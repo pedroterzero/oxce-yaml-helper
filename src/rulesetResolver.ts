@@ -1,6 +1,6 @@
 import YAML from "yaml";
 import * as vscode from 'vscode';
-import { workspace, Uri, window } from 'vscode';
+import { workspace, Uri } from 'vscode';
 import { logger } from "./logger";
 import { rulesetTree, Ruleset } from "./rulesetTree";
 import { EventEmitter } from "events";
@@ -49,13 +49,15 @@ export class RulesetResolver implements vscode.Disposable {
             files = files.filter(file => workspace.getWorkspaceFolder(file).uri.path === workspaceFolder.uri.path)
 
             if (files.length === 0) {
-                logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not a rails project.`);
+                logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not an OXC(E) project.`);
                 return files;
             }
 
             if (!loadAllFiles) {
                 return files;
             }
+
+            return [];
         })
     }
 
