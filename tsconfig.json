@@ -8,6 +8,7 @@
         ],
         "sourceMap": true,
         "rootDir": "src",
+        "removeComments": true,
         /* Strict Type-Checking Option */
         "strict": false,   /* enable all strict type-checking options */
         /* Additional Checks */

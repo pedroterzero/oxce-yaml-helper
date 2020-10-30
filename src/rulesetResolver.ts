@@ -42,7 +42,7 @@ export class RulesetResolver implements vscode.Disposable {
     }
 
     private getYamlFilesForWorkspaceFolder(workspaceFolder: vscode.WorkspaceFolder): Thenable<Uri[]> {
-        const loadAllFiles: boolean = workspace.getConfiguration('oxcYamlThingy').get<boolean>('loadAllRulesets');
+        const loadAllFiles: boolean = workspace.getConfiguration('oxcYamlHelper').get<boolean>('loadAllRulesets');
         logger.debug('loadAllFiles:', loadAllFiles, 'workspace dir:', workspaceFolder.name);
 
         return workspace.findFiles(this.yamlPattern).then(files => {

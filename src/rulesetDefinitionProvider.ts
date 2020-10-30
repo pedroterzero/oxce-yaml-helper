@@ -40,7 +40,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
     }
 
     findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] {
-        let yamlDocument: YAMLDocument = null;
+        let yamlDocument: YAMLDocument;
         try {
             yamlDocument = YAML.parseDocument(yaml);
         } catch (error) {

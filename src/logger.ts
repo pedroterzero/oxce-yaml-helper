@@ -5,7 +5,7 @@ export enum LogLevel {
     Error = 3
 }
 
-//export let logLevel: LogLevel = workspace.getConfiguration('oxcYamlThingy').get('debugLevel');
+//export let logLevel: LogLevel = workspace.getConfiguration('oxcYamlHelper').get('debugLevel');
 export let logLevel: LogLevel = LogLevel.Debug;
 
 export class Logger {

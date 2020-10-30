@@ -1,5 +1,5 @@
 {
-    "name": "oxc-yaml-thingy",
+    "name": "oxc-yaml-helper",
     "displayName": "OXC(E) YAML Helper",
     "description": "OXC(E) YAML Helper",
     "version": "0.0.1",
@@ -25,7 +25,7 @@
             "type": "object",
             "title": "OXC YAML Helper",
             "properties": {
-                "oxcYamlThingy.debugLevel": {
+                "oxcYamlHelper.debugLevel": {
                     "type": [
                         "integer"
                     ],
