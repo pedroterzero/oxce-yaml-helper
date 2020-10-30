@@ -1,5 +1,3 @@
-import { workspace } from "vscode";
-
 export enum LogLevel {
     Debug = 0,
     Info = 1,
@@ -11,25 +9,25 @@ export enum LogLevel {
 export let logLevel: LogLevel = LogLevel.Debug;
 
 export class Logger {
-    public debug(...args): void {
+    public debug(...args: any[]): void {
         if (logLevel <= LogLevel.Debug) {
             console.info(...args);
         }
     }
 
-    public info(...args): void {
+    public info(...args: any[]): void {
         if (logLevel <= LogLevel.Info) {
             console.info(...args);
         }
     }
 
-    public warn(...args): void {
+    public warn(...args: any[]): void {
         if (logLevel <= LogLevel.Warn) {
             console.warn(...args);
         }
     }
 
-    public error(...args): void {
+    public error(...args: any[]): void {
         if (logLevel <= LogLevel.Error) {
             console.error(...args);
         }

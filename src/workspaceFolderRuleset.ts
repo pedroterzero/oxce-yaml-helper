@@ -1,7 +1,6 @@
 import { Uri, WorkspaceFolder } from "vscode";
 import { Ruleset, LookupMap } from "./rulesetTree";
 import { LookupMapGenerator } from "./lookupMapGenerator";
-import { logger } from "./logger";
 import * as merge from "merge";
 
 export type RulesetPart = { file: Uri, rulesets: Ruleset }
