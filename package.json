@@ -20,7 +20,7 @@
     ],
     "main": "./out/extension",
     "contributes": {
-		"commands": [],
+        "commands": [],
         "configuration": {
             "type": "object",
             "title": "OXC YAML Helper",
