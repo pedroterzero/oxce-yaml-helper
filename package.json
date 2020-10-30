@@ -4,7 +4,7 @@
     "description": "OXC(E) YAML Helper",
     "version": "0.0.1",
     "publisher": "pedroterzero",
-    "icon": "docs/icon.png",
+    "icon": "docs/icon.jpg",
     "repository": {
         "type": "git",
         "url": "https://github.com/pedroterzero/oxce-yaml-helper.git"
