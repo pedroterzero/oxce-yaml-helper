@@ -2,7 +2,7 @@ import { DefinitionProvider, TextDocument, Position, Definition, ProviderResult,
 import { logger } from "./logger";
 import { KeyDetector } from "./keyDetector";
 import { rulesetTree } from "./rulesetTree";
-import { parseDocument } from "yaml";
+import { Document, parseDocument } from "yaml";
 import { Pair, YAMLMap } from "yaml/types";
 
 interface YAMLDocument {
@@ -52,7 +52,10 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
     findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] | null {
         let yamlDocument: YAMLDocument = {} as YAMLDocument;
         try {
-            yamlDocument.contents = parseDocument(yaml);
+            // I am not sure why I have to cast this to Document, are yaml package's types broken?
+            const doc: Document = parseDocument(yaml);
+
+            yamlDocument.contents = doc.contents;
         } catch (error) {
             logger.error('could not parse yaml document', { error })
             return null;
