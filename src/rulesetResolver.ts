@@ -1,4 +1,4 @@
-import YAML from "yaml";
+import { parse as YAMLParse } from "yaml";
 import * as vscode from 'vscode';
 import { workspace, Uri } from 'vscode';
 import { logger } from "./logger";
@@ -78,7 +78,7 @@ export class RulesetResolver implements vscode.Disposable {
                 if (!workspaceFolder) {
                     workspaceFolder = workspace.getWorkspaceFolder(file);
                 }
-                rulesetTree.mergeIntoTree(<Ruleset>YAML.parse(document.getText()), workspaceFolder, file);
+                rulesetTree.mergeIntoTree(<Ruleset>YAMLParse(document.getText()), workspaceFolder, file);
             } catch (error) {
                 logger.error('loadDocumentIntoMap', file.path, error.message);
             }

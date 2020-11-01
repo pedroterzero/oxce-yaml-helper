@@ -2,7 +2,7 @@ import { DefinitionProvider, TextDocument, Position, Definition, ProviderResult,
 import { logger } from "./logger";
 import { KeyDetector } from "./keyDetector";
 import { rulesetTree } from "./rulesetTree";
-import YAML from "yaml";
+import { parseDocument } from "yaml";
 
 interface YAMLDocument {
     contents: { items: YAMLDocumentItem[] };
@@ -42,7 +42,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
     findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] {
         let yamlDocument: YAMLDocument;
         try {
-            yamlDocument = YAML.parseDocument(yaml);
+            yamlDocument.contents = parseDocument(yaml);
         } catch (error) {
             logger.error('could not parse yaml document', { error })
             return null;
