@@ -7,7 +7,7 @@ import { EventEmitter } from "events";
 
 export class RulesetResolver implements vscode.Disposable {
 
-    private fileSystemWatcher;
+    private fileSystemWatcher?: vscode.FileSystemWatcher;
     private readonly yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
 
@@ -30,6 +30,10 @@ export class RulesetResolver implements vscode.Disposable {
     }
 
     private loadYamlFiles(): Thenable<any> {
+        if (!workspace.workspaceFolders) {
+            return new Promise(() => {});
+        }
+
         return Promise.all(workspace.workspaceFolders.map(workspaceFolder => {
             logger.debug('loading yaml files for workspace dir:', workspaceFolder.name);
             return this.getYamlFilesForWorkspaceFolder(workspaceFolder).then(files => {
@@ -42,11 +46,11 @@ export class RulesetResolver implements vscode.Disposable {
     }
 
     private getYamlFilesForWorkspaceFolder(workspaceFolder: vscode.WorkspaceFolder): Thenable<Uri[]> {
-        const loadAllFiles: boolean = workspace.getConfiguration('oxcYamlHelper').get<boolean>('loadAllRulesets');
+        const loadAllFiles: boolean = workspace.getConfiguration('oxcYamlHelper').get<boolean>('loadAllRulesets') || false;
         logger.debug('loadAllFiles:', loadAllFiles, 'workspace dir:', workspaceFolder.name);
 
         return workspace.findFiles(this.yamlPattern).then(files => {
-            files = files.filter(file => workspace.getWorkspaceFolder(file).uri.path === workspaceFolder.uri.path)
+            files = files.filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path)
 
             if (files.length === 0) {
                 logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not an OXC(E) project.`);
@@ -78,6 +82,10 @@ export class RulesetResolver implements vscode.Disposable {
                 if (!workspaceFolder) {
                     workspaceFolder = workspace.getWorkspaceFolder(file);
                 }
+                if (!workspaceFolder) {
+                    throw new Error('workspace folder could not be found');
+                }
+
                 rulesetTree.mergeIntoTree(<Ruleset>YAMLParse(document.getText()), workspaceFolder, file);
             } catch (error) {
                 logger.error('loadDocumentIntoMap', file.path, error.message);

@@ -3,6 +3,7 @@ import { logger } from "./logger";
 import { KeyDetector } from "./keyDetector";
 import { rulesetTree } from "./rulesetTree";
 import { parseDocument } from "yaml";
+import { Pair, YAMLMap } from "yaml/types";
 
 interface YAMLDocument {
     contents: { items: YAMLDocumentItem[] };
@@ -16,22 +17,31 @@ interface YAMLDocumentItem {
 export class RulesetDefinitionProvider implements DefinitionProvider {
 
     provideDefinition(document: TextDocument, position: Position): ProviderResult<Definition> {
-        let { key } = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document);
-        if (!key) {
-            return null;
+        let value = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document);
+        if (!value?.key) {
+            return;
         }
-        const ruleFile = rulesetTree.getRuleFile(key, workspace.getWorkspaceFolder(document.uri));
+
+        let folder = workspace.getWorkspaceFolder(document.uri);
+        if (!folder) {
+            return;
+        }
+
+        const ruleFile = rulesetTree.getRuleFile(value.key, folder);
 
         logger.debug('Rule file:', ruleFile);
-        return this.findKeyValueLocationInDocument(ruleFile.file, key);
+        if (!ruleFile?.file) { 
+            throw new Error('could not load ' + ruleFile);
+        }
+
+        return this.findKeyValueLocationInDocument(ruleFile.file, value.key);
     }
 
-
-    findKeyValueLocationInDocument(file: Uri, absoluteKey: string): Thenable<Location> {
+    findKeyValueLocationInDocument(file: Uri, absoluteKey: string): Thenable<Location | null> {
         return workspace.openTextDocument(file.path).then((document: TextDocument) => {
             // return new Location(file, new Range(document.positionAt(0), document.positionAt(0)));
 
-            const range: number[] = this.findKeyValueRangeInYAML(document.getText(), absoluteKey);
+            const range = this.findKeyValueRangeInYAML(document.getText(), absoluteKey);
             if (!range) {
                 return null;
             }
@@ -39,8 +49,8 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         });
     }
 
-    findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] {
-        let yamlDocument: YAMLDocument;
+    findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] | null {
+        let yamlDocument: YAMLDocument = {} as YAMLDocument;
         try {
             yamlDocument.contents = parseDocument(yaml);
         } catch (error) {
@@ -50,10 +60,9 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         return this.findKeyValueRangeInYamlDocument(yamlDocument, absoluteKey);
     }
 
-    findKeyValueRangeInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string): number[] {
+    findKeyValueRangeInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string): [number, number] {
         logger.debug('findKeyValueRangeInYamlDocument', { absoluteKey });
 
-        
         let yamlPairs = yamlDocument.contents.items;
         if (!yamlPairs) {
             logger.warn('yamlDocument does not have any items');
@@ -61,15 +70,15 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         }
 
         // loop through each type in this document
-        let match;
+        let match: Pair | undefined;
         yamlPairs.forEach((ruleType) => {
             // console.log('ruleType', ruleType);
-            ruleType.value.items.forEach(ruleProperties => {
+            ruleType.value.items.forEach((ruleProperties: YAMLMap) => {
                 if (match) {
                     return;
                 }
 
-                ruleProperties.items.forEach(ruleProperty => {
+                ruleProperties.items.forEach((ruleProperty: Pair) => {
                     if (ruleProperty.key.value === 'type' && (ruleProperty.value.value === absoluteKey || ruleProperty.value.value.indexOf(absoluteKey + '.') === 0)) {
                         // highlight the entire block
                         // match = ruleProperties; 
@@ -81,7 +90,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
             });
         })
 
-        if (match) {
+        if (match?.range) {
             return match.range;
         }
 

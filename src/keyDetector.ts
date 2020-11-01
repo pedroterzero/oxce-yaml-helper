@@ -19,7 +19,7 @@ export class KeyDetector {
      * @param position position to look for the key
      * @param document current document
      */
-    public static getRangeOfKeyAtPosition(position: Position, document: TextDocument): Range {
+    public static getRangeOfKeyAtPosition(position: Position, document: TextDocument): Range | undefined {
         // let stringRegex = /(STR_[A-Z0-9_]+)/g;
         let stringRegex = /([A-Z0-9_]+)/g;
         return document.getWordRangeAtPosition(position, stringRegex);

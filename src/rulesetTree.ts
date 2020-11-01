@@ -12,29 +12,29 @@ export class RulesetTree {
         this.workspaceFolderRulesets = [];
     }
 
-    public mergeIntoTree(treePart: Ruleset, workspaceFolder: WorkspaceFolder, sourceFile?: Uri) {
-        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder).mergeIntoRulesetTree(treePart, sourceFile);
+    public mergeIntoTree(treePart: Ruleset, workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeIntoRulesetTree(treePart, sourceFile);
     }
 
-    public getRuleFile(key: string, workspaceFolder: WorkspaceFolder): RulesetPart {
+    public getRuleFile(key: string, workspaceFolder: WorkspaceFolder): RulesetPart | undefined {
         logger.debug('getRuleFile', 'key', key, 'workspaceFolder', workspaceFolder);
-        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder).getRuleFile(key);
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getRuleFile(key);
     }
    
     public getWorkspaceFolders(): WorkspaceFolder[] {
         return this.workspaceFolderRulesets.map((workspaceFolderRuleset) => workspaceFolderRuleset.workspaceFolder);
     }
 
-    private getWorkspaceFolderRuleset(workspaceFolder: WorkspaceFolder): WorkspaceFolderRuleset {
+    private getWorkspaceFolderRuleset(workspaceFolder: WorkspaceFolder): WorkspaceFolderRuleset | undefined {
         if (!workspaceFolder || this.workspaceFolderRulesets.length === 0) {
-            return null;
+            return;
         }
         return this.workspaceFolderRulesets.find((workspaceFolderRuleset) => workspaceFolderRuleset.workspaceFolder.name === workspaceFolder.name);
     }
 
-    private getOrCreateWorkspaceFolderRuleset(workspaceFolder: WorkspaceFolder): WorkspaceFolderRuleset {
+    private getOrCreateWorkspaceFolderRuleset(workspaceFolder: WorkspaceFolder): WorkspaceFolderRuleset | undefined {
         if (!workspaceFolder) {
-            return null;
+            return;
         }
         let workspaceFolderRuleset = this.getWorkspaceFolderRuleset(workspaceFolder);
         if (!workspaceFolderRuleset) {
