@@ -2,7 +2,7 @@ import { logger } from "./logger";
 import { Uri, WorkspaceFolder } from "vscode";
 import { WorkspaceFolderRuleset as WorkspaceFolderRuleset, RulesetPart } from "./workspaceFolderRuleset";
 
-export type Ruleset = { [key: string]: string | Ruleset }
+export type Ruleset = { [key: string]: Ruleset }
 export type LookupMap = { [key: string]: string }
 
 export class RulesetTree {

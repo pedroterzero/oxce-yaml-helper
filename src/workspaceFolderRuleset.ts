@@ -2,6 +2,7 @@ import { Uri, WorkspaceFolder } from "vscode";
 import { Ruleset, LookupMap } from "./rulesetTree";
 import { LookupMapGenerator } from "./lookupMapGenerator";
 import * as deepmerge from 'deepmerge';
+import { typedProperties } from "./typedProperties";
 
 export type RulesetPart = { file: Uri, rulesets: Ruleset }
 
@@ -45,20 +46,17 @@ export class WorkspaceFolderRuleset {
     }
 
     private traverseRuleset(key: string, ruleset: Ruleset): boolean {
-        let result: any = ruleset;
+        // let result: any = ruleset;
+        let match = false;
 
-        for (let ruleType in ruleset) {
-            let rules: any = ruleset[ruleType];
-
-            for (let ruleIndex in rules) {
-                let rule = rules[ruleIndex];
-
-                if (rule.type && (rule.type === key || rule.type.indexOf(key + '.') === 0)) {
-                    return true;
+        Object.keys(ruleset).forEach(ruleType => {
+            Object.values(ruleset[ruleType]).forEach((rule: any) => {
+                if (typedProperties.isTypePropertyForKey(ruleType, rule, key)) {
+                    match = true;
                 }
-            }
-        }
+            });
+        });
 
-        return result;
+        return match;
     }
 }

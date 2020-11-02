@@ -4,6 +4,7 @@ import { KeyDetector } from "./keyDetector";
 import { rulesetTree } from "./rulesetTree";
 import { Document, parseDocument } from "yaml";
 import { Pair, YAMLMap } from "yaml/types";
+import { typedProperties } from "./typedProperties";
 
 interface YAMLDocument {
     contents: { items: YAMLDocumentItem[] };
@@ -11,6 +12,7 @@ interface YAMLDocument {
 
 interface YAMLDocumentItem {
     stringKey: string;
+    key: any;
     value: any;
 }
 
@@ -80,16 +82,20 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
                 if (match) {
                     return;
                 }
+            
+                const propertiesFlat = ruleProperties.toJSON();
+                if (typedProperties.isTypePropertyForKey(ruleType.key.value, propertiesFlat, absoluteKey)) {
+                    const typeKey = typedProperties.getTypeKey(propertiesFlat, ruleType.key.value);
 
-                ruleProperties.items.forEach((ruleProperty: Pair) => {
-                    if (ruleProperty.key.value === 'type' && (ruleProperty.value.value === absoluteKey || ruleProperty.value.value.indexOf(absoluteKey + '.') === 0)) {
-                        // highlight the entire block
-                        // match = ruleProperties; 
-                        // highlight just the key
-                        match = ruleProperty.value;
-                    }
-                });
-
+                    ruleProperties.items.forEach((ruleProperty: Pair) => {
+                        if (ruleProperty.key.value === typeKey) {
+                            // highlight the entire block
+                            // match = ruleProperties; 
+                            // highlight just the key
+                            match = ruleProperty.value;
+                        }
+                    });
+                }
             });
         })
 
