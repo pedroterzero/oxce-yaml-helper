@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OXC(E) YAML Helper",
     "description": "OXC(E) YAML Helper",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "pedroterzero",
     "icon": "docs/icon.jpg",
     "repository": {
@@ -37,6 +37,13 @@
                     ],
                     "default": 1,
                     "description": "logging verbosity (0 = all logs, 3 = only errors)"
+                },
+                "oxcYamlHelper.ruleFilesPattern": {
+                    "type": [
+                        "string"
+                    ],
+                    "default": "**/*.rul",
+                    "description": "Rules files location (i.e. Rulesets/**/*.rul)"
                 }
             }
         }

@@ -29,12 +29,15 @@ export class WorkspaceFolderRuleset {
 
         this.lookupMap = new LookupMapGenerator(this.ruleset).generateLookupMap();
     }
-
-    public getRuleFile(key: string): RulesetPart | undefined {
-        return this.rulesetParts.find(rulesetPart => {
+    
+    public getRuleFiles(key: string): RulesetPart[] | undefined {
+        const ret = this.rulesetParts.filter(rulesetPart => {
+            console.log('part:', rulesetPart.file.path)
             const result = this.traverseRuleset(key, rulesetPart.rulesets);
             return result === true;
         });
+
+        return ret;
     }    
 
     private addRulesetPart(ruleset: Ruleset, sourceFile: Uri) {

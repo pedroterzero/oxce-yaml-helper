@@ -16,9 +16,10 @@ export class RulesetTree {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeIntoRulesetTree(treePart, sourceFile);
     }
 
-    public getRuleFile(key: string, workspaceFolder: WorkspaceFolder): RulesetPart | undefined {
+    public getRuleFiles(key: string, workspaceFolder: WorkspaceFolder): RulesetPart[] | undefined {
         logger.debug('getRuleFile', 'key', key, 'workspaceFolder', workspaceFolder);
-        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getRuleFile(key);
+        const files = this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getRuleFiles(key);
+        return files;
     }
    
     public getWorkspaceFolders(): WorkspaceFolder[] {

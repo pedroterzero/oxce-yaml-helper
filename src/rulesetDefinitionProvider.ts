@@ -2,7 +2,7 @@ import { DefinitionProvider, TextDocument, Position, Definition, ProviderResult,
 import { logger } from "./logger";
 import { KeyDetector } from "./keyDetector";
 import { rulesetTree } from "./rulesetTree";
-import { Document, parseDocument } from "yaml";
+import { Document, parseDocument } from 'yaml';
 import { Pair, YAMLMap } from "yaml/types";
 import { typedProperties } from "./typedProperties";
 
@@ -41,14 +41,20 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
             return this.findRefNodeInDocument(document.uri, value.key.slice(1));
         }
 
-        const ruleFile = rulesetTree.getRuleFile(value.key, folder);
+        const ruleFiles = rulesetTree.getRuleFiles(value.key, folder);
+        logger.debug('Found ', ruleFiles?.length, ' matches for ', value.key);
 
-        logger.debug('Rule file:', ruleFile);
-        if (!ruleFile?.file) { 
-            throw new Error('could not load ' + ruleFile);
-        }
+        const files: Uri[] = [];
+        ruleFiles?.forEach(ruleFile => {
+            logger.debug('Rule file:', ruleFile);
+            if (!ruleFile?.file) { 
+                throw new Error('could not load ' + ruleFile);
+            }
 
-        return this.findKeyValueLocationInDocument(ruleFile.file, value.key);
+            files.push(ruleFile.file);
+        })
+
+        return this.findKeyValueLocationInDocuments(files, value.key);
     }
 
     findRefNodeInDocument(file: Uri, key: string): Thenable<Location | null> {
@@ -64,14 +70,30 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         });
     }
 
-    findKeyValueLocationInDocument(file: Uri, absoluteKey: string): Thenable<Location | null> {
-        return workspace.openTextDocument(file.path).then((document: TextDocument) => {
-            const range = this.findKeyValueRangeInYAML(document.getText(), absoluteKey);
-            if (!range) {
-                return null;
-            }
-            return new Location(file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
+    async findKeyValueLocationInDocuments(files: Uri[], absoluteKey: string): Promise<Location[]> {
+        const promises: Thenable<Location | undefined>[] = [];
+
+        files.forEach(file => {
+            promises.push(workspace.openTextDocument(file.path).then((document: TextDocument) => {
+                const range = this.findKeyValueRangeInYAML(document.getText(), absoluteKey);
+                if (!range) {
+                    return;
+                }
+
+                return new Location(file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
+            }));
         });
+
+        const values = await Promise.all(promises);
+
+        const resolvedLocations: Location[] = [];
+        values.forEach(resolved => {
+            if (resolved) {
+                resolvedLocations.push(resolved);
+            }
+        });
+
+        return resolvedLocations;
     }
 
     findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] {
@@ -134,7 +156,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         let yamlDocument: YAMLDocument = {} as YAMLDocument;
         try {
             // I am not sure why I have to cast this to Document, are yaml package's types broken?
-            const doc: Document = parseDocument(yaml);
+            const doc: Document = parseDocument(yaml, {maxAliasCount: 1024});
 
             yamlDocument.anchors = doc.anchors;
             yamlDocument.contents = doc.contents;

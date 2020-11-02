@@ -8,7 +8,7 @@ import { EventEmitter } from "events";
 export class RulesetResolver implements vscode.Disposable {
 
     private fileSystemWatcher?: vscode.FileSystemWatcher;
-    private readonly yamlPattern = '**/*.rul';
+    private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
 
     public load(): Thenable<any> {
@@ -26,6 +26,13 @@ export class RulesetResolver implements vscode.Disposable {
 
     private init(): void {
         logger.debug('init');
+
+        const pattern = workspace.getConfiguration('oxcYamlHelper').get<string>('ruleFilesPattern');
+        if (pattern) {
+            this.yamlPattern = pattern;
+        }
+        logger.debug('using pattern', this.yamlPattern);
+
         rulesetTree.init();
     }
 
@@ -86,7 +93,7 @@ export class RulesetResolver implements vscode.Disposable {
                     throw new Error('workspace folder could not be found');
                 }
 
-                rulesetTree.mergeIntoTree(<Ruleset>parseYAML(document.getText()), workspaceFolder, file);
+                rulesetTree.mergeIntoTree(<Ruleset>parseYAML(document.getText(), {maxAliasCount: 1024}), workspaceFolder, file);
             } catch (error) {
                 logger.error('loadDocumentIntoMap', file.path, error.message);
             }
