@@ -21,7 +21,7 @@ export class KeyDetector {
      */
     public static getRangeOfKeyAtPosition(position: Position, document: TextDocument): Range | undefined {
         // let stringRegex = /(STR_[A-Z0-9_]+)/g;
-        let stringRegex = /(\*[A-Z0-9_]+(\.PCK)?)/g;
+        let stringRegex = /(\*?[A-Z0-9_]+(\.PCK)?)/g;
         return document.getWordRangeAtPosition(position, stringRegex);
     }
 
