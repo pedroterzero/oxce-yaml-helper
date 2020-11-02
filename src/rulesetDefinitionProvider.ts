@@ -8,12 +8,19 @@ import { typedProperties } from "./typedProperties";
 
 interface YAMLDocument {
     contents: { items: YAMLDocumentItem[] };
+    anchors: {
+        getNode: (name: string) => YAMLNode | undefined
+    };
 }
 
 interface YAMLDocumentItem {
     stringKey: string;
     key: any;
     value: any;
+}
+
+interface YAMLNode {
+    range?: [number, number] | null
 }
 
 export class RulesetDefinitionProvider implements DefinitionProvider {
@@ -29,6 +36,11 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
             return;
         }
 
+        // allows looking for refNodes
+        if (value.key.indexOf('*') === 0) {
+            return this.findRefNodeInDocument(document.uri, value.key.slice(1));
+        }
+
         const ruleFile = rulesetTree.getRuleFile(value.key, folder);
 
         logger.debug('Rule file:', ruleFile);
@@ -39,10 +51,21 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         return this.findKeyValueLocationInDocument(ruleFile.file, value.key);
     }
 
+    findRefNodeInDocument(file: Uri, key: string): Thenable<Location | null> {
+        logger.debug('Looking for refNode ', key, 'in ', file.path);
+
+        return workspace.openTextDocument(file.path).then((document: TextDocument) => {
+            const range = this.findRefNodeRangeInYAML(document.getText(), key);
+            if (!range) {
+                return null;
+            }
+
+            return new Location(file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
+        });
+    }
+
     findKeyValueLocationInDocument(file: Uri, absoluteKey: string): Thenable<Location | null> {
         return workspace.openTextDocument(file.path).then((document: TextDocument) => {
-            // return new Location(file, new Range(document.positionAt(0), document.positionAt(0)));
-
             const range = this.findKeyValueRangeInYAML(document.getText(), absoluteKey);
             if (!range) {
                 return null;
@@ -51,18 +74,19 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         });
     }
 
-    findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] | null {
-        let yamlDocument: YAMLDocument = {} as YAMLDocument;
-        try {
-            // I am not sure why I have to cast this to Document, are yaml package's types broken?
-            const doc: Document = parseDocument(yaml);
+    findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] {
+        return this.findKeyValueRangeInYamlDocument(this.parseDocument(yaml), absoluteKey);
+    }
 
-            yamlDocument.contents = doc.contents;
-        } catch (error) {
-            logger.error('could not parse yaml document', { error })
-            return null;
-        }
-        return this.findKeyValueRangeInYamlDocument(yamlDocument, absoluteKey);
+    findRefNodeRangeInYAML(yaml: string, key: string): number[] {
+        const doc = this.parseDocument(yaml);
+        const node = doc.anchors.getNode(key);
+
+        if (node) {
+            return node.range as number[];
+        }   
+
+        return [0, 0];
     }
 
     findKeyValueRangeInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string): [number, number] {
@@ -104,5 +128,20 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         }
 
         return [0, 0];
+    }
+
+    private parseDocument (yaml: string): YAMLDocument {
+        let yamlDocument: YAMLDocument = {} as YAMLDocument;
+        try {
+            // I am not sure why I have to cast this to Document, are yaml package's types broken?
+            const doc: Document = parseDocument(yaml);
+
+            yamlDocument.anchors = doc.anchors;
+            yamlDocument.contents = doc.contents;
+        } catch (error) {
+            logger.error('could not parse yaml document', { error })
+        }
+
+        return yamlDocument;
     }
 }
