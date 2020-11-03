@@ -47,7 +47,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         const files: Uri[] = [];
         ruleFiles?.forEach(ruleFile => {
             logger.debug('Rule file:', ruleFile);
-            if (!ruleFile?.file) { 
+            if (!ruleFile?.file) {
                 throw new Error('could not load ' + ruleFile);
             }
 
@@ -106,7 +106,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
 
         if (node) {
             return node.range as number[];
-        }   
+        }
 
         return [0, 0];
     }
@@ -128,7 +128,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
                 if (match) {
                     return;
                 }
-            
+
                 const propertiesFlat = ruleProperties.toJSON();
                 if (typedProperties.isTypePropertyForKey(ruleType.key.value, propertiesFlat, absoluteKey)) {
                     const typeKey = typedProperties.getTypeKey(propertiesFlat, ruleType.key.value);
@@ -136,7 +136,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
                     ruleProperties.items.forEach((ruleProperty: Pair) => {
                         if (ruleProperty.key.value === typeKey) {
                             // highlight the entire block
-                            // match = ruleProperties; 
+                            // match = ruleProperties;
                             // highlight just the key
                             match = ruleProperty.value;
                         }

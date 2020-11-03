@@ -25,7 +25,7 @@ export class KeyDetector {
     }
 
     /**
-     * get the key as text from call range 
+     * get the key as text from call range
      * @param range range where call occurs
      * @param document current document
      */

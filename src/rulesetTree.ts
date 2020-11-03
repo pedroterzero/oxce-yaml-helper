@@ -21,7 +21,7 @@ export class RulesetTree {
         const files = this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getRuleFiles(key);
         return files;
     }
-   
+
     public getWorkspaceFolders(): WorkspaceFolder[] {
         return this.workspaceFolderRulesets.map((workspaceFolderRuleset) => workspaceFolderRuleset.workspaceFolder);
     }

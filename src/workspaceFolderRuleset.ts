@@ -29,7 +29,7 @@ export class WorkspaceFolderRuleset {
 
         this.lookupMap = new LookupMapGenerator(this.ruleset).generateLookupMap();
     }
-    
+
     public getRuleFiles(key: string): RulesetPart[] | undefined {
         const ret = this.rulesetParts.filter(rulesetPart => {
             console.log('part:', rulesetPart.file.path)
@@ -38,7 +38,7 @@ export class WorkspaceFolderRuleset {
         });
 
         return ret;
-    }    
+    }
 
     private addRulesetPart(ruleset: Ruleset, sourceFile: Uri) {
         const rulesetPart = { rulesets: ruleset, file: sourceFile };
