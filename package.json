@@ -26,9 +26,7 @@
             "title": "OXC YAML Helper",
             "properties": {
                 "oxcYamlHelper.debugLevel": {
-                    "type": [
-                        "integer"
-                    ],
+                    "type": ["integer"],
                     "enum": [
                         0,
                         1,
@@ -39,11 +37,14 @@
                     "description": "logging verbosity (0 = all logs, 3 = only errors)"
                 },
                 "oxcYamlHelper.ruleFilesPattern": {
-                    "type": [
-                        "string"
-                    ],
+                    "type": ["string"],
                     "default": "**/*.rul",
                     "description": "Rules files location (i.e. Rulesets/**/*.rul)"
+                },
+                "oxcYamlHelper.attemptCRLFFix": {
+                    "type": ["string"],
+                    "default": true,
+                    "description": "Attempt to work around files using CRLF. If you're having problems with wrong positions, disable this and convert rulesets to LF"
                 }
             }
         }

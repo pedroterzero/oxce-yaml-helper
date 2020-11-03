@@ -101,6 +101,10 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         files.forEach(file => {
             promises.push(workspace.openTextDocument(file.path).then((document: TextDocument) => {
                 const range = this.findKeyValueRangeInYAML(document.getText(), absoluteKey);
+
+                // convert CRLF
+                this.fixRangesForWindowsLineEndingsIfNeeded(document, range);
+
                 if (!range) {
                     return;
                 }
@@ -119,6 +123,31 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         });
 
         return resolvedLocations;
+    }
+
+    /**
+     * Checks the line endings, and if it's CRLF, corrects for that. Because the parser uses LF.
+     * @param document
+     * @param range
+     */
+    private fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: number[]) {
+        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('attemptCRLFFix')) {
+            return;
+        }
+
+        if (document.getText().indexOf("\r\n") !== -1) {
+            // parse the document so we're working off the same base
+            const doc = parseDocument(document.getText(), { maxAliasCount: 1024 });
+
+            // find offset
+            const myText = doc.toString().replace("\r\n", "\n");
+            // count number of line breaks
+            const lineBreaks = myText.slice(0, range[0]).match(/\n/g)?.length || 0;
+
+            // add a byte to the range for each line break
+            range[0] += lineBreaks;
+            range[1] += lineBreaks;
+        }
     }
 
     findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] {
