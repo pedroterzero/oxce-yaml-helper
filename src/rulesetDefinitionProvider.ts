@@ -57,13 +57,13 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         return this.findKeyValueLocationInDocuments(files, value.key);
     }
 
-    findRefNodeInDocument(file: Uri, key: string): Thenable<Location | null> {
+    async findRefNodeInDocument(file: Uri, key: string): Promise<Location | undefined> {
         logger.debug('Looking for refNode ', key, 'in ', file.path);
 
         return workspace.openTextDocument(file.path).then((document: TextDocument) => {
             const range = this.findRefNodeRangeInYAML(document.getText(), key);
             if (!range) {
-                return null;
+                return;
             }
 
             return new Location(file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
