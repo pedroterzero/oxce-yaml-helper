@@ -4,6 +4,7 @@ import { WorkspaceFolderRuleset as WorkspaceFolderRuleset, RulesetPart } from ".
 
 export type Ruleset = { [key: string]: Ruleset }
 export type LookupMap = { [key: string]: string }
+export type RuleType = { type: string; key: string; }
 
 export class RulesetTree {
     private workspaceFolderRulesets: WorkspaceFolderRuleset[] = [];
@@ -16,9 +17,9 @@ export class RulesetTree {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeIntoRulesetTree(treePart, sourceFile);
     }
 
-    public getRuleFiles(key: string, workspaceFolder: WorkspaceFolder): RulesetPart[] | undefined {
+    public getRuleFiles(key: string, workspaceFolder: WorkspaceFolder, ruleType: RuleType | undefined): RulesetPart[] | undefined {
         logger.debug('getRuleFile', 'key', key, 'workspaceFolder', workspaceFolder);
-        const files = this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getRuleFiles(key);
+        const files = this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getRuleFiles(key, ruleType);
         return files;
     }
 

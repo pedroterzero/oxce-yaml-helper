@@ -1,7 +1,7 @@
-import { DefinitionProvider, TextDocument, Position, Definition, ProviderResult, workspace, Location, Range, Uri } from "vscode";
+import { DefinitionProvider, TextDocument, Position, Definition, ProviderResult, workspace, Location, Range, Uri, window } from "vscode";
 import { logger } from "./logger";
 import { KeyDetector } from "./keyDetector";
-import { rulesetTree } from "./rulesetTree";
+import { rulesetTree, RuleType } from "./rulesetTree";
 import { Document, parseDocument } from 'yaml';
 import { Pair, YAMLMap } from "yaml/types";
 import { typedProperties } from "./typedProperties";
@@ -14,13 +14,17 @@ interface YAMLDocument {
 }
 
 interface YAMLDocumentItem {
-    stringKey: string;
     key: any;
     value: any;
 }
 
 interface YAMLNode {
     range?: [number, number] | null
+}
+
+interface RuleMatch {
+    ruleType: YAMLDocumentItem & YAMLNode;
+    rule: YAMLDocumentItem & YAMLNode;
 }
 
 export class RulesetDefinitionProvider implements DefinitionProvider {
@@ -41,7 +45,10 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
             return this.findRefNodeInDocument(document.uri, value.key.slice(1));
         }
 
-        const ruleFiles = rulesetTree.getRuleFiles(value.key, folder);
+        // what kind of rule are we trying to look up?
+        const ruleType = this.findTypeOfKey(document.uri, value.key);
+
+        const ruleFiles = rulesetTree.getRuleFiles(value.key, folder, ruleType);
         logger.debug('Found ', ruleFiles?.length, ' matches for ', value.key);
 
         const files: Uri[] = [];
@@ -55,6 +62,23 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         })
 
         return this.findKeyValueLocationInDocuments(files, value.key);
+    }
+
+    private findTypeOfKey(file: Uri, key: string): RuleType | undefined {
+        logger.debug('Looking for requested key ', key, 'in ', file.path);
+
+        const document = window.activeTextEditor?.document;
+        if (!document) {
+            return;
+        }
+
+        const rule = this.getKeyInformationFromYAML(document.getText(), key);
+        if (!rule) {
+            return;
+        }
+
+        logger.debug('Key', key, 'is', rule.key, 'of', rule.type);
+        return rule;
     }
 
     async findRefNodeInDocument(file: Uri, key: string): Promise<Location | undefined> {
@@ -114,14 +138,38 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
     findKeyValueRangeInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string): [number, number] {
         logger.debug('findKeyValueRangeInYamlDocument', { absoluteKey });
 
+        const match = this.findKeyValueInYamlDocument(yamlDocument, absoluteKey);
+        if (match && match.rule) {
+            return match.rule.value.range;
+        }
+
+        return [0, 0];
+    }
+
+    private getKeyInformationFromYAML(yaml: string, key: string): RuleType | undefined {
+        const match = this.findKeyValueInYamlDocument(this.parseDocument(yaml), key);
+
+        if (!match) {
+            return;
+        }
+
+        return {
+            type: match.ruleType.key.value,
+            key: match.rule.key.value
+        };
+    }
+
+   findKeyValueInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string): RuleMatch | undefined {
+        logger.debug('findKeyValueInYamlDocument', { absoluteKey });
+
         let yamlPairs = yamlDocument.contents.items;
         if (!yamlPairs) {
             logger.warn('yamlDocument does not have any items');
-            return [0, 0];
+            return;
         }
 
         // loop through each type in this document
-        let match: Pair | undefined;
+        let match: RuleMatch | undefined;
         yamlPairs.forEach((ruleType) => {
             // console.log('ruleType', ruleType);
             ruleType.value.items.forEach((ruleProperties: YAMLMap) => {
@@ -138,18 +186,21 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
                             // highlight the entire block
                             // match = ruleProperties;
                             // highlight just the key
-                            match = ruleProperty.value;
+                            match = {
+                                ruleType: ruleType,
+                                rule: ruleProperty
+                            };
                         }
                     });
                 }
             });
         })
 
-        if (match?.range) {
-            return match.range;
+        if (match) {
+            return match;
         }
 
-        return [0, 0];
+        return;
     }
 
     private parseDocument (yaml: string): YAMLDocument {

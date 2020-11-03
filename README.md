@@ -12,6 +12,7 @@ Welcome to the OXC(E) YAML Helper thingy. For lack of a better name.
 
 ## Todo/ideas
 - Prompt user about CRLF files and offer to fix them
+- Show string translation on hover
 - Parse all YAML files when the workspace launches and cache them, instead of parsing them every time
 - Make ruleset parsing more intelligent. Currently the correctness of definition detection is not guaranteed. Clicking to a definition
   may take you to an 'unrelated' definition if that has the same name. A workaround would be not to share names between different types, if possible.

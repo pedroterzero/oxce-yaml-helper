@@ -1,5 +1,5 @@
 import { Uri, WorkspaceFolder } from "vscode";
-import { Ruleset, LookupMap } from "./rulesetTree";
+import { Ruleset, LookupMap, RuleType } from "./rulesetTree";
 import { LookupMapGenerator } from "./lookupMapGenerator";
 import * as deepmerge from 'deepmerge';
 import { typedProperties } from "./typedProperties";
@@ -30,10 +30,9 @@ export class WorkspaceFolderRuleset {
         this.lookupMap = new LookupMapGenerator(this.ruleset).generateLookupMap();
     }
 
-    public getRuleFiles(key: string): RulesetPart[] | undefined {
+    public getRuleFiles(key: string, ruleType: RuleType | undefined): RulesetPart[] | undefined {
         const ret = this.rulesetParts.filter(rulesetPart => {
-            console.log('part:', rulesetPart.file.path)
-            const result = this.traverseRuleset(key, rulesetPart.rulesets);
+            const result = this.traverseRuleset(key, rulesetPart.rulesets, ruleType);
             return result === true;
         });
 
@@ -48,13 +47,13 @@ export class WorkspaceFolderRuleset {
         this.rulesetParts.push(rulesetPart);
     }
 
-    private traverseRuleset(key: string, ruleset: Ruleset): boolean {
+    private traverseRuleset(key: string, ruleset: Ruleset, sourceRuleType: RuleType | undefined): boolean {
         // let result: any = ruleset;
         let match = false;
 
         Object.keys(ruleset).forEach(ruleType => {
             Object.values(ruleset[ruleType]).forEach((rule: any) => {
-                if (typedProperties.isTypePropertyForKey(ruleType, rule, key)) {
+                if (typedProperties.isTypePropertyForKey(ruleType, rule, key) && typedProperties.isTargetForSourceRule(sourceRuleType, ruleType)) {
                     match = true;
                 }
             });
