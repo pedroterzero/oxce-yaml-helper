@@ -28,7 +28,8 @@ export class typedProperties {
 
     private static typePropertyLinks: typePropertyLinks = {
         research: {
-            name: {target: 'ufopaedia'}
+            name: {target: 'ufopaedia'},
+            dependencies: {target: 'research'}
         }
     }
 
