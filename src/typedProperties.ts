@@ -10,7 +10,7 @@ export class typedProperties {
         'events': ['name'],                         // FtA
         'extraSprites': ['type', 'typeSingle'],
         'research': ['name'],
-        'terrain': ['name']
+        'terrains': ['name']
     };
 
     public static isTypePropertyForKey (ruleType: string, rule: any, key: string): boolean {
