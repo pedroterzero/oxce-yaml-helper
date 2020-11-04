@@ -1,0 +1,57 @@
+diff --git a/README.md b/README.md
+index 6e80740..7483bda 100644
+--- a/README.md
++++ b/README.md
+@@ -12,6 +12,7 @@ Welcome to the OXC(E) YAML Helper thingy. For lack of a better name.
+ 
+ ## Todo/ideas
+ - Prompt user about CRLF files and offer to fix them
++- Show string translation on hover
+ - Parse all YAML files when the workspace launches and cache them, instead of parsing them every time
+ - Make ruleset parsing more intelligent. Currently the correctness of definition detection is not guaranteed. Clicking to a definition
+   may take you to an 'unrelated' definition if that has the same name. A workaround would be not to share names between different types, if possible.
+diff --git a/src/extension.ts b/src/extension.ts
+index 4be4b66..db93a86 100644
+--- a/src/extension.ts
++++ b/src/extension.ts
+@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
+ import { RulesetResolver } from './rulesetResolver';
+ import { workspace } from 'vscode';
+ import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
++import { LineEndingChecker } from './lineEndingChecker';
+ 
+ export let rulesetResolver = new RulesetResolver();
+ 
+@@ -22,5 +23,18 @@ export function activate(context: vscode.ExtensionContext) {
+     const fileTypes = ['yaml'];
+     const documentFilters = fileTypes.map(fileType => ({ language: fileType, scheme: 'file' }));
+ 
++    // diagnostic
++    let diagnosticCollection = vscode.languages.createDiagnosticCollection('stuff');
++    let diagnostics : vscode.Diagnostic[] = [];
++    let range : vscode.Range = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 10));
++
++
++    diagnostics.push(new vscode.Diagnostic(range, 'fix it', vscode.DiagnosticSeverity.Warning));
++    diagnosticCollection.set(vscode.Uri.file('foobar'), diagnostics);
++    // end
++
+     context.subscriptions.push(vscode.languages.registerDefinitionProvider(documentFilters, new RulesetDefinitionProvider()));
++    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(LineEndingChecker.checkActiveEditorLineEndings));
++    
++    LineEndingChecker.checkActiveEditorLineEndings();
+ }
+diff --git a/src/typedProperties.ts b/src/typedProperties.ts
+index 3f840d6..419f234 100644
+--- a/src/typedProperties.ts
++++ b/src/typedProperties.ts
+@@ -10,7 +10,8 @@ export class typedProperties {
+         'events': ['name'],                         // FtA
+         'extraSprites': ['type', 'typeSingle'],
+         'research': ['name'],
+-        'terrains': ['name']
++        'terrains': ['name'],
++        'ufopaedia': ['id']
+     };
+ 
+     public static isTypePropertyForKey (ruleType: string, rule: any, key: string): boolean {
