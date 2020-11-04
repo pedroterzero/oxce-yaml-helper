@@ -5,6 +5,7 @@ import { Document, parseDocument } from 'yaml';
 import { Pair, YAMLMap } from "yaml/types";
 import { typedProperties } from "./typedProperties";
 import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
+import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
 
 export interface YAMLDocument {
     contents: { items: YAMLDocumentItem[] };
@@ -47,16 +48,7 @@ export class RulesetParser {
     }
 
     public async findRefNodeInDocument(file: Uri, key: string): Promise<Location | undefined> {
-        logger.debug('Looking for refNode ', key, 'in ', file.path);
-
-        return workspace.openTextDocument(file.path).then((document: TextDocument) => {
-            const range = this.findRefNodeRangeInYAML(document.getText(), key);
-            if (!range) {
-                return;
-            }
-
-            return new Location(file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
-        });
+        return rulesetRefnodeFinder.findRefNodeInDocument(file, key);
     }
 
     public async findKeyValueLocationInDocuments(files: Uri[], absoluteKey: string): Promise<Location[]> {
@@ -116,17 +108,6 @@ export class RulesetParser {
 
     private findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] {
         return this.findKeyValueRangeInYamlDocument(this.parseDocument(yaml), absoluteKey);
-    }
-
-    private findRefNodeRangeInYAML(yaml: string, key: string): number[] {
-        const doc = this.parseDocument(yaml);
-        const node = doc.anchors.getNode(key);
-
-        if (node) {
-            return node.range as number[];
-        }
-
-        return [0, 0];
     }
 
     private findKeyValueRangeInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string): [number, number] {
