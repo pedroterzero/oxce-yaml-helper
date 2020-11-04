@@ -1,7 +1,7 @@
 import { logger } from "./logger";
 import { RuleType } from "./rulesetTree";
 import { Pair, Scalar, YAMLMap } from "yaml/types";
-import { rulesetParser, YAMLDocument } from "./rulesetParser";
+import { rulesetParser, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 
 type RecursiveMatch = {
     match: boolean,
@@ -9,6 +9,8 @@ type RecursiveMatch = {
     path?: string,
     node?: Pair | Scalar
 }
+
+type Entry = YAMLMap | string | Scalar;
 
 export class RulesetRecursiveKeyRetriever {
     public getKeyInformationFromYAML(yaml: string, key: string, range: number[]): RuleType | undefined {
@@ -24,7 +26,7 @@ export class RulesetRecursiveKeyRetriever {
         };
     }
 
-    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string, range?: number[]): RecursiveMatch | undefined {
+    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string, range: number[]): RecursiveMatch | undefined {
         logger.debug('findKeyInformationInYamlDocument', { absoluteKey });
 
         let yamlPairs = yamlDocument.contents.items;
@@ -33,33 +35,38 @@ export class RulesetRecursiveKeyRetriever {
             return;
         }
 
-        // loop through each type in this document
-        let match: RecursiveMatch | undefined;
-        let path: string[] = [];
-        yamlPairs.forEach((ruleType) => {
-            path.push(ruleType.key.value);
-
-            ruleType.value.items.forEach((ruleProperties: YAMLMap) => {
-                const recursiveMatch = this.processItems(ruleProperties, path[0], absoluteKey, range);
-                if (recursiveMatch.match) {
-                    if (recursiveMatch.path && recursiveMatch.path.indexOf('.') !== -1) {
-                        recursiveMatch.type = recursiveMatch.path.slice(0, recursiveMatch.path.indexOf('.'));
-                        recursiveMatch.path = recursiveMatch.path.slice(recursiveMatch.path.indexOf('.') + 1);
-                    }
-
-                    match = recursiveMatch;
-                }
-            });
-        })
-
-        if (match) {
-            return match;
-        }
-
-        return;
+        // loop through each entry in this document
+        return this.findRecursiveMatch(yamlPairs, absoluteKey, range) || undefined;
     }
 
-    private processItems(entry: YAMLMap | string | Scalar, path: string, key: string, range: number[] | undefined): RecursiveMatch {
+    private findRecursiveMatch(yamlPairs: YAMLDocumentItem[], absoluteKey: string, range: number[]) {
+        let match: RecursiveMatch | undefined;
+
+        yamlPairs.forEach((ruleType) => {
+            ruleType.value.items.forEach((ruleProperties: YAMLMap) => {
+                const recursiveMatch = this.processItems(ruleProperties, ruleType.key.value, absoluteKey, range);
+
+                match = this.checkForMatch(recursiveMatch, match);
+            });
+        });
+
+        return match;
+    }
+
+    private checkForMatch(recursiveMatch: RecursiveMatch, matchedObject: RecursiveMatch | undefined) {
+        if (recursiveMatch.match) {
+            if (recursiveMatch.path && recursiveMatch.path.indexOf('.') !== -1) {
+                recursiveMatch.type = recursiveMatch.path.slice(0, recursiveMatch.path.indexOf('.'));
+                recursiveMatch.path = recursiveMatch.path.slice(recursiveMatch.path.indexOf('.') + 1);
+            }
+
+            matchedObject = recursiveMatch;
+        }
+
+        return matchedObject;
+    }
+
+    private processItems(entry: Entry, path: string, key: string, range: number[]): RecursiveMatch {
         let retval: RecursiveMatch = {
             match: false
         };
@@ -102,8 +109,8 @@ export class RulesetRecursiveKeyRetriever {
         return retval;
     }
 
-    private checkForRangeMatch(entry: Scalar | Pair, range: number[] | undefined): boolean {
-        if (entry.range && range) {
+    private checkForRangeMatch(entry: Scalar | Pair, range: number[]): boolean {
+        if (entry.range) {
             if (entry.range[0] === range[0] && entry.range[1] === range[1]) {
                 return true;
             }
