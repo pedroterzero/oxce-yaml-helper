@@ -2,10 +2,9 @@ import { TextDocument, workspace, Location, Range, Uri, window, EndOfLine } from
 import { logger } from "./logger";
 import { RuleType } from "./rulesetTree";
 import { Document, parseDocument } from 'yaml';
-import { Pair, YAMLMap } from "yaml/types";
-import { typedProperties } from "./typedProperties";
 import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
 import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
+import { rulesetKeyValueFinder } from "./rulesetKeyValueFinder";
 
 export interface YAMLDocument {
     contents: { items: YAMLDocumentItem[] };
@@ -14,18 +13,13 @@ export interface YAMLDocument {
     };
 }
 
-interface YAMLDocumentItem {
+export interface YAMLDocumentItem {
     key: any;
     value: any;
 }
 
-interface YAMLNode {
+export interface YAMLNode {
     range?: [number, number] | null
-}
-
-interface RuleMatch {
-    ruleType: YAMLDocumentItem & YAMLNode;
-    rule: YAMLDocumentItem & YAMLNode;
 }
 
 export class RulesetParser {
@@ -56,7 +50,7 @@ export class RulesetParser {
 
         files.forEach(file => {
             promises.push(workspace.openTextDocument(file.path).then((document: TextDocument) => {
-                const range = this.findKeyValueRangeInYAML(document.getText(), absoluteKey);
+                const range = rulesetKeyValueFinder.findKeyValueRangeInYAML(document.getText(), absoluteKey);
 
                 // convert CRLF
                 this.fixRangesForWindowsLineEndingsIfNeeded(document, range);
@@ -104,66 +98,6 @@ export class RulesetParser {
             range[0] += lineBreaks;
             range[1] += lineBreaks;
         }
-    }
-
-    private findKeyValueRangeInYAML(yaml: string, absoluteKey: string): number[] {
-        return this.findKeyValueRangeInYamlDocument(this.parseDocument(yaml), absoluteKey);
-    }
-
-    private findKeyValueRangeInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string): [number, number] {
-        logger.debug('findKeyValueRangeInYamlDocument', { absoluteKey });
-
-        const match = this.findKeyValueInYamlDocument(yamlDocument, absoluteKey);
-        if (match && match.rule) {
-            return match.rule.value.range;
-        }
-
-        return [0, 0];
-    }
-
-    private findKeyValueInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string): RuleMatch | undefined {
-        logger.debug('findKeyValueInYamlDocument', { absoluteKey });
-
-        let yamlPairs = yamlDocument.contents.items;
-        if (!yamlPairs) {
-            logger.warn('yamlDocument does not have any items');
-            return;
-        }
-
-        // loop through each type in this document
-        let match: RuleMatch | undefined;
-        yamlPairs.forEach((ruleType) => {
-            // console.log('ruleType', ruleType);
-            ruleType.value.items.forEach((ruleProperties: YAMLMap) => {
-                if (match) {
-                    return;
-                }
-
-                const propertiesFlat = ruleProperties.toJSON();
-                if (typedProperties.isTypePropertyForKey(ruleType.key.value, propertiesFlat, absoluteKey)) {
-                    const typeKey = typedProperties.getTypeKey(propertiesFlat, ruleType.key.value);
-
-                    // @todo make this recursive so subitems can be looked up like research.dependencies
-                    ruleProperties.items.forEach((ruleProperty: Pair) => {
-                        if (ruleProperty.key.value === typeKey) {
-                            // highlight the entire block
-                            // match = ruleProperties;
-                            // highlight just the key
-                            match = {
-                                ruleType: ruleType,
-                                rule: ruleProperty
-                            };
-                        }
-                    });
-                }
-            });
-        })
-
-        if (match) {
-            return match;
-        }
-
-        return;
     }
 
     public parseDocument (yaml: string): YAMLDocument {
