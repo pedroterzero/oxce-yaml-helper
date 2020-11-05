@@ -54,7 +54,7 @@ export class RulesetTree {
     }
 
     public getDefinitionsByName(key: string, workspaceFolder: WorkspaceFolder, ruleType: RuleType | undefined) {
-        logger.debug('getRuleFile', 'key', key, 'workspaceFolder', workspaceFolder);
+        logger.debug('getDefinitionsByName', 'key', key, 'workspaceFolder', workspaceFolder);
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getDefinitionsByName(key, ruleType);
     }
 }

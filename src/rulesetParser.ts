@@ -30,14 +30,17 @@ export class RulesetParser {
     }
 
     public findTypeOfKey(key: string, range: Range): RuleType | undefined {
-        logger.debug('Looking for requested key ', key, 'in ', window.activeTextEditor?.document.fileName);
+        logger.debug(`Looking for requested key ${key} in ${window.activeTextEditor?.document.fileName}`);
 
         const document = window.activeTextEditor?.document;
         if (!document) {
             return;
         }
 
-        const sourceRange = [document.offsetAt(range.start), document.offsetAt(range.end)];
+        let sourceRange: [number, number] = [document.offsetAt(range.start), document.offsetAt(range.end)];
+        // logger.debug(`Searching for type ${key} in ${document.fileName}`);
+        sourceRange = this.fixRangesForWindowsLineEndingsIfNeeded(document, sourceRange, true);
+
         const rule = rulesetRecursiveKeyRetriever.getKeyInformationFromYAML(document.getText(), key, sourceRange);
         if (!rule) {
             return;
@@ -61,15 +64,12 @@ export class RulesetParser {
 
         for (const definition of definitions) {
             promises.push(workspace.openTextDocument(definition.file.path).then((document: TextDocument) => {
-                const range = definition.range;
-
-                // convert CRLF
-                this.fixRangesForWindowsLineEndingsIfNeeded(document, range);
+                // take care of CRLF
+                const range = this.fixRangesForWindowsLineEndingsIfNeeded(document, definition.range);
 
                 logger.debug(`opening ${definition.file.path} at ${range[0]}:${range[1]}`);
-                const myRange = new Range(document.positionAt(range[0]), document.positionAt(range[1]));
 
-                return new Location(definition.file, myRange);
+                return new Location(definition.file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
             }));
         }
 
@@ -90,24 +90,35 @@ export class RulesetParser {
      * @param document
      * @param range
      */
-    private fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: number[]) {
+    private fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: [number, number], reverse: boolean = false): [number, number] {
+        let correctRange = {...range};
         if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('attemptCRLFFix')) {
-            return;
+            return correctRange;
         }
 
         if (document.eol === EndOfLine.CRLF) {
-            // parse the document so we're working off the same base
-            const doc = parseDocument(document.getText(), { maxAliasCount: 1024 });
+            logger.debug(`Range before adjusting for CRLF: ${range[0]}:${range[1]}`)
 
             // find offset
-            const myText = doc.toString().replace("\r\n", "\n");
-            // count number of line breaks
-            const lineBreaks = myText.slice(0, range[0]).match(/\n/g)?.length || 0;
+            let lineBreaks = 0;
+            if (reverse) {
+                // we're coming from CRLF and want LF position, so subtract them
+                lineBreaks = -1 * (document.getText().slice(0, range[0]).match(/\n/g)?.length || 0);
+            } else {
+                // we're coming from LF and want CRLF position, so account for line breaks
+                const myText = document.getText().toString().replace(/\r\n/g, "\n");
+                // count number of line breaks
+                lineBreaks = myText.slice(0, range[0]).match(/\n/g)?.length || 0;
+            }
 
             // add a byte to the range for each line break
-            range[0] += lineBreaks;
-            range[1] += lineBreaks;
+            correctRange[0] += lineBreaks;
+            correctRange[1] += lineBreaks;
+
+            logger.debug(`Range after adjusting for CRLF: ${correctRange[0]}:${correctRange[1]} (reverse: ${reverse})`)
         }
+
+        return correctRange;
     }
 
     public parseDocument (yaml: string): YAMLDocument {

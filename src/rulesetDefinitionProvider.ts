@@ -1,4 +1,4 @@
-import { DefinitionProvider, TextDocument, Position, Definition, ProviderResult, workspace, WorkspaceFolder } from "vscode";
+import { DefinitionProvider, TextDocument, Position, Definition, ProviderResult, workspace, WorkspaceFolder, Range } from "vscode";
 import { KeyDetector } from "./keyDetector";
 import { rulesetParser } from "./rulesetParser";
 
@@ -23,7 +23,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         return this.getDefinitions(value, folder);
     }
 
-    private getDefinitions(value: { key: string; range: import("vscode").Range; }, folder: WorkspaceFolder) {
+    private getDefinitions(value: { key: string; range: Range; }, folder: WorkspaceFolder) {
         // what kind of rule are we trying to look up?
         const ruleType = rulesetParser.findTypeOfKey(value.key, value.range);
 
