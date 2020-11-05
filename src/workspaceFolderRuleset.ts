@@ -19,7 +19,6 @@ export class WorkspaceFolderRuleset {
         this.ruleset = {};
         this.rulesetFiles.forEach((ruleset) => {
             this.ruleset = deepmerge(
-                true,
                 this.ruleset,
                 ruleset.ruleset
             );

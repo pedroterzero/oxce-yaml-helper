@@ -1,6 +1,6 @@
 import { logger } from "./logger";
 import { RuleType } from "./rulesetTree";
-import { Pair, Scalar, YAMLMap } from "yaml/types";
+import { Pair, Scalar, YAMLSeq } from "yaml/types";
 import { rulesetParser, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 
 type RecursiveMatch = {
@@ -10,7 +10,7 @@ type RecursiveMatch = {
     node?: Pair | Scalar
 }
 
-type Entry = YAMLMap | string | Scalar;
+type Entry = YAMLSeq | string | Scalar;
 
 export class RulesetRecursiveKeyRetriever {
     public getKeyInformationFromYAML(yaml: string, key: string, range: number[]): RuleType | undefined {
@@ -43,7 +43,7 @@ export class RulesetRecursiveKeyRetriever {
         let match: RecursiveMatch | undefined;
 
         yamlPairs.forEach((ruleType) => {
-            ruleType.value.items.forEach((ruleProperties: YAMLMap) => {
+            ruleType.value.items.forEach((ruleProperties: YAMLSeq) => {
                 const recursiveMatch = this.processItems(ruleProperties, ruleType.key.value, absoluteKey, range);
 
                 match = this.checkForMatch(recursiveMatch, match);
@@ -71,7 +71,9 @@ export class RulesetRecursiveKeyRetriever {
             match: false
         };
 
-        if (typeof entry === 'string') {
+        // logger.debug(`now processing ${path}`);
+
+        if (typeof entry === 'string' || typeof entry === 'number') {
             if (entry === key) {
                 logger.debug('Possible match found', entry);
                 return {
@@ -79,19 +81,7 @@ export class RulesetRecursiveKeyRetriever {
                 } as RecursiveMatch;
             }
         } else if ('items' in entry) {
-            entry.items.forEach((ruleProperty) => {
-                const result = this.processItems(ruleProperty.value, path + '.' + ruleProperty?.key?.value, key, range);
-                if (result.node) {
-                    // node already set, pass it upwards
-                    retval = result;
-                } else if (result.match && this.checkForRangeMatch(ruleProperty, range)) {
-                    logger.debug('Definitive match found by range (string)', key, path, entry);
-                    result.node = ruleProperty;
-                    result.path = path;
-
-                    retval = result;
-                }
-            });
+            retval = this.loopEntry(entry, path, key, range, retval);
         } else {
             entry = entry as Scalar;
 
@@ -106,6 +96,27 @@ export class RulesetRecursiveKeyRetriever {
             }
         }
 
+        return retval;
+    }
+
+    private loopEntry(entry: YAMLSeq, path: string, key: string, range: number[], retval: RecursiveMatch) {
+        entry.items.forEach((ruleProperty) => {
+            if ('items' in ruleProperty) {
+                retval = this.loopEntry(ruleProperty, path + '[]', key, range, retval);;
+            } else {
+                const result = this.processItems(ruleProperty.value, path + '.' + ruleProperty?.key?.value, key, range);
+                if (result.node) {
+                    // node already set, pass it upwards
+                    retval = result;
+                } else if (result.match && this.checkForRangeMatch(ruleProperty, range)) {
+                    logger.debug('Definitive match found by range (string)', key, path, entry);
+                    result.node = ruleProperty;
+                    result.path = path;
+
+                    retval = result;
+                }
+            }
+        });
         return retval;
     }
 
