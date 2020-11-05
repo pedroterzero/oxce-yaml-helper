@@ -1,10 +1,10 @@
-import { TextDocument, workspace, Location, Range, Uri, window, EndOfLine } from "vscode";
+import { TextDocument, workspace, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
 import { logger } from "./logger";
-import { RuleType } from "./rulesetTree";
+import { Definition, rulesetTree, RuleType } from "./rulesetTree";
 import { Document, parseDocument } from 'yaml';
 import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
 import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
-import { rulesetKeyValueFinder } from "./rulesetKeyValueFinder";
+import { rulesetDefinitionFinder } from "./rulesetDefinitionFinder";
 
 export interface YAMLDocument {
     contents: { items: YAMLDocumentItem[] };
@@ -23,6 +23,12 @@ export interface YAMLNode {
 }
 
 export class RulesetParser {
+    public getDefinitions(yaml: string): Definition[] {
+        const doc = this.parseDocument(yaml);
+
+        return rulesetDefinitionFinder.findAllDefinitionsInYamlDocument(doc);
+    }
+
     public findTypeOfKey(key: string, range: Range): RuleType | undefined {
         logger.debug('Looking for requested key ', key, 'in ', window.activeTextEditor?.document.fileName);
 
@@ -45,23 +51,27 @@ export class RulesetParser {
         return rulesetRefnodeFinder.findRefNodeInDocument(file, key);
     }
 
-    public async findKeyValueLocationInDocuments(files: Uri[], absoluteKey: string): Promise<Location[]> {
+    public async getDefinitionsByName(workspaceFolder: WorkspaceFolder, key: string, ruleType: RuleType | undefined): Promise<Location[]> {
         const promises: Thenable<Location | undefined>[] = [];
 
-        files.forEach(file => {
-            promises.push(workspace.openTextDocument(file.path).then((document: TextDocument) => {
-                const range = rulesetKeyValueFinder.findKeyValueRangeInYAML(document.getText(), absoluteKey);
+        const definitions = rulesetTree.getDefinitionsByName(key, workspaceFolder, ruleType);
+        if (!definitions) {
+            return [];
+        }
+
+        for (const definition of definitions) {
+            promises.push(workspace.openTextDocument(definition.file.path).then((document: TextDocument) => {
+                const range = definition.range;
 
                 // convert CRLF
                 this.fixRangesForWindowsLineEndingsIfNeeded(document, range);
 
-                if (!range) {
-                    return;
-                }
+                logger.debug(`opening ${definition.file.path} at ${range[0]}:${range[1]}`);
+                const myRange = new Range(document.positionAt(range[0]), document.positionAt(range[1]));
 
-                return new Location(file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
+                return new Location(definition.file, myRange);
             }));
-        });
+        }
 
         const values = await Promise.all(promises);
 

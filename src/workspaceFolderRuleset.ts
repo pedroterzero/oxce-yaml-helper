@@ -1,61 +1,79 @@
 import { Uri, WorkspaceFolder } from "vscode";
-import { Ruleset, LookupMap, RuleType } from "./rulesetTree";
-import { LookupMapGenerator } from "./lookupMapGenerator";
+import { RuleType, Definition, DefinitionLookup } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
+import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 
-export type RulesetFile = { file: Uri, ruleset: Ruleset }
+
+export type RulesetFile = { file: Uri, definitions: Definition[] }
+
+type TypeLookup = {
+    [key: string]: DefinitionLookup[];
+};
 
 export class WorkspaceFolderRuleset {
-    public ruleset: Ruleset = {};
+    public definitionsLookup: {[key: string]: DefinitionLookup[]} = {};
     public rulesetFiles: RulesetFile[] = [];
-    public lookupMap: LookupMap = {};
 
     constructor(public workspaceFolder: WorkspaceFolder) {
     }
 
-    public mergeIntoRulesetTree(ruleset: Ruleset, sourceFile: Uri) {
-        this.addRulesetFile(ruleset, sourceFile || null);
-        this.ruleset = {};
+    public mergeIntoRulesetTree(definitions: Definition[], sourceFile: Uri) {
+        this.addRulesetFile(definitions, sourceFile || null);
+        this.definitionsLookup = {};
+
         this.rulesetFiles.forEach((ruleset) => {
-            this.ruleset = deepmerge(
-                this.ruleset,
-                ruleset.ruleset
+            this.definitionsLookup = deepmerge(
+                this.definitionsLookup,
+                this.getLookups(ruleset.definitions, ruleset.file)
             );
         });
 
-        this.lookupMap = new LookupMapGenerator(this.ruleset).generateLookupMap();
+        logger.debug('Number of type names', Object.keys(this.definitionsLookup).length);
     }
 
-    public getRuleFiles(key: string, ruleType: RuleType | undefined): RulesetFile[] | undefined {
-        const ret = this.rulesetFiles.filter(file => {
-            const result = this.traverseRuleset(key, file.ruleset, ruleType);
-            return result === true;
-        });
+    private getLookups(definitions: Definition[], sourceFile: Uri): TypeLookup {
+        const lookups: TypeLookup = {};
 
-        return ret;
+        for (const definition of definitions) {
+            if (!(definition.name in lookups)) {
+                lookups[definition.name] = [];
+            }
+
+            lookups[definition.name].push(this.getDefinitionLookup(definition, sourceFile));
+        }
+
+        return lookups;
     }
 
-    private addRulesetFile(ruleset: Ruleset, sourceFile: Uri) {
-        const rulesetFile = { ruleset: ruleset, file: sourceFile };
+    private getDefinitionLookup(definition: Definition, sourceFile: Uri): DefinitionLookup {
+        return {
+            type: definition.type,
+            range: definition.range,
+            file: sourceFile
+        };
+    }
+
+    /**
+     * Get definitions by their type name
+     * @param key
+     * @param sourceRuleType
+     */
+    public getDefinitionsByName(key: string, sourceRuleType: RuleType | undefined): DefinitionLookup[] {
+        if (key in this.definitionsLookup) {
+            return this.definitionsLookup[key].filter(lookup => {
+                return typedProperties.isTargetForSourceRule(sourceRuleType, lookup.type)
+            });
+        }
+
+        return [];
+    }
+
+    private addRulesetFile(definitions: Definition[], sourceFile: Uri) {
+        const rulesetFile = { definitions, file: sourceFile };
         if (this.rulesetFiles.length > 0 && rulesetFile.file) {
             this.rulesetFiles = this.rulesetFiles.filter(tp => tp.file && tp.file.path !== rulesetFile.file.path);
         }
         this.rulesetFiles.push(rulesetFile);
-    }
-
-    private traverseRuleset(key: string, ruleset: Ruleset, sourceRuleType: RuleType | undefined): boolean {
-        // let result: any = ruleset;
-        let match = false;
-
-        Object.keys(ruleset).forEach(ruleType => {
-            Object.values(ruleset[ruleType]).forEach((rule: any) => {
-                if (typedProperties.isTypePropertyForKey(ruleType, rule, key) && typedProperties.isTargetForSourceRule(sourceRuleType, ruleType)) {
-                    match = true;
-                }
-            });
-        });
-
-        return match;
     }
 }

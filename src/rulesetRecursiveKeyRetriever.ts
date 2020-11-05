@@ -75,7 +75,7 @@ export class RulesetRecursiveKeyRetriever {
 
         if (typeof entry === 'string' || typeof entry === 'number') {
             if (entry === key) {
-                logger.debug('Possible match found', entry);
+                // logger.debug('Possible match found', entry);
                 return {
                     match: true
                 } as RecursiveMatch;

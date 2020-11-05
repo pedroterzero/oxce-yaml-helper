@@ -1,10 +1,23 @@
 import { logger } from "./logger";
 import { Uri, WorkspaceFolder } from "vscode";
-import { WorkspaceFolderRuleset as WorkspaceFolderRuleset, RulesetFile } from "./workspaceFolderRuleset";
+import { WorkspaceFolderRuleset as WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 
 export type Ruleset = { [key: string]: Ruleset }
 export type LookupMap = { [key: string]: string }
 export type RuleType = { type: string; key: string; }
+
+type BaseDefinition = {
+    type: string,
+    range: [number, number],
+};
+
+export type Definition = BaseDefinition & {
+    // field: typeKey,
+    name: string,
+};
+export type DefinitionLookup = BaseDefinition & {
+    file: Uri,
+};
 
 export class RulesetTree {
     private workspaceFolderRulesets: WorkspaceFolderRuleset[] = [];
@@ -13,13 +26,8 @@ export class RulesetTree {
         this.workspaceFolderRulesets = [];
     }
 
-    public mergeIntoTree(treePart: Ruleset, workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
-        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeIntoRulesetTree(treePart, sourceFile);
-    }
-
-    public getRuleFiles(key: string, workspaceFolder: WorkspaceFolder, ruleType: RuleType | undefined): RulesetFile[] | undefined {
-        logger.debug('getRuleFile', 'key', key, 'workspaceFolder', workspaceFolder);
-        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getRuleFiles(key, ruleType);
+    public mergeIntoTree(definitions: Definition[], workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeIntoRulesetTree(definitions, sourceFile);
     }
 
     public getWorkspaceFolders(): WorkspaceFolder[] {
@@ -43,6 +51,11 @@ export class RulesetTree {
             this.workspaceFolderRulesets.push(workspaceFolderRuleset);
         }
         return workspaceFolderRuleset;
+    }
+
+    public getDefinitionsByName(key: string, workspaceFolder: WorkspaceFolder, ruleType: RuleType | undefined) {
+        logger.debug('getRuleFile', 'key', key, 'workspaceFolder', workspaceFolder);
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getDefinitionsByName(key, ruleType);
     }
 }
 
