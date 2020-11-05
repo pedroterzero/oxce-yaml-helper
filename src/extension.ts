@@ -3,6 +3,7 @@
 import { ExtensionContext, languages, ProgressLocation, window, workspace } from 'vscode';
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
+import { ExtensionRecommender } from './extensionRecommender';
 
 export let rulesetResolver = new RulesetResolver();
 
@@ -22,4 +23,7 @@ export function activate(context: ExtensionContext) {
     const documentFilters = fileTypes.map(fileType => ({ language: fileType, scheme: 'file' }));
 
     context.subscriptions.push(languages.registerDefinitionProvider(documentFilters, new RulesetDefinitionProvider()));
+
+    // load the recommender
+    new ExtensionRecommender;
 }

@@ -47,10 +47,17 @@
                 },
                 "oxcYamlHelper.attemptCRLFFix": {
                     "type": [
-                        "string"
+                        "boolean"
                     ],
                     "default": true,
                     "description": "Attempt to work around files using CRLF. If you're having problems with wrong positions, disable this and convert rulesets to LF"
+                },
+                "oxcYamlHelper.prompts.noRecommendImagePreview": {
+                    "type": [
+                        "boolean"
+                    ],
+                    "default": false,
+                    "description": "Stop prompting for Image Preview extension"
                 }
             }
         }
