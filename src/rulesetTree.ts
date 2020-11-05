@@ -1,6 +1,6 @@
 import { logger } from "./logger";
 import { Uri, WorkspaceFolder } from "vscode";
-import { WorkspaceFolderRuleset as WorkspaceFolderRuleset, RulesetPart } from "./workspaceFolderRuleset";
+import { WorkspaceFolderRuleset as WorkspaceFolderRuleset, RulesetFile } from "./workspaceFolderRuleset";
 
 export type Ruleset = { [key: string]: Ruleset }
 export type LookupMap = { [key: string]: string }
@@ -17,10 +17,9 @@ export class RulesetTree {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeIntoRulesetTree(treePart, sourceFile);
     }
 
-    public getRuleFiles(key: string, workspaceFolder: WorkspaceFolder, ruleType: RuleType | undefined): RulesetPart[] | undefined {
+    public getRuleFiles(key: string, workspaceFolder: WorkspaceFolder, ruleType: RuleType | undefined): RulesetFile[] | undefined {
         logger.debug('getRuleFile', 'key', key, 'workspaceFolder', workspaceFolder);
-        const files = this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getRuleFiles(key, ruleType);
-        return files;
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getRuleFiles(key, ruleType);
     }
 
     public getWorkspaceFolders(): WorkspaceFolder[] {

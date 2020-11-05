@@ -3,7 +3,7 @@ import { logger } from "./logger";
 import { KeyDetector } from "./keyDetector";
 import { rulesetTree } from "./rulesetTree";
 import { rulesetParser } from "./rulesetParser";
-import { RulesetPart } from "./workspaceFolderRuleset";
+import { RulesetFile } from "./workspaceFolderRuleset";
 
 export class RulesetDefinitionProvider implements DefinitionProvider {
 
@@ -37,7 +37,7 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         return rulesetParser.findKeyValueLocationInDocuments(this.getRulesetUris(ruleFiles), value.key);
     }
 
-    private getRulesetUris(ruleFiles: RulesetPart[] | undefined) {
+    private getRulesetUris(ruleFiles: RulesetFile[] | undefined) {
         const files: Uri[] = [];
 
         ruleFiles?.forEach(ruleFile => {

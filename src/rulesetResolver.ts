@@ -11,13 +11,12 @@ export class RulesetResolver implements vscode.Disposable {
     private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
 
-    public load(): Thenable<any> {
+    public async load(): Promise<void> {
         this.init();
-        return this.loadYamlFiles().then(_ => {
-            logger.debug('yaml files loaded');
-            this.registerFileWatcher();
-            this.onDidLoadEmitter.emit('didLoad');
-        });
+        await this.loadYamlFiles();
+        logger.debug('yaml files loaded');
+        this.registerFileWatcher();
+        this.onDidLoadEmitter.emit('didLoad');
     }
 
     public onDidLoad(listener: () => any) {
@@ -36,40 +35,31 @@ export class RulesetResolver implements vscode.Disposable {
         rulesetTree.init();
     }
 
-    private loadYamlFiles(): Thenable<any> {
+    private async loadYamlFiles(): Promise<undefined | void[][]> {
         if (!workspace.workspaceFolders) {
-            return new Promise(() => {});
+            return;
         }
 
-        return Promise.all(workspace.workspaceFolders.map(workspaceFolder => {
+        return Promise.all(workspace.workspaceFolders.map(async workspaceFolder => {
             logger.debug('loading yaml files for workspace dir:', workspaceFolder.name);
-            return this.getYamlFilesForWorkspaceFolder(workspaceFolder).then(files => {
-                return Promise.all(files.map(file => {
-                    logger.debug('loading ruleset file:', file.path);
-                    return this.loadYamlIntoTree(file, workspaceFolder);
-                }));
-            })
+            const files = await this.getYamlFilesForWorkspaceFolder(workspaceFolder);
+            return Promise.all(files.map(file => {
+                logger.debug('loading ruleset file:', file.path);
+                return this.loadYamlIntoTree(file, workspaceFolder);
+            }));
         }))
     }
 
-    private getYamlFilesForWorkspaceFolder(workspaceFolder: vscode.WorkspaceFolder): Thenable<Uri[]> {
-        const loadAllFiles: boolean = workspace.getConfiguration('oxcYamlHelper').get<boolean>('loadAllRulesets') || false;
-        logger.debug('loadAllFiles:', loadAllFiles, 'workspace dir:', workspaceFolder.name);
+    private async getYamlFilesForWorkspaceFolder(workspaceFolder: vscode.WorkspaceFolder): Promise<Uri[]> {
+        let files = await workspace.findFiles(this.yamlPattern);
 
-        return workspace.findFiles(this.yamlPattern).then(files => {
-            files = files.filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path)
+        files = files.filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
+        if (files.length === 0) {
+            logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not an OXC(E) project.`);
+            return files;
+        }
 
-            if (files.length === 0) {
-                logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not an OXC(E) project.`);
-                return files;
-            }
-
-            if (!loadAllFiles) {
-                return files;
-            }
-
-            return [];
-        })
+        return files;
     }
 
     private registerFileWatcher(): void {
@@ -83,21 +73,20 @@ export class RulesetResolver implements vscode.Disposable {
         });
     }
 
-    private loadYamlIntoTree(file: Uri, workspaceFolder?: vscode.WorkspaceFolder): Thenable<void> {
-        return workspace.openTextDocument(file.path).then((document: vscode.TextDocument) => {
-            try {
-                if (!workspaceFolder) {
-                    workspaceFolder = workspace.getWorkspaceFolder(file);
-                }
-                if (!workspaceFolder) {
-                    throw new Error('workspace folder could not be found');
-                }
-
-                rulesetTree.mergeIntoTree(<Ruleset>parseYAML(document.getText(), {maxAliasCount: 1024}), workspaceFolder, file);
-            } catch (error) {
-                logger.error('loadDocumentIntoMap', file.path, error.message);
+    private async loadYamlIntoTree(file: Uri, workspaceFolder?: vscode.WorkspaceFolder): Promise<void> {
+        const document = await workspace.openTextDocument(file.path);
+        try {
+            if (!workspaceFolder) {
+                workspaceFolder = workspace.getWorkspaceFolder(file);
             }
-        });
+            if (!workspaceFolder) {
+                throw new Error('workspace folder could not be found');
+            }
+
+            rulesetTree.mergeIntoTree(<Ruleset>parseYAML(document.getText(), { maxAliasCount: 1024 }), workspaceFolder, file);
+        } catch (error) {
+            logger.error('loadYamlIntoTree', file.path, error.message);
+        }
     }
 
     public dispose() {

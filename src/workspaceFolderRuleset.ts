@@ -4,47 +4,45 @@ import { LookupMapGenerator } from "./lookupMapGenerator";
 import * as deepmerge from 'deepmerge';
 import { typedProperties } from "./typedProperties";
 
-export type RulesetPart = { file: Uri, rulesets: Ruleset }
+export type RulesetFile = { file: Uri, ruleset: Ruleset }
 
 export class WorkspaceFolderRuleset {
-    public workspaceFolder: WorkspaceFolder;
     public ruleset: Ruleset = {};
-    public rulesetParts: RulesetPart[] = [];
+    public rulesetFiles: RulesetFile[] = [];
     public lookupMap: LookupMap = {};
 
-    constructor(workspaceFolder: WorkspaceFolder) {
-        this.workspaceFolder = workspaceFolder;
+    constructor(public workspaceFolder: WorkspaceFolder) {
     }
 
-    public mergeIntoRulesetTree(treePart: Ruleset, sourceFile: Uri) {
-        this.addRulesetPart(treePart, sourceFile || null);
+    public mergeIntoRulesetTree(ruleset: Ruleset, sourceFile: Uri) {
+        this.addRulesetFile(ruleset, sourceFile || null);
         this.ruleset = {};
-        this.rulesetParts.forEach((rulesetPart) => {
+        this.rulesetFiles.forEach((ruleset) => {
             this.ruleset = deepmerge(
                 true,
                 this.ruleset,
-                rulesetPart.rulesets
+                ruleset.ruleset
             );
         });
 
         this.lookupMap = new LookupMapGenerator(this.ruleset).generateLookupMap();
     }
 
-    public getRuleFiles(key: string, ruleType: RuleType | undefined): RulesetPart[] | undefined {
-        const ret = this.rulesetParts.filter(rulesetPart => {
-            const result = this.traverseRuleset(key, rulesetPart.rulesets, ruleType);
+    public getRuleFiles(key: string, ruleType: RuleType | undefined): RulesetFile[] | undefined {
+        const ret = this.rulesetFiles.filter(file => {
+            const result = this.traverseRuleset(key, file.ruleset, ruleType);
             return result === true;
         });
 
         return ret;
     }
 
-    private addRulesetPart(ruleset: Ruleset, sourceFile: Uri) {
-        const rulesetPart = { rulesets: ruleset, file: sourceFile };
-        if (this.rulesetParts.length > 0 && rulesetPart.file) {
-            this.rulesetParts = this.rulesetParts.filter(tp => tp.file && tp.file.path !== rulesetPart.file.path);
+    private addRulesetFile(ruleset: Ruleset, sourceFile: Uri) {
+        const rulesetFile = { ruleset: ruleset, file: sourceFile };
+        if (this.rulesetFiles.length > 0 && rulesetFile.file) {
+            this.rulesetFiles = this.rulesetFiles.filter(tp => tp.file && tp.file.path !== rulesetFile.file.path);
         }
-        this.rulesetParts.push(rulesetPart);
+        this.rulesetFiles.push(rulesetFile);
     }
 
     private traverseRuleset(key: string, ruleset: Ruleset, sourceRuleType: RuleType | undefined): boolean {
