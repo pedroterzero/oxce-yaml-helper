@@ -1,9 +1,9 @@
-import { parse as parseYAML } from "yaml";
 import * as vscode from 'vscode';
 import { workspace, Uri } from 'vscode';
 import { logger } from "./logger";
-import { rulesetTree, Ruleset } from "./rulesetTree";
+import { rulesetTree } from "./rulesetTree";
 import { EventEmitter } from "events";
+import { rulesetParser } from "./rulesetParser";
 
 export class RulesetResolver implements vscode.Disposable {
 
@@ -13,8 +13,9 @@ export class RulesetResolver implements vscode.Disposable {
 
     public async load(): Promise<void> {
         this.init();
+        const start = new Date();
         await this.loadYamlFiles();
-        logger.debug('yaml files loaded');
+        logger.debug(`yaml files loaded, took ${((new Date()).getTime() - start.getTime()) / 1000}s`);
         this.registerFileWatcher();
         this.onDidLoadEmitter.emit('didLoad');
     }
@@ -83,7 +84,10 @@ export class RulesetResolver implements vscode.Disposable {
                 throw new Error('workspace folder could not be found');
             }
 
-            rulesetTree.mergeIntoTree(<Ruleset>parseYAML(document.getText(), { maxAliasCount: 1024 }), workspaceFolder, file);
+            const definitions = rulesetParser.getDefinitions(document.getText());
+            logger.debug(`found ${definitions.length} definitions in file ${file.path}`);
+
+            rulesetTree.mergeIntoTree(definitions, workspaceFolder, file);
         } catch (error) {
             logger.error('loadYamlIntoTree', file.path, error.message);
         }

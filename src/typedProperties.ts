@@ -54,6 +54,11 @@ export class typedProperties {
     }
 
     public static getTypeKey(rule: any, ruleType: string): string | undefined {
+        if (typeof rule !== 'object') {
+            // for now, only handle objects
+            return;
+        }
+
         let typeKey: string | undefined;
         if ('type' in rule) {
             typeKey = 'type';
