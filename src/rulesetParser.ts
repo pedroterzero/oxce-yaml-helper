@@ -46,7 +46,7 @@ export class RulesetParser {
             return;
         }
 
-        logger.debug('Key', key, 'is', rule.key, 'of', rule.type);
+        logger.debug(`Key ${key} is ${rule.key} of ${rule.type}`);
         return rule;
     }
 

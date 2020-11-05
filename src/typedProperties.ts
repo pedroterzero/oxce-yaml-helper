@@ -1,3 +1,4 @@
+import { logger } from "./logger";
 import { RuleType } from "./rulesetTree";
 
 type typePropertyHints = {
@@ -12,6 +13,14 @@ type typePropertyLinks = {
 
 type typePropertyLink = {
     target: string;
+}
+
+type logicOverrides = {
+    [key: string]: string;
+}
+
+type logicMethods = {
+    [key: string]: (key: string) => string;
 }
 
 export class typedProperties {
@@ -41,6 +50,13 @@ export class typedProperties {
             specialIconSprite: {target: 'extraSprites.SPICONS.DAT.files'},
         }
     }
+
+    private static logicOverrides: logicOverrides = {
+        'items.bulletSprite': 'bulletSpriteLogic'
+    }
+    private static logicMethods: logicMethods = {
+        'bulletSpriteLogic': typedProperties.bulletSpriteLogic
+    };
 
     public static isTypePropertyForKey (ruleType: string, rule: any, key: string): boolean {
         if (typeof rule !== 'object') {
@@ -103,5 +119,30 @@ export class typedProperties {
         }
 
         return link[sourceRuleType.key].target === ruleType;
+    }
+
+    public static checkForKeyOverrides(key: string, sourceRuleType: RuleType | undefined) {
+        if (!sourceRuleType) {
+            return key;
+        }
+
+        const fullType = sourceRuleType.type + '.' + sourceRuleType.key;
+
+        if (!(fullType in this.logicOverrides)) {
+            return key;
+        }
+
+        const method = this.logicMethods[this.logicOverrides[fullType]];
+        const finalKey = method(key);
+
+        if (key !== finalKey) {
+            logger.debug(`Overriding key for ${fullType} from ${key} to ${finalKey}`);
+        }
+
+        return finalKey;
+    }
+
+    private static bulletSpriteLogic(key: string): string {
+        return (parseInt(key) * 35).toString();
     }
 }

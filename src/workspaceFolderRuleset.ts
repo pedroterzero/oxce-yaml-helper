@@ -4,7 +4,6 @@ import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 
-
 export type RulesetFile = { file: Uri, definitions: Definition[] }
 
 type TypeLookup = {
@@ -60,8 +59,10 @@ export class WorkspaceFolderRuleset {
      * @param sourceRuleType
      */
     public getDefinitionsByName(key: string, sourceRuleType: RuleType | undefined): DefinitionLookup[] {
-        if (key in this.definitionsLookup) {
-            return this.definitionsLookup[key].filter(lookup => {
+        const finalKey = typedProperties.checkForKeyOverrides(key, sourceRuleType);
+
+        if (finalKey in this.definitionsLookup) {
+            return this.definitionsLookup[finalKey].filter(lookup => {
                 return typedProperties.isTargetForSourceRule(sourceRuleType, lookup.type)
             });
         }
