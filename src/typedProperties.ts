@@ -45,6 +45,15 @@ export class typedProperties {
     };
 
     private static typePropertyLinks: typePropertyLinks = {
+        crafts: {
+            sprite: {target: 'extraSprites.INTICON.PCK.files'},
+        },
+        craftWeapons: {
+            sprite: {target: 'extraSprites.INTICON.PCK.files'},
+        },
+        facilities: {
+            spriteFacility: {target: 'extraSprites.BASEBITS.PCK.files'},
+        },
         research: {
             name: {target: 'ufopaedia'},
             dependencies: {target: 'research'},
