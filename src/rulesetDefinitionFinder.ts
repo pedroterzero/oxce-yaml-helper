@@ -1,7 +1,7 @@
 import { logger } from "./logger";
 import { YAMLMap } from "yaml/types";
 import { typedProperties } from "./typedProperties";
-import { YAMLDocument } from "./rulesetParser";
+import { YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { Definition } from "./rulesetTree";
 
 export class RulesetDefinitionFinder {
@@ -17,32 +17,54 @@ export class RulesetDefinitionFinder {
         const definitions: Definition[] = [];
 
         // loop through each type in this document
-        yamlPairs.forEach((ruleType) => {
+        for (const ruleType of yamlPairs) {
             // console.log('ruleType', ruleType.key.value);
             ruleType.value.items?.forEach((ruleProperties: YAMLMap) => {
                 // console.log('ruleprop', ruleProperties);
 
                 const propertiesFlat = ruleProperties.toJSON() as {[key: string]: string | object};
                 const typeKey = typedProperties.getTypeKey(propertiesFlat, ruleType.key.value);
-                if (typeKey && typeKey in propertiesFlat) {
-                    // now get the range
-                    for (let ruleProperty of ruleProperties.items) {
-                        if (ruleProperty.key.value === typeKey) {
-                            definitions.push({
-                                type: ruleType.key.value,
-                                // field: typeKey,
-                                name: propertiesFlat[typeKey] as string,
-                                range: ruleProperty.value.range,
-                            });
+                if (ruleType.key.value === 'extraSprites') {
+                    this.handleExtraSprites(propertiesFlat, ruleProperties, definitions, ruleType);
+                } else {
+                    if (typeKey && typeKey in propertiesFlat) {
+                        // now get the range
+                        for (const ruleProperty of ruleProperties.items) {
+                            if (ruleProperty.key.value === typeKey) {
+                                definitions.push({
+                                    type: ruleType.key.value,
+                                    // field: typeKey,
+                                    name: propertiesFlat[typeKey] as string,
+                                    range: ruleProperty.value.range,
+                                });
 
-                            break;
+                                break;
+                            }
                         }
                     }
                 }
             });
-        })
+        }
 
         return definitions;
+    }
+
+    private handleExtraSprites(propertiesFlat: { [key: string]: string | object; }, ruleProperties: YAMLMap, definitions: Definition[], ruleType: YAMLDocumentItem) {
+        const typeKey = 'files';
+        if (typeKey in propertiesFlat) {
+            for (const ruleProperty of ruleProperties.items) {
+                if (ruleProperty.key.value === typeKey) {
+                    for (const entry of ruleProperty.value.items) {
+                        definitions.push({
+                            type: ruleType.key.value + '.' + propertiesFlat.type + '.' + typeKey,
+                            // field: typeKey,
+                            name: entry.key.value,
+                            range: entry.key.range,
+                        });
+                    }
+                }
+            }
+        }
     }
 }
 

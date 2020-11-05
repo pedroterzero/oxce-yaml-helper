@@ -31,6 +31,14 @@ export class typedProperties {
             name: {target: 'ufopaedia'},
             dependencies: {target: 'research'},
             // getOneFree: {target: 'research'},
+        },
+        items: {
+            bigSprite: {target: 'extraSprites.BIGOBS.PCK.files'},
+            floorSprite: {target: 'extraSprites.FLOOROB.PCK.files'},
+            handSprite: {target: 'extraSprites.HANDOB.PCK.files'},
+            hitAnimation: {target: 'extraSprites.X1.PCK.files'},
+            meleeAnimation: {target: 'extraSprites.HIT.PCK.files'},
+            specialIconSprite: {target: 'extraSprites.SPICONS.DAT.files'},
         }
     }
 

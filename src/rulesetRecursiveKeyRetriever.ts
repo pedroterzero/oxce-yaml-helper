@@ -71,10 +71,11 @@ export class RulesetRecursiveKeyRetriever {
             match: false
         };
 
-        // logger.debug(`now processing ${path}`);
+        // logger.debug(`now processing ${path} for ${key}:${typeof key}`);
 
         if (typeof entry === 'string' || typeof entry === 'number') {
-            if (entry === key) {
+            // logger.debug(`now processing ${path} for ${key}:${typeof key}, ${entry}:${typeof entry}`);
+            if (entry === key || entry.toString() === key/* || (typeof entry === 'number' && parseInt(key) === entry) */) {
                 // logger.debug('Possible match found', entry);
                 return {
                     match: true
@@ -85,7 +86,8 @@ export class RulesetRecursiveKeyRetriever {
         } else {
             entry = entry as Scalar;
 
-            if (entry.value === key && this.checkForRangeMatch(entry, range)) {
+            // logger.debug(`now processing ${path} for ${key}:${typeof key}, ${entry.value}:${typeof entry.value}`);
+            if ((entry.value === key || entry.value.toString() === key) && this.checkForRangeMatch(entry, range)) {
                 retval.match = true;
                 retval.node = entry;
                 retval.path = path;

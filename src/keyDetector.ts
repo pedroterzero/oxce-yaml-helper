@@ -20,7 +20,7 @@ export class KeyDetector {
      * @param document current document
      */
     public static getRangeOfKeyAtPosition(position: Position, document: TextDocument): Range | undefined {
-        let stringRegex = /\*[A-Za-z0-9_]+|(\*?[A-Z0-9_]+(\.PCK)?)/g;
+        let stringRegex = /\*[A-Za-z0-9_]+|(\*?[A-Z0-9_]+(\.(PCK|SPK))?)/g;
         return document.getWordRangeAtPosition(position, stringRegex);
     }
 
@@ -38,11 +38,16 @@ export class KeyDetector {
         if (!range) {
             return null;
         }
-        let key = KeyDetector.getKeyAtRangeFromDocument(range, document);
+        let key: string = KeyDetector.getKeyAtRangeFromDocument(range, document);
         logger.debug('getAbsoluteKeyFromPositionInDocument', { key, range });
         if (!KeyDetector.isValidKey(key)) {
             return null;
         }
+
+        // if (parseInt(key).toString() === key) {
+        //     // check if we're dealing with a number
+        //     key = parseInt(key);
+        // }
 
         return { key, range };
     }
