@@ -4,11 +4,12 @@ import { WorkspaceFolderRuleset as WorkspaceFolderRuleset } from "./workspaceFol
 
 export type Ruleset = { [key: string]: Ruleset }
 export type LookupMap = { [key: string]: string }
-export type RuleType = { type: string; key: string; }
+export type RuleType = { type: string; key: string; metadata?: {[key: string]: [value: object | undefined]}}
 
 type BaseDefinition = {
     type: string,
     range: [number, number],
+    metadata?: {[key: string]: string | object}
 };
 
 export type Definition = BaseDefinition & {

@@ -2,12 +2,14 @@ import { logger } from "./logger";
 import { RuleType } from "./rulesetTree";
 import { Pair, Scalar, YAMLSeq } from "yaml/types";
 import { rulesetParser, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
+import { typedProperties } from "./typedProperties";
 
 type RecursiveMatch = {
     match: boolean,
     type?: string,
     path?: string,
     node?: Pair | Scalar
+    metadata?: {}
 }
 
 type Entry = YAMLSeq | string | Scalar;
@@ -20,10 +22,16 @@ export class RulesetRecursiveKeyRetriever {
             return;
         }
 
-        return {
+        const ruleMatch: RuleType = {
             type: match.type,
             key: match.path
         };
+
+        if (match.metadata) {
+            ruleMatch.metadata = match.metadata;
+        }
+
+        return ruleMatch;
     }
 
     private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string, range: number[]): RecursiveMatch | undefined {
@@ -109,6 +117,7 @@ export class RulesetRecursiveKeyRetriever {
                 const result = this.processItems(ruleProperty.value, path + '.' + ruleProperty?.key?.value, key, range);
                 if (result.node) {
                     // node already set, pass it upwards
+                    this.addMetadata(result, path, entry);
                     retval = result;
                 } else if (result.match && this.checkForRangeMatch(ruleProperty, range)) {
                     logger.debug('Definitive match found by range (string)', key, path, entry);
@@ -120,6 +129,29 @@ export class RulesetRecursiveKeyRetriever {
             }
         });
         return retval;
+    }
+
+    private addMetadata(result: RecursiveMatch, path: string, entry: YAMLSeq) {
+        if (result.metadata) {
+            return;
+        }
+
+        const fields = typedProperties.getMetadataFieldsForType(path);
+        if (!fields) {
+            return;
+        }
+
+        const properties = entry.toJSON() as {[key: string]: any};
+        const metadata: {[key: string]: string | object} = {};
+        for (const field of fields) {
+            if (properties && field in properties) {
+                metadata[field] = properties[field];
+            }
+        }
+
+        if (Object.keys(metadata).length > 0) {
+            result.metadata = metadata;
+        }
     }
 
     private checkForRangeMatch(entry: Scalar | Pair, range: number[]): boolean {

@@ -20,7 +20,16 @@ type logicOverrides = {
 }
 
 type logicMethods = {
-    [key: string]: (key: string) => string;
+    [key: string]: (key: string, ruleType: RuleType) => LogicOverride;
+}
+
+type metadataFields = {
+    [key: string]: string[]
+};
+
+type LogicOverride = {
+    key: string;
+    target: string | undefined;
 }
 
 export class typedProperties {
@@ -52,11 +61,17 @@ export class typedProperties {
     }
 
     private static logicOverrides: logicOverrides = {
-        'items.bulletSprite': 'bulletSpriteLogic'
+        'items.bulletSprite': 'bulletSpriteLogic',
+        'items.hitAnimation': 'hitAnimationLogic',
     }
     private static logicMethods: logicMethods = {
-        'bulletSpriteLogic': typedProperties.bulletSpriteLogic
+        'bulletSpriteLogic': typedProperties.bulletSpriteLogic,
+        'hitAnimationLogic': typedProperties.hitAnimationLogic,
     };
+
+    private static metadataFields: metadataFields = {
+        'items': ['damageType'],
+    }
 
     public static isTypePropertyForKey (ruleType: string, rule: any, key: string): boolean {
         if (typeof rule !== 'object') {
@@ -121,28 +136,64 @@ export class typedProperties {
         return link[sourceRuleType.key].target === ruleType;
     }
 
-    public static checkForKeyOverrides(key: string, sourceRuleType: RuleType | undefined) {
+    public static checkForLogicOverrides(key: string, sourceRuleType: RuleType | undefined): LogicOverride {
         if (!sourceRuleType) {
-            return key;
+            return this.getBaseOverride(key);
         }
 
         const fullType = sourceRuleType.type + '.' + sourceRuleType.key;
 
         if (!(fullType in this.logicOverrides)) {
-            return key;
+            return this.getBaseOverride(key);
         }
 
         const method = this.logicMethods[this.logicOverrides[fullType]];
-        const finalKey = method(key);
+        const override = method(key, sourceRuleType);
 
-        if (key !== finalKey) {
-            logger.debug(`Overriding key for ${fullType} from ${key} to ${finalKey}`);
+        if (key !== override.key) {
+            logger.debug(`Overriding key for ${fullType} from ${key} to ${override.key}`);
+        }
+        if (override.target) {
+            logger.debug(`Overriding target type for ${fullType}=${key} to ${override.target}`);
         }
 
-        return finalKey;
+        return override;
     }
 
-    private static bulletSpriteLogic(key: string): string {
-        return (parseInt(key) * 35).toString();
+    private static getBaseOverride(key: string): LogicOverride {
+        return {
+            key,
+            target: undefined,
+        };
+    }
+
+    private static bulletSpriteLogic(key: string): LogicOverride {
+        const override = this.getBaseOverride(key);
+        override.key = (parseInt(key) * 35).toString();
+        return override;
+    }
+
+    private static hitAnimationLogic(key: string, ruleType: RuleType): LogicOverride {
+        const override = typedProperties.getBaseOverride(key);
+
+        if (!ruleType?.metadata) {
+            return override;
+        }
+
+        if ('damageType' in ruleType.metadata) {
+            if (['2', '3', '6', '9'].indexOf(ruleType.metadata.damageType.toString()) !== -1) {
+                override.target = 'extraSprites.SMOKE.PCK.files';
+            }
+        }
+
+        return override;
+    }
+
+    public static getMetadataFieldsForType(ruleType: string): string[] | undefined {
+        if (!(ruleType in this.metadataFields)) {
+            return;
+        }
+
+        return this.metadataFields[ruleType];
     }
 }

@@ -59,12 +59,19 @@ export class WorkspaceFolderRuleset {
      * @param sourceRuleType
      */
     public getDefinitionsByName(key: string, sourceRuleType: RuleType | undefined): DefinitionLookup[] {
-        const finalKey = typedProperties.checkForKeyOverrides(key, sourceRuleType);
+        const override = typedProperties.checkForLogicOverrides(key, sourceRuleType);
+        const finalKey = override.key;
 
         if (finalKey in this.definitionsLookup) {
-            return this.definitionsLookup[finalKey].filter(lookup => {
-                return typedProperties.isTargetForSourceRule(sourceRuleType, lookup.type)
+            const lookups = this.definitionsLookup[finalKey].filter(lookup => {
+                if (override.target) {
+                    return override.target === lookup.type;
+                } else {
+                    return typedProperties.isTargetForSourceRule(sourceRuleType, lookup.type);
+                }
             });
+
+            return lookups;
         }
 
         return [];
