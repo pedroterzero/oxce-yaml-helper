@@ -1,20 +1,19 @@
 'use strict';
 
-import * as vscode from 'vscode';
+import { ExtensionContext, languages, ProgressLocation, window, workspace } from 'vscode';
 import { RulesetResolver } from './rulesetResolver';
-import { workspace } from 'vscode';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 
 export let rulesetResolver = new RulesetResolver();
 
 function loadWithProgress(): void{
-    vscode.window.withProgress({
-        location: vscode.ProgressLocation.Window,
+    window.withProgress({
+        location: ProgressLocation.Window,
         title: "Loading rulesets.."
     }, () => rulesetResolver.load());
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
     loadWithProgress();
     context.subscriptions.push(rulesetResolver);
     context.subscriptions.push(workspace.onDidChangeWorkspaceFolders(() => loadWithProgress()));
@@ -22,5 +21,5 @@ export function activate(context: vscode.ExtensionContext) {
     const fileTypes = ['yaml'];
     const documentFilters = fileTypes.map(fileType => ({ language: fileType, scheme: 'file' }));
 
-    context.subscriptions.push(vscode.languages.registerDefinitionProvider(documentFilters, new RulesetDefinitionProvider()));
+    context.subscriptions.push(languages.registerDefinitionProvider(documentFilters, new RulesetDefinitionProvider()));
 }

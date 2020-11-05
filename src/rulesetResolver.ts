@@ -1,13 +1,12 @@
-import * as vscode from 'vscode';
-import { workspace, Uri } from 'vscode';
+import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder } from 'vscode';
 import { logger } from "./logger";
 import { rulesetTree } from "./rulesetTree";
 import { EventEmitter } from "events";
 import { rulesetParser } from "./rulesetParser";
 
-export class RulesetResolver implements vscode.Disposable {
+export class RulesetResolver implements Disposable {
 
-    private fileSystemWatcher?: vscode.FileSystemWatcher;
+    private fileSystemWatcher?: FileSystemWatcher;
     private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
 
@@ -51,7 +50,7 @@ export class RulesetResolver implements vscode.Disposable {
         }))
     }
 
-    private async getYamlFilesForWorkspaceFolder(workspaceFolder: vscode.WorkspaceFolder): Promise<Uri[]> {
+    private async getYamlFilesForWorkspaceFolder(workspaceFolder: WorkspaceFolder): Promise<Uri[]> {
         let files = await workspace.findFiles(this.yamlPattern);
 
         files = files.filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
@@ -74,7 +73,7 @@ export class RulesetResolver implements vscode.Disposable {
         });
     }
 
-    private async loadYamlIntoTree(file: Uri, workspaceFolder?: vscode.WorkspaceFolder): Promise<void> {
+    private async loadYamlIntoTree(file: Uri, workspaceFolder?: WorkspaceFolder): Promise<void> {
         const document = await workspace.openTextDocument(file.path);
         try {
             if (!workspaceFolder) {
