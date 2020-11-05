@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { RulesetResolver } from './rulesetResolver';
 import { workspace } from 'vscode';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
+import { rulesetDefinitionKeeper } from './rulesetDefinitionKeeper';
 
 export let rulesetResolver = new RulesetResolver();
 
@@ -18,6 +19,8 @@ export function activate(context: vscode.ExtensionContext) {
     loadWithProgress();
     context.subscriptions.push(rulesetResolver);
     context.subscriptions.push(workspace.onDidChangeWorkspaceFolders(() => loadWithProgress()));
+
+    rulesetDefinitionKeeper.init();
 
     const fileTypes = ['yaml'];
     const documentFilters = fileTypes.map(fileType => ({ language: fileType, scheme: 'file' }));
