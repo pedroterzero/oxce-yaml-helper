@@ -23,13 +23,14 @@ export class typedProperties {
         extraSprites: ['type', 'typeSingle'],
         research: ['name'],
         terrains: ['name'],
-        ufopaedia: ['id']
+        ufopaedia: ['id'],
     };
 
     private static typePropertyLinks: typePropertyLinks = {
         research: {
             name: {target: 'ufopaedia'},
-            dependencies: {target: 'research'}
+            dependencies: {target: 'research'},
+            // getOneFree: {target: 'research'},
         }
     }
 
@@ -39,7 +40,7 @@ export class typedProperties {
             return false;
         }
 
-        let typeKey = typedProperties.getTypeKey(rule, ruleType);
+        let typeKey = this.getTypeKey(rule, ruleType);
         if (!typeKey) {
             return false;
         }
