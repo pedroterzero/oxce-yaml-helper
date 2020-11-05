@@ -90,7 +90,7 @@ export class RulesetParser {
      * @param document
      * @param range
      */
-    private fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: [number, number], reverse: boolean = false): [number, number] {
+    public fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: [number, number], reverse: boolean = false): [number, number] {
         let correctRange = {...range};
         if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('attemptCRLFFix')) {
             return correctRange;

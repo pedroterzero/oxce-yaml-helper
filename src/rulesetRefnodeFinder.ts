@@ -7,10 +7,12 @@ export class RulesetRefnodeFinder {
         logger.debug('Looking for refNode ', key, 'in ', file.path);
 
         return workspace.openTextDocument(file.path).then((document: TextDocument) => {
-            const range = this.findRefNodeRangeInYAML(document.getText(), key);
+            let range = this.findRefNodeRangeInYAML(document.getText(), key);
             if (!range) {
                 return;
             }
+
+            range = rulesetParser.fixRangesForWindowsLineEndingsIfNeeded(document, [range[0], range[1]]);
 
             return new Location(file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
         });
