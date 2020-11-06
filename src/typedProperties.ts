@@ -87,6 +87,10 @@ export class typedProperties {
         'items': ['damageType'],
     }
 
+    private static storeVariables: {[key: string]: Record<string, unknown>} = {
+        'ftaGame': {}
+    }
+
     public static isTypePropertyForKey (ruleType: string, rule: any, key: string): boolean {
         if (typeof rule !== 'object') {
             // for now, only handle objects
@@ -211,5 +215,9 @@ export class typedProperties {
         }
 
         return this.metadataFields[ruleType];
+    }
+
+    public static isStoreVariable(key: string) {
+        return (key in this.storeVariables);
     }
 }

@@ -19,7 +19,7 @@ export class RulesetRefnodeFinder {
     }
 
     public findRefNodeRangeInYAML(yaml: string, key: string): number[] {
-        const doc = rulesetParser.parseDocument(yaml);
+        const doc = rulesetParser.parseDocument(yaml).parsed;
         const node = doc.anchors.getNode(key);
 
         if (node) {

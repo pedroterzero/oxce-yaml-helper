@@ -5,7 +5,12 @@ import { Document, parseDocument } from 'yaml';
 import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
 import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
 import { rulesetDefinitionFinder } from "./rulesetDefinitionFinder";
+import { rulesetVariableFinder } from "./rulesetVariableFinder";
 
+export interface ParsedDocument {
+    parsed: YAMLDocument,
+    regular: Document,
+}
 export interface YAMLDocument {
     contents: { items: YAMLDocumentItem[] };
     anchors: {
@@ -23,10 +28,13 @@ export interface YAMLNode {
 }
 
 export class RulesetParser {
-    public getDefinitions(yaml: string): Definition[] {
-        const doc = this.parseDocument(yaml);
 
+    public getDefinitions(doc: YAMLDocument): Definition[] {
         return rulesetDefinitionFinder.findAllDefinitionsInYamlDocument(doc);
+    }
+
+    public getVariables(doc: Document) {
+        return rulesetVariableFinder.findAllVariablesInYamlDocument(doc);
     }
 
     public findTypeOfKey(key: string, range: Range): RuleType | undefined {
@@ -67,7 +75,7 @@ export class RulesetParser {
                 // take care of CRLF
                 const range = this.fixRangesForWindowsLineEndingsIfNeeded(document, definition.range);
 
-                logger.debug(`opening ${definition.file.path} at ${range[0]}:${range[1]}`);
+                logger.debug(`opening ${definition.file.path.slice(workspaceFolder.uri.path.length + 1)} at ${range[0]}:${range[1]}`);
 
                 return new Location(definition.file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
             }));
@@ -121,11 +129,12 @@ export class RulesetParser {
         return correctRange;
     }
 
-    public parseDocument (yaml: string): YAMLDocument {
+    public parseDocument (yaml: string): ParsedDocument {
         const yamlDocument: YAMLDocument = {} as YAMLDocument;
+        let doc: Document = new Document();
         try {
             // I am not sure why I have to cast this to Document, are yaml package's types broken?
-            const doc: Document = parseDocument(yaml, {maxAliasCount: 1024});
+            doc = parseDocument(yaml, {maxAliasCount: 1024});
 
             yamlDocument.anchors = doc.anchors;
             yamlDocument.contents = doc.contents;
@@ -133,7 +142,10 @@ export class RulesetParser {
             logger.error('could not parse yaml document', { error });
         }
 
-        return yamlDocument;
+        return {
+            parsed: yamlDocument,
+            regular: doc
+        }
     }
 }
 

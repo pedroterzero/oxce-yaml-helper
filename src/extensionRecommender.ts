@@ -1,4 +1,6 @@
-import { commands, extensions, window, workspace } from "vscode";
+import { commands, extensions, Uri, window, workspace } from "vscode";
+import { rulesetResolver } from "./extension";
+import { rulesetTree } from "./rulesetTree";
 
 export class ExtensionRecommender {
     private choices = {
@@ -11,18 +13,49 @@ export class ExtensionRecommender {
     public constructor() {
         this.init();
     }
-    init() {
-        this.recommend(
-            'openxcom.ruleset-tools',
-            'noOpenXcomRulesetTools',
-            'Install the OpenXCOM Ruleset Tools extension to improve QoL even more! This provides syntax validation on the rule files.'
-        );
+
+    private addOnLoadEvent() {
+        rulesetResolver.onDidLoad(this.onRulesetsLoaded.bind(this));
+    }
+
+    private init() {
+        this.addOnLoadEvent();
 
         this.recommend(
             'kisstkondoros.vscode-gutter-preview',
             'noRecommendImagePreview',
             'Install the Image Preview extension to improve QoL even more! This enables image previews for extraSprites et cetera.'
         );
+    }
+
+    private onRulesetsLoaded() {
+        if (!window.activeTextEditor) {
+            return;
+        }
+
+        const folder = workspace.getWorkspaceFolder(Uri.file(window.activeTextEditor.document.fileName));
+        if (!folder) {
+            return;
+        }
+
+        const variables = rulesetTree.getVariables(folder);
+        if (!variables) {
+            return;
+        }
+
+        if ('ftaGame' in variables && variables.ftaGame === true) {
+            this.recommend(
+                'openxcomfta.ruleset-tools',
+                'noOpenXcomFtaRulesetTools',
+                'Install the OpenXCOM FtA Ruleset Tools extension to improve QoL even more! This provides syntax validation on the rule files.'
+            );
+        } else {
+            this.recommend(
+                'openxcom.ruleset-tools',
+                'noOpenXcomRulesetTools',
+                'Install the OpenXCOM Ruleset Tools extension to improve QoL even more! This provides syntax validation on the rule files.'
+            );
+        }
     }
 
     private recommend(extension: string, noPromptSetting: string, message: string) {

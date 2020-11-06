@@ -16,6 +16,10 @@ export type Definition = BaseDefinition & {
     // field: typeKey,
     name: string,
 };
+export type Variables = {
+    [key: string]: unknown
+};
+
 export type DefinitionLookup = BaseDefinition & {
     file: Uri,
 };
@@ -31,8 +35,16 @@ export class RulesetTree {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeIntoRulesetTree(definitions, sourceFile);
     }
 
+    public mergeVariablesIntoTree(variables: Variables, workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeVariablesIntoRulesetTree(variables, sourceFile);
+    }
+
     public getWorkspaceFolders(): WorkspaceFolder[] {
         return this.workspaceFolderRulesets.map((workspaceFolderRuleset) => workspaceFolderRuleset.workspaceFolder);
+    }
+
+    public getVariables(workspaceFolder: WorkspaceFolder): Variables | undefined {
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getVariables();
     }
 
     private getWorkspaceFolderRuleset(workspaceFolder: WorkspaceFolder): WorkspaceFolderRuleset | undefined {

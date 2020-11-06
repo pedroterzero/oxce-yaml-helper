@@ -83,10 +83,15 @@ export class RulesetResolver implements Disposable {
                 throw new Error('workspace folder could not be found');
             }
 
-            const definitions = rulesetParser.getDefinitions(document.getText());
+            const doc = rulesetParser.parseDocument(document.getText());
+
+            const definitions = rulesetParser.getDefinitions(doc.parsed);
             logger.debug(`found ${definitions.length} definitions in file ${file.path.slice(workspaceFolder.uri.path.length + 1)}`);
 
+            const variables = rulesetParser.getVariables(doc.regular);
+
             rulesetTree.mergeIntoTree(definitions, workspaceFolder, file);
+            rulesetTree.mergeVariablesIntoTree(variables, workspaceFolder, file);
         } catch (error) {
             logger.error('loadYamlIntoTree', file.path, error.message);
         }

@@ -16,7 +16,7 @@ type Entry = YAMLSeq | string | Scalar;
 
 export class RulesetRecursiveKeyRetriever {
     public getKeyInformationFromYAML(yaml: string, key: string, range: number[]): RuleType | undefined {
-        const match = this.findKeyInformationInYamlDocument(rulesetParser.parseDocument(yaml), key, range);
+        const match = this.findKeyInformationInYamlDocument(rulesetParser.parseDocument(yaml).parsed, key, range);
 
         if (!match || !match.type || !match.path) {
             return;
