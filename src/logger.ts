@@ -1,3 +1,5 @@
+import { workspace } from "vscode";
+
 export enum LogLevel {
     Debug = 0,
     Info = 1,
@@ -5,28 +7,25 @@ export enum LogLevel {
     Error = 3
 }
 
-//export let logLevel: LogLevel = workspace.getConfiguration('oxcYamlHelper').get('debugLevel');
-export const logLevel: LogLevel = LogLevel.Debug;
+export const logLevel: LogLevel = workspace.getConfiguration('oxcYamlHelper').get('debugLevel') ?? LogLevel.Info;
 
 export class Logger {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-
     public constructor () {
         this.initLoggers();
     }
 
     private initLoggers() {
         if (logLevel <= LogLevel.Debug) {
-            this.debug = console.info.bind(console, '[debug] ');
+            this.debug = console.info.bind(console, '[debug]');
         }
         if (logLevel <= LogLevel.Info) {
-            this.info = console.info.bind(console, '[info ] ');
+            this.info = console.info.bind(console, '[info ]');
         }
         if (logLevel <= LogLevel.Warn) {
-            this.warn = console.warn.bind(console, '[warn] ');
+            this.warn = console.warn.bind(console, '[warn ]');
         }
         if (logLevel <= LogLevel.Error) {
-            this.error = console.error.bind(console, '[error] ');
+            this.error = console.error.bind(console, '[error]');
         }
     }
 

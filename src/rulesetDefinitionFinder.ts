@@ -6,7 +6,7 @@ import { Definition } from "./rulesetTree";
 
 export class RulesetDefinitionFinder {
     public findAllDefinitionsInYamlDocument(yamlDocument: YAMLDocument): Definition[] {
-        logger.debug('findAllDefinitionsInYamlDocument');
+        // logger.debug('findAllDefinitionsInYamlDocument');
 
         const yamlPairs = yamlDocument.contents.items;
         if (!yamlPairs) {

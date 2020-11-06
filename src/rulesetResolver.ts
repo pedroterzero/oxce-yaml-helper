@@ -44,7 +44,7 @@ export class RulesetResolver implements Disposable {
             logger.debug('loading yaml files for workspace dir:', workspaceFolder.name);
             const files = await this.getYamlFilesForWorkspaceFolder(workspaceFolder);
             return Promise.all(files.map(file => {
-                logger.debug('loading ruleset file:', file.path);
+                logger.debug('loading ruleset file:', file.path.slice(workspaceFolder.uri.path.length + 1));
                 return this.loadYamlIntoTree(file, workspaceFolder);
             }));
         }));
@@ -84,7 +84,7 @@ export class RulesetResolver implements Disposable {
             }
 
             const definitions = rulesetParser.getDefinitions(document.getText());
-            logger.debug(`found ${definitions.length} definitions in file ${file.path}`);
+            logger.debug(`found ${definitions.length} definitions in file ${file.path.slice(workspaceFolder.uri.path.length + 1)}`);
 
             rulesetTree.mergeIntoTree(definitions, workspaceFolder, file);
         } catch (error) {
