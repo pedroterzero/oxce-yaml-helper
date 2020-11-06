@@ -145,7 +145,7 @@ export class RulesetParser {
         return {
             parsed: yamlDocument,
             regular: doc
-        }
+        };
     }
 }
 

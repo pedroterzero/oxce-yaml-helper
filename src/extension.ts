@@ -1,6 +1,6 @@
 'use strict';
 
-import { ExtensionContext, languages, ProgressLocation, window, workspace } from 'vscode';
+import { ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';
@@ -10,8 +10,8 @@ export const rulesetResolver = new RulesetResolver();
 function loadWithProgress(): void{
     window.withProgress({
         location: ProgressLocation.Window,
-        title: "Loading rulesets.."
-    }, () => rulesetResolver.load());
+        title: "Loading rulesets"
+    }, (progress: Progress<{ message?: string; increment?: number }>) => rulesetResolver.load(progress));
 }
 
 export function activate(context: ExtensionContext) {

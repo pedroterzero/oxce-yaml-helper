@@ -70,6 +70,10 @@ export class RulesetTree {
         logger.debug('getDefinitionsByName', 'key', key, 'workspaceFolder', workspaceFolder);
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getDefinitionsByName(key, ruleType);
     }
+
+    public getNumberOfParsedDefinitionFiles (workspaceFolder: WorkspaceFolder) {
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getNumberOfParsedDefinitionFiles();
+    }
 }
 
 export const rulesetTree = new RulesetTree();

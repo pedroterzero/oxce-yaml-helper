@@ -15,7 +15,7 @@ export class WorkspaceFolderRuleset {
     public definitionsLookup: {[key: string]: DefinitionLookup[]} = {};
     public rulesetFiles: RulesetFile[] = [];
     public variableFiles: VariableFile[] = [];
-    private variables: {} = {};
+    private variables: Variables = {};
 
     constructor(public workspaceFolder: WorkspaceFolder) {
     }
@@ -112,5 +112,9 @@ export class WorkspaceFolderRuleset {
 
     public getVariables(): Variables {
         return this.variables;
+    }
+
+    public getNumberOfParsedDefinitionFiles(): number {
+        return this.rulesetFiles.length;
     }
 }

@@ -1,4 +1,4 @@
-import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder } from 'vscode';
+import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress } from 'vscode';
 import { logger } from "./logger";
 import { rulesetTree } from "./rulesetTree";
 import { EventEmitter } from "events";
@@ -10,9 +10,14 @@ export class RulesetResolver implements Disposable {
     private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
 
-    public async load(): Promise<void> {
+    public async load(progress: Progress<{ message?: string; increment?: number }>): Promise<void> {
         this.init();
         const start = new Date();
+
+        progress.report({ increment: 0 });
+
+        this.onDidLoadRulesheet(this.ruleSheetLoaded.bind(this, progress));
+
         await this.loadYamlFiles();
         logger.debug(`yaml files loaded, took ${((new Date()).getTime() - start.getTime()) / 1000}s`);
         this.registerFileWatcher();
@@ -21,6 +26,10 @@ export class RulesetResolver implements Disposable {
 
     public onDidLoad(listener: () => any) {
         this.onDidLoadEmitter.addListener('didLoad', listener);
+    }
+
+    public onDidLoadRulesheet(listener: (file: string, files: number, totalFiles: number) => void) {
+        this.onDidLoadEmitter.addListener('didLoadRulesheet', listener);
     }
 
     private init(): void {
@@ -35,6 +44,12 @@ export class RulesetResolver implements Disposable {
         rulesetTree.init();
     }
 
+    private ruleSheetLoaded (progress: Progress<{ message?: string; increment?: number }>, file: string, filesLoaded: number, totalFiles: number): void {
+        const pct = Math.round((filesLoaded / totalFiles) * 100);
+
+        progress.report({increment: pct, message: `${file} (${filesLoaded}/${totalFiles})`});
+    }
+
     private async loadYamlFiles(): Promise<undefined | void[][]> {
         if (!workspace.workspaceFolders) {
             return;
@@ -45,7 +60,7 @@ export class RulesetResolver implements Disposable {
             const files = await this.getYamlFilesForWorkspaceFolder(workspaceFolder);
             return Promise.all(files.map(file => {
                 logger.debug('loading ruleset file:', file.path.slice(workspaceFolder.uri.path.length + 1));
-                return this.loadYamlIntoTree(file, workspaceFolder);
+                return this.loadYamlIntoTree(file, workspaceFolder, files.length);
             }));
         }));
     }
@@ -73,7 +88,7 @@ export class RulesetResolver implements Disposable {
         });
     }
 
-    private async loadYamlIntoTree(file: Uri, workspaceFolder?: WorkspaceFolder): Promise<void> {
+    private async loadYamlIntoTree(file: Uri, workspaceFolder?: WorkspaceFolder, numberOfFiles?: number): Promise<void> {
         const document = await workspace.openTextDocument(file.path);
         try {
             if (!workspaceFolder) {
@@ -85,13 +100,16 @@ export class RulesetResolver implements Disposable {
 
             const doc = rulesetParser.parseDocument(document.getText());
 
+            const workspaceFile = file.path.slice(workspaceFolder.uri.path.length + 1);
             const definitions = rulesetParser.getDefinitions(doc.parsed);
-            logger.debug(`found ${definitions.length} definitions in file ${file.path.slice(workspaceFolder.uri.path.length + 1)}`);
+            logger.debug(`found ${definitions.length} definitions in file ${workspaceFile}`);
 
             const variables = rulesetParser.getVariables(doc.regular);
 
             rulesetTree.mergeIntoTree(definitions, workspaceFolder, file);
             rulesetTree.mergeVariablesIntoTree(variables, workspaceFolder, file);
+
+            this.onDidLoadEmitter.emit('didLoadRulesheet', workspaceFile, rulesetTree.getNumberOfParsedDefinitionFiles(workspaceFolder), numberOfFiles);
         } catch (error) {
             logger.error('loadYamlIntoTree', file.path, error.message);
         }
