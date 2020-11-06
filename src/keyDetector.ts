@@ -20,7 +20,7 @@ export class KeyDetector {
      * @param document current document
      */
     public static getRangeOfKeyAtPosition(position: Position, document: TextDocument): Range | undefined {
-        const stringRegex = /\*[A-Za-z0-9_]+|(\*?[A-Z0-9_]+(\.(PCK|SPK))?)/g;
+        const stringRegex = /\*[A-Za-z0-9_]+|(\*?[A-Z0-9_]+(\.(PCK|SPK|SCR))?)/g;
         return document.getWordRangeAtPosition(position, stringRegex);
     }
 
