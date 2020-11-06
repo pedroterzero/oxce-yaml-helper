@@ -1,10 +1,11 @@
 import { Uri, WorkspaceFolder } from "vscode";
-import { RuleType, Definition, DefinitionLookup } from "./rulesetTree";
+import { RuleType, Definition, DefinitionLookup, Variables } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 
 export type RulesetFile = { file: Uri, definitions: Definition[] }
+export type VariableFile = { file: Uri, variables: Variables }
 
 type TypeLookup = {
     [key: string]: DefinitionLookup[];
@@ -13,6 +14,8 @@ type TypeLookup = {
 export class WorkspaceFolderRuleset {
     public definitionsLookup: {[key: string]: DefinitionLookup[]} = {};
     public rulesetFiles: RulesetFile[] = [];
+    public variableFiles: VariableFile[] = [];
+    private variables: {} = {};
 
     constructor(public workspaceFolder: WorkspaceFolder) {
     }
@@ -29,6 +32,20 @@ export class WorkspaceFolderRuleset {
         });
 
         logger.debug('Number of type names', Object.keys(this.definitionsLookup).length);
+    }
+
+    public mergeVariablesIntoRulesetTree(variables: Variables, sourceFile: Uri) {
+        this.addRulesetVariableFile(variables, sourceFile || null);
+        this.definitionsLookup = {};
+
+        this.variableFiles.forEach((file) => {
+            this.variables = deepmerge(
+                this.variables,
+                file.variables
+            );
+        });
+
+//        logger.debug('Number of variables', Object.keys(this.variables).length);
     }
 
     private getLookups(definitions: Definition[], sourceFile: Uri): TypeLookup {
@@ -83,5 +100,17 @@ export class WorkspaceFolderRuleset {
             this.rulesetFiles = this.rulesetFiles.filter(tp => tp.file && tp.file.path !== rulesetFile.file.path);
         }
         this.rulesetFiles.push(rulesetFile);
+    }
+
+    private addRulesetVariableFile(variables: Variables, sourceFile: Uri) {
+        const variableFile = { variables, file: sourceFile };
+        if (this.variableFiles.length > 0 && variableFile.file) {
+            this.variableFiles = this.variableFiles.filter(tp => tp.file && tp.file.path !== variableFile.file.path);
+        }
+        this.variableFiles.push(variableFile);
+    }
+
+    public getVariables(): Variables {
+        return this.variables;
     }
 }
