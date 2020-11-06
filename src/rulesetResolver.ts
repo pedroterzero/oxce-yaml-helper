@@ -19,6 +19,7 @@ export class RulesetResolver implements Disposable {
         this.onDidLoadRulesheet(this.ruleSheetLoaded.bind(this, progress));
 
         await this.loadYamlFiles();
+        progress.report({ increment: 100 });
         logger.debug(`yaml files loaded, took ${((new Date()).getTime() - start.getTime()) / 1000}s`);
         this.registerFileWatcher();
         this.onDidLoadEmitter.emit('didLoad');
@@ -45,9 +46,9 @@ export class RulesetResolver implements Disposable {
     }
 
     private ruleSheetLoaded (progress: Progress<{ message?: string; increment?: number }>, file: string, filesLoaded: number, totalFiles: number): void {
-        const pct = Math.round((filesLoaded / totalFiles) * 100);
+        const increment = Math.round((1 / totalFiles) * 100);
 
-        progress.report({increment: pct, message: `${file} (${filesLoaded}/${totalFiles})`});
+        progress.report({increment: increment, message: `${file} (${filesLoaded}/${totalFiles})`});
     }
 
     private async loadYamlFiles(): Promise<undefined | void[][]> {

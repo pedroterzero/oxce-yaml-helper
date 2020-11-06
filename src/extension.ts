@@ -9,8 +9,8 @@ export const rulesetResolver = new RulesetResolver();
 
 function loadWithProgress(): void{
     window.withProgress({
-        location: ProgressLocation.Window,
-        title: "Loading rulesets"
+        location: ProgressLocation.Notification,
+        title: 'Loading rulesets',
     }, (progress: Progress<{ message?: string; increment?: number }>) => rulesetResolver.load(progress));
 }
 
@@ -23,6 +23,9 @@ export function activate(context: ExtensionContext) {
     const documentFilters = fileTypes.map(fileType => ({ language: fileType, scheme: 'file' }));
 
     context.subscriptions.push(languages.registerDefinitionProvider(documentFilters, new RulesetDefinitionProvider()));
+
+	// context.subscriptions.push(commands.registerCommand('extension.startTask', () => {
+	// }));
 
     // load the recommender
     new ExtensionRecommender;
