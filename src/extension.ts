@@ -5,7 +5,7 @@ import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';
 
-export let rulesetResolver = new RulesetResolver();
+export const rulesetResolver = new RulesetResolver();
 
 function loadWithProgress(): void{
     window.withProgress({

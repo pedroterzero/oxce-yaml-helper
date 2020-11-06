@@ -6,7 +6,7 @@ export enum LogLevel {
 }
 
 //export let logLevel: LogLevel = workspace.getConfiguration('oxcYamlHelper').get('debugLevel');
-export let logLevel: LogLevel = LogLevel.Debug;
+export const logLevel: LogLevel = LogLevel.Debug;
 
 export class Logger {
     public debug(...args: any[]): void {

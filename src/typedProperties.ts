@@ -35,13 +35,18 @@ type LogicOverride = {
 export class typedProperties {
     // properties for which 'name' is the key
     private static typePropertyHints: typePropertyHints = {
+        alienRaces: ['id'],
         covertOperations: ['name'],               // FtA
         diplomacyFactions: ['name'],              // FtA
         events: ['name'],                         // FtA
         extraSprites: ['type', 'typeSingle'],
+        // manufacture: ['name'],
         research: ['name'],
+        // soldierBonuses: ['name'],
+        // soldierTransformation: ['name'],
         terrains: ['name'],
         ufopaedia: ['id'],
+        ufoTrajectories: ['id'],
     };
 
     private static typePropertyLinks: typePropertyLinks = {
@@ -88,7 +93,7 @@ export class typedProperties {
             return false;
         }
 
-        let typeKey = this.getTypeKey(rule, ruleType);
+        const typeKey = this.getTypeKey(rule, ruleType);
         if (!typeKey) {
             return false;
         }
@@ -190,7 +195,9 @@ export class typedProperties {
         }
 
         if ('damageType' in ruleType.metadata) {
-            if (['2', '3', '6', '9'].indexOf(ruleType.metadata.damageType.toString()) !== -1) {
+            const damageType = ruleType.metadata.damageType as number;
+
+            if (['2', '3', '6', '9'].indexOf(damageType.toString()) !== -1) {
                 override.target = 'extraSprites.SMOKE.PCK.files';
             }
         }

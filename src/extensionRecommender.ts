@@ -13,6 +13,12 @@ export class ExtensionRecommender {
     }
     init() {
         this.recommend(
+            'openxcom.ruleset-tools',
+            'noOpenXcomRulesetTools',
+            'Install the OpenXCOM Ruleset Tools extension to improve QoL even more! This provides syntax validation on the rule files.'
+        );
+
+        this.recommend(
             'kisstkondoros.vscode-gutter-preview',
             'noRecommendImagePreview',
             'Install the Image Preview extension to improve QoL even more! This enables image previews for extraSprites et cetera.'
@@ -23,8 +29,6 @@ export class ExtensionRecommender {
         if (extensions.getExtension(extension) || workspace.getConfiguration('oxcYamlHelper').get('prompts.' + noPromptSetting)) {
             return;
         }
-
-
 
         window.showInformationMessage(
             message, this.choices.showIt, this.choices.installIt, this.choices.notNow, this.choices.never

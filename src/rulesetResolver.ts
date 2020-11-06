@@ -47,7 +47,7 @@ export class RulesetResolver implements Disposable {
                 logger.debug('loading ruleset file:', file.path);
                 return this.loadYamlIntoTree(file, workspaceFolder);
             }));
-        }))
+        }));
     }
 
     private async getYamlFilesForWorkspaceFolder(workspaceFolder: WorkspaceFolder): Promise<Uri[]> {

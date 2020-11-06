@@ -8,8 +8,9 @@ Welcome to the OXC(E) YAML Helper thingy. For lack of a better name.
 - Is clicking to a definition taking you to a wrong (seemingly random) place in a ruleset? This is because the [YAML parser](https://www.npmjs.com/package/yaml) used assumes UNIX line endings. Therefore this tool may not correctly work on Windows with CRLF files. I have tried to work around this, but I'm not sure yet if it's reliable.
 
 ## Todo/ideas
-- Prompt user about CRLF files and offer to fix them?
+- Implement translations
 - Show string translation on hover
+- Implement problem finding (missing definitions, missing sprite ids, et cetera)
 
 ## Todo/dev
 - Look for 0 definitions to find missing types like alienRaces

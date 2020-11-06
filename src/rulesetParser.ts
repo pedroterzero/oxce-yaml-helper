@@ -90,14 +90,14 @@ export class RulesetParser {
      * @param document
      * @param range
      */
-    public fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: [number, number], reverse: boolean = false): [number, number] {
-        let correctRange = {...range};
+    public fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: [number, number], reverse = false): [number, number] {
+        const correctRange = {...range};
         if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('attemptCRLFFix')) {
             return correctRange;
         }
 
         if (document.eol === EndOfLine.CRLF) {
-            logger.debug(`Range before adjusting for CRLF: ${range[0]}:${range[1]}`)
+            logger.debug(`Range before adjusting for CRLF: ${range[0]}:${range[1]}`);
 
             // find offset
             let lineBreaks = 0;
@@ -115,14 +115,14 @@ export class RulesetParser {
             correctRange[0] += lineBreaks;
             correctRange[1] += lineBreaks;
 
-            logger.debug(`Range after adjusting for CRLF: ${correctRange[0]}:${correctRange[1]} (reverse: ${reverse})`)
+            logger.debug(`Range after adjusting for CRLF: ${correctRange[0]}:${correctRange[1]} (reverse: ${reverse})`);
         }
 
         return correctRange;
     }
 
     public parseDocument (yaml: string): YAMLDocument {
-        let yamlDocument: YAMLDocument = {} as YAMLDocument;
+        const yamlDocument: YAMLDocument = {} as YAMLDocument;
         try {
             // I am not sure why I have to cast this to Document, are yaml package's types broken?
             const doc: Document = parseDocument(yaml, {maxAliasCount: 1024});
@@ -130,7 +130,7 @@ export class RulesetParser {
             yamlDocument.anchors = doc.anchors;
             yamlDocument.contents = doc.contents;
         } catch (error) {
-            logger.error('could not parse yaml document', { error })
+            logger.error('could not parse yaml document', { error });
         }
 
         return yamlDocument;

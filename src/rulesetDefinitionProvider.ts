@@ -5,12 +5,12 @@ import { rulesetParser } from "./rulesetParser";
 export class RulesetDefinitionProvider implements DefinitionProvider {
 
     provideDefinition(document: TextDocument, position: Position): ProviderResult<Definition> {
-        let value = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document);
+        const value = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document);
         if (!value?.key) {
             return;
         }
 
-        let folder = workspace.getWorkspaceFolder(document.uri);
+        const folder = workspace.getWorkspaceFolder(document.uri);
         if (!folder) {
             return;
         }

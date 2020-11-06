@@ -8,7 +8,7 @@ export class RulesetDefinitionFinder {
     public findAllDefinitionsInYamlDocument(yamlDocument: YAMLDocument): Definition[] {
         logger.debug('findAllDefinitionsInYamlDocument');
 
-        let yamlPairs = yamlDocument.contents.items;
+        const yamlPairs = yamlDocument.contents.items;
         if (!yamlPairs) {
             logger.warn('yamlDocument does not have any items');
             return [];
@@ -22,7 +22,7 @@ export class RulesetDefinitionFinder {
             ruleType.value.items?.forEach((ruleProperties: YAMLMap) => {
                 // console.log('ruleprop', ruleProperties);
 
-                const propertiesFlat = ruleProperties.toJSON() as {[key: string]: string | object};
+                const propertiesFlat = ruleProperties.toJSON() as {[key: string]: string | Record<string, unknown>};
                 const typeKey = typedProperties.getTypeKey(propertiesFlat, ruleType.key.value);
                 if (ruleType.key.value === 'extraSprites') {
                     this.handleExtraSprites(propertiesFlat, ruleProperties, definitions, ruleType);
@@ -49,7 +49,7 @@ export class RulesetDefinitionFinder {
         return definitions;
     }
 
-    private handleExtraSprites(propertiesFlat: { [key: string]: string | object; }, ruleProperties: YAMLMap, definitions: Definition[], ruleType: YAMLDocumentItem) {
+    private handleExtraSprites(propertiesFlat: { [key: string]: string | Record<string, unknown>; }, ruleProperties: YAMLMap, definitions: Definition[], ruleType: YAMLDocumentItem) {
         const typeKey = 'files';
         if (typeKey in propertiesFlat) {
             for (const ruleProperty of ruleProperties.items) {

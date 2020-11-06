@@ -9,7 +9,7 @@ type RecursiveMatch = {
     type?: string,
     path?: string,
     node?: Pair | Scalar
-    metadata?: {}
+    metadata?: Record<string, unknown>
 }
 
 type Entry = YAMLSeq | string | Scalar;
@@ -37,7 +37,7 @@ export class RulesetRecursiveKeyRetriever {
     private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, absoluteKey: string, range: number[]): RecursiveMatch | undefined {
         logger.debug('findKeyInformationInYamlDocument', { absoluteKey });
 
-        let yamlPairs = yamlDocument.contents.items;
+        const yamlPairs = yamlDocument.contents.items;
         if (!yamlPairs) {
             logger.warn('yamlDocument does not have any items');
             return;
@@ -112,7 +112,7 @@ export class RulesetRecursiveKeyRetriever {
     private loopEntry(entry: YAMLSeq, path: string, key: string, range: number[], retval: RecursiveMatch) {
         entry.items.forEach((ruleProperty) => {
             if ('items' in ruleProperty) {
-                retval = this.loopEntry(ruleProperty, path + '[]', key, range, retval);;
+                retval = this.loopEntry(ruleProperty, path + '[]', key, range, retval);
             } else {
                 const result = this.processItems(ruleProperty.value, path + '.' + ruleProperty?.key?.value, key, range);
                 if (result.node) {
@@ -142,7 +142,7 @@ export class RulesetRecursiveKeyRetriever {
         }
 
         const properties = entry.toJSON() as {[key: string]: any};
-        const metadata: {[key: string]: string | object} = {};
+        const metadata: Record<string, unknown> = {};
         for (const field of fields) {
             if (properties && field in properties) {
                 metadata[field] = properties[field];

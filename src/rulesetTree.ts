@@ -4,12 +4,12 @@ import { WorkspaceFolderRuleset as WorkspaceFolderRuleset } from "./workspaceFol
 
 export type Ruleset = { [key: string]: Ruleset }
 export type LookupMap = { [key: string]: string }
-export type RuleType = { type: string; key: string; metadata?: {[key: string]: [value: object | undefined]}}
+export type RuleType = { type: string; key: string; metadata?: Record<string, unknown>}
 
 type BaseDefinition = {
     type: string,
     range: [number, number],
-    metadata?: {[key: string]: string | object}
+    metadata?: Record<string, unknown>
 };
 
 export type Definition = BaseDefinition & {
@@ -48,7 +48,7 @@ export class RulesetTree {
         }
         let workspaceFolderRuleset = this.getWorkspaceFolderRuleset(workspaceFolder);
         if (!workspaceFolderRuleset) {
-            workspaceFolderRuleset = new WorkspaceFolderRuleset(workspaceFolder)
+            workspaceFolderRuleset = new WorkspaceFolderRuleset(workspaceFolder);
             this.workspaceFolderRulesets.push(workspaceFolderRuleset);
         }
         return workspaceFolderRuleset;
