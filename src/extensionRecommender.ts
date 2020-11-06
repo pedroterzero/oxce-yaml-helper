@@ -46,13 +46,13 @@ export class ExtensionRecommender {
         if ('ftaGame' in variables && variables.ftaGame === true) {
             this.recommend(
                 'openxcomfta.ruleset-tools',
-                'noOpenXcomFtaRulesetTools',
+                'noRecommendOpenXcomFtaRulesetTools',
                 'Install the OpenXCOM FtA Ruleset Tools extension to improve QoL even more! This provides syntax validation on the rule files.'
             );
         } else {
             this.recommend(
                 'openxcom.ruleset-tools',
-                'noOpenXcomRulesetTools',
+                'noRecommendOpenXcomRulesetTools',
                 'Install the OpenXCOM Ruleset Tools extension to improve QoL even more! This provides syntax validation on the rule files.'
             );
         }

@@ -36,7 +36,7 @@ export class WorkspaceFolderRuleset {
 
     public mergeVariablesIntoRulesetTree(variables: Variables, sourceFile: Uri) {
         this.addRulesetVariableFile(variables, sourceFile || null);
-        this.definitionsLookup = {};
+        this.variables = {};
 
         this.variableFiles.forEach((file) => {
             this.variables = deepmerge(
