@@ -4,6 +4,7 @@ import { ExtensionContext, languages, Progress, ProgressLocation, window, worksp
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';
+import { RulesetHoverProvider } from './rulesetHoverProvider';
 
 export const rulesetResolver = new RulesetResolver();
 
@@ -23,9 +24,7 @@ export function activate(context: ExtensionContext) {
     const documentFilters = fileTypes.map(fileType => ({ language: fileType, scheme: 'file' }));
 
     context.subscriptions.push(languages.registerDefinitionProvider(documentFilters, new RulesetDefinitionProvider()));
-
-	// context.subscriptions.push(commands.registerCommand('extension.startTask', () => {
-	// }));
+    context.subscriptions.push(languages.registerHoverProvider(documentFilters, new RulesetHoverProvider()));
 
     // load the recommender
     new ExtensionRecommender;

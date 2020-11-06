@@ -1,11 +1,10 @@
-import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress } from 'vscode';
+import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress, window } from 'vscode';
 import { logger } from "./logger";
 import { rulesetTree } from "./rulesetTree";
 import { EventEmitter } from "events";
 import { rulesetParser } from "./rulesetParser";
 
 export class RulesetResolver implements Disposable {
-
     private fileSystemWatcher?: FileSystemWatcher;
     private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
@@ -100,20 +99,39 @@ export class RulesetResolver implements Disposable {
             }
 
             const doc = rulesetParser.parseDocument(document.getText());
+            const docObject = doc.regular.toJSON();
 
             const workspaceFile = file.path.slice(workspaceFolder.uri.path.length + 1);
             const definitions = rulesetParser.getDefinitions(doc.parsed);
             logger.debug(`found ${definitions.length} definitions in file ${workspaceFile}`);
 
-            const variables = rulesetParser.getVariables(doc.regular);
+            const variables = rulesetParser.getVariables(docObject);
+            const translations = rulesetParser.getTranslations(docObject);
 
             rulesetTree.mergeIntoTree(definitions, workspaceFolder, file);
             rulesetTree.mergeVariablesIntoTree(variables, workspaceFolder, file);
+            rulesetTree.mergeTranslationsIntoTree(translations, workspaceFolder, file);
 
             this.onDidLoadEmitter.emit('didLoadRulesheet', workspaceFile, rulesetTree.getNumberOfParsedDefinitionFiles(workspaceFolder), numberOfFiles);
         } catch (error) {
             logger.error('loadYamlIntoTree', file.path, error.message);
         }
+    }
+
+    public getTranslationForKey(key: string, sourceUri?: Uri): string | undefined {
+        if (!sourceUri) {
+            sourceUri = window.activeTextEditor?.document.uri;
+        }
+        if (!sourceUri) {
+            return;
+        }
+
+        const folder = workspace.getWorkspaceFolder(sourceUri);
+        if (!folder) {
+            return;
+        }
+
+        return rulesetTree.getTranslation(key, folder);
     }
 
     public dispose() {

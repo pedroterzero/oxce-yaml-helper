@@ -1,11 +1,12 @@
-import { Uri, WorkspaceFolder } from "vscode";
-import { RuleType, Definition, DefinitionLookup, Variables } from "./rulesetTree";
+import { Uri, workspace, WorkspaceFolder } from "vscode";
+import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 
 export type RulesetFile = { file: Uri, definitions: Definition[] }
 export type VariableFile = { file: Uri, variables: Variables }
+export type TranslationFile = { file: Uri, translations: Translations }
 
 type TypeLookup = {
     [key: string]: DefinitionLookup[];
@@ -15,7 +16,9 @@ export class WorkspaceFolderRuleset {
     public definitionsLookup: {[key: string]: DefinitionLookup[]} = {};
     public rulesetFiles: RulesetFile[] = [];
     public variableFiles: VariableFile[] = [];
+    public translationFiles: TranslationFile[] = [];
     private variables: Variables = {};
+    private translations: Translations = {};
 
     constructor(public workspaceFolder: WorkspaceFolder) {
     }
@@ -47,6 +50,38 @@ export class WorkspaceFolderRuleset {
 
 //        logger.debug('Number of variables', Object.keys(this.variables).length);
     }
+
+    public mergeTranslationsIntoTree(translations: Translation[], sourceFile: Uri) {
+        const lookups = this.getTranslationLookups(translations);
+
+        this.addRulesetTranslationFile(lookups, sourceFile || null);
+        this.translations = {};
+
+        this.translationFiles.forEach((file) => {
+            this.translations = deepmerge(
+                this.translations,
+                file.translations
+            );
+        });
+
+        // logger.debug(`Number of translations for ${this.getLocale()}: ${Object.keys(this.translations[locale]).length}`);
+    }
+
+    private getTranslationLookups(translations: Translation[]): Translations {
+        const grouped: Translations = {};
+
+        for (const translation of translations) {
+            if (!(translation.language in grouped)) {
+                grouped[translation.language] = {};
+            }
+
+            grouped[translation.language][translation.key] = translation.value;
+        }
+
+        return grouped;
+    }
+
+
 
     private getLookups(definitions: Definition[], sourceFile: Uri): TypeLookup {
         const lookups: TypeLookup = {};
@@ -110,11 +145,33 @@ export class WorkspaceFolderRuleset {
         this.variableFiles.push(variableFile);
     }
 
+    private addRulesetTranslationFile(translations: Translations, sourceFile: Uri) {
+        const translationFile = { translations, file: sourceFile };
+        if (this.translationFiles.length > 0 && translationFile.file) {
+            this.translationFiles = this.translationFiles.filter(tp => tp.file && tp.file.path !== translationFile.file.path);
+        }
+        this.translationFiles.push(translationFile);
+    }
+
     public getVariables(): Variables {
         return this.variables;
     }
 
     public getNumberOfParsedDefinitionFiles(): number {
         return this.rulesetFiles.length;
+    }
+
+    public getTranslation(key: string): string {
+        const locale = this.getLocale();
+
+        if (!(locale in this.translations) || !(key in this.translations[locale])) {
+            return `No translation found for locale '${locale}' '${key}'!`;
+        }
+
+        return this.translations[locale][key];
+    }
+
+    private getLocale (): string {
+        return workspace.getConfiguration('oxcYamlHelper').get<string>('translationLocale') ?? 'en-US';
     }
 }

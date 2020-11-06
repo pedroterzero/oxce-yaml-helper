@@ -1,11 +1,12 @@
 import { TextDocument, workspace, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
 import { logger } from "./logger";
-import { Definition, rulesetTree, RuleType } from "./rulesetTree";
+import { Definition, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
 import { Document, parseDocument } from 'yaml';
 import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
 import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
 import { rulesetDefinitionFinder } from "./rulesetDefinitionFinder";
 import { rulesetVariableFinder } from "./rulesetVariableFinder";
+import { rulesetTranslationFinder } from "./rulesetTranslationFinder";
 
 export interface ParsedDocument {
     parsed: YAMLDocument,
@@ -27,14 +28,21 @@ export interface YAMLNode {
     range?: [number, number] | null
 }
 
-export class RulesetParser {
+export type JsonObject = {
+    [key: string]: string | Record<string, unknown>;
+};
 
+export class RulesetParser {
     public getDefinitions(doc: YAMLDocument): Definition[] {
         return rulesetDefinitionFinder.findAllDefinitionsInYamlDocument(doc);
     }
 
-    public getVariables(doc: Document) {
+    public getVariables(doc: any): Variables {
         return rulesetVariableFinder.findAllVariablesInYamlDocument(doc);
+    }
+
+    public getTranslations(doc: any): Translation[] {
+        return rulesetTranslationFinder.findAllVariablesInYamlDocument(doc);
     }
 
     public findTypeOfKey(key: string, range: Range): RuleType | undefined {

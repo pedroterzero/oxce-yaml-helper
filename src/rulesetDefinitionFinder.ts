@@ -1,7 +1,7 @@
 import { logger } from "./logger";
 import { YAMLMap } from "yaml/types";
 import { typedProperties } from "./typedProperties";
-import { YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
+import { JsonObject, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { Definition } from "./rulesetTree";
 
 export class RulesetDefinitionFinder {
@@ -49,19 +49,21 @@ export class RulesetDefinitionFinder {
         return definitions;
     }
 
-    private handleExtraSprites(propertiesFlat: { [key: string]: string | Record<string, unknown>; }, ruleProperties: YAMLMap, definitions: Definition[], ruleType: YAMLDocumentItem) {
+    private handleExtraSprites(propertiesFlat: JsonObject, ruleProperties: YAMLMap, definitions: Definition[], ruleType: YAMLDocumentItem) {
         const typeKey = 'files';
-        if (typeKey in propertiesFlat) {
-            for (const ruleProperty of ruleProperties.items) {
-                if (ruleProperty.key.value === typeKey) {
-                    for (const entry of ruleProperty.value.items) {
-                        definitions.push({
-                            type: ruleType.key.value + '.' + propertiesFlat.type + '.' + typeKey,
-                            // field: typeKey,
-                            name: entry.key.value,
-                            range: entry.key.range,
-                        });
-                    }
+        if (!(typeKey in propertiesFlat)) {
+            return;
+        }
+
+        for (const ruleProperty of ruleProperties.items) {
+            if (ruleProperty.key.value === typeKey) {
+                for (const entry of ruleProperty.value.items) {
+                    definitions.push({
+                        type: ruleType.key.value + '.' + propertiesFlat.type + '.' + typeKey,
+                        // field: typeKey,
+                        name: entry.key.value,
+                        range: entry.key.range,
+                    });
                 }
             }
         }

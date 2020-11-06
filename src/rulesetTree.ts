@@ -12,12 +12,29 @@ type BaseDefinition = {
     metadata?: Record<string, unknown>
 };
 
+export type RulesetItems = {
+    definitions: Definition[],
+    translations: Translation[]
+}
+
+export type Translation = {
+    language: string,
+    key: string,
+    value: string
+}
+
 export type Definition = BaseDefinition & {
     // field: typeKey,
     name: string,
 };
 export type Variables = {
     [key: string]: unknown
+};
+
+export type Translations = {
+    [key: string]: {
+        [key: string]: string;
+    };
 };
 
 export type DefinitionLookup = BaseDefinition & {
@@ -37,6 +54,10 @@ export class RulesetTree {
 
     public mergeVariablesIntoTree(variables: Variables, workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeVariablesIntoRulesetTree(variables, sourceFile);
+    }
+
+    public mergeTranslationsIntoTree(translations: Translation[], workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeTranslationsIntoTree(translations, sourceFile);
     }
 
     public getWorkspaceFolders(): WorkspaceFolder[] {
@@ -73,6 +94,11 @@ export class RulesetTree {
 
     public getNumberOfParsedDefinitionFiles (workspaceFolder: WorkspaceFolder) {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getNumberOfParsedDefinitionFiles();
+    }
+
+    public getTranslation(key: string, workspaceFolder: WorkspaceFolder): any {
+        logger.debug(`getTranslation key ${key} workspaceFolder ${workspaceFolder}`);
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getTranslation(key);
     }
 }
 
