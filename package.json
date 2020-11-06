@@ -2,7 +2,10 @@
     "name": "oxc-yaml-helper",
     "displayName": "OXC(E) YAML Helper",
     "description": "OXC(E) YAML Helper",
-    "version": "0.1.4",
+    "version": "0.1.5",
+    "author": {
+        "name": "pedroterzero"
+      },
     "publisher": "pedroterzero",
     "icon": "docs/icon.jpg",
     "repository": {

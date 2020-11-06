@@ -40,7 +40,7 @@ export class typedProperties {
         diplomacyFactions: ['name'],              // FtA
         events: ['name'],                         // FtA
         extraSprites: ['type', 'typeSingle'],
-        // manufacture: ['name'],
+        manufacture: ['name'],
         research: ['name'],
         // soldierBonuses: ['name'],
         // soldierTransformation: ['name'],

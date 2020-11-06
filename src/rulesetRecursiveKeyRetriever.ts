@@ -81,7 +81,11 @@ export class RulesetRecursiveKeyRetriever {
 
         // logger.debug(`now processing ${path} for ${key}:${typeof key}`);
 
-        if (typeof entry === 'string' || typeof entry === 'number') {
+        if (entry === null) {
+            // this should actually not happen, but happens if there are parse errors in yaml (like missing values)
+            logger.error(`found a null value at ${path} while looking for ${key} -- ignoring`);
+           return retval;
+        } else if (typeof entry === 'string' || typeof entry === 'number') {
             // logger.debug(`now processing ${path} for ${key}:${typeof key}, ${entry}:${typeof entry}`);
             if (entry === key || entry?.toString() === key/* || (typeof entry === 'number' && parseInt(key) === entry) */) {
                 // logger.debug('Possible match found', entry);
