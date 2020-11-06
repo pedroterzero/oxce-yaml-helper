@@ -1,7 +1,7 @@
 {
     "name": "oxc-yaml-helper",
-    "displayName": "OXC(E) YAML Helper",
-    "description": "OXC(E) YAML Helper",
+    "displayName": "OpenXcom (Extended) YAML Helper",
+    "description": "Provides go to definition support for OpenXcom (extended) mods, among other things",
     "version": "0.1.5",
     "author": {
         "name": "pedroterzero"
