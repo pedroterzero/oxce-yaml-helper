@@ -6,7 +6,9 @@ import { logger } from './logger';
 export class RulesetHoverProvider implements HoverProvider {
 
     public provideHover(document: TextDocument, position: Position): Hover | undefined {
-        const value = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document);
+        let value = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document);
+        value = KeyDetector.isValidTranslationKey(value);
+
         if (!value?.key) {
             return;
         }
