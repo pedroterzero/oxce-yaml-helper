@@ -45,6 +45,10 @@ export class RulesetParser {
         return rulesetTranslationFinder.findAllVariablesInYamlDocument(doc);
     }
 
+    public getTranslationsFromLanguageFile(doc: any): Translation[] {
+        return rulesetTranslationFinder.findAllVariablesInTranslationFile(doc);
+    }
+
     public findTypeOfKey(key: string, range: Range): RuleType | undefined {
         logger.debug(`Looking for requested key ${key} in ${window.activeTextEditor?.document.fileName}`);
 

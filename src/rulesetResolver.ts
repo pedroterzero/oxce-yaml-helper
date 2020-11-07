@@ -1,8 +1,9 @@
 import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress, window } from 'vscode';
 import { logger } from "./logger";
-import { rulesetTree } from "./rulesetTree";
+import { rulesetTree, Translation } from "./rulesetTree";
 import { EventEmitter } from "events";
 import { rulesetParser } from "./rulesetParser";
+import deepmerge = require('deepmerge');
 
 export class RulesetResolver implements Disposable {
     private fileSystemWatcher?: FileSystemWatcher;
@@ -66,7 +67,8 @@ export class RulesetResolver implements Disposable {
     }
 
     private async getYamlFilesForWorkspaceFolder(workspaceFolder: WorkspaceFolder): Promise<Uri[]> {
-        let files = await workspace.findFiles(this.yamlPattern);
+        let files = await workspace.findFiles(this.yamlPattern, '');
+        files = deepmerge(files, await workspace.findFiles('**/Language/*.yml'));
 
         files = files.filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
         if (files.length === 0) {
@@ -102,14 +104,22 @@ export class RulesetResolver implements Disposable {
             const docObject = doc.regular.toJSON();
 
             const workspaceFile = file.path.slice(workspaceFolder.uri.path.length + 1);
-            const definitions = rulesetParser.getDefinitions(doc.parsed);
-            logger.debug(`found ${definitions.length} definitions in file ${workspaceFile}`);
+            const isLanguageFile = file.path.indexOf('Language/') !== -1 && file.path.slice(file.path.lastIndexOf('.')) === '.yml';
 
-            const variables = rulesetParser.getVariables(docObject);
-            const translations = rulesetParser.getTranslations(docObject);
+            let translations: Translation[] = [];
+            if (isLanguageFile) {
+                translations = rulesetParser.getTranslationsFromLanguageFile(docObject);
+            } else {
+                const definitions = rulesetParser.getDefinitions(doc.parsed);
+                logger.debug(`found ${definitions.length} definitions in file ${workspaceFile}`);
 
-            rulesetTree.mergeIntoTree(definitions, workspaceFolder, file);
-            rulesetTree.mergeVariablesIntoTree(variables, workspaceFolder, file);
+                const variables = rulesetParser.getVariables(docObject);
+                translations = rulesetParser.getTranslations(docObject);
+
+                rulesetTree.mergeIntoTree(definitions, workspaceFolder, file);
+                rulesetTree.mergeVariablesIntoTree(variables, workspaceFolder, file);
+            }
+
             rulesetTree.mergeTranslationsIntoTree(translations, workspaceFolder, file);
 
             this.onDidLoadEmitter.emit('didLoadRulesheet', workspaceFile, rulesetTree.getNumberOfParsedDefinitionFiles(workspaceFolder), numberOfFiles);

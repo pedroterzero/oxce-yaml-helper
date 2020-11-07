@@ -32,6 +32,23 @@ export class RulesetTranslationFinder {
         return translations;
     }
 
+    public findAllVariablesInTranslationFile(doc: any): Translation[] {
+        const translations: Translation[] = [];
+
+        for (const locale in doc) {
+            const entries = doc[locale] as {[key: string]: string};
+            for (const key in entries) {
+                translations.push({
+                    language: locale,
+                    key: key,
+                    value: entries[key],
+                });
+            }
+        }
+
+        return translations;
+    }
+
     private extractExtraStringsRule(entry: any): ExtraStrings | undefined {
         if (!('type' in entry) || !('strings' in entry)) {
             return;
