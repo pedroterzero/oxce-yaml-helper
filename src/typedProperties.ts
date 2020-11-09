@@ -165,7 +165,7 @@ export class typedProperties {
             return this.getBaseOverride(key);
         }
 
-        const method = this.logicMethods[this.logicOverrides[fullType]];
+        const method = this.logicMethods[this.logicOverrides[fullType]].bind(this);
         const override = method(key, sourceRuleType);
 
         if (key !== override.key) {
