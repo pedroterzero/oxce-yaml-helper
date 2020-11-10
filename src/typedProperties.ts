@@ -66,11 +66,27 @@ export class typedProperties {
         },
         items: {
             bigSprite: {target: 'extraSprites.BIGOBS.PCK.files'},
+            explosionHitSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            fireSound: {target: 'extraSounds.BATTLE.CAT.files'},
             floorSprite: {target: 'extraSprites.FLOOROB.PCK.files'},
             handSprite: {target: 'extraSprites.HANDOB.PCK.files'},
             hitAnimation: {target: 'extraSprites.X1.PCK.files'},
+            hitSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            hitMissSound: {target: 'extraSounds.BATTLE.CAT.files'},
             meleeAnimation: {target: 'extraSprites.HIT.PCK.files'},
+            meleeHitSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            meleeSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            psiSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            psiMissSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            reloadSound: {target: 'extraSounds.BATTLE.CAT.files'},
             specialIconSprite: {target: 'extraSprites.SPICONS.DAT.files'},
+        },
+        units: {
+            aggroSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            berserkSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            deathSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            moveSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            panicSound: {target: 'extraSounds.BATTLE.CAT.files'},
         }
     }
 

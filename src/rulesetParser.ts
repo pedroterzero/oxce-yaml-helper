@@ -46,7 +46,7 @@ export class RulesetParser {
     }
 
     public getTranslationsFromLanguageFile(doc: any): Translation[] {
-        return rulesetTranslationFinder.findAllVariablesInTranslationFile(doc);
+        return rulesetTranslationFinder.findAllTranslationsInTranslationFile(doc);
     }
 
     public findTypeOfKey(key: string, range: Range): RuleType | undefined {

@@ -32,7 +32,7 @@ export class RulesetTranslationFinder {
         return translations;
     }
 
-    public findAllVariablesInTranslationFile(doc: any): Translation[] {
+    public findAllTranslationsInTranslationFile(doc: any): Translation[] {
         const translations: Translation[] = [];
 
         for (const locale in doc) {

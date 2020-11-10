@@ -24,8 +24,8 @@ export class RulesetDefinitionFinder {
 
                 const propertiesFlat = ruleProperties.toJSON() as {[key: string]: string | Record<string, unknown>};
                 const typeKey = typedProperties.getTypeKey(propertiesFlat, ruleType.key.value);
-                if (ruleType.key.value === 'extraSprites') {
-                    this.handleExtraSprites(propertiesFlat, ruleProperties, definitions, ruleType);
+                if (['extraSprites', 'extraSounds'].indexOf(ruleType.key.value) !== -1) {
+                    this.handleExtraFiles(propertiesFlat, ruleProperties, definitions, ruleType);
                 }
 
                 if (typeKey && typeKey in propertiesFlat) {
@@ -49,7 +49,14 @@ export class RulesetDefinitionFinder {
         return definitions;
     }
 
-    private handleExtraSprites(propertiesFlat: JsonObject, ruleProperties: YAMLMap, definitions: Definition[], ruleType: YAMLDocumentItem) {
+    /**
+     * Parses extraSprites and extraSounds
+     * @param propertiesFlat
+     * @param ruleProperties
+     * @param definitions
+     * @param ruleType
+     */
+    private handleExtraFiles(propertiesFlat: JsonObject, ruleProperties: YAMLMap, definitions: Definition[], ruleType: YAMLDocumentItem) {
         const typeKey = 'files';
         if (!(typeKey in propertiesFlat)) {
             return;
