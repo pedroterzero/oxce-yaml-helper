@@ -1,3 +1,4 @@
+import { workspace } from 'vscode';
 import * as docjson from './assets/doc.json';
 
 const doc = docjson as DescriptionMap;
@@ -75,7 +76,12 @@ class DocumentationProvider {
     }
 
     private getMatchText(description: Description): string {
-        return description.description + "\n\n" + `**Default: ${description.default}**`;
+        let desc = description.description;
+        if (workspace.getConfiguration('oxcYamlHelper').get<string>('showDocumentationHover') === 'short') {
+            desc = desc.split("\n")[0];
+        }
+
+        return desc + "\n\n" + `**Default: ${description.default}**`;
     }
 }
 

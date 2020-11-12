@@ -40,7 +40,7 @@ export class RulesetHoverProvider implements HoverProvider {
     }
 
     private providePropertyHover(value: KeyMatch | undefined): Hover | undefined {
-        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('showDocumentationHover')) {
+        if (workspace.getConfiguration('oxcYamlHelper').get<string>('showDocumentationHover') === 'no') {
             return;
         }
 
