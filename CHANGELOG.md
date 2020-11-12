@@ -1,3 +1,6 @@
+# v0.3.6
+- Added `*.rul` language hint
+
 # v0.3.5
 - Added option to show short documentation hovers only (only first line)
 

@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom (Extended) YAML Helper",
     "description": "Provides go to definition support for OpenXcom (extended) mods, among other things",
-    "version": "0.3.5",
+    "version": "0.3.6",
     "author": {
         "name": "pedroterzero"
     },
@@ -95,7 +95,16 @@
                     "description": "Stop prompting for OpenXCOM Ruleset Tools extension"
                 }
             }
-        }
+        },
+        "languages": [
+            {
+                "id": "yaml",
+                "extensions": [
+                    ".rul",
+                    ".nam"
+                ]
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
