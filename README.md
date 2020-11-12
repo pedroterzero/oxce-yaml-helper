@@ -12,22 +12,22 @@ Welcome to the OXC(E) YAML Helper thingy. For lack of a better name.
 ### Definitions
 Go to any (supported) type, for example `STR_FOOBAR`. If it is defined anywhere else, you should be able to jump directly to its definition by CTRL+clicking on it. Or by right-clicking it and clicking 'Go to definition', or by clicking it and pressing F12.
 
-![Go To Definition Example](docs/go-to-definition.gif)
+![Go To Definition Example](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/go-to-definition.gif)
 
 ### Translation Hover
 Go to any translation string, for example `STR_FOOBAR` and hover your mouse on it. If a translation exists for the current locale, it will be shown. The default locale is `en-US`, this can be changed in your settings (CTRL+comma, then type `oxc helper` to find settings)
 
-![Translation Hover Example](docs/translation-hover.gif)
+![Translation Hover Example](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/translation-hover.gif)
 
 ### Documentation Hover
 Go to any ruleset property, for example `requiresBuy` and hover your mouse on it. If documentation exists for it, it will be shown. If you find this annoying, you can disable it in your settings (CTRL+comma, then type `oxc helper` to find settings)
 
-![Documentation Hover Example](docs/documentation-hover.gif)
+![Documentation Hover Example](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/documentation-hover.gif)
 
 ### Image preview
 Hover over any image reference to get an image preview.
 
-![Image Preview Example](docs/image-preview.gif)
+![Image Preview Example](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/image-preview.gif)
 
 ## Troubleshooting
 - Is clicking to a definition taking you to a wrong (seemingly random) place in a ruleset? This is because the [YAML parser](https://www.npmjs.com/package/yaml) used assumes UNIX line endings. Therefore this tool may not correctly work on Windows with CRLF files. I have tried to work around this, but I'm not sure yet if it's reliable.

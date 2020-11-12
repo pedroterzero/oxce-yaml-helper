@@ -1,3 +1,7 @@
+v0.3.4
+=
+- Fixed examples to work in marketplace
+
 v0.3.3
 =
 - No functionality, expanded readme with visual examples
