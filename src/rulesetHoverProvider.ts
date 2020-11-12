@@ -1,7 +1,7 @@
-import { Hover, HoverProvider, MarkdownString, Position, Range, TextDocument, workspace } from 'vscode';
+import { Hover, HoverProvider, MarkdownString, Position, TextDocument, workspace } from 'vscode';
 import { documentationProvider } from './documentationProvider';
 import { rulesetResolver } from './extension';
-import { KeyDetector } from './keyDetector';
+import { KeyDetector, KeyMatch } from './keyDetector';
 import { logger } from './logger';
 
 export class RulesetHoverProvider implements HoverProvider {
@@ -16,13 +16,15 @@ export class RulesetHoverProvider implements HoverProvider {
 
         const property = KeyDetector.isValidPropertyKey(value);
         if (property !== undefined) {
-           return this.providePropertyHover(value);
+            property.type = KeyDetector.findRuleType(position, document);
+
+            return this.providePropertyHover(property);
         }
 
         return;
     }
 
-    private provideTranslationHover(value: { key: string; range: Range | undefined; } | undefined): Hover | undefined {
+    private provideTranslationHover(value: KeyMatch | undefined): Hover | undefined {
         if (!value?.key) {
             return;
         }
@@ -37,7 +39,7 @@ export class RulesetHoverProvider implements HoverProvider {
         return;
     }
 
-    private providePropertyHover(value: { key: string; range: Range | undefined; } | undefined): Hover | undefined {
+    private providePropertyHover(value: KeyMatch | undefined): Hover | undefined {
         if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('showDocumentationHover')) {
             return;
         }
@@ -46,9 +48,9 @@ export class RulesetHoverProvider implements HoverProvider {
             return;
         }
 
-        const text = documentationProvider.getDocumentationForProperty(value.key.slice(0, -1));
+        const text = documentationProvider.getDocumentationForProperty(value.key.slice(0, -1), value.type);
         if (text) {
-            logger.debug(`provideHover for ${value.key.slice(0, -1)} = ${text}`);
+            logger.debug(`provideHover for ${value.type || 'unknown'}.${value.key.slice(0, -1)} = ${text}`);
 
             return new Hover(new MarkdownString(text), value.range);
         }

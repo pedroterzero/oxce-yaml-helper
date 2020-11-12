@@ -1,3 +1,7 @@
+v0.3.1
+=
+- Added more robust documentation support
+
 v0.3.0
 =
 - Added initial documentation hover support (not complete yet)

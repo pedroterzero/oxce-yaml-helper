@@ -3,24 +3,66 @@ import * as docjson from './assets/doc.json';
 const doc = docjson as DescriptionMap;
 
 type DescriptionMap = {
+    [key: string]: DescriptionEntries
+}
+
+type DescriptionEntries = {
     [key: string]: Description
 }
 
 type Description = {
-    [key: string]: {description: string, default: string}
+    description: string;
+    default: string;
 }
 
-class DocumentationProvider {
-    public getDocumentationForProperty(property: string): string | undefined {
-        let matches = 0;
-        let match = '';
+const map: {[key: string]: {to: string, prefix: boolean}} = {
+    ai: {
+        to: 'globalVariables',
+        prefix: true
+    },
+    constants: {
+        to: 'globalVariables',
+        prefix: false
+    }
+};
 
-        // @todo actually look at what kind of property we are looking at
+class DocumentationProvider {
+    public getDocumentationForProperty(baseProperty: string, baseType: string | undefined): string | undefined {
+        const { type, property } = this.getOverride(baseType, baseProperty);
+
+        // find match by type
+        if (type && type in doc && property in doc[type]) {
+            return this.getMatchText(doc[type][property]);
+        }
+
+        // otherwise by unique key
+        const match = this.findPossibleDocumentationMatches(property);
+
+        return match;
+    }
+
+    private getOverride(baseType: string | undefined, baseProperty: string) {
+        let type = baseType;
+        let property = baseProperty;
+        if (type && type in map) {
+            if (map[type].prefix) {
+                property = type + '.' + baseProperty;
+            }
+
+            type = map[type].to;
+        }
+        return { type, property };
+    }
+
+    private findPossibleDocumentationMatches(property: string): string | undefined {
+        let match = '';
+        let matches = 0;
+
         for (const key in doc) {
             for (const propertyKey of Object.keys(doc[key])) {
                 if (property === propertyKey) {
                     matches++;
-                    match = doc[key][propertyKey].description;
+                    match = this.getMatchText(doc[key][property]);
                 }
             }
         }
@@ -30,6 +72,10 @@ class DocumentationProvider {
         }
 
         return match;
+    }
+
+    private getMatchText(description: Description): string {
+        return description.description + "\n\n" + `**Default: ${description.default}**`;
     }
 }
 

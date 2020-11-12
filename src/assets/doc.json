@@ -1,7 +1,7 @@
 {
   "startingBase": {
     "randomSoldiers": {
-      "description": "Determines number and type of starting X-Com soldiers.\n\nIf a mod contains more than one type of soldiers, this can also be specified with:\n\n randomSoldiers:\n   STR\\_SOLDIER: 3\n   STR\\_ANOTHER\\_SOLDIER: 7",
+      "description": "Determines number and type of starting X-Com soldiers.\n\nIf a mod contains more than one type of soldiers, this can also be specified with:\n\n```\n randomSoldiers:\n   STR_SOLDIER: 3\n   STR_ANOTHER_SOLDIER: 7\n\n```",
       "default": "0"
     },
     "scientists": {
@@ -103,11 +103,11 @@
       "default": "required"
     },
     "terrain": {
-      "description": "List of terrains (can be more than one) that correspond to each [Geoscape texture](/index.php/TEXTURE.DAT \"TEXTURE.DAT\").\n\nTerrains can be restricted to certain areas on the globe with **area: (_\\[lon1, lon2, lat1, lat2\\]_)** and **weight: NUMBER** that gives their chance of appearance.\n\nThese textures are primarily used for UFO landing/crash sites.\n\nExample 1:\n\nglobe:\n  textures:\n    - id: 0\n      terrain:\n        - name: FOREST\n          area: \\[0, 360, -90, 0\\]\n        - name: JUNGLE\n          area: \\[0, 360, 0, 90\\]\n\nExample 2:\n\nglobe:\n  textures:\n    - id: 11\n      terrain:\n        - name: PIPES\n          weight: 50\n        - name: SEABED\n          weight: 25\n        - name: CORAL\n          weight: 25",
+      "description": "List of terrains (can be more than one) that correspond to each [Geoscape texture](/index.php/TEXTURE.DAT \"TEXTURE.DAT\").\n\nTerrains can be restricted to certain areas on the globe with **area: (_\\[lon1, lon2, lat1, lat2\\]_)** and **weight: NUMBER** that gives their chance of appearance.\n\nThese textures are primarily used for UFO landing/crash sites.\n\nExample 1:\n\n```\nglobe:\n  textures:\n    - id: 0\n      terrain:\n        - name: FOREST\n          area: [0, 360, -90, 0]\n        - name: JUNGLE\n          area: [0, 360, 0, 90]\n\n```\n\nExample 2:\n\n```\nglobe:\n  textures:\n    - id: 11\n      terrain:\n        - name: PIPES\n          weight: 50\n        - name: SEABED\n          weight: 25\n        - name: CORAL\n          weight: 25\n\n```",
       "default": "-"
     },
     "deployments": {
-      "description": "Defined by weighted alien deployments (can be more than one), which determine appearance for mission sites (e.g. terror sites, artifact sites, shipping lanes, etc.).\n\nExample:\n\nglobe:\n  textures:\n    - id: -4\n      deployments:\n        STR\\_CARGO\\_SHIP\\_P1: 50\n        STR\\_CRUISE\\_SHIP\\_P1: 50",
+      "description": "Defined by weighted alien deployments (can be more than one), which determine appearance for mission sites (e.g. terror sites, artifact sites, shipping lanes, etc.).\n\nExample:\n\n```\nglobe:\n  textures:\n    - id: -4\n      deployments:\n        STR_CARGO_SHIP_P1: 50\n        STR_CRUISE_SHIP_P1: 50\n\n```",
       "default": "-"
     },
     "baseTerrain": {
@@ -163,7 +163,7 @@
       "default": "0"
     },
     "areas": {
-      "description": "List of \"rectangles\" on the globe defined as _\\[lon1, lon2, lat1, lat2\\]_. Any activity within these areas counts towards the region's graph activity.\n\nExample:\n\n regions:\n   - type: STR\\_EUROPE\n     areas:\n       - \\[335, 60, -70, -35\\]",
+      "description": "List of \"rectangles\" on the globe defined as _\\[lon1, lon2, lat1, lat2\\]_. Any activity within these areas counts towards the region's graph activity.\n\nExample:\n\n```\n regions:\n   - type: STR_EUROPE\n     areas:\n       - [335, 60, -70, -35]\n\n```",
       "default": "-"
     },
     "regionWeight": {
@@ -175,7 +175,7 @@
       "default": "-"
     },
     "missionZones": {
-      "description": "List of mission zones. Mission zones are used for generating waypoints for UFO trajectories, and also for spawning mission sites and alien bases. Each mission zone itself is a list of \"mission areas\", where each mission area is defined by:\n\n*   a \"rectangle\" (_\\[lon1, lon2, lat1, lat2\\]_) defining a relevant section of the globe (does not need to be within the region itself); or a single point (a city) on the globe\n\nZones used for mission site spawning additionally have:\n\n*   a texture ID (from globe ruleset, this should be the alienDeployment-based texture, usually the ID is a negative number)\n*   and optionally a city string ID (will be displayed on the globe if defined)\n\nExample: (_\\[lon1, lon2, lat1, lat2, textureID, STR\\_CITY\\_NAME\\]_).\n\n**Important:** Crossing the prime meridian in **missionZones** requires a different syntax! (_lon2_ cannot be smaller than _lon1_)\n\nWrong example:\n\n \\[350,   8, 20, 30\\]\n\nCorrect example:\n\n \\[350, 368, 20, 30\\]  # 368 (=8+360) also represents 8 degrees, and satisfies the _lon2 >= lon1_ condition\n\nPS: This syntax exception does not apply to **areas**.",
+      "description": "List of mission zones. Mission zones are used for generating waypoints for UFO trajectories, and also for spawning mission sites and alien bases. Each mission zone itself is a list of \"mission areas\", where each mission area is defined by:\n\n*   a \"rectangle\" (_\\[lon1, lon2, lat1, lat2\\]_) defining a relevant section of the globe (does not need to be within the region itself); or a single point (a city) on the globe\n\nZones used for mission site spawning additionally have:\n\n*   a texture ID (from globe ruleset, this should be the alienDeployment-based texture, usually the ID is a negative number)\n*   and optionally a city string ID (will be displayed on the globe if defined)\n\nExample: (_\\[lon1, lon2, lat1, lat2, textureID, STR\\_CITY\\_NAME\\]_).\n\n**Important:** Crossing the prime meridian in **missionZones** requires a different syntax! (_lon2_ cannot be smaller than _lon1_)\n\nWrong example:\n\n```\n [350,   8, 20, 30]\n\n```\n\nCorrect example:\n\n```\n [350, 368, 20, 30]  # 368 (=8+360) also represents 8 degrees, and satisfies the _lon2 >= lon1_ condition\n\n```\n\nPS: This syntax exception does not apply to **areas**.",
       "default": "-"
     },
     "missionRegion": {
@@ -257,7 +257,7 @@
       "default": "0"
     },
     "buildCostItems": {
-      "description": "Items needed to build a facility and items \"refunded\" when the facility is dismantled.\n\n - type: STR\\_MY\\_FACILITY\n   buildCostItems:\n     STR\\_ALIEN\\_ALLOYS:\n       build: 100\n       refund: 75\n     STR\\_ALIEN\\_ENTERTAINMENT:\n       build: 1\n       refund: 1",
+      "description": "Items needed to build a facility and items \"refunded\" when the facility is dismantled.```\n - type: STR_MY_FACILITY\n   buildCostItems:\n     STR_ALIEN_ALLOYS:\n       build: 100\n       refund: 75\n     STR_ALIEN_ENTERTAINMENT:\n       build: 1\n       refund: 1\n\n```",
       "default": "-"
     },
     "buildTime": {
@@ -360,8 +360,12 @@
       "description": "How much health/HP does the facility recover per day. The facility setting is NOT cumulative, more facilities don't provide more regen. If there are multiple facilities of different type with different regen rate, the best (highest) regen rate is used.\n\nFIXME: add a link to more detailed description of this feature!",
       "default": "0"
     },
-    "sickBayAbsoluteBonussickBayRelativeBonus": {
-      "description": "How much additional HP is healed per day.\n\n - type: STR\\_FIELD\\_HOSPITAL\n   sickBayAbsoluteBonus: 0.75\n   sickBayRelativeBonus: 0.0\n - type: STR\\_SURGERY\\_ROOM\n   sickBayAbsoluteBonus: 0.25\n   sickBayRelativeBonus: 1.0\n - type: STR\\_REGENERATION\\_ROOM\n   sickBayAbsoluteBonus: 0.0\n   sickBayRelativeBonus: 10.0\n - type: STR\\_GOAULD\\_SARCOPHAGUS\n   sickBayAbsoluteBonus: 90.0\n   sickBayRelativeBonus: 0.0\n\nExamples, considering the ruleset above:\n\n*   with no facilities: 1 hp healed per day\n*   with one field hospital: 1.75 hp per day\n*   with one surgery room: 1.25 hp per day + 1% of soldier's max hp\n*   with 2 field hospitals and 2 surgery rooms: 3 hp per day + 2% of soldier's max hp\n*   with regeneration room: 10% of soldier's max hp... i.e. fully recovered in 10 days or less\n*   with Goa'uld sarcophagus: 90 hp per day... i.e. fully healed overnight",
+    "sickBayAbsoluteBonus": {
+      "description": "How much additional HP is healed per day.```\n - type: STR_FIELD_HOSPITAL\n   sickBayAbsoluteBonus: 0.75\n   sickBayRelativeBonus: 0.0\n - type: STR_SURGERY_ROOM\n   sickBayAbsoluteBonus: 0.25\n   sickBayRelativeBonus: 1.0\n - type: STR_REGENERATION_ROOM\n   sickBayAbsoluteBonus: 0.0\n   sickBayRelativeBonus: 10.0\n - type: STR_GOAULD_SARCOPHAGUS\n   sickBayAbsoluteBonus: 90.0\n   sickBayRelativeBonus: 0.0\n\n```\n\nExamples, considering the ruleset above:\n\n*   with no facilities: 1 hp healed per day\n*   with one field hospital: 1.75 hp per day\n*   with one surgery room: 1.25 hp per day + 1% of soldier's max hp\n*   with 2 field hospitals and 2 surgery rooms: 3 hp per day + 2% of soldier's max hp\n*   with regeneration room: 10% of soldier's max hp... i.e. fully recovered in 10 days or less\n*   with Goa'uld sarcophagus: 90 hp per day... i.e. fully healed overnight",
+      "default": "0.00.0"
+    },
+    "sickBayRelativeBonus": {
+      "description": "How much additional HP is healed per day.```\n - type: STR_FIELD_HOSPITAL\n   sickBayAbsoluteBonus: 0.75\n   sickBayRelativeBonus: 0.0\n - type: STR_SURGERY_ROOM\n   sickBayAbsoluteBonus: 0.25\n   sickBayRelativeBonus: 1.0\n - type: STR_REGENERATION_ROOM\n   sickBayAbsoluteBonus: 0.0\n   sickBayRelativeBonus: 10.0\n - type: STR_GOAULD_SARCOPHAGUS\n   sickBayAbsoluteBonus: 90.0\n   sickBayRelativeBonus: 0.0\n\n```\n\nExamples, considering the ruleset above:\n\n*   with no facilities: 1 hp healed per day\n*   with one field hospital: 1.75 hp per day\n*   with one surgery room: 1.25 hp per day + 1% of soldier's max hp\n*   with 2 field hospitals and 2 surgery rooms: 3 hp per day + 2% of soldier's max hp\n*   with regeneration room: 10% of soldier's max hp... i.e. fully recovered in 10 days or less\n*   with Goa'uld sarcophagus: 90 hp per day... i.e. fully healed overnight",
       "default": "0.00.0"
     },
     "leavesBehindOnSell": {
@@ -863,7 +867,7 @@
       "default": "-1"
     },
     "damageAlter": {
-      "description": "OpenXcom has 10 damage types and the mechanics of all 10 of them are completely hardcoded. In OXCE, you can use one of these hardcoded damage types as a starting point, but still be able to override all damage aspects for every item. To do this, you always use a pair of attributes for default and override:\n\n*   for normal/primary damage: default is in **damageType** and overrides in **damageAlter**\n*   for secondary melee damage: default is in **meleeType** and overrides in **meleeAlter**\n\nDamage override has many attributes, which are all described in [Item Damage Types](#Item_Damage_Types).\n\nSmall example:\n\n - type: STR\\_HWP\\_DISC\\_PLASMA\\_CANNON\n   damageType: 5\n   damageAlter:\n     RandomType: 6\n     IgnoreOverKill: false\n     ToArmorPre: 0.05\n     ToStun: 0.75\n     RandomWound: false\n     ToWound: 0.12\n     FireThreshold: 25",
+      "description": "OpenXcom has 10 damage types and the mechanics of all 10 of them are completely hardcoded. In OXCE, you can use one of these hardcoded damage types as a starting point, but still be able to override all damage aspects for every item. To do this, you always use a pair of attributes for default and override:\n\n*   for normal/primary damage: default is in **damageType** and overrides in **damageAlter**\n*   for secondary melee damage: default is in **meleeType** and overrides in **meleeAlter**\n\nDamage override has many attributes, which are all described in [Item Damage Types](#Item_Damage_Types).\n\nSmall example:\n\n```\n - type: STR_HWP_DISC_PLASMA_CANNON\n   damageType: 5\n   damageAlter:\n     RandomType: 6\n     IgnoreOverKill: false\n     ToArmorPre: 0.05\n     ToStun: 0.75\n     RandomWound: false\n     ToWound: 0.12\n     FireThreshold: 25\n\n```",
       "default": "-"
     },
     "meleePower": {
@@ -883,7 +887,7 @@
       "default": "false"
     },
     "damageBonus": {
-      "description": "Formulae for additional weapon power bonus (not damage bonus!). Defined as a sum of polynomials of up to third degree with various unit stats as parameters :) If you didn't understand the previous sentence, don't be sad, just look at an example. **FIXME**: add more description and examples later.\n\nExample:\n\n - type: STR\\_EXAMPLE\\_1\n   damageBonus:\n     bravery: 2.5\n     flatHundred: -1.25\n - type: STR\\_EXAMPLE\\_2\n   damageBonus:\n     firing: \\[0.0, 0.01\\]\n\nIn the first example the power bonus is \"250% of soldier's bravery minus 125\".\n\nIn the second example the power bonus is \"0% of firing accuracy plus 1% of firing accuracy squared\".",
+      "description": "Formulae for additional weapon power bonus (not damage bonus!). Defined as a sum of polynomials of up to third degree with various unit stats as parameters :) If you didn't understand the previous sentence, don't be sad, just look at an example. **FIXME**: add more description and examples later.\n\nExample:\n\n```\n - type: STR_EXAMPLE_1\n   damageBonus:\n     bravery: 2.5\n     flatHundred: -1.25\n - type: STR_EXAMPLE_2\n   damageBonus:\n     firing: [0.0, 0.01]\n\n```\n\nIn the first example the power bonus is \"250% of soldier's bravery minus 125\".\n\nIn the second example the power bonus is \"0% of firing accuracy plus 1% of firing accuracy squared\".",
       "default": "-"
     },
     "meleeBonus": {
@@ -894,11 +898,31 @@
       "description": "The penalty (in percent) to accuracy applied when attacking a unit or a tile outside of LOS. Overrides global setting.",
       "default": "-1"
     },
-    "accuracyAimedaccuracySnapaccuracyAutoaccuracyMelee": {
+    "accuracyAimed": {
       "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](/index.php/Firing_Accuracy \"Firing Accuracy\") when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
       "default": "0000"
     },
-    "accuracyPanicaccuracyMindControlaccuracyUse": {
+    "accuracySnap": {
+      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](/index.php/Firing_Accuracy \"Firing Accuracy\") when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
+      "default": "0000"
+    },
+    "accuracyAuto": {
+      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](/index.php/Firing_Accuracy \"Firing Accuracy\") when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
+      "default": "0000"
+    },
+    "accuracyMelee": {
+      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](/index.php/Firing_Accuracy \"Firing Accuracy\") when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
+      "default": "0000"
+    },
+    "accuracyPanic": {
+      "description": "The accuracy bonus (in flat percent) applied during psi attacks (Panic/MindControl/Use). **accuracyMultiplier** is also used in the calculations.",
+      "default": "2000"
+    },
+    "accuracyMindControl": {
+      "description": "The accuracy bonus (in flat percent) applied during psi attacks (Panic/MindControl/Use). **accuracyMultiplier** is also used in the calculations.",
+      "default": "2000"
+    },
+    "accuracyUse": {
       "description": "The accuracy bonus (in flat percent) applied during psi attacks (Panic/MindControl/Use). **accuracyMultiplier** is also used in the calculations.",
       "default": "2000"
     },
@@ -931,7 +955,7 @@
       "default": "true"
     },
     "accuracyMultiplier": {
-      "description": "Formulae defining the skills (i.e. various units stats) affecting the unit's accuracy when using this item in Aimed/Snap/Auto shots and in Psi attacks (Panic/MindControl/Use).\n\nExample:\n\n - type: STR\\_EXAMPLE\n   accuracyMultiplier:\n     firing: 0.0\n     throwing: 0.5\n     melee: 0.5\n\nIn this example, the accuracy is based on 50% of unit's throwing skill and 50% of unit's melee skill... and 0% of unit's firing skill.",
+      "description": "Formulae defining the skills (i.e. various units stats) affecting the unit's accuracy when using this item in Aimed/Snap/Auto shots and in Psi attacks (Panic/MindControl/Use).\n\nExample:\n\n```\n - type: STR_EXAMPLE\n   accuracyMultiplier:\n     firing: 0.0\n     throwing: 0.5\n     melee: 0.5\n\n```\n\nIn this example, the accuracy is based on 50% of unit's throwing skill and 50% of unit's melee skill... and 0% of unit's firing skill.",
       "default": "-"
     },
     "meleeMultiplier": {
@@ -958,7 +982,15 @@
       "description": "Number of projectiles fired per unit of ammunition. (note: due to engine limitations it is currently impossible to draw multiple projectiles in flight.)",
       "default": "0"
     },
-    "shotgunBehaviorshotgunSpreadshotgunChoke": {
+    "shotgunBehavior": {
+      "description": "Attributes affecting how shotguns work.\n\nMore info: [https://openxcom.org/forum/index.php/topic,4834.0.html](https://openxcom.org/forum/index.php/topic,4834.0.html)",
+      "default": "0100100"
+    },
+    "shotgunSpread": {
+      "description": "Attributes affecting how shotguns work.\n\nMore info: [https://openxcom.org/forum/index.php/topic,4834.0.html](https://openxcom.org/forum/index.php/topic,4834.0.html)",
+      "default": "0100100"
+    },
+    "shotgunChoke": {
       "description": "Attributes affecting how shotguns work.\n\nMore info: [https://openxcom.org/forum/index.php/topic,4834.0.html](https://openxcom.org/forum/index.php/topic,4834.0.html)",
       "default": "0100100"
     },
@@ -1010,12 +1042,16 @@
       "description": "List of string IDs of the ammo items that can be loaded on this weapon. If none are specified, the weapon doesn't need ammo.",
       "default": "-"
     },
-    "tuLoadtuUnload": {
+    "tuLoad": {
+      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to load/unload this item.\n\n**Note**: in OXCE, when loading a weapon, you need to **additionally** pay the cost of moving the ammo from its current inventory slot into a hand slot! Consider that when balancing reload costs.\n\n**Update**: since OXCE v6.2, the OXCE behavior is now turned off by default. It can be enabled using the **extendedItemReloadCost** setting.",
+      "default": "158"
+    },
+    "tuUnload": {
       "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to load/unload this item.\n\n**Note**: in OXCE, when loading a weapon, you need to **additionally** pay the cost of moving the ammo from its current inventory slot into a hand slot! Consider that when balancing reload costs.\n\n**Update**: since OXCE v6.2, the OXCE behavior is now turned off by default. It can be enabled using the **extendedItemReloadCost** setting.",
       "default": "158"
     },
     "ammo": {
-      "description": "In OXCE, you can load multiple **different** types of ammo into one gun at the same time. This allows you to create, for example, a rifle with a built-in grenade launcher. There are up to 4 ammo slots, which can be assigned to Aimed/Snap/Auto actions. Going back to the rifle with a grenade launcher example, you could have the rifle with Aimed and Snap and sacrifice the Auto action for implementing let's say a Snap shot for the grenade launcher.\n\nExample:\n\n - type: STR\\_WEAPON\\_WITH\\_4\\_AMMO\\_SLOTS\n   ammo:\n     0:\n       compatibleAmmo: \\[ STR\\_AMMO\\_1, STR\\_AMMO\\_2 \\]\n       tuLoad: 5\n       tuUnload: 2\n     1:\n       compatibleAmmo: \\[ STR\\_AMMO\\_3 \\]\n       tuLoad: 10\n       tuUnload: 4\n     2:\n       compatibleAmmo: \\[ STR\\_AMMO\\_4, STR\\_AMMO\\_5 \\]\n       tuLoad: 10\n       tuUnload: 4\n     3:\n       compatibleAmmo: \\[ STR\\_GRENADE\\_AMMO \\]\n       tuLoad: 20\n       tuUnload: 8",
+      "description": "In OXCE, you can load multiple **different** types of ammo into one gun at the same time. This allows you to create, for example, a rifle with a built-in grenade launcher. There are up to 4 ammo slots, which can be assigned to Aimed/Snap/Auto actions. Going back to the rifle with a grenade launcher example, you could have the rifle with Aimed and Snap and sacrifice the Auto action for implementing let's say a Snap shot for the grenade launcher.\n\nExample:\n\n```\n - type: STR_WEAPON_WITH_4_AMMO_SLOTS\n   ammo:\n     0:\n       compatibleAmmo: [ STR_AMMO_1, STR_AMMO_2 ]\n       tuLoad: 5\n       tuUnload: 2\n     1:\n       compatibleAmmo: [ STR_AMMO_3 ]\n       tuLoad: 10\n       tuUnload: 4\n     2:\n       compatibleAmmo: [ STR_AMMO_4, STR_AMMO_5 ]\n       tuLoad: 10\n       tuUnload: 4\n     3:\n       compatibleAmmo: [ STR_GRENADE_AMMO ]\n       tuLoad: 20\n       tuUnload: 8\n\n```",
       "default": "-"
     },
     "autoShots": {
@@ -1026,8 +1062,20 @@
       "description": "Does this weapon fire in an arc?",
       "default": "false"
     },
-    "confAimedconfSnapconfAutoconfMelee": {
-      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n - type: STR\\_RIFLE\\_WITH\\_A\\_GRENADE\\_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR\\_AIMED\\_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR\\_DOUBLE\\_SNAP\\_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR\\_LAUNCH\\_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR\\_PUNCH\\_IN\\_THE\\_FACE",
+    "confAimed": {
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```",
+      "default": "-"
+    },
+    "confSnap": {
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```",
+      "default": "-"
+    },
+    "confAuto": {
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```",
+      "default": "-"
+    },
+    "confMelee": {
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```",
       "default": "-"
     },
     "psiAttackName": {
@@ -1050,7 +1098,19 @@
       "description": "Message for the player informing about the un-priming of an item. Default is STR\\_GRENADE\\_IS\\_DEACTIVATED.",
       "default": "<="
     },
-    "tuAimedtuSnaptuAutotuMelee": {
+    "tuAimed": {
+      "description": "The percentage (0-100%) of [Time Units](/index.php/Time_Units \"Time Units\") (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
+      "default": "0000"
+    },
+    "tuSnap": {
+      "description": "The percentage (0-100%) of [Time Units](/index.php/Time_Units \"Time Units\") (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
+      "default": "0000"
+    },
+    "tuAuto": {
+      "description": "The percentage (0-100%) of [Time Units](/index.php/Time_Units \"Time Units\") (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
+      "default": "0000"
+    },
+    "tuMelee": {
       "description": "The percentage (0-100%) of [Time Units](/index.php/Time_Units \"Time Units\") (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
       "default": "0000"
     },
@@ -1058,24 +1118,100 @@
       "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to use this item (for non-offensive items). It's a flat rate if **flatRate** is true, otherwise it's a percentage (0-100%).",
       "default": "0"
     },
-    "tuMindControltuPanic": {
+    "tuMindControl": {
       "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to use this item. If not specified, defaults to **tuUse**.",
       "default": "-1-1"
     },
-    "tuThrowtuPrimetuUnprime": {
+    "tuPanic": {
+      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to use this item. If not specified, defaults to **tuUse**.",
+      "default": "-1-1"
+    },
+    "tuThrow": {
       "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to throw/prime/unprime this item.",
       "default": "255025"
     },
-    "costAimedcostSnapcostAutocostMeleecostUsecostMindControlcostPaniccostThrowcostPrimecostUnprime": {
-      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n - type: STR\\_FUNNY\\_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5",
+    "tuPrime": {
+      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to throw/prime/unprime this item.",
+      "default": "255025"
+    },
+    "tuUnprime": {
+      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to throw/prime/unprime this item.",
+      "default": "255025"
+    },
+    "costAimed": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
+      "default": "-"
+    },
+    "costSnap": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
+      "default": "-"
+    },
+    "costAuto": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
+      "default": "-"
+    },
+    "costMelee": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
+      "default": "-"
+    },
+    "costUse": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
+      "default": "-"
+    },
+    "costMindControl": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
+      "default": "-"
+    },
+    "costPanic": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
+      "default": "-"
+    },
+    "costThrow": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
+      "default": "-"
+    },
+    "costPrime": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
+      "default": "-"
+    },
+    "costUnprime": {
+      "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
       "default": "-"
     },
     "flatRate": {
       "description": "If true, then TU costs for this weapon are a flat rate (instead of a percentage of unit TUs).",
       "default": "false"
     },
-    "flatAimedflatSnapflatAutoflatMeleeflatUseflatThrowflatPrimeflatUnprime": {
-      "description": "Extended way of defining if the cost of item use is flat or in percentage. You can now define it for various actions separately. If defined, the more specific setting (e.g. flatAimed) overrides the less specific setting (flatRate).\n\nExample:\n\n - type: STR\\_FUNNY\\_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     mana: 5\n   flatAimed:\n     time: false   # 90% of TU\n     energy: true  # 20 energy (flat)\n     mana: true    # 5 mana (flat)",
+    "flatAimed": {
+      "description": "Extended way of defining if the cost of item use is flat or in percentage. You can now define it for various actions separately. If defined, the more specific setting (e.g. flatAimed) overrides the less specific setting (flatRate).\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     mana: 5\n   flatAimed:\n     time: false   # 90% of TU\n     energy: true  # 20 energy (flat)\n     mana: true    # 5 mana (flat)\n\n```",
+      "default": "-"
+    },
+    "flatSnap": {
+      "description": "Extended way of defining if the cost of item use is flat or in percentage. You can now define it for various actions separately. If defined, the more specific setting (e.g. flatAimed) overrides the less specific setting (flatRate).\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     mana: 5\n   flatAimed:\n     time: false   # 90% of TU\n     energy: true  # 20 energy (flat)\n     mana: true    # 5 mana (flat)\n\n```",
+      "default": "-"
+    },
+    "flatAuto": {
+      "description": "Extended way of defining if the cost of item use is flat or in percentage. You can now define it for various actions separately. If defined, the more specific setting (e.g. flatAimed) overrides the less specific setting (flatRate).\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     mana: 5\n   flatAimed:\n     time: false   # 90% of TU\n     energy: true  # 20 energy (flat)\n     mana: true    # 5 mana (flat)\n\n```",
+      "default": "-"
+    },
+    "flatMelee": {
+      "description": "Extended way of defining if the cost of item use is flat or in percentage. You can now define it for various actions separately. If defined, the more specific setting (e.g. flatAimed) overrides the less specific setting (flatRate).\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     mana: 5\n   flatAimed:\n     time: false   # 90% of TU\n     energy: true  # 20 energy (flat)\n     mana: true    # 5 mana (flat)\n\n```",
+      "default": "-"
+    },
+    "flatUse": {
+      "description": "Extended way of defining if the cost of item use is flat or in percentage. You can now define it for various actions separately. If defined, the more specific setting (e.g. flatAimed) overrides the less specific setting (flatRate).\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     mana: 5\n   flatAimed:\n     time: false   # 90% of TU\n     energy: true  # 20 energy (flat)\n     mana: true    # 5 mana (flat)\n\n```",
+      "default": "-"
+    },
+    "flatThrow": {
+      "description": "Extended way of defining if the cost of item use is flat or in percentage. You can now define it for various actions separately. If defined, the more specific setting (e.g. flatAimed) overrides the less specific setting (flatRate).\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     mana: 5\n   flatAimed:\n     time: false   # 90% of TU\n     energy: true  # 20 energy (flat)\n     mana: true    # 5 mana (flat)\n\n```",
+      "default": "-"
+    },
+    "flatPrime": {
+      "description": "Extended way of defining if the cost of item use is flat or in percentage. You can now define it for various actions separately. If defined, the more specific setting (e.g. flatAimed) overrides the less specific setting (flatRate).\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     mana: 5\n   flatAimed:\n     time: false   # 90% of TU\n     energy: true  # 20 energy (flat)\n     mana: true    # 5 mana (flat)\n\n```",
+      "default": "-"
+    },
+    "flatUnprime": {
+      "description": "Extended way of defining if the cost of item use is flat or in percentage. You can now define it for various actions separately. If defined, the more specific setting (e.g. flatAimed) overrides the less specific setting (flatRate).\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     mana: 5\n   flatAimed:\n     time: false   # 90% of TU\n     energy: true  # 20 energy (flat)\n     mana: true    # 5 mana (flat)\n\n```",
       "default": "-"
     },
     "experienceTrainingMode": {
@@ -1083,7 +1219,7 @@
       "default": "0"
     },
     "manaExperience": {
-      "description": "How much mana experience points does the weapon provide. Since OXCE v6.6, this attribute also works on psi-amps (also on unsuccessful attempts).\n\n manaExperience: 250    # this means 2 points + 50% chance for a 3rd point (on every hit on hostile unit)",
+      "description": "How much mana experience points does the weapon provide. Since OXCE v6.6, this attribute also works on psi-amps (also on unsuccessful attempts).```\n manaExperience: 250    # this means 2 points + 50% chance for a 3rd point (on every hit on hostile unit)\n\n```",
       "default": "0"
     },
     "recover": {
@@ -1243,7 +1379,7 @@
       "default": "<="
     },
     "fuseTriggerEvents": {
-      "description": "Defines how fuse triggers work. Contains 5 sub-attributes:\n\n*   **defaultBehavior**: everything works as in vanilla\n*   **throwTrigger**: timer starts only after throwing\n*   **throwExplode**: items explode (grenades) or are removed (other) on throw; affected by **specialChance**\n*   **proximityTrigger**: timer starts only after moving into item's proximity\n*   **proximityExplode**: item explode (grenades, proxies) or are removed (other) after moving into item's proximity; affected by **specialChance**\n\nExample/Defaults:\n\n fuseTriggerEvents:\n   defaultBehavior: true\n   throwTrigger: false\n   throwExplode: false\n   proximityTrigger: false\n   proximityExplode: false",
+      "description": "Defines how fuse triggers work. Contains 5 sub-attributes:\n\n*   **defaultBehavior**: everything works as in vanilla\n*   **throwTrigger**: timer starts only after throwing\n*   **throwExplode**: items explode (grenades) or are removed (other) on throw; affected by **specialChance**\n*   **proximityTrigger**: timer starts only after moving into item's proximity\n*   **proximityExplode**: item explode (grenades, proxies) or are removed (other) after moving into item's proximity; affected by **specialChance**\n\nExample/Defaults:\n\n```\n fuseTriggerEvents:\n   defaultBehavior: true\n   throwTrigger: false\n   throwExplode: false\n   proximityTrigger: false\n   proximityExplode: false\n\n```",
       "default": "<="
     },
     "specialChance": {
@@ -1310,12 +1446,20 @@
       "description": "Overrides **zombieUnit**. Based on the victim soldier/unit type. A list of String ID pairs.",
       "default": "-"
     },
-    "spawnUnitspawnUnitFaction": {
+    "spawnUnit": {
       "description": "Used for spawning units from items.\n\nMore info: [https://openxcom.org/forum/index.php/topic,6535.0.html](https://openxcom.org/forum/index.php/topic,6535.0.html)",
       "default": "--1"
     },
-    "ai.useDelayai.meleeHitCount": {
-      "description": "1/ Used to override AI delay defined by global settings.\n\n2/ How many times should an AI unit try to perform a melee attack (in the single go)? In vanilla, the unit used the melee attack until the target was neutralized or until it ran out of TUs. This attribute gives you the option to perform \"hit and run\".\n\n ai:\n   useDelay: 1\n   meleeHitCount: 15",
+    "spawnUnitFaction": {
+      "description": "Used for spawning units from items.\n\nMore info: [https://openxcom.org/forum/index.php/topic,6535.0.html](https://openxcom.org/forum/index.php/topic,6535.0.html)",
+      "default": "--1"
+    },
+    "ai.useDelay": {
+      "description": "1/ Used to override AI delay defined by global settings.\n\n2/ How many times should an AI unit try to perform a melee attack (in the single go)? In vanilla, the unit used the melee attack until the target was neutralized or until it ran out of TUs. This attribute gives you the option to perform \"hit and run\".\n\n```\n ai:\n   useDelay: 1\n   meleeHitCount: 15\n\n```",
+      "default": "-125"
+    },
+    "ai.meleeHitCount": {
+      "description": "1/ Used to override AI delay defined by global settings.\n\n2/ How many times should an AI unit try to perform a melee attack (in the single go)? In vanilla, the unit used the melee attack until the target was neutralized or until it ran out of TUs. This attribute gives you the option to perform \"hit and run\".\n\n```\n ai:\n   useDelay: 1\n   meleeHitCount: 15\n\n```",
       "default": "-125"
     }
   },
@@ -1422,8 +1566,12 @@
       "description": "Should the calculation above be randomized?",
       "default": "true"
     },
-    "ToWoundRandomWound": {
-      "description": "Determines how many fatal wounds should be inflicted. Default settings equal to vanilla calculations. Formula is quite hard to describe in words, so here's the code:\n\n if (damage > 0) {\n   if (RandomWound) {\n     if (RNG::generate(0, 10) < int(damage \\* ToWound)) {\n       return RNG::generate(1,3);\n     }\n   } else {\n     return (int)std::round(damage \\* ToWound);\n   }\n }",
+    "ToWound": {
+      "description": "Determines how many fatal wounds should be inflicted. Default settings equal to vanilla calculations. Formula is quite hard to describe in words, so here's the code:```\n if (damage > 0) {\n   if (RandomWound) {\n     if (RNG::generate(0, 10) < int(damage \\* ToWound)) {\n       return RNG::generate(1,3);\n     }\n   } else {\n     return (int)std::round(damage \\* ToWound);\n   }\n }\n\n```",
+      "default": "1.0true"
+    },
+    "RandomWound": {
+      "description": "Determines how many fatal wounds should be inflicted. Default settings equal to vanilla calculations. Formula is quite hard to describe in words, so here's the code:```\n if (damage > 0) {\n   if (RandomWound) {\n     if (RNG::generate(0, 10) < int(damage \\* ToWound)) {\n       return RNG::generate(1,3);\n     }\n   } else {\n     return (int)std::round(damage \\* ToWound);\n   }\n }\n\n```",
       "default": "1.0true"
     },
     "ToTime": {
@@ -1581,7 +1729,7 @@
       "default": "-1"
     },
     "raceBonus": {
-      "description": "Modifies or overrides the UFO Stats per alien race.\n\nYou can use this to make the same type of UFO have different [stats](#UFO_Stats) depending on the alien race.\n\n - type: STR\\_TERROR\\_SHIP\n   raceBonus:\n     STR\\_MUTON:\n       hitBonus: 20\n       craftCustomDeploy: STR\\_MORE\\_SCARY\\_WEAPONS\n       missionCustomDeploy: STR\\_TERROR\\_SITE\\_MUTONS\n     STR\\_ETHEREAL:\n       missionCustomDeploy: STR\\_END\\_OF\\_THE\\_WORLD",
+      "description": "Modifies or overrides the UFO Stats per alien race.\n\nYou can use this to make the same type of UFO have different [stats](#UFO_Stats) depending on the alien race.\n\n```\n - type: STR_TERROR_SHIP\n   raceBonus:\n     STR_MUTON:\n       hitBonus: 20\n       craftCustomDeploy: STR_MORE_SCARY_WEAPONS\n       missionCustomDeploy: STR_TERROR_SITE_MUTONS\n     STR_ETHEREAL:\n       missionCustomDeploy: STR_END_OF_THE_WORLD\n\n```",
       "default": "-"
     },
     "damageMax": {
@@ -1745,11 +1893,11 @@
       "default": "-"
     },
     "fuseTimers": {
-      "description": "This attribute allows you to pre-prime the items placed on the map using the **items** attribute. It's a list of items and information about minimum and maximum fuse timer.\n\nExample:\n\n items:\n   STR\\_ELERIUM:\n     - \\[0, 0, 0\\]\n   STR\\_TIMEBOMB:\n     - \\[2, 1, 0\\]\n     - \\[6, 2, 0\\]\n fuseTimers:\n   STR\\_TIMEBOMB: \\[0, 30\\]\n\nIn this example 3 items are placed on the map block: 1 Elerium item and 2 Timebomb items. Both Timebomb items will be pre-primed with a random delay between 0 and 30 (each item will have a different delay). Elerium item will not be pre-primed :)",
+      "description": "This attribute allows you to pre-prime the items placed on the map using the **items** attribute. It's a list of items and information about minimum and maximum fuse timer.\n\nExample:\n\n```\n items:\n   STR_ELERIUM:\n     - [0, 0, 0]\n   STR_TIMEBOMB:\n     - [2, 1, 0]\n     - [6, 2, 0]\n fuseTimers:\n   STR_TIMEBOMB: [0, 30]\n\n```\n\nIn this example 3 items are placed on the map block: 1 Elerium item and 2 Timebomb items. Both Timebomb items will be pre-primed with a random delay between 0 and 30 (each item will have a different delay). Elerium item will not be pre-primed :)",
       "default": "-"
     },
     "randomizedItems": {
-      "description": "A list of additional items to add to this mapblock, using a more randomized approach. Does not support pre-priming of items.\n\nExample:\n\n randomizedItems:\n   - position: \\[12, 15, 2\\]\n     amount: 3\n     mixed: true\n     itemList: \\[STR\\_ITEM\\_1, STR\\_ITEM\\_2, STR\\_ITEM\\_3, STR\\_ITEM\\_3\\]\n\nIn this example:\n\n*   3 items will be placed on the tile at coordinates \\[x,y,z\\] = \\[12, 15, 2\\]\n*   all 3 items can be different (_mixed: true_); if you wanted 3 items of the same type use _mixed: false_\n*   items are selected from the _itemList_ randomly; to increase odds for a certain item type, you can add it to the list multiple times\n    *   in our example STR\\_ITEM\\_1 has 25% chance, STR\\_ITEM\\_2 also 25% chance and STR\\_ITEM\\_3 a 50% chance",
+      "description": "A list of additional items to add to this mapblock, using a more randomized approach. Does not support pre-priming of items.\n\nExample:\n\n```\n randomizedItems:\n   - position: [12, 15, 2]\n     amount: 3\n     mixed: true\n     itemList: [STR_ITEM_1, STR_ITEM_2, STR_ITEM_3, STR_ITEM_3]\n\n```\n\nIn this example:\n\n*   3 items will be placed on the tile at coordinates \\[x,y,z\\] = \\[12, 15, 2\\]\n*   all 3 items can be different (_mixed: true_); if you wanted 3 items of the same type use _mixed: false_\n*   items are selected from the _itemList_ randomly; to increase odds for a certain item type, you can add it to the list multiple times\n    *   in our example STR\\_ITEM\\_1 has 25% chance, STR\\_ITEM\\_2 also 25% chance and STR\\_ITEM\\_3 a 50% chance",
       "default": "-"
     }
   },
@@ -2207,7 +2355,7 @@
       "default": "statCaps"
     },
     "dogfightExperience": {
-      "description": "A list of probabilities (0-100%) to improve a stat (only bravery, firing or reactions) after a successful Dogfight.\n\n - type: STR\\_SOLDIER\n   dogfightExperience:\n     bravery: 20   # 20% chance of improvement by 10\n     reactions: 50 # 50% chance to improve by 1\n     firing: 100   # guaranteed to improve by 1",
+      "description": "A list of probabilities (0-100%) to improve a stat (only bravery, firing or reactions) after a successful Dogfight.```\n - type: STR_SOLDIER\n   dogfightExperience:\n     bravery: 20   # 20% chance of improvement by 10\n     reactions: 50 # 50% chance to improve by 1\n     firing: 100   # guaranteed to improve by 1\n\n```",
       "default": "-"
     },
     "armor": {
@@ -2472,7 +2620,11 @@
       "description": "A direct change to the soldier's overall stats when undergoing this project, can be positive or negative - tu: 5 means the soldier will gain 5 max time units, while tu: -5 means the soldier will lose 5 max time units. The default of 0 means no change.",
       "default": "-"
     },
-    "flatMin\nflatMax": {
+    "flatMin": {
+      "description": "Similar to **flatOverallStatChange**, but allows to specify a range from which the game chooses randomly.\n\nMore info: [https://openxcom.org/forum/index.php/topic,7196.msg117768.html#msg117768](https://openxcom.org/forum/index.php/topic,7196.msg117768.html#msg117768)",
+      "default": "-"
+    },
+    "flatMax": {
       "description": "Similar to **flatOverallStatChange**, but allows to specify a range from which the game chooses randomly.\n\nMore info: [https://openxcom.org/forum/index.php/topic,7196.msg117768.html#msg117768](https://openxcom.org/forum/index.php/topic,7196.msg117768.html#msg117768)",
       "default": "-"
     },
@@ -2480,7 +2632,11 @@
       "description": "A percent change to the soldier's overall stats when undergoing this project, can be positive or negative - tu: 5 means the soldier will gain an extra 5% of their max time units, while tu: -5 means the soldier will lose 5% of their max time units. The default of 0 means no change.",
       "default": "-"
     },
-    "percentMin\npercentMax": {
+    "percentMin": {
+      "description": "Similar to **percentOverallStatChange**, but allows to specify a range from which the game chooses randomly.",
+      "default": "-"
+    },
+    "percentMax": {
       "description": "Similar to **percentOverallStatChange**, but allows to specify a range from which the game chooses randomly.",
       "default": "-"
     },
@@ -2488,7 +2644,11 @@
       "description": "A percent change to the soldier's stats, but instead of taking a portion of the overall stats, this only applies to the stats they've trained up from their initial values, can be positive or negative - firing: -100 means the soldier will lose all of the firing accuracy they trained since joining, while firing: 10 means they gain 10% of the amount they trained over their initial values. The default of 0 means no change.",
       "default": "-"
     },
-    "percentGainedMin\npercentGainedMax": {
+    "percentGainedMin": {
+      "description": "Similar to **percentGainedStatChange**, but allows to specify a range from which the game chooses randomly.",
+      "default": "-"
+    },
+    "percentGainedMax": {
       "description": "Similar to **percentGainedStatChange**, but allows to specify a range from which the game chooses randomly.",
       "default": "-"
     },
@@ -3407,7 +3567,7 @@
       "default": "-"
     },
     "pages": {
-      "description": "Configuration of additional pages for an article.\n\n*   Each page can have its own title and text description.\n*   Additionally, you can define which **ammoSlot** will be used to limit the display of supported attack types and compatible ammo.\n*   If multiple pages have same value of **ammoSlot**, then each page will show successive group of 3 ammo items available for this slot.\n\nExample:\n\n - id: STR\\_PISTOL\n   pages:\n     - title: STR\\_PISTOL\n       text: STR\\_PISTOL\\_UFOPEDIA\n       ammoSlot: 0                  # default for all pages\n     - title: STR\\_PISTOL\n       text: STR\\_PISTOL\\_UFOPEDIA\\_2\n       ammoSlot: 1                  # ammo and attack types relevant for the second ammo slot (0 = first slot)\n     - title: STR\\_PISTOL\\_UFOPEDIA\\_TITLE\\_3\n       text: STR\\_PISTOL\\_UFOPEDIA\\_3",
+      "description": "Configuration of additional pages for an article.\n\n*   Each page can have its own title and text description.\n*   Additionally, you can define which **ammoSlot** will be used to limit the display of supported attack types and compatible ammo.\n*   If multiple pages have same value of **ammoSlot**, then each page will show successive group of 3 ammo items available for this slot.\n\nExample:\n\n```\n - id: STR_PISTOL\n   pages:\n     - title: STR_PISTOL\n       text: STR_PISTOL_UFOPEDIA\n       ammoSlot: 0                  # default for all pages\n     - title: STR_PISTOL\n       text: STR_PISTOL_UFOPEDIA_2\n       ammoSlot: 1                  # ammo and attack types relevant for the second ammo slot (0 = first slot)\n     - title: STR_PISTOL_UFOPEDIA_TITLE_3\n       text: STR_PISTOL_UFOPEDIA_3\n       \n\n```",
       "default": "Only one page using standard title and text."
     }
   },
@@ -3988,11 +4148,51 @@
       "description": "String to add to name.",
       "default": "required"
     },
-    "psiStrength\npsiSkill\nbravery\nstrength\nfiring\nreactions\nstamina\ntu\nhealth\nthrowing": {
+    "psiStrength": {
       "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
       "default": "-"
     },
-    "melee\npsiTraining": {
+    "psiSkill": {
+      "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
+      "default": "-"
+    },
+    "bravery": {
+      "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
+      "default": "-"
+    },
+    "strength": {
+      "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
+      "default": "-"
+    },
+    "firing": {
+      "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
+      "default": "-"
+    },
+    "reactions": {
+      "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
+      "default": "-"
+    },
+    "stamina": {
+      "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
+      "default": "-"
+    },
+    "tu": {
+      "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
+      "default": "-"
+    },
+    "health": {
+      "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
+      "default": "-"
+    },
+    "throwing": {
+      "description": "One or more stat ranges are AND-ed together to find a match.\n\nEach range has a format \\[min, max\\]. Use YAML standard tilde (~) to indicate empty value (interpreted as 0 for min and as 255 for max).",
+      "default": "-"
+    },
+    "melee": {
+      "description": "New attributes (only available in OpenXcom).",
+      "default": "-"
+    },
+    "psiTraining": {
       "description": "New attributes (only available in OpenXcom).",
       "default": "-"
     },
@@ -4085,15 +4285,27 @@
       "default": "[100, 100, 100, 20]"
     },
     "unitResponseSounds": {
-      "description": "Custom unit response sounds per individual soldier name... when soldier type/armor/gender is just not RPG enough :) Hardcore.\n\nMore info: [https://openxcom.org/forum/index.php/topic,7371.0.html](https://openxcom.org/forum/index.php/topic,7371.0.html)\n\nSyntax:\n\n unitResponseSounds:\n   - name: Starving Poet\n     selectUnitSound:   \\[200, 201, 202, 203, 204\\]\n     startMovingSound:  \\[210, 211, 212, 213\\]\n     selectWeaponSound: \\[220, 221, 222, 223\\]\n     annoyedSound:      \\[230, 231, 232, 233\\]\n   - name: Ivan Dogovich\n     selectUnitSound:   \\[300, 301, 302, 303, 304, 305\\]\n     startMovingSound:  \\[310, 311, 312, 313\\]\n     selectWeaponSound: \\[320, 321, 322, 323\\]\n     annoyedSound:      \\[330, 331, 332, 333, 334, 335\\]",
+      "description": "Custom unit response sounds per individual soldier name... when soldier type/armor/gender is just not RPG enough :) Hardcore.\n\nMore info: [https://openxcom.org/forum/index.php/topic,7371.0.html](https://openxcom.org/forum/index.php/topic,7371.0.html)\n\nSyntax:\n\n```\n unitResponseSounds:\n   - name: Starving Poet\n     selectUnitSound:   [200, 201, 202, 203, 204]\n     startMovingSound:  [210, 211, 212, 213]\n     selectWeaponSound: [220, 221, 222, 223]\n     annoyedSound:      [230, 231, 232, 233]\n   - name: Ivan Dogovich\n     selectUnitSound:   [300, 301, 302, 303, 304, 305]\n     startMovingSound:  [310, 311, 312, 313]\n     selectWeaponSound: [320, 321, 322, 323]\n     annoyedSound:      [330, 331, 332, 333, 334, 335]\n\n```",
       "default": "-"
     },
-    "baseNamesFirst\nbaseNamesMiddle\nbaseNamesLast": {
-      "description": "Data for the random base name generator. **baseNamesMiddle** and **baseNamesLast** are optional. Example:\n\n baseNamesFirst:\n   - Big\n   - Huge\n   - Large\n   - Stinky\n baseNamesMiddle:\n   - Rat\n   - Pirate\n baseNamesLast:\n   - Bay\n   - Port\n   - Haven\n   - Tavern",
+    "baseNamesFirst": {
+      "description": "Data for the random base name generator. **baseNamesMiddle** and **baseNamesLast** are optional. Example:```\n baseNamesFirst:\n   - Big\n   - Huge\n   - Large\n   - Stinky\n baseNamesMiddle:\n   - Rat\n   - Pirate\n baseNamesLast:\n   - Bay\n   - Port\n   - Haven\n   - Tavern\n\n```",
       "default": "-"
     },
-    "operationNamesFirst\noperationNamesLast": {
-      "description": "Data for the random operation name generator. **operationNamesLast** is optional. Example:\n\n operationNamesFirst:\n   - Blind\n   - Burning\n   - Cold\n   - Dark\n   - Devil's\n   - Enduring\n   - Fallen\n operationNamesLast:\n   - Blade\n   - Dream\n   - Future\n   - Justice\n   - Rain\n   - Star\n   - Thunder",
+    "baseNamesMiddle": {
+      "description": "Data for the random base name generator. **baseNamesMiddle** and **baseNamesLast** are optional. Example:```\n baseNamesFirst:\n   - Big\n   - Huge\n   - Large\n   - Stinky\n baseNamesMiddle:\n   - Rat\n   - Pirate\n baseNamesLast:\n   - Bay\n   - Port\n   - Haven\n   - Tavern\n\n```",
+      "default": "-"
+    },
+    "baseNamesLast": {
+      "description": "Data for the random base name generator. **baseNamesMiddle** and **baseNamesLast** are optional. Example:```\n baseNamesFirst:\n   - Big\n   - Huge\n   - Large\n   - Stinky\n baseNamesMiddle:\n   - Rat\n   - Pirate\n baseNamesLast:\n   - Bay\n   - Port\n   - Haven\n   - Tavern\n\n```",
+      "default": "-"
+    },
+    "operationNamesFirst": {
+      "description": "Data for the random operation name generator. **operationNamesLast** is optional. Example:```\n operationNamesFirst:\n   - Blind\n   - Burning\n   - Cold\n   - Dark\n   - Devil's\n   - Enduring\n   - Fallen\n operationNamesLast:\n   - Blade\n   - Dream\n   - Future\n   - Justice\n   - Rain\n   - Star\n   - Thunder\n\n```",
+      "default": "-"
+    },
+    "operationNamesLast": {
+      "description": "Data for the random operation name generator. **operationNamesLast** is optional. Example:```\n operationNamesFirst:\n   - Blind\n   - Burning\n   - Cold\n   - Dark\n   - Devil's\n   - Enduring\n   - Fallen\n operationNamesLast:\n   - Blade\n   - Dream\n   - Future\n   - Justice\n   - Rain\n   - Star\n   - Thunder\n\n```",
       "default": "-"
     },
     "startingTime": {
@@ -4105,7 +4317,7 @@
       "default": "0"
     },
     "monthlyRatings": {
-      "description": "A list of monthly ratings. Each item contains a minimum required score and a corresponding String ID of the rating. Example:\n\n monthlyRatings:\n   5000: STR\\_MT\\_RATING\\_AMAZING\n   2000: STR\\_MT\\_RATING\\_PERFECT\n   1000: STR\\_MT\\_RATING\\_VERY\\_GOOD\n   500: STR\\_MT\\_RATING\\_GOOD\n   250: STR\\_MT\\_RATING\\_OK\n   0: STR\\_MT\\_RATING\\_MEH\n   -350: STR\\_MT\\_RATING\\_BAD\n   -99999: STR\\_MT\\_RATING\\_TERRIBLE",
+      "description": "A list of monthly ratings. Each item contains a minimum required score and a corresponding String ID of the rating. Example:```\n monthlyRatings:\n   5000: STR_MT_RATING_AMAZING\n   2000: STR_MT_RATING_PERFECT\n   1000: STR_MT_RATING_VERY_GOOD\n   500: STR_MT_RATING_GOOD\n   250: STR_MT_RATING_OK\n   0: STR_MT_RATING_MEH\n   -350: STR_MT_RATING_BAD\n   -99999: STR_MT_RATING_TERRIBLE\n\n```",
       "default": "-"
     },
     "performanceBonusFactor": {
@@ -4149,7 +4361,7 @@
       "default": "false"
     },
     "gameOver": {
-      "description": "A list of cutscene names for special events. More info: [https://openxcom.org/forum/index.php/topic,7476.msg117830.html#msg117830](https://openxcom.org/forum/index.php/topic,7476.msg117830.html#msg117830)\n\n gameOver:\n   loseMoney: loseGame       # cutscene ID that should be played when the player loses due to poor economy management\n   loseRating: loseGame      # cutscene ID that should be played when the player loses due to poor rating\n   loseDefeat: loseGame      # cutscene ID that should be played when the player loses the last base",
+      "description": "A list of cutscene names for special events. More info: [https://openxcom.org/forum/index.php/topic,7476.msg117830.html#msg117830](https://openxcom.org/forum/index.php/topic,7476.msg117830.html#msg117830)```\n gameOver:\n   loseMoney: loseGame       # cutscene ID that should be played when the player loses due to poor economy management\n   loseRating: loseGame      # cutscene ID that should be played when the player loses due to poor rating\n   loseDefeat: loseGame      # cutscene ID that should be played when the player loses the last base\n\n```",
       "default": "<="
     },
     "timePersonnel": {
@@ -4213,7 +4425,7 @@
       "default": "0"
     },
     "flagByKills": {
-      "description": "OXCE allows to display flags next to soldier names, based on their nationality (resp. based on the name pool from which their name was chosen). If this setting is used, the flag will depend on the number of kills from soldier's diary instead.\n\n flagByKills: \\[10,20,30\\]\n\nExample above means:\n\n*   0-10 kills = Flag0 sprite is used\n*   11-20 = Flag1 sprite\n*   21-30 = Flag2 sprite\n*   31+ = Flag3 sprite",
+      "description": "OXCE allows to display flags next to soldier names, based on their nationality (resp. based on the name pool from which their name was chosen). If this setting is used, the flag will depend on the number of kills from soldier's diary instead.```\n flagByKills: [10,20,30]\n\n```\n\nExample above means:\n\n*   0-10 kills = Flag0 sprite is used\n*   11-20 = Flag1 sprite\n*   21-30 = Flag2 sprite\n*   31+ = Flag3 sprite",
       "default": "-"
     },
     "alienInventoryOffsetX": {
@@ -4261,7 +4473,7 @@
       "default": "1000"
     },
     "ufoTractorBeamSizeModifiers": {
-      "description": "The modifiers to a tractor beam's power based on a UFO's size.\n\n ufoTractorBeamSizeModifiers:\n   - 400 # very small, tractor beams are 400% or 4x as effective\n   - 200\n   - 100\n   - 50\n   - 25 # very large, tractor beams are 25% or 1/4x as effective",
+      "description": "The modifiers to a tractor beam's power based on a UFO's size.```\n ufoTractorBeamSizeModifiers:\n   - 400 # very small, tractor beams are 400% or 4x as effective\n   - 200\n   - 100\n   - 50\n   - 25 # very large, tractor beams are 25% or 1/4x as effective\n\n```",
       "default": "[400, 200, 100, 50, 25]"
     },
     "hunterKillerFastRetarget": {
@@ -4305,7 +4517,7 @@
       "default": "0"
     },
     "lighting": {
-      "description": "Configuration of light propagation:\n\n*   **enhanced**: flags to switch between vanilla and directional light propagation (1 = directional for tiles and fire, 2 = directional for items, 4 = directional for units); add the numbers together to turn on multiple flags (e.g. 1+2+4=7 = directional lighting for all light sources)\n*   **maxStatic**: maximum range/radius for tile and fire light propagation\n*   **maxDynamic**: maximum range/radius for item and unit light propagation\n\nDefaults:\n\n lighting:\n   enhanced: 0\n   maxStatic: 16   #Careful, affects overall game performance!\n   maxDynamic: 24  #Careful, affects overall game performance!",
+      "description": "Configuration of light propagation:\n\n*   **enhanced**: flags to switch between vanilla and directional light propagation (1 = directional for tiles and fire, 2 = directional for items, 4 = directional for units); add the numbers together to turn on multiple flags (e.g. 1+2+4=7 = directional lighting for all light sources)\n*   **maxStatic**: maximum range/radius for tile and fire light propagation\n*   **maxDynamic**: maximum range/radius for item and unit light propagation\n\nDefaults:\n\n```\n lighting:\n   enhanced: 0\n   maxStatic: 16   #Careful, affects overall game performance!\n   maxDynamic: 24  #Careful, affects overall game performance!\n\n```",
       "default": "<="
     },
     "maxViewDistance": {
@@ -4365,7 +4577,7 @@
       "default": "false"
     },
     "missionRatings": {
-      "description": "A list of mission ratings. Each item contains a minimum required mission score and a corresponding String ID of the rating. Example:\n\n missionRatings:\n   2000: STR\\_MS\\_RATING\\_HOLY\\_COW\n   1000: STR\\_MS\\_RATING\\_AMAZING\n   750: STR\\_MS\\_RATING\\_PERFECT\n   500: STR\\_MS\\_RATING\\_VERY\\_GOOD\n   350: STR\\_MS\\_RATING\\_GOOD\n   150: STR\\_MS\\_RATING\\_OK\n   0: STR\\_MS\\_RATING\\_MEH\n   -200: STR\\_MS\\_RATING\\_BAD\n   -350: STR\\_MS\\_RATING\\_WORSE\n   -500: STR\\_MS\\_RATING\\_TERRIBLE\n   -1000: STR\\_MS\\_RATING\\_DISASTER\n   -99999: STR\\_MS\\_RATING\\_EPIC\\_FAIL",
+      "description": "A list of mission ratings. Each item contains a minimum required mission score and a corresponding String ID of the rating. Example:```\n missionRatings:\n   2000: STR_MS_RATING_HOLY_COW\n   1000: STR_MS_RATING_AMAZING\n   750: STR_MS_RATING_PERFECT\n   500: STR_MS_RATING_VERY_GOOD\n   350: STR_MS_RATING_GOOD\n   150: STR_MS_RATING_OK\n   0: STR_MS_RATING_MEH\n   -200: STR_MS_RATING_BAD\n   -350: STR_MS_RATING_WORSE\n   -500: STR_MS_RATING_TERRIBLE\n   -1000: STR_MS_RATING_DISASTER\n   -99999: STR_MS_RATING_EPIC_FAIL\n\n```",
       "default": "-"
     },
     "statisticalBulletConservation": {
@@ -4381,11 +4593,11 @@
       "default": "100"
     },
     "mana": {
-      "description": "Global switches to turn mana GUI and features on/off.\n\nMore info: [https://openxcom.org/forum/index.php/topic,7241.0.html](https://openxcom.org/forum/index.php/topic,7241.0.html)\n\nExample:\n\n mana:\n   enabled: false\n   battleUI: false\n   unlockResearch: STR\\_SORCERY     # empty by default\n   trainingPrimary: false\n   trainingSecondary: false\n   woundThreshold: 200             # default is 200\n   replenishAfterMission: true",
+      "description": "Global switches to turn mana GUI and features on/off.\n\nMore info: [https://openxcom.org/forum/index.php/topic,7241.0.html](https://openxcom.org/forum/index.php/topic,7241.0.html)\n\nExample:\n\n```\n mana:\n   enabled: false\n   battleUI: false\n   unlockResearch: STR_SORCERY     # empty by default\n   trainingPrimary: false\n   trainingSecondary: false\n   woundThreshold: 200             # default is 200\n   replenishAfterMission: true\n\n```",
       "default": "see example"
     },
     "health": {
-      "description": "Health recovery modding options. Allows soldiers to go into battle even with missing health.\n\nMore info: FIXME\n\nExample:\n\n health:\n   woundThreshold: 100             # default is 100\n   replenishAfterMission: true",
+      "description": "Health recovery modding options. Allows soldiers to go into battle even with missing health.\n\nMore info: FIXME\n\nExample:\n\n```\n health:\n   woundThreshold: 100             # default is 100\n   replenishAfterMission: true\n\n```",
       "default": "see example"
     },
     "minReactionAccuracy": {
@@ -4417,14 +4629,22 @@
       "default": "0"
     },
     "ai.useDelayPsionic": {
-      "description": "Defines a turn, from which the aliens are allowed to use psi amps.\n\nExample:\n\n ai:\n   useDelayBlaster: 3\n   useDelayFirearm: 1\n   useDelayGrenade: 1\n   useDelayMelee: 1\n   useDelayPsionic: 2",
+      "description": "Defines a turn, from which the aliens are allowed to use psi amps.\n\nExample:\n\n```\n ai:\n   useDelayBlaster: 3\n   useDelayFirearm: 1\n   useDelayGrenade: 1\n   useDelayMelee: 1\n   useDelayPsionic: 2\n\n```",
       "default": "0"
     },
-    "ai.fireChoiceIntelCoeffai.fireChoiceAggroCoeff": {
+    "ai.fireChoiceIntelCoeff": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,5679.0.html](https://openxcom.org/forum/index.php/topic,5679.0.html)",
       "default": "55"
     },
-    "ai.extendedFireModeChoiceai.respectMaxRange": {
+    "ai.fireChoiceAggroCoeff": {
+      "description": "More info here: [https://openxcom.org/forum/index.php/topic,5679.0.html](https://openxcom.org/forum/index.php/topic,5679.0.html)",
+      "default": "55"
+    },
+    "ai.extendedFireModeChoice": {
+      "description": "More info here: [https://openxcom.org/forum/index.php/topic,5980.0.html](https://openxcom.org/forum/index.php/topic,5980.0.html)",
+      "default": "falsefalse"
+    },
+    "ai.respectMaxRange": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,5980.0.html](https://openxcom.org/forum/index.php/topic,5980.0.html)",
       "default": "falsefalse"
     },
@@ -4432,7 +4652,11 @@
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,6663.0.html](https://openxcom.org/forum/index.php/topic,6663.0.html)",
       "default": "false"
     },
-    "ai.pickUpWeaponsMoreActivelyai.pickUpWeaponsMoreActivelyCiv": {
+    "ai.pickUpWeaponsMoreActively": {
+      "description": "More info here: [https://openxcom.org/forum/index.php/topic,6882.0.html](https://openxcom.org/forum/index.php/topic,6882.0.html)",
+      "default": "falsefalse"
+    },
+    "ai.pickUpWeaponsMoreActivelyCiv": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,6882.0.html](https://openxcom.org/forum/index.php/topic,6882.0.html)",
       "default": "falsefalse"
     },

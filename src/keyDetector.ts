@@ -1,9 +1,10 @@
 import { Position, Range, TextDocument } from 'vscode';
 import { logger } from './logger';
 
-type KeyMatch = {
+export type KeyMatch = {
     key: string;
     range: Range;
+    type?: string;
 };
 
 /**
@@ -82,5 +83,22 @@ export class KeyDetector {
         }
 
         return { key, range };
+    }
+
+    public static findRuleType(position: Position, document: TextDocument): string | undefined {
+        const range = KeyDetector.getRangeOfKeyAtPosition(position, document);
+        if (!range) {
+            return;
+        }
+
+        const text = document.getText().slice(0, document.offsetAt(range.start));
+
+        for (const line of text.split("\n").reverse()) {
+            if (line.trim().match(/^[a-zA-Z]+:$/)) {
+                return line.trim().slice(0, -1);
+            }
+        }
+
+        return;
     }
 }
