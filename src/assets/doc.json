@@ -103,7 +103,7 @@
       "default": "required"
     },
     "terrain": {
-      "description": "List of terrains (can be more than one) that correspond to each [Geoscape texture](/index.php/TEXTURE.DAT \"TEXTURE.DAT\").\n\nTerrains can be restricted to certain areas on the globe with **area: (_\\[lon1, lon2, lat1, lat2\\]_)** and **weight: NUMBER** that gives their chance of appearance.\n\nThese textures are primarily used for UFO landing/crash sites.\n\nExample 1:\n\n```\nglobe:\n  textures:\n    - id: 0\n      terrain:\n        - name: FOREST\n          area: [0, 360, -90, 0]\n        - name: JUNGLE\n          area: [0, 360, 0, 90]\n\n```\n\nExample 2:\n\n```\nglobe:\n  textures:\n    - id: 11\n      terrain:\n        - name: PIPES\n          weight: 50\n        - name: SEABED\n          weight: 25\n        - name: CORAL\n          weight: 25\n\n```",
+      "description": "List of terrains (can be more than one) that correspond to each [Geoscape texture](https://www.ufopaedia.org/index.php/TEXTURE.DAT).\n\nTerrains can be restricted to certain areas on the globe with **area: (_\\[lon1, lon2, lat1, lat2\\]_)** and **weight: NUMBER** that gives their chance of appearance.\n\nThese textures are primarily used for UFO landing/crash sites.\n\nExample 1:\n\n```\nglobe:\n  textures:\n    - id: 0\n      terrain:\n        - name: FOREST\n          area: [0, 360, -90, 0]\n        - name: JUNGLE\n          area: [0, 360, 0, 90]\n\n```\n\nExample 2:\n\n```\nglobe:\n  textures:\n    - id: 11\n      terrain:\n        - name: PIPES\n          weight: 50\n        - name: SEABED\n          weight: 25\n        - name: CORAL\n          weight: 25\n\n```",
       "default": "-"
     },
     "deployments": {
@@ -193,7 +193,7 @@
       "default": "-1"
     },
     "requires": {
-      "description": "List of [topics](#Research) (string IDs) that must be researched to unlock this facility. If none are specified, this facility is unlocked from the start.",
+      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this facility. If none are specified, this facility is unlocked from the start.",
       "default": "-"
     },
     "requiresBaseFunc": {
@@ -209,11 +209,11 @@
       "default": "-"
     },
     "spriteShape": {
-      "description": "Sprite ID from [BASEBITS.PCK](/index.php/BASEBITS.PCK \"BASEBITS.PCK\") used to draw the facility's outer shape in the Basescape and UFOpaedia.",
+      "description": "Sprite ID from [BASEBITS.PCK](https://www.ufopaedia.org/index.php/BASEBITS.PCK) used to draw the facility's outer shape in the Basescape and UFOpaedia.",
       "default": "-1"
     },
     "spriteFacility": {
-      "description": "Sprite ID from [BASEBITS.PCK](/index.php/BASEBITS.PCK \"BASEBITS.PCK\") used to draw the facility's contents in the Basescape and UFOpaedia. Drawn on top of **spriteShape**. Not required for buildings size 2 or larger.",
+      "description": "Sprite ID from [BASEBITS.PCK](https://www.ufopaedia.org/index.php/BASEBITS.PCK) used to draw the facility's contents in the Basescape and UFOpaedia. Drawn on top of **spriteShape**. Not required for buildings size 2 or larger.",
       "default": "-1"
     },
     "missileAttraction": {
@@ -225,15 +225,15 @@
       "default": "-"
     },
     "lift": {
-      "description": "Is this facility an [Access Lift](/index.php/Access_Lift \"Access Lift\")? All base facilities must be connected to the lift.",
+      "description": "Is this facility an [Access Lift](https://www.ufopaedia.org/index.php/Access_Lift)? All base facilities must be connected to the lift.",
       "default": "false"
     },
     "hyper": {
-      "description": "Is this facility a [Hyperwave Decoder](/index.php/Hyperwave_Decoder \"Hyperwave Decoder\")? Displays extra information for detected UFOs. Only valid for radar facilities. If \"true\", the radar detection chance will be taken from **radarChance** value.",
+      "description": "Is this facility a [Hyperwave Decoder](https://www.ufopaedia.org/index.php/Hyperwave_Decoder)? Displays extra information for detected UFOs. Only valid for radar facilities. If \"true\", the radar detection chance will be taken from **radarChance** value.",
       "default": "false"
     },
     "mind": {
-      "description": "Is this facility a [Mind Shield](/index.php/Mind_Shield \"Mind Shield\")? Reduces the chance of UFOs finding your base. Does stack (detection chance is inversely proportional to the number of mind shields).",
+      "description": "Is this facility a [Mind Shield](https://www.ufopaedia.org/index.php/Mind_Shield)? Reduces the chance of UFOs finding your base. Does stack (detection chance is inversely proportional to the number of mind shields).",
       "default": "false"
     },
     "mindPower": {
@@ -241,7 +241,7 @@
       "default": "1"
     },
     "grav": {
-      "description": "Is this facility a [Grav Shield](/index.php/Grav_Shield \"Grav Shield\")? Doubles the power of your base defenses. Does not stack.",
+      "description": "Is this facility a [Grav Shield](https://www.ufopaedia.org/index.php/Grav_Shield)? Doubles the power of your base defenses. Does not stack.",
       "default": "false"
     },
     "size": {
@@ -269,7 +269,7 @@
       "default": "0"
     },
     "storage": {
-      "description": "Amount of storage space (for items) this facility provides. See [Base Stores](/index.php/Base_Stores \"Base Stores\").",
+      "description": "Amount of storage space (for items) this facility provides. See [Base Stores](https://www.ufopaedia.org/index.php/Base_Stores).",
       "default": "0"
     },
     "storageTiles": {
@@ -333,15 +333,15 @@
       "default": "0"
     },
     "fireSound": {
-      "description": "Sound ID from [GEO.CAT](#Extra_Sounds) played when the base defense fires.",
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org#Extra_Sounds) played when the base defense fires.",
       "default": "0"
     },
     "hitSound": {
-      "description": "Sound ID from [GEO.CAT](#Extra_Sounds) played when the base defense hits a target.",
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org#Extra_Sounds) played when the base defense hits a target.",
       "default": "0"
     },
     "mapName": {
-      "description": "[Map](/index.php/MAPS \"MAPS\") associated to this facility in Battlescape base defenses.",
+      "description": "[Map](https://www.ufopaedia.org/index.php/MAPS) associated to this facility in Battlescape base defenses.",
       "default": "-"
     },
     "verticalLevels": {
@@ -395,7 +395,7 @@
       "default": "required"
     },
     "requires": {
-      "description": "List of [topics](#Research) (string IDs) that must be researched to unlock this craft. If none are specified, this craft is unlocked from the start.",
+      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this craft. If none are specified, this craft is unlocked from the start.",
       "default": "-"
     },
     "requiresBuyBaseFunc": {
@@ -403,7 +403,7 @@
       "default": "-"
     },
     "sprite": {
-      "description": "Sprite ID from [BASEBITS.PCK](/index.php/BASEBITS.PCK \"BASEBITS.PCK\") used to draw this craft in the Basescape and from [INTICON.PCK](/index.php/INTICON.PCK \"INTICON.PCK\") used to draw the damage indicator in dogfights.\n\nNote that:\n\n*   the corresponding id for INTICON.PCK for the minimized craft icon is sprite+0\n*   the corresponding id for INTICON.PCK for the dogfight image is sprite+11\n*   the corresponding id for BASEBITS.PCK is sprite+33",
+      "description": "Sprite ID from [BASEBITS.PCK](https://www.ufopaedia.org/index.php/BASEBITS.PCK) used to draw this craft in the Basescape and from [INTICON.PCK](https://www.ufopaedia.org/index.php/INTICON.PCK) used to draw the damage indicator in dogfights.\n\nNote that:\n\n*   the corresponding id for INTICON.PCK for the minimized craft icon is sprite+0\n*   the corresponding id for INTICON.PCK for the dogfight image is sprite+11\n*   the corresponding id for BASEBITS.PCK is sprite+33",
       "default": "-1"
     },
     "marker": {
@@ -459,11 +459,11 @@
       "default": "0"
     },
     "repairRate": {
-      "description": "Amount of damage restored every hour while [Repairing](/index.php/Repairs \"Repairs\") in base.",
+      "description": "Amount of damage restored every hour while [Repairing](https://www.ufopaedia.org/index.php/Repairs) in base.",
       "default": "1"
     },
     "refuelRate": {
-      "description": "Amount of fuel restored every 30 mins while [Refueling](/index.php/Refueling \"Refueling\") in base. If specified, a **refuelItem** is spent each time.",
+      "description": "Amount of fuel restored every 30 mins while [Refueling](https://www.ufopaedia.org/index.php/Refueling) in base. If specified, a **refuelItem** is spent each time.",
       "default": "1"
     },
     "transferTime": {
@@ -471,11 +471,11 @@
       "default": "0"
     },
     "score": {
-      "description": "[Score](/index.php/Score \"Score\") lost when this craft is destroyed.",
+      "description": "[Score](https://www.ufopaedia.org/index.php/Score) lost when this craft is destroyed.",
       "default": "0"
     },
     "battlescapeTerrainData": {
-      "description": "[Terrain](#Terrains) associated to this craft in Battlescape missions.",
+      "description": "[Terrain](https://www.ufopaedia.org#Terrains) associated to this craft in Battlescape missions.",
       "default": "-"
     },
     "craftInventoryTile": {
@@ -495,7 +495,7 @@
       "default": "false"
     },
     "spacecraft": {
-      "description": "Can this craft go to [Cydonia](/index.php/Cydonia \"Cydonia\")?",
+      "description": "Can this craft go to [Cydonia](https://www.ufopaedia.org/index.php/Cydonia)?",
       "default": "false"
     },
     "notifyWhenRefueled": {
@@ -593,15 +593,15 @@
       "default": "0"
     },
     "sprite": {
-      "description": "Sprite ID from [BASEBITS.PCK](/index.php/BASEBITS.PCK \"BASEBITS.PCK\") used to draw the weapon in the Basescape and from [INTICON.PCK](/index.php/INTICON.PCK \"INTICON.PCK\") used to draw the weapon in dogfights.\n\nNote that:\n\n*   the corresponding id for INTICON.PCK is sprite+5\n*   the corresponding id for BASEBITS.PCK is sprite+48",
+      "description": "Sprite ID from [BASEBITS.PCK](https://www.ufopaedia.org/index.php/BASEBITS.PCK) used to draw the weapon in the Basescape and from [INTICON.PCK](https://www.ufopaedia.org/index.php/INTICON.PCK) used to draw the weapon in dogfights.\n\nNote that:\n\n*   the corresponding id for INTICON.PCK is sprite+5\n*   the corresponding id for BASEBITS.PCK is sprite+48",
       "default": "-1"
     },
     "sound": {
-      "description": "Sound ID from [GEO.CAT](#Extra_Sounds) played when this weapon fires.",
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon fires.",
       "default": "-1"
     },
     "stats": {
-      "description": "Contains the same set of attributes as [Craft Stats](#Craft_Stats). These dynamically increase/decrease the stats of a craft, when equipped.\n\nExamples:\n\n*   you can increase the craft's range by equipping an extra fuel tank\n*   you can increase the craft's hit chance by equipping advanced targeters\n*   you can increase the craft's radar range/chance by equipping an extra radar\n*   and so on...",
+      "description": "Contains the same set of attributes as [Craft Stats](https://www.ufopaedia.org#Craft_Stats). These dynamically increase/decrease the stats of a craft, when equipped.\n\nExamples:\n\n*   you can increase the craft's range by equipping an extra fuel tank\n*   you can increase the craft's hit chance by equipping advanced targeters\n*   you can increase the craft's radar range/chance by equipping an extra radar\n*   and so on...",
       "default": "-"
     },
     "hidePediaInfo": {
@@ -641,11 +641,11 @@
       "default": "0"
     },
     "rearmRate": {
-      "description": "Amount of ammo restored every hour while the craft is [Rearming](/index.php/Rearming \"Rearming\") in base. If specified, **clip**s are spent depending on their **clipSize**, and **reamRate** should be a multiple of **clipSize**. If the **clipSize** of the specified ammo is 0, no **clip**s are spent.",
+      "description": "Amount of ammo restored every hour while the craft is [Rearming](https://www.ufopaedia.org/index.php/Rearming) in base. If specified, **clip**s are spent depending on their **clipSize**, and **reamRate** should be a multiple of **clipSize**. If the **clipSize** of the specified ammo is 0, no **clip**s are spent.",
       "default": "1"
     },
     "projectileType": {
-      "description": "Type of the weapon projectile, used for the projectile sprite in dogfights:\n\n*   0 - [Stingray](/index.php/Stingray \"Stingray\")\n*   1 - [Avalanche](/index.php/Avalanche \"Avalanche\")\n*   2 - [Cannon](/index.php/Cannon \"Cannon\")\n*   3 - [Fusion Ball](/index.php/Fusion_Ball \"Fusion Ball\")\n*   4 - [Laser Cannon](/index.php/Laser_Cannon \"Laser Cannon\")\n*   5 - [Plasma Beam](/index.php/Plasma_Beam \"Plasma Beam\")",
+      "description": "Type of the weapon projectile, used for the projectile sprite in dogfights:\n\n*   0 - [Stingray](https://www.ufopaedia.org/index.php/Stingray)\n*   1 - [Avalanche](https://www.ufopaedia.org/index.php/Avalanche)\n*   2 - [Cannon](https://www.ufopaedia.org/index.php/Cannon)\n*   3 - [Fusion Ball](https://www.ufopaedia.org/index.php/Fusion_Ball)\n*   4 - [Laser Cannon](https://www.ufopaedia.org/index.php/Laser_Cannon)\n*   5 - [Plasma Beam](https://www.ufopaedia.org/index.php/Plasma_Beam)",
       "default": "2"
     },
     "projectileSpeed": {
@@ -653,11 +653,11 @@
       "default": "0"
     },
     "launcher": {
-      "description": "String ID of the [item](#Items) required to equip this weapon.",
+      "description": "String ID of the [item](https://www.ufopaedia.org#Items) required to equip this weapon.",
       "default": "required"
     },
     "clip": {
-      "description": "String ID of the [item](#Items) required to rearm this weapon.",
+      "description": "String ID of the [item](https://www.ufopaedia.org#Items) required to rearm this weapon.",
       "default": "-"
     },
     "underwaterOnly": {
@@ -683,11 +683,11 @@
       "default": "-"
     },
     "battleType": {
-      "description": "Defines the weapon's behavior in the Battlescape:\n\n*   0 - None (Geoscape-only item)\n*   1 - [Firearm](/index.php/Weapons \"Weapons\")\n*   2 - Ammo\n*   3 - Melee\n*   4 - [Grenade](/index.php/Grenade \"Grenade\")\n*   5 - [Proximity Grenade](/index.php/Proximity_Grenade \"Proximity Grenade\")\n*   6 - [Medi-Kit](/index.php/Medi-Kit_(EU) \"Medi-Kit (EU)\")\n*   7 - [Motion Scanner](/index.php/Motion_Scanner \"Motion Scanner\")\n*   8 - [Mind Probe](/index.php/Mind_Probe \"Mind Probe\")\n*   9 - [Psi-Amp](/index.php/Psi-Amp \"Psi-Amp\")\n*   10 - [Electro-flare](/index.php/Electro-flare \"Electro-flare\")\n*   11 - Corpse",
+      "description": "Defines the weapon's behavior in the Battlescape:\n\n*   0 - None (Geoscape-only item)\n*   1 - [Firearm](https://www.ufopaedia.org/index.php/Weapons)\n*   2 - Ammo\n*   3 - Melee\n*   4 - [Grenade](https://www.ufopaedia.org/index.php/Grenade)\n*   5 - [Proximity Grenade](https://www.ufopaedia.org/index.php/Proximity_Grenade)\n*   6 - [Medi-Kit](https://www.ufopaedia.org/index.php/Medi-Kit_(EU))\n*   7 - [Motion Scanner](https://www.ufopaedia.org/index.php/Motion_Scanner)\n*   8 - [Mind Probe](https://www.ufopaedia.org/index.php/Mind_Probe)\n*   9 - [Psi-Amp](https://www.ufopaedia.org/index.php/Psi-Amp)\n*   10 - [Electro-flare](https://www.ufopaedia.org/index.php/Electro-flare)\n*   11 - Corpse",
       "default": "0"
     },
     "requires": {
-      "description": "List of [topics](#Research) (string IDs) that must be researched to unlock this item. If none are specified, this item is unlocked from the start. Soldiers can only use unlocked items in the Battlescape.",
+      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this item. If none are specified, this item is unlocked from the start. Soldiers can only use unlocked items in the Battlescape.",
       "default": "-"
     },
     "requiresBuy": {
@@ -699,7 +699,7 @@
       "default": "-"
     },
     "size": {
-      "description": "Space occupied by this item in [Base Stores](/index.php/Base_Stores \"Base Stores\"). Can be a decimal value.",
+      "description": "Space occupied by this item in [Base Stores](https://www.ufopaedia.org/index.php/Base_Stores). Can be a decimal value.",
       "default": "0.0"
     },
     "costBuy": {
@@ -715,7 +715,7 @@
       "default": "24"
     },
     "categories": {
-      "description": "A list of [categories](#Item_Categories) this item belongs to.",
+      "description": "A list of [categories](https://www.ufopaedia.org#Item_Categories) this item belongs to.",
       "default": "-"
     },
     "monthlyMaintenance": {
@@ -731,23 +731,23 @@
       "default": "-"
     },
     "bigSprite": {
-      "description": "Sprite ID from [BIGOBS.PCK](/index.php/BIGOBS.PCK \"BIGOBS.PCK\") used to draw this item in a soldier's inventory and UFOpaedia.",
+      "description": "Sprite ID from [BIGOBS.PCK](https://www.ufopaedia.org/index.php/BIGOBS.PCK) used to draw this item in a soldier's inventory and UFOpaedia.",
       "default": "-1"
     },
     "specialIconSprite": {
-      "description": "Sprite ID from [SPICONS.DAT](/index.php/SPICONS.DAT \"SPICONS.DAT\") used to draw this item when used as **specialWeapon** (in Armor definition).",
+      "description": "Sprite ID from [SPICONS.DAT](https://www.ufopaedia.org/index.php/SPICONS.DAT) used to draw this item when used as **specialWeapon** (in Armor definition).",
       "default": "-1"
     },
     "floorSprite": {
-      "description": "Sprite ID from [FLOOROB.PCK](/index.php/FLOOROB.PCK \"FLOOROB.PCK\") used to draw this item on the floor of a Battlescape tile.",
+      "description": "Sprite ID from [FLOOROB.PCK](https://www.ufopaedia.org/index.php/FLOOROB.PCK) used to draw this item on the floor of a Battlescape tile.",
       "default": "-1"
     },
     "handSprite": {
-      "description": "Sprite ID from [HANDOB.PCK](/index.php/HANDOB.PCK \"HANDOB.PCK\") used to draw this item on a soldier's hand in the Battlescape.\n\nmodders: each handobject needs 8 images (8 directions) define the extrasprites accordingly",
+      "description": "Sprite ID from [HANDOB.PCK](https://www.ufopaedia.org/index.php/HANDOB.PCK) used to draw this item on a soldier's hand in the Battlescape.\n\nmodders: each handobject needs 8 images (8 directions) define the extrasprites accordingly",
       "default": "120"
     },
     "bulletSprite": {
-      "description": "Sprite ID from _BulletSprites.png_ used to draw this weapon's projectile on the Battlescape:\n\n*   0 - [Rocket Launcher](/index.php/Rocket_Launcher \"Rocket Launcher\")\n*   1 - [Pistol](/index.php/Pistol \"Pistol\")\n*   2 - [Rifle](/index.php/Rifle \"Rifle\")\n*   3 - [Auto Cannon](/index.php/Auto_Cannon \"Auto Cannon\")\n*   4 - [Heavy Cannon](/index.php/Heavy_Cannon \"Heavy Cannon\")\n*   5 - [Laser Pistol](/index.php/Laser_Pistol \"Laser Pistol\")\n*   6 - [Laser Rifle](/index.php/Laser_Rifle \"Laser Rifle\")\n*   7 - [Heavy Laser](/index.php/Heavy_Laser \"Heavy Laser\")\n*   8 - [Plasma](/index.php/Plasma_Rifle \"Plasma Rifle\")\n*   9 - [Small Launcher](/index.php/Small_Launcher \"Small Launcher\")\n*   10 - [Blaster Launcher](/index.php/Blaster_Launcher \"Blaster Launcher\")\n\nfor modders: the bulletsprite needs to be put into the extraSprites type \"Projectiles\" the bulletsprite can contain up to 35 3x3 images. The corresponding file id is 35\\*\\[bulletSprite\\]",
+      "description": "Sprite ID from _BulletSprites.png_ used to draw this weapon's projectile on the Battlescape:\n\n*   0 - [Rocket Launcher](https://www.ufopaedia.org/index.php/Rocket_Launcher)\n*   1 - [Pistol](https://www.ufopaedia.org/index.php/Pistol)\n*   2 - [Rifle](https://www.ufopaedia.org/index.php/Rifle)\n*   3 - [Auto Cannon](https://www.ufopaedia.org/index.php/Auto_Cannon)\n*   4 - [Heavy Cannon](https://www.ufopaedia.org/index.php/Heavy_Cannon)\n*   5 - [Laser Pistol](https://www.ufopaedia.org/index.php/Laser_Pistol)\n*   6 - [Laser Rifle](https://www.ufopaedia.org/index.php/Laser_Rifle)\n*   7 - [Heavy Laser](https://www.ufopaedia.org/index.php/Heavy_Laser)\n*   8 - [Plasma](https://www.ufopaedia.org/index.php/Plasma_Rifle)\n*   9 - [Small Launcher](https://www.ufopaedia.org/index.php/Small_Launcher)\n*   10 - [Blaster Launcher](https://www.ufopaedia.org/index.php/Blaster_Launcher)\n\nfor modders: the bulletsprite needs to be put into the extraSprites type \"Projectiles\" the bulletsprite can contain up to 35 3x3 images. The corresponding file id is 35\\*\\[bulletSprite\\]",
       "default": "-1"
     },
     "bulletSpeed": {
@@ -759,7 +759,7 @@
       "default": "0"
     },
     "turretType": {
-      "description": "Sprite ID from [TANKS.PCK](/index.php/TANKS.PCK \"TANKS.PCK\") of the turret to assign to this tank:\n\n*   0 - [Tank/Cannon](/index.php/Tank/Cannon \"Tank/Cannon\")\n*   1 - [Tank/Rocket Launcher](/index.php/Tank/Rocket_Launcher \"Tank/Rocket Launcher\")\n*   2 - [Tank/Laser Cannon](/index.php/Tank/Laser_Cannon \"Tank/Laser Cannon\")\n*   3 - [Hovertank/Plasma](/index.php/Hovertank/Plasma \"Hovertank/Plasma\")\n*   4 - [Hovertank/Launcher](/index.php/Hovertank/Launcher \"Hovertank/Launcher\")",
+      "description": "Sprite ID from [TANKS.PCK](https://www.ufopaedia.org/index.php/TANKS.PCK) of the turret to assign to this tank:\n\n*   0 - [Tank/Cannon](https://www.ufopaedia.org/index.php/Tank/Cannon)\n*   1 - [Tank/Rocket Launcher](https://www.ufopaedia.org/index.php/Tank/Rocket_Launcher)\n*   2 - [Tank/Laser Cannon](https://www.ufopaedia.org/index.php/Tank/Laser_Cannon)\n*   3 - [Hovertank/Plasma](https://www.ufopaedia.org/index.php/Hovertank/Plasma)\n*   4 - [Hovertank/Launcher](https://www.ufopaedia.org/index.php/Hovertank/Launcher)",
       "default": "-1"
     },
     "vaporColor": {
@@ -787,51 +787,51 @@
       "default": "15"
     },
     "explosionHitSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when explosion happens. Can be a list with multiple options. If not specified, default explosion sound is used.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when explosion happens. Can be a list with multiple options. If not specified, default explosion sound is used.",
       "default": "-"
     },
     "reloadSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this weapon is reloaded. Can be a list with multiple options. If not specified, default reload sound is used.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon is reloaded. Can be a list with multiple options. If not specified, default reload sound is used.",
       "default": "-"
     },
     "fireSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this weapon fires. In OXCE, can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon fires. In OXCE, can be a list with multiple options.",
       "default": "-1"
     },
     "hitSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this weapon hits a target. In OXCE, can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon hits a target. In OXCE, can be a list with multiple options.",
       "default": "-1"
     },
     "psiSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this weapon performs a psi attack (only Panic/MindControl). Can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon performs a psi attack (only Panic/MindControl). Can be a list with multiple options.",
       "default": "-"
     },
     "hitMissSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this weapon misses a psi attack (Use/Panic/MindControl). Can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon misses a psi attack (Use/Panic/MindControl). Can be a list with multiple options.",
       "default": "-"
     },
     "psiMissSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this weapon misses a psi attack (only Panic/MindControl). Can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon misses a psi attack (only Panic/MindControl). Can be a list with multiple options.",
       "default": "-"
     },
     "meleeSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this weapon attacks a target with melee. In OXCE, can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon attacks a target with melee. In OXCE, can be a list with multiple options.",
       "default": "39"
     },
     "meleeHitSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this weapon hits a target with melee. In OXCE, can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon hits a target with melee. In OXCE, can be a list with multiple options.",
       "default": "-1"
     },
     "meleeMissSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this weapon misses a target with melee. Can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon misses a target with melee. Can be a list with multiple options.",
       "default": "-"
     },
     "hitAnimation": {
-      "description": "Sprite ID from [SMOKE.PCK](/index.php/SMOKE.PCK \"SMOKE.PCK\") used to draw the weapon's \"hit explosion\". In OXCE, it applies also to Use action of psi weapons.\n\n**NOTE**: Do not define this value for melee/psi weapons, they use [HIT.PCK](/index.php/HIT.PCK \"HIT.PCK\") and therefore meleeAnimation instead.\n\n**NOTE**: Explosive style weapons (Damage type: smoke, incendiary, stun, & High Explosive) use [X1.PCK](/index.php/X1.PCK \"X1.PCK\") and should always be set to the first _above water_ sprite (spriteID for UFO, spriteID + 8 for TFTD). TFTD spritesheet should start with 8 underwater images, followed by 8 above water images.",
+      "description": "Sprite ID from [SMOKE.PCK](https://www.ufopaedia.org/index.php/SMOKE.PCK) used to draw the weapon's \"hit explosion\". In OXCE, it applies also to Use action of psi weapons.\n\n**NOTE**: Do not define this value for melee/psi weapons, they use [HIT.PCK](https://www.ufopaedia.org/index.php/HIT.PCK) and therefore meleeAnimation instead.\n\n**NOTE**: Explosive style weapons (Damage type: smoke, incendiary, stun, & High Explosive) use [X1.PCK](https://www.ufopaedia.org/index.php/X1.PCK) and should always be set to the first _above water_ sprite (spriteID for UFO, spriteID + 8 for TFTD). TFTD spritesheet should start with 8 underwater images, followed by 8 above water images.",
       "default": "-1"
     },
     "hitMissAnimation": {
-      "description": "Sprite ID from [SMOKE.PCK](/index.php/SMOKE.PCK \"SMOKE.PCK\") used to draw the weapon's \"miss explosion\". Applies only to Use action of psi weapons.",
+      "description": "Sprite ID from [SMOKE.PCK](https://www.ufopaedia.org/index.php/SMOKE.PCK) used to draw the weapon's \"miss explosion\". Applies only to Use action of psi weapons.",
       "default": "-1"
     },
     "meleeAnimation": {
@@ -859,15 +859,15 @@
       "default": "false"
     },
     "damageType": {
-      "description": "What type of [damage](/index.php/Damage \"Damage\") does this weapon do:\n\n*   0 - None\n*   1 - Armor Piercing\n*   2 - Incendiary\n*   3 - High Explosive\n*   4 - Laser\n*   5 - Plasma\n*   6 - Stun\n*   7 - Melee\n*   8 - Acid\n*   9 - Smoke\n\nNotes:\n\n*   A damage type other than 0-9 will do nothing in OpenXcom.\n*   In OXCE, there are **10 more damage types** (10-19), which have same default settings as AP/Laser/Plasma/Acid damage types in OpenXcom.",
+      "description": "What type of [damage](https://www.ufopaedia.org/index.php/Damage) does this weapon do:\n\n*   0 - None\n*   1 - Armor Piercing\n*   2 - Incendiary\n*   3 - High Explosive\n*   4 - Laser\n*   5 - Plasma\n*   6 - Stun\n*   7 - Melee\n*   8 - Acid\n*   9 - Smoke\n\nNotes:\n\n*   A damage type other than 0-9 will do nothing in OpenXcom.\n*   In OXCE, there are **10 more damage types** (10-19), which have same default settings as AP/Laser/Plasma/Acid damage types in OpenXcom.",
       "default": "0"
     },
     "blastRadius": {
-      "description": "Size of the projectile explosions. 0 for no explosion. -1 to automatically calculate based on weapon power and damage type (actual **blastRadius** currently is capped due [Explosion calculations](/index.php/Explosions#Playing_With_Fire \"Explosions\")).\n\nNote: blastRadius is deprecated in OXCE. Use **damageAlter.FixRadius** instead. If both are specified, FixRadius is taken.",
+      "description": "Size of the projectile explosions. 0 for no explosion. -1 to automatically calculate based on weapon power and damage type (actual **blastRadius** currently is capped due [Explosion calculations](https://www.ufopaedia.org/index.php/Explosions#Playing_With_Fire)).\n\nNote: blastRadius is deprecated in OXCE. Use **damageAlter.FixRadius** instead. If both are specified, FixRadius is taken.",
       "default": "-1"
     },
     "damageAlter": {
-      "description": "OpenXcom has 10 damage types and the mechanics of all 10 of them are completely hardcoded. In OXCE, you can use one of these hardcoded damage types as a starting point, but still be able to override all damage aspects for every item. To do this, you always use a pair of attributes for default and override:\n\n*   for normal/primary damage: default is in **damageType** and overrides in **damageAlter**\n*   for secondary melee damage: default is in **meleeType** and overrides in **meleeAlter**\n\nDamage override has many attributes, which are all described in [Item Damage Types](#Item_Damage_Types).\n\nSmall example:\n\n```\n - type: STR_HWP_DISC_PLASMA_CANNON\n   damageType: 5\n   damageAlter:\n     RandomType: 6\n     IgnoreOverKill: false\n     ToArmorPre: 0.05\n     ToStun: 0.75\n     RandomWound: false\n     ToWound: 0.12\n     FireThreshold: 25\n\n```",
+      "description": "OpenXcom has 10 damage types and the mechanics of all 10 of them are completely hardcoded. In OXCE, you can use one of these hardcoded damage types as a starting point, but still be able to override all damage aspects for every item. To do this, you always use a pair of attributes for default and override:\n\n*   for normal/primary damage: default is in **damageType** and overrides in **damageAlter**\n*   for secondary melee damage: default is in **meleeType** and overrides in **meleeAlter**\n\nDamage override has many attributes, which are all described in [Item Damage Types](https://www.ufopaedia.org#Item_Damage_Types).\n\nSmall example:\n\n```\n - type: STR_HWP_DISC_PLASMA_CANNON\n   damageType: 5\n   damageAlter:\n     RandomType: 6\n     IgnoreOverKill: false\n     ToArmorPre: 0.05\n     ToStun: 0.75\n     RandomWound: false\n     ToWound: 0.12\n     FireThreshold: 25\n\n```",
       "default": "-"
     },
     "meleePower": {
@@ -879,7 +879,7 @@
       "default": "-"
     },
     "meleeAlter": {
-      "description": "Damage type details for **meleeType**.\n\nDamage override has many attributes, which are all described in [Item Damage Types](#Item_Damage_Types).",
+      "description": "Damage type details for **meleeType**.\n\nDamage override has many attributes, which are all described in [Item Damage Types](https://www.ufopaedia.org#Item_Damage_Types).",
       "default": "-"
     },
     "strengthApplied": {
@@ -899,19 +899,19 @@
       "default": "-1"
     },
     "accuracyAimed": {
-      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](/index.php/Firing_Accuracy \"Firing Accuracy\") when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
+      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](https://www.ufopaedia.org/index.php/Firing_Accuracy) when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
       "default": "0000"
     },
     "accuracySnap": {
-      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](/index.php/Firing_Accuracy \"Firing Accuracy\") when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
+      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](https://www.ufopaedia.org/index.php/Firing_Accuracy) when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
       "default": "0000"
     },
     "accuracyAuto": {
-      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](/index.php/Firing_Accuracy \"Firing Accuracy\") when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
+      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](https://www.ufopaedia.org/index.php/Firing_Accuracy) when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
       "default": "0000"
     },
     "accuracyMelee": {
-      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](/index.php/Firing_Accuracy \"Firing Accuracy\") when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
+      "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](https://www.ufopaedia.org/index.php/Firing_Accuracy) when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
       "default": "0000"
     },
     "accuracyPanic": {
@@ -971,7 +971,7 @@
       "default": "-"
     },
     "waypoints": {
-      "description": "Gives the integer number of waypoints the weapon can use. (eg. [Blaster Launcher](/index.php/Blaster_Launcher \"Blaster Launcher\")). Can also be used to make ammo items use the waypoint system. \"-1\" means unlimited waypoints.",
+      "description": "Gives the integer number of waypoints the weapon can use. (eg. [Blaster Launcher](https://www.ufopaedia.org/index.php/Blaster_Launcher)). Can also be used to make ammo items use the waypoint system. \"-1\" means unlimited waypoints.",
       "default": "0"
     },
     "sprayWaypoints": {
@@ -1043,11 +1043,11 @@
       "default": "-"
     },
     "tuLoad": {
-      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to load/unload this item.\n\n**Note**: in OXCE, when loading a weapon, you need to **additionally** pay the cost of moving the ammo from its current inventory slot into a hand slot! Consider that when balancing reload costs.\n\n**Update**: since OXCE v6.2, the OXCE behavior is now turned off by default. It can be enabled using the **extendedItemReloadCost** setting.",
+      "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to load/unload this item.\n\n**Note**: in OXCE, when loading a weapon, you need to **additionally** pay the cost of moving the ammo from its current inventory slot into a hand slot! Consider that when balancing reload costs.\n\n**Update**: since OXCE v6.2, the OXCE behavior is now turned off by default. It can be enabled using the **extendedItemReloadCost** setting.",
       "default": "158"
     },
     "tuUnload": {
-      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to load/unload this item.\n\n**Note**: in OXCE, when loading a weapon, you need to **additionally** pay the cost of moving the ammo from its current inventory slot into a hand slot! Consider that when balancing reload costs.\n\n**Update**: since OXCE v6.2, the OXCE behavior is now turned off by default. It can be enabled using the **extendedItemReloadCost** setting.",
+      "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to load/unload this item.\n\n**Note**: in OXCE, when loading a weapon, you need to **additionally** pay the cost of moving the ammo from its current inventory slot into a hand slot! Consider that when balancing reload costs.\n\n**Update**: since OXCE v6.2, the OXCE behavior is now turned off by default. It can be enabled using the **extendedItemReloadCost** setting.",
       "default": "158"
     },
     "ammo": {
@@ -1099,43 +1099,43 @@
       "default": "<="
     },
     "tuAimed": {
-      "description": "The percentage (0-100%) of [Time Units](/index.php/Time_Units \"Time Units\") (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
+      "description": "The percentage (0-100%) of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
       "default": "0000"
     },
     "tuSnap": {
-      "description": "The percentage (0-100%) of [Time Units](/index.php/Time_Units \"Time Units\") (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
+      "description": "The percentage (0-100%) of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
       "default": "0000"
     },
     "tuAuto": {
-      "description": "The percentage (0-100%) of [Time Units](/index.php/Time_Units \"Time Units\") (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
+      "description": "The percentage (0-100%) of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
       "default": "0000"
     },
     "tuMelee": {
-      "description": "The percentage (0-100%) of [Time Units](/index.php/Time_Units \"Time Units\") (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
+      "description": "The percentage (0-100%) of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
       "default": "0000"
     },
     "tuUse": {
-      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to use this item (for non-offensive items). It's a flat rate if **flatRate** is true, otherwise it's a percentage (0-100%).",
+      "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to use this item (for non-offensive items). It's a flat rate if **flatRate** is true, otherwise it's a percentage (0-100%).",
       "default": "0"
     },
     "tuMindControl": {
-      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to use this item. If not specified, defaults to **tuUse**.",
+      "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to use this item. If not specified, defaults to **tuUse**.",
       "default": "-1-1"
     },
     "tuPanic": {
-      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to use this item. If not specified, defaults to **tuUse**.",
+      "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to use this item. If not specified, defaults to **tuUse**.",
       "default": "-1-1"
     },
     "tuThrow": {
-      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to throw/prime/unprime this item.",
+      "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to throw/prime/unprime this item.",
       "default": "255025"
     },
     "tuPrime": {
-      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to throw/prime/unprime this item.",
+      "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to throw/prime/unprime this item.",
       "default": "255025"
     },
     "tuUnprime": {
-      "description": "Amount of [Time Units](/index.php/Time_Units \"Time Units\") required to throw/prime/unprime this item.",
+      "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to throw/prime/unprime this item.",
       "default": "255025"
     },
     "costAimed": {
@@ -1231,11 +1231,11 @@
       "default": "true"
     },
     "recoveryPoints": {
-      "description": "[Score](/index.php/Score \"Score\") gained for recovering this alien artifact.",
+      "description": "[Score](https://www.ufopaedia.org/index.php/Score) gained for recovering this alien artifact.",
       "default": "0"
     },
     "liveAlien": {
-      "description": "Does this item represent a live alien? (counts towards [Alien Containment](/index.php/Alien_Containment \"Alien Containment\"))",
+      "description": "Does this item represent a live alien? (counts towards [Alien Containment](https://www.ufopaedia.org/index.php/Alien_Containment))",
       "default": "false"
     },
     "prisonType": {
@@ -1283,35 +1283,35 @@
       "default": "false"
     },
     "painKiller": {
-      "description": "Amount of painkillers contained in a [Medi-Kit](/index.php/Medi-Kit_(EU) \"Medi-Kit (EU)\").",
+      "description": "Amount of painkillers contained in a [Medi-Kit](https://www.ufopaedia.org/index.php/Medi-Kit_(EU)).",
       "default": "0"
     },
     "heal": {
-      "description": "Amount of heals contained in a [Medi-Kit](/index.php/Medi-Kit_(EU) \"Medi-Kit (EU)\").",
+      "description": "Amount of heals contained in a [Medi-Kit](https://www.ufopaedia.org/index.php/Medi-Kit_(EU)).",
       "default": "0"
     },
     "stimulant": {
-      "description": "Amount of stimulants contained in a [Medi-Kit](/index.php/Medi-Kit_(EU) \"Medi-Kit (EU)\").",
+      "description": "Amount of stimulants contained in a [Medi-Kit](https://www.ufopaedia.org/index.php/Medi-Kit_(EU)).",
       "default": "0"
     },
     "woundRecovery": {
-      "description": "Amount of [Fatal Wounds](/index.php/Fatal_Wounds \"Fatal Wounds\") treated by each heal of a [Medi-Kit](/index.php/Medi-Kit_(EU) \"Medi-Kit (EU)\").",
+      "description": "Amount of [Fatal Wounds](https://www.ufopaedia.org/index.php/Fatal_Wounds) treated by each heal of a [Medi-Kit](https://www.ufopaedia.org/index.php/Medi-Kit_(EU)).",
       "default": "0"
     },
     "healthRecovery": {
-      "description": "Amount of [Health](/index.php/Health \"Health\") recovered by each heal of a [Medi-Kit](/index.php/Medi-Kit_(EU) \"Medi-Kit (EU)\").",
+      "description": "Amount of [Health](https://www.ufopaedia.org/index.php/Health) recovered by each heal of a [Medi-Kit](https://www.ufopaedia.org/index.php/Medi-Kit_(EU)).",
       "default": "0"
     },
     "stunRecovery": {
-      "description": "Amount of [Stun](/index.php/Stun \"Stun\") removed by each stimulant of a [Medi-Kit](/index.php/Medi-Kit_(EU) \"Medi-Kit (EU)\").",
+      "description": "Amount of [Stun](https://www.ufopaedia.org/index.php/Stun) removed by each stimulant of a [Medi-Kit](https://www.ufopaedia.org/index.php/Medi-Kit_(EU)).",
       "default": "0"
     },
     "energyRecovery": {
-      "description": "Amount of [Energy](/index.php/Energy \"Energy\") recovered by each stimulant of a [Medi-Kit](/index.php/Medi-Kit_(EU) \"Medi-Kit (EU)\").",
+      "description": "Amount of [Energy](https://www.ufopaedia.org/index.php/Energy) recovered by each stimulant of a [Medi-Kit](https://www.ufopaedia.org/index.php/Medi-Kit_(EU)).",
       "default": "0"
     },
     "manaRecovery": {
-      "description": "Amount of Mana recovered by each stimulant of a [Medi-Kit](/index.php/Medi-Kit_(EU) \"Medi-Kit (EU)\").",
+      "description": "Amount of Mana recovered by each stimulant of a [Medi-Kit](https://www.ufopaedia.org/index.php/Medi-Kit_(EU)).",
       "default": "0"
     },
     "painKillerRecovery": {
@@ -1327,7 +1327,7 @@
       "default": "-"
     },
     "weight": {
-      "description": "[Weight](/index.php/Item_Weight \"Item Weight\") occupied by this item in a soldier's inventory.",
+      "description": "[Weight](https://www.ufopaedia.org/index.php/Item_Weight) occupied by this item in a soldier's inventory.",
       "default": "3"
     },
     "invWidth": {
@@ -1431,7 +1431,7 @@
       "default": "false"
     },
     "zombieUnit": {
-      "description": "String ID of the unit used for zombification (eg. [Chrysallids](/index.php/Chrysallid \"Chrysallid\") turn units into [Zombies](/index.php/Zombie \"Zombie\")).",
+      "description": "String ID of the unit used for zombification (eg. [Chrysallids](https://www.ufopaedia.org/index.php/Chrysallid) turn units into [Zombies](https://www.ufopaedia.org/index.php/Zombie)).",
       "default": "-"
     },
     "zombieUnitByArmorMale": {
@@ -1637,7 +1637,7 @@
       "default": "STR_VERY_SMALL"
     },
     "sprite": {
-      "description": "Sprite ID from [INTERWIN.DAT](/index.php/INTERWIN.DAT \"INTERWIN.DAT\") used to draw this UFO in the dogfight view and UFOpaedia.\n\nNote: don't try to add more images if you don't want to punch yourself in the face - use **modSprite** instead.",
+      "description": "Sprite ID from [INTERWIN.DAT](https://www.ufopaedia.org/index.php/INTERWIN.DAT) used to draw this UFO in the dogfight view and UFOpaedia.\n\nNote: don't try to add more images if you don't want to punch yourself in the face - use **modSprite** instead.",
       "default": "-1"
     },
     "modSprite": {
@@ -1665,7 +1665,7 @@
       "default": "0"
     },
     "score": {
-      "description": "[Score](/index.php/Score \"Score\") gained when this UFO is destroyed, or half this score if it crash lands.",
+      "description": "[Score](https://www.ufopaedia.org/index.php/Score) gained when this UFO is destroyed, or half this score if it crash lands.",
       "default": "0"
     },
     "reload": {
@@ -1681,7 +1681,7 @@
       "default": "1"
     },
     "battlescapeTerrainData": {
-      "description": "[Terrain](#Terrains) associated to this UFO in Battlescape missions.",
+      "description": "[Terrain](https://www.ufopaedia.org#Terrains) associated to this UFO in Battlescape missions.",
       "default": "required"
     },
     "hunterKillerPercentage": {
@@ -1729,7 +1729,7 @@
       "default": "-1"
     },
     "raceBonus": {
-      "description": "Modifies or overrides the UFO Stats per alien race.\n\nYou can use this to make the same type of UFO have different [stats](#UFO_Stats) depending on the alien race.\n\n```\n - type: STR_TERROR_SHIP\n   raceBonus:\n     STR_MUTON:\n       hitBonus: 20\n       craftCustomDeploy: STR_MORE_SCARY_WEAPONS\n       missionCustomDeploy: STR_TERROR_SITE_MUTONS\n     STR_ETHEREAL:\n       missionCustomDeploy: STR_END_OF_THE_WORLD\n\n```",
+      "description": "Modifies or overrides the UFO Stats per alien race.\n\nYou can use this to make the same type of UFO have different [stats](https://www.ufopaedia.org#UFO_Stats) depending on the alien race.\n\n```\n - type: STR_TERROR_SHIP\n   raceBonus:\n     STR_MUTON:\n       hitBonus: 20\n       craftCustomDeploy: STR_MORE_SCARY_WEAPONS\n       missionCustomDeploy: STR_TERROR_SITE_MUTONS\n     STR_ETHEREAL:\n       missionCustomDeploy: STR_END_OF_THE_WORLD\n\n```",
       "default": "-"
     },
     "damageMax": {
@@ -1785,11 +1785,11 @@
       "default": "0"
     },
     "craftCustomDeploy": {
-      "description": "Overrides the [deployment data](#Deployment_Data) used during the Battlescape generation, when the UFO crashes or lands.",
+      "description": "Overrides the [deployment data](https://www.ufopaedia.org#Deployment_Data) used during the Battlescape generation, when the UFO crashes or lands.",
       "default": "-"
     },
     "missionCustomDeploy": {
-      "description": "Overrides the [deployment data](#Deployment_Data) used during the Battlescape generation, when the UFO spawns a mission site.",
+      "description": "Overrides the [deployment data](https://www.ufopaedia.org#Deployment_Data) used during the Battlescape generation, when the UFO spawns a mission site.",
       "default": "-"
     }
   },
@@ -1811,17 +1811,17 @@
       "default": "-"
     },
     "costs": {
-      "description": "List of [Time Units](/index.php/Time_Units \"Time Units\") costs to move an item from this section to another one (eg. _STR\\_BACKPACK: 16_ means it will cost 16 TUs to move an item from this section to the Backpack).",
+      "description": "List of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) costs to move an item from this section to another one (eg. _STR\\_BACKPACK: 16_ means it will cost 16 TUs to move an item from this section to the Backpack).",
       "default": "-"
     }
   },
   "terrains": {
     "name": {
-      "description": "Filename of the [map](/index.php/MAPS \"MAPS\").",
+      "description": "Filename of the [map](https://www.ufopaedia.org/index.php/MAPS).",
       "default": "required"
     },
     "mapDataSets": {
-      "description": "List of filenames (each with matching [MCD](/index.php/MCD \"MCD\")/[PCK/TAB](/index.php/Image_Formats#PCK \"Image Formats\") files) that contain the tiles of this terrain.",
+      "description": "List of filenames (each with matching [MCD](https://www.ufopaedia.org/index.php/MCD)/[PCK/TAB](https://www.ufopaedia.org/index.php/Image_Formats#PCK) files) that contain the tiles of this terrain.",
       "default": "-"
     },
     "mapBlocks": {
@@ -1845,7 +1845,7 @@
       "default": "[0, 0]"
     },
     "ambience": {
-      "description": "The ambient sound effect. Sound ID from [BATTLE.CAT](#Extra_Sounds).",
+      "description": "The ambient sound effect. Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
       "default": "-1"
     },
     "ambientVolume": {
@@ -2005,11 +2005,11 @@
       "default": "-"
     },
     "spriteSheet": {
-      "description": "Sprite sheet from [UNITS](/index.php/UNITS \"UNITS\") used to draw a unit wearing this armor.",
+      "description": "Sprite sheet from [UNITS](https://www.ufopaedia.org/index.php/UNITS) used to draw a unit wearing this armor.",
       "default": "-"
     },
     "spriteInv": {
-      "description": "Sprite used for the [Inventory Backgrounds](/index.php/Inventory_Backgrounds \"Inventory Backgrounds\") of a unit wearing this armor.",
+      "description": "Sprite used for the [Inventory Backgrounds](https://www.ufopaedia.org/index.php/Inventory_Backgrounds) of a unit wearing this armor.",
       "default": "-"
     },
     "layersDefaultPrefix layersSpecificPrefix layersDefinition": {
@@ -2025,15 +2025,15 @@
       "default": "-"
     },
     "corpseBattle": {
-      "description": "List of string IDs of the corpse [items](#Items) generated when a unit wearing this armor is killed/stunned (1 for 1x1 unit, 4 for 2x2 unit) on the Battlescape.",
+      "description": "List of string IDs of the corpse [items](https://www.ufopaedia.org#Items) generated when a unit wearing this armor is killed/stunned (1 for 1x1 unit, 4 for 2x2 unit) on the Battlescape.",
       "default": "-"
     },
     "corpseGeo": {
-      "description": "String ID of the corpse [item](#Items) recovered in Debriefing. Defaults to **corpseBattle** if omitted.\n\nTip for modders: useful for example when you want to recover a \"damaged\" version of a soldier's armor.",
+      "description": "String ID of the corpse [item](https://www.ufopaedia.org#Items) recovered in Debriefing. Defaults to **corpseBattle** if omitted.\n\nTip for modders: useful for example when you want to recover a \"damaged\" version of a soldier's armor.",
       "default": "-"
     },
     "storeItem": {
-      "description": "String ID of the [item](#Items) that represents this armor in [Base Stores](/index.php/Base_Stores \"Base Stores\") for equipping. Set to _STR\\_NONE_ to not require an item (eg. [coveralls](/index.php/Coveralls \"Coveralls\")).",
+      "description": "String ID of the [item](https://www.ufopaedia.org#Items) that represents this armor in [Base Stores](https://www.ufopaedia.org/index.php/Base_Stores) for equipping. Set to _STR\\_NONE_ to not require an item (eg. [coveralls](https://www.ufopaedia.org/index.php/Coveralls)).",
       "default": "-"
     },
     "specialWeapon": {
@@ -2065,7 +2065,7 @@
       "default": "0"
     },
     "drawingRoutine": {
-      "description": "Drawing routine used to put together the body parts in the unit's **spriteSheet**:\n\n*   0 = [Soldier](/index.php/Soldier \"Soldier\"), [Sectoid](/index.php/Sectoid \"Sectoid\")\n*   1 = [Floater](/index.php/Floater \"Floater\")\n*   2 = [HWP](/index.php/HWP \"HWP\")\n*   3 = [Cyberdisk](/index.php/Cyberdisk \"Cyberdisk\")\n*   4 = [Civilian](/index.php/Civilian \"Civilian\"), [Ethereal](/index.php/Ethereal \"Ethereal\")\n*   5 = [Sectopod](/index.php/Sectopod \"Sectopod\"), [Reaper](/index.php/Reaper \"Reaper\")\n*   6 = [Snakeman](/index.php/Snakeman \"Snakeman\")\n*   7 = [Chryssalid](/index.php/Chryssalid \"Chryssalid\")\n*   8 = [Silacoid](/index.php/Silacoid \"Silacoid\")\n*   9 = [Celatid](/index.php/Celatid \"Celatid\")\n*   10 = [Muton](/index.php/Muton \"Muton\") (identical to routine 0 except for the placement of a single arm frame while walking in a specific direction, use routine 0 instead)\n*   11 = [Submersible Weapons Systems](/index.php/Submersible_Weapons_Systems \"Submersible Weapons Systems\")\n*   12 = [Hallucinoid](/index.php/Hallucinoid \"Hallucinoid\")\n*   13 = [Aquanauts](/index.php/Aquanauts \"Aquanauts\")\n*   14 = [Calcinite](/index.php/Calcinite \"Calcinite\"), [Deep One](/index.php/Deep_One \"Deep One\"), [Gillman](/index.php/Gillman \"Gillman\"), [Lobster Man](/index.php/Lobster_Man \"Lobster Man\"), [Tasoth](/index.php/Tasoth \"Tasoth\")\n*   15 = [Aquatoid](/index.php/Aquatoid \"Aquatoid\")\n*   16 = [Bio-Drone](/index.php/Bio-Drone \"Bio-Drone\")\n*   17 = TFTD Civilians type A and [Zombie\\_(TFTD)](/index.php/Zombie_(TFTD) \"Zombie (TFTD)\")\n*   18 = TFTD Civilians type B\n*   19 = [Tentaculat](/index.php/Tentaculat \"Tentaculat\")\n*   20 = [Triscene](/index.php/Triscene \"Triscene\")\n*   21 = [Xarquid](/index.php/Xarquid \"Xarquid\")\n*   22 = Inverted [Cyberdisc](/index.php/Cyberdisc \"Cyberdisc\") (propulsion animation on top)",
+      "description": "Drawing routine used to put together the body parts in the unit's **spriteSheet**:\n\n*   0 = [Soldier](https://www.ufopaedia.org/index.php/Soldier), [Sectoid](https://www.ufopaedia.org/index.php/Sectoid)\n*   1 = [Floater](https://www.ufopaedia.org/index.php/Floater)\n*   2 = [HWP](https://www.ufopaedia.org/index.php/HWP)\n*   3 = [Cyberdisk](https://www.ufopaedia.org/index.php/Cyberdisk)\n*   4 = [Civilian](https://www.ufopaedia.org/index.php/Civilian), [Ethereal](https://www.ufopaedia.org/index.php/Ethereal)\n*   5 = [Sectopod](https://www.ufopaedia.org/index.php/Sectopod), [Reaper](https://www.ufopaedia.org/index.php/Reaper)\n*   6 = [Snakeman](https://www.ufopaedia.org/index.php/Snakeman)\n*   7 = [Chryssalid](https://www.ufopaedia.org/index.php/Chryssalid)\n*   8 = [Silacoid](https://www.ufopaedia.org/index.php/Silacoid)\n*   9 = [Celatid](https://www.ufopaedia.org/index.php/Celatid)\n*   10 = [Muton](https://www.ufopaedia.org/index.php/Muton) (identical to routine 0 except for the placement of a single arm frame while walking in a specific direction, use routine 0 instead)\n*   11 = [Submersible Weapons Systems](https://www.ufopaedia.org/index.php/Submersible_Weapons_Systems)\n*   12 = [Hallucinoid](https://www.ufopaedia.org/index.php/Hallucinoid)\n*   13 = [Aquanauts](https://www.ufopaedia.org/index.php/Aquanauts)\n*   14 = [Calcinite](https://www.ufopaedia.org/index.php/Calcinite), [Deep One](https://www.ufopaedia.org/index.php/Deep_One), [Gillman](https://www.ufopaedia.org/index.php/Gillman), [Lobster Man](https://www.ufopaedia.org/index.php/Lobster_Man), [Tasoth](https://www.ufopaedia.org/index.php/Tasoth)\n*   15 = [Aquatoid](https://www.ufopaedia.org/index.php/Aquatoid)\n*   16 = [Bio-Drone](https://www.ufopaedia.org/index.php/Bio-Drone)\n*   17 = TFTD Civilians type A and [Zombie\\_(TFTD)](https://www.ufopaedia.org/index.php/Zombie_(TFTD))\n*   18 = TFTD Civilians type B\n*   19 = [Tentaculat](https://www.ufopaedia.org/index.php/Tentaculat)\n*   20 = [Triscene](https://www.ufopaedia.org/index.php/Triscene)\n*   21 = [Xarquid](https://www.ufopaedia.org/index.php/Xarquid)\n*   22 = Inverted [Cyberdisc](https://www.ufopaedia.org/index.php/Cyberdisc) (propulsion animation on top)",
       "default": "0"
     },
     "drawBubbles": {
@@ -2073,7 +2073,7 @@
       "default": "false"
     },
     "movementType": {
-      "description": "Type of movement provided by this armor:\n\n*   0 = Walking\n*   1 = Flying\n*   2 = Sliding (no walking animation)\n*   3 = Floating (fly underwater, walk on the surface)\n*   4 = Sinking (walk underwater, fly on the surface)\n\nit also defines the body of a tank (32-images) in your spriteSheet or the change in sprites while flying using a flying armor see: [TANKS.PCK](/index.php/TANKS.PCK \"TANKS.PCK\"), [XCOM\\_2.PCK](/index.php/XCOM_2.PCK \"XCOM 2.PCK\")",
+      "description": "Type of movement provided by this armor:\n\n*   0 = Walking\n*   1 = Flying\n*   2 = Sliding (no walking animation)\n*   3 = Floating (fly underwater, walk on the surface)\n*   4 = Sinking (walk underwater, fly on the surface)\n\nit also defines the body of a tank (32-images) in your spriteSheet or the change in sprites while flying using a flying armor see: [TANKS.PCK](https://www.ufopaedia.org/index.php/TANKS.PCK), [XCOM\\_2.PCK](https://www.ufopaedia.org/index.php/XCOM_2.PCK)",
       "default": "0"
     },
     "turnBeforeFirstStep": {
@@ -2085,27 +2085,27 @@
       "default": "1"
     },
     "moveSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when a unit wearing this armor moves (overrides unit's moveSound).",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor moves (overrides unit's moveSound).",
       "default": "-1"
     },
     "deathMale/deathFemale": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when a unit wearing this armor dies. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor dies. A list of sound IDs can be used too.",
       "default": "-"
     },
     "selectUnitMale/selectUnitFemale": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when a unit wearing this armor is manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor is manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "startMovingMale/startMovingFemale": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when a unit wearing this armor starts moving. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor starts moving. A list of sound IDs can be used too.",
       "default": "-"
     },
     "selectWeaponMale/selectWeaponFemale": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when a weapon of a unit wearing this armor is selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a weapon of a unit wearing this armor is selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "annoyedMale/annoyedFemale": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when a unit wearing this armor is repeatedly manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor is repeatedly manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "size": {
@@ -2161,11 +2161,11 @@
       "default": "-"
     },
     "damageModifier": {
-      "description": "List of decimal damage modifiers (1.0 = 100%) this armor applies to each damage type (see [Items section](#Items)) received. Modifiers must be specified for all damage types, in this order:\n\n*   None\n*   Armor Piercing\n*   Incendiary\n*   High Explosive\n*   Laser\n*   Plasma\n*   Stun\n*   Melee\n*   Acid\n*   Smoke\n\nIn OXCE, there are 10 additional (nameless) damage types, which you can name and use for any purpose you like (e.g. create Electric damage, Freeze damage, EMP damage or whatever). You are also not forced to specify all 20 values if you are using less. If you for example only use 2 additional damage types, it is enough to specify only 12 (10 vanilla + 2 additional).",
+      "description": "List of decimal damage modifiers (1.0 = 100%) this armor applies to each damage type (see [Items section](https://www.ufopaedia.org#Items)) received. Modifiers must be specified for all damage types, in this order:\n\n*   None\n*   Armor Piercing\n*   Incendiary\n*   High Explosive\n*   Laser\n*   Plasma\n*   Stun\n*   Melee\n*   Acid\n*   Smoke\n\nIn OXCE, there are 10 additional (nameless) damage types, which you can name and use for any purpose you like (e.g. create Electric damage, Freeze damage, EMP damage or whatever). You are also not forced to specify all 20 values if you are using less. If you for example only use 2 additional damage types, it is enough to specify only 12 (10 vanilla + 2 additional).",
       "default": "- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0"
     },
     "loftempsSet": {
-      "description": "List of [LOFTEMPS](/index.php/LOFTEMPS \"LOFTEMPS\") IDs (1 for 1x1 units, 4 for 2x2 units) used to represent a unit wearing this armor in 3D voxel space.",
+      "description": "List of [LOFTEMPS](https://www.ufopaedia.org/index.php/LOFTEMPS) IDs (1 for 1x1 units, 4 for 2x2 units) used to represent a unit wearing this armor in 3D voxel space.",
       "default": "-"
     },
     "loftemps": {
@@ -2189,19 +2189,19 @@
       "default": "0"
     },
     "spriteFaceGroup": {
-      "description": "[Palette](/index.php/PALETTES.DAT#Color_Indexes \"PALETTES.DAT\") offset (1-15) used for replacing colors when drawing units. Replacement is based on unit's avatar (gender & look). Default 0 (unused).\n\nAs the name suggests, it is usually used to recolor faces.",
+      "description": "[Palette](https://www.ufopaedia.org/index.php/PALETTES.DAT#Color_Indexes) offset (1-15) used for replacing colors when drawing units. Replacement is based on unit's avatar (gender & look). Default 0 (unused).\n\nAs the name suggests, it is usually used to recolor faces.",
       "default": "example:  6"
     },
     "spriteHairGroup": {
-      "description": "[Palette](/index.php/PALETTES.DAT#Color_Indexes \"PALETTES.DAT\") offset (1-15) used for replacing colors when drawing units. Replacement is based on unit's avatar (gender & look). Default 0 (unused).\n\nAs the name suggests, it is usually used to recolor hair.",
+      "description": "[Palette](https://www.ufopaedia.org/index.php/PALETTES.DAT#Color_Indexes) offset (1-15) used for replacing colors when drawing units. Replacement is based on unit's avatar (gender & look). Default 0 (unused).\n\nAs the name suggests, it is usually used to recolor hair.",
       "default": "example:  9"
     },
     "spriteUtileGroup": {
-      "description": "[Palette](/index.php/PALETTES.DAT#Color_Indexes \"PALETTES.DAT\") offset (1-15) used for replacing colors when drawing units. Replacement is based on unit's avatar (gender & look). Default 0 (unused).\n\nDoesn't have any suggested use, feel free to use it to recolor anything you want :)",
+      "description": "[Palette](https://www.ufopaedia.org/index.php/PALETTES.DAT#Color_Indexes) offset (1-15) used for replacing colors when drawing units. Replacement is based on unit's avatar (gender & look). Default 0 (unused).\n\nDoesn't have any suggested use, feel free to use it to recolor anything you want :)",
       "default": "0"
     },
     "spriteRankGroup": {
-      "description": "[Palette](/index.php/PALETTES.DAT#Color_Indexes \"PALETTES.DAT\") offset (1-15) used for replacing colors when drawing units. Replacement is based on unit's \"rank\" (see below for details). Default 0 (unused).\n\nDoesn't have any suggested use, feel free to use it to recolor anything you want... for example Floater robes :)",
+      "description": "[Palette](https://www.ufopaedia.org/index.php/PALETTES.DAT#Color_Indexes) offset (1-15) used for replacing colors when drawing units. Replacement is based on unit's \"rank\" (see below for details). Default 0 (unused).\n\nDoesn't have any suggested use, feel free to use it to recolor anything you want... for example Floater robes :)",
       "default": "0"
     },
     "spriteFaceColor": {
@@ -2331,7 +2331,7 @@
       "default": "required"
     },
     "requires": {
-      "description": "List of [topics](#Research) (string IDs) that must be researched to unlock this soldier type. If none are specified, this soldier type is unlocked from the start.",
+      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this soldier type. If none are specified, this soldier type is unlocked from the start.",
       "default": "-"
     },
     "requiresBuyBaseFunc": {
@@ -2339,15 +2339,15 @@
       "default": "-"
     },
     "minStats": {
-      "description": "Minimum values used to generate the soldier's [Starting Stats](/index.php/Starting_Stats \"Starting Stats\"). In this case, _psiSkill_ is treated as the initial stat (not generated).",
+      "description": "Minimum values used to generate the soldier's [Starting Stats](https://www.ufopaedia.org/index.php/Starting_Stats). In this case, _psiSkill_ is treated as the initial stat (not generated).",
       "default": "-"
     },
     "maxStats": {
-      "description": "Maximum values used to generate the soldier's [Starting Stats](/index.php/Starting_Stats \"Starting Stats\"). In this case, _psiSkill_ is treated as the minimum value for the first month of psi training (actual value is 100%-150%).",
+      "description": "Maximum values used to generate the soldier's [Starting Stats](https://www.ufopaedia.org/index.php/Starting_Stats). In this case, _psiSkill_ is treated as the minimum value for the first month of psi training (actual value is 100%-150%).",
       "default": "-"
     },
     "statCaps": {
-      "description": "Maximum stats this soldier can gain through [Experience](/index.php/Experience \"Experience\"). **NOTE:** A stat will still go over the limit once, and then will no longer increase (see [Regarding Caps](/index.php/Experience#Regarding_Caps \"Experience\")).",
+      "description": "Maximum stats this soldier can gain through [Experience](https://www.ufopaedia.org/index.php/Experience). **NOTE:** A stat will still go over the limit once, and then will no longer increase (see [Regarding Caps](https://www.ufopaedia.org/index.php/Experience#Regarding_Caps)).",
       "default": "-"
     },
     "trainingStatCaps": {
@@ -2359,7 +2359,7 @@
       "default": "-"
     },
     "armor": {
-      "description": "String ID of the [armor](#Armor) this soldier uses by default.",
+      "description": "String ID of the [armor](https://www.ufopaedia.org#Armor) this soldier uses by default.",
       "default": "-"
     },
     "armorForAvatar": {
@@ -2443,43 +2443,43 @@
       "default": "100"
     },
     "deathMale": {
-      "description": "Death sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](#Extra_Sounds).",
+      "description": "Death sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
       "default": "-"
     },
     "deathFemale": {
-      "description": "Death sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](#Extra_Sounds).",
+      "description": "Death sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
       "default": "-"
     },
     "selectUnitMale/selectUnitFemale": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this soldier is manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this soldier is manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "startMovingMale/startMovingFemale": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this soldier starts moving. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this soldier starts moving. A list of sound IDs can be used too.",
       "default": "-"
     },
     "selectWeaponMale/selectWeaponFemale": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this soldier's weapon is selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this soldier's weapon is selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "annoyedMale/annoyedFemale": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this soldier is repeatedly manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this soldier is repeatedly manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "panicMale": {
-      "description": "Panic sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](#Extra_Sounds).",
+      "description": "Panic sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
       "default": "-"
     },
     "panicFemale": {
-      "description": "Panic sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](#Extra_Sounds).",
+      "description": "Panic sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
       "default": "-"
     },
     "berserkMale": {
-      "description": "Berserk sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](#Extra_Sounds).",
+      "description": "Berserk sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
       "default": "-"
     },
     "berserkFemale": {
-      "description": "Berserk sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](#Extra_Sounds).",
+      "description": "Berserk sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
       "default": "-"
     },
     "soldierNames": {
@@ -2767,7 +2767,7 @@
       "default": "-"
     },
     "armor": {
-      "description": "String ID of the [armor](#Armor) this unit uses by default.",
+      "description": "String ID of the [armor](https://www.ufopaedia.org#Armor) this unit uses by default.",
       "default": "-"
     },
     "standHeight": {
@@ -2783,7 +2783,7 @@
       "default": "0"
     },
     "value": {
-      "description": "[Score](/index.php/Score \"Score\") this unit is worth.",
+      "description": "[Score](https://www.ufopaedia.org/index.php/Score) this unit is worth.",
       "default": "0"
     },
     "civilianRecoveryType": {
@@ -2819,11 +2819,11 @@
       "default": "30"
     },
     "specab": {
-      "description": "Special ability of this unit:\n\n*   0 = None\n*   1 = [Explodes on Death](/index.php/Cyberdisc \"Cyberdisc\") (Requires **power** and **blastRadius** properties to be set on the corpse)\n*   2 = [Burns Floor](/index.php/Silacoid \"Silacoid\")\n*   3 = [Burns Floor and explodes on Death](/index.php/Bio-Drone \"Bio-Drone\")",
+      "description": "Special ability of this unit:\n\n*   0 = None\n*   1 = [Explodes on Death](https://www.ufopaedia.org/index.php/Cyberdisc) (Requires **power** and **blastRadius** properties to be set on the corpse)\n*   2 = [Burns Floor](https://www.ufopaedia.org/index.php/Silacoid)\n*   3 = [Burns Floor and explodes on Death](https://www.ufopaedia.org/index.php/Bio-Drone)",
       "default": "0"
     },
     "spawnUnit": {
-      "description": "String ID of the unit used to respawn on death (e.g. [Zombies](/index.php/Zombie \"Zombie\") respawn as [Chrysallids](/index.php/Chrysallid \"Chrysallid\")).",
+      "description": "String ID of the unit used to respawn on death (e.g. [Zombies](https://www.ufopaedia.org/index.php/Zombie) respawn as [Chrysallids](https://www.ufopaedia.org/index.php/Chrysallid)).",
       "default": "-"
     },
     "livingWeapon": {
@@ -2855,39 +2855,39 @@
       "default": "100"
     },
     "deathSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this unit dies. No value means no sound upon death. A list of sound IDs can be used too, the game then chooses one randomly each time.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit dies. No value means no sound upon death. A list of sound IDs can be used too, the game then chooses one randomly each time.",
       "default": "-"
     },
     "selectUnitSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this unit is manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit is manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "startMovingSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this unit starts moving. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit starts moving. A list of sound IDs can be used too.",
       "default": "-"
     },
     "selectWeaponSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this unit's weapon is selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit's weapon is selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "annoyedSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this unit is repeatedly manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit is repeatedly manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "panicSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this unit panics. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit panics. A list of sound IDs can be used too.",
       "default": "-"
     },
     "berserkSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this unit berserks. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit berserks. A list of sound IDs can be used too.",
       "default": "-"
     },
     "aggroSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this unit aggros.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit aggros.",
       "default": "-1"
     },
     "moveSound": {
-      "description": "Sound ID from [BATTLE.CAT](#Extra_Sounds) played when this unit moves.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit moves.",
       "default": "-1"
     },
     "showFullNameInAlienInventory": {
@@ -2925,7 +2925,7 @@
       "default": "-"
     },
     "baseCustomDeploy": {
-      "description": "A lighter version of **baseCustomMission**, which only overrides the [deployment data](#Deployment_Data) used during the Battlescape generation.\n\nNote: if both **baseCustomMission** and **baseCustomDeploy** are specified, [deployment data](#Deployment_Data) is taken from **baseCustomDeploy** and everything else is taken from **baseCustomMission**.",
+      "description": "A lighter version of **baseCustomMission**, which only overrides the [deployment data](https://www.ufopaedia.org#Deployment_Data) used during the Battlescape generation.\n\nNote: if both **baseCustomMission** and **baseCustomDeploy** are specified, [deployment data](https://www.ufopaedia.org#Deployment_Data) is taken from **baseCustomDeploy** and everything else is taken from **baseCustomMission**.",
       "default": "-"
     }
   },
@@ -2943,11 +2943,11 @@
       "default": "-"
     },
     "startingCondition": {
-      "description": "String ID of a [starting condition](#Battle_Starting_Conditions) for missions using this deployment.\n\nNote: overrides any globe texture starting condition.",
+      "description": "String ID of a [starting condition](https://www.ufopaedia.org#Battle_Starting_Conditions) for missions using this deployment.\n\nNote: overrides any globe texture starting condition.",
       "default": "-"
     },
     "enviroEffects": {
-      "description": "String ID of [enviro effects](#Battle_Enviro_Effects) for missions using this deployment.\n\nNote: overrides any mission terrain enviro effects.",
+      "description": "String ID of [enviro effects](https://www.ufopaedia.org#Battle_Enviro_Effects) for missions using this deployment.\n\nNote: overrides any mission terrain enviro effects.",
       "default": "-"
     },
     "data": {
@@ -2979,7 +2979,7 @@
       "default": "-"
     },
     "terrains": {
-      "description": "List of string IDs of the [terrains](#Terrains) to choose from when generating the map. Not used for UFO land/crash sites, terrain comes from the Geoscape globe texture.",
+      "description": "List of string IDs of the [terrains](https://www.ufopaedia.org#Terrains) to choose from when generating the map. Not used for UFO land/crash sites, terrain comes from the Geoscape globe texture.",
       "default": "-"
     },
     "shade": {
@@ -3007,7 +3007,7 @@
       "default": "-"
     },
     "finalDestination": {
-      "description": "Sets whether this mission is where you send your [uber-craft](/index.php/Avenger \"Avenger\") to win the game.",
+      "description": "Sets whether this mission is where you send your [uber-craft](https://www.ufopaedia.org/index.php/Avenger) to win the game.",
       "default": "false"
     },
     "winCutscene": {
@@ -3179,7 +3179,7 @@
       "default": "false"
     },
     "alienRank": {
-      "description": "[Rank](/index.php/Alien_Rank \"Alien Rank\") associated with this deployment data, as defined by the order of the race in question (see above)",
+      "description": "[Rank](https://www.ufopaedia.org/index.php/Alien_Rank) associated with this deployment data, as defined by the order of the race in question (see above)",
       "default": "required"
     },
     "lowQty": {
@@ -3203,7 +3203,7 @@
       "default": "required"
     },
     "itemSets": {
-      "description": "Three lists (one for each alien technology level) of [items](#Items) (string IDs) for the aliens to equip.",
+      "description": "Three lists (one for each alien technology level) of [items](https://www.ufopaedia.org#Items) (string IDs) for the aliens to equip.",
       "default": "required"
     },
     "extraRandomItems": {
@@ -3211,7 +3211,7 @@
       "default": "-"
     },
     "palette": {
-      "description": "The color swatch to use from [BACKPALS.DAT](/index.php/BACKPALS.DAT \"BACKPALS.DAT\").",
+      "description": "The color swatch to use from [BACKPALS.DAT](https://www.ufopaedia.org/index.php/BACKPALS.DAT).",
       "default": "0"
     },
     "textOffset": {
@@ -3295,7 +3295,7 @@
       "default": "-"
     },
     "environmentalConditions": {
-      "description": "A set of [environmental conditions](#Environmental_Conditions) (one for each faction: STR\\_FRIENDLY, STR\\_HOSTILE or STR\\_NEUTRAL), see below. Environmental conditions define a special effect applied to each unit of a given faction at the beginning of their turn. This can be for example damage in toxic environment, stun in harsh environment, morale decrease in tough battles, etc.\n\nNote: the player is informed about the effects applied on the \\[Next Turn\\] screen.",
+      "description": "A set of [environmental conditions](https://www.ufopaedia.org#Environmental_Conditions) (one for each faction: STR\\_FRIENDLY, STR\\_HOSTILE or STR\\_NEUTRAL), see below. Environmental conditions define a special effect applied to each unit of a given faction at the beginning of their turn. This can be for example damage in toxic environment, stun in harsh environment, morale decrease in tough battles, etc.\n\nNote: the player is informed about the effects applied on the \\[Next Turn\\] screen.",
       "default": "-"
     },
     "armorTransformations": {
@@ -3395,7 +3395,7 @@
       "default": "0"
     },
     "points": {
-      "description": "[Score](/index.php/Score \"Score\") earned for completing this project.",
+      "description": "[Score](https://www.ufopaedia.org/index.php/Score) earned for completing this project.",
       "default": "0"
     },
     "dependencies": {
@@ -3431,7 +3431,7 @@
       "default": "-"
     },
     "needItem": {
-      "description": "Does this project require an [item](#Items) of the same name?",
+      "description": "Does this project require an [item](https://www.ufopaedia.org#Items) of the same name?",
       "default": "false"
     },
     "destroyItem": {
@@ -3453,7 +3453,7 @@
       "default": "-"
     },
     "requires": {
-      "description": "List of [topics](#Research) (string IDs) that must be researched to unlock this project. If none are specified, this project is unlocked from the start.",
+      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this project. If none are specified, this project is unlocked from the start.",
       "default": "-"
     },
     "requiresBaseFunc": {
@@ -3461,7 +3461,7 @@
       "default": "-"
     },
     "space": {
-      "description": "Amount of [Workshop](/index.php/Workshop \"Workshop\") space required to begin this project.",
+      "description": "Amount of [Workshop](https://www.ufopaedia.org/index.php/Workshop) space required to begin this project.",
       "default": "0"
     },
     "time": {
@@ -3477,11 +3477,11 @@
       "default": "false"
     },
     "requiredItems": {
-      "description": "List of [items](#Items) required and consumed per production.",
+      "description": "List of [items](https://www.ufopaedia.org#Items) required and consumed per production.",
       "default": "-"
     },
     "producedItems": {
-      "description": "List of [items](#Items) manufactured per production. If not specified, defaults to 1 item with the same string ID as the manufacture project.",
+      "description": "List of [items](https://www.ufopaedia.org#Items) manufactured per production. If not specified, defaults to 1 item with the same string ID as the manufacture project.",
       "default": "name: 1"
     },
     "randomProducedItems": {
@@ -3489,7 +3489,7 @@
       "default": "-"
     },
     "spawnedPersonType": {
-      "description": "Allows to \"manufacture\" soldiers, scientists and engineers. More info here: [https://openxcom.org/forum/index.php/topic,4187.msg78212.html#msg78212](https://openxcom.org/forum/index.php/topic,4187.msg78212.html#msg78212)\n\nNote: you can't use existing soldiers as \"input\" here, only items or prisoners. For transformation of existing soldiers (e.g. from normal humans to MECs), please use the [Soldier Transformation](#Soldier_Transformation) functionality and ruleset.",
+      "description": "Allows to \"manufacture\" soldiers, scientists and engineers. More info here: [https://openxcom.org/forum/index.php/topic,4187.msg78212.html#msg78212](https://openxcom.org/forum/index.php/topic,4187.msg78212.html#msg78212)\n\nNote: you can't use existing soldiers as \"input\" here, only items or prisoners. For transformation of existing soldiers (e.g. from normal humans to MECs), please use the [Soldier Transformation](https://www.ufopaedia.org#Soldier_Transformation) functionality and ruleset.",
       "default": "-"
     },
     "spawnedPersonName": {
@@ -3527,7 +3527,7 @@
       "default": "-"
     },
     "type_id": {
-      "description": "Type of this article:\n\n*   1 = [Craft](/index.php/Craft \"Craft\")\n*   2 = [Craft Armaments](/index.php/Craft_Armaments \"Craft Armaments\")\n*   3 = [HWP](/index.php/HWP \"HWP\")\n*   4 = [Equipment](/index.php/Equipment_(EU) \"Equipment (EU)\")\n*   5 = [Armour](/index.php/Armour \"Armour\")\n*   6 = [Base Facilities](/index.php/Base_Facilities \"Base Facilities\")\n*   7 = Text & Image (eg. [Alien Life Forms](/index.php/Alien_Life_Forms \"Alien Life Forms\"), [UFO Components](/index.php/UFO_Components \"UFO Components\"))\n*   8 = Text (eg. [Alien Research](/index.php/Alien_Research \"Alien Research\"))\n*   9 = [UFO](/index.php/UFO \"UFO\")\n*   10 = [TFTD](/index.php/TFTD \"TFTD\")\n*   11 = TFTD [Subs](/index.php/Subs \"Subs\")\n*   12 = TFTD [Sub Armaments](/index.php/Sub_Armaments \"Sub Armaments\")\n*   13 = TFTD [Submersible Weapons Systems](/index.php/Submersible_Weapons_Systems \"Submersible Weapons Systems\")\n*   14 = TFTD [Equipment](/index.php/Equipment_(TFTD) \"Equipment (TFTD)\")\n*   15 = TFTD [Armour](/index.php/Armour_(TFTD) \"Armour (TFTD)\")\n*   16 = TFTD [Base Facilities](/index.php/Base_Facilities_(TFTD) \"Base Facilities (TFTD)\")\n*   17 = TFTD [Alien Subs](/index.php/Alien_Subs \"Alien Subs\")\n\nIn OXCE, the TFTD-style articles can also be used in UFO-based mods.",
+      "description": "Type of this article:\n\n*   1 = [Craft](https://www.ufopaedia.org/index.php/Craft)\n*   2 = [Craft Armaments](https://www.ufopaedia.org/index.php/Craft_Armaments)\n*   3 = [HWP](https://www.ufopaedia.org/index.php/HWP)\n*   4 = [Equipment](https://www.ufopaedia.org/index.php/Equipment_(EU))\n*   5 = [Armour](https://www.ufopaedia.org/index.php/Armour)\n*   6 = [Base Facilities](https://www.ufopaedia.org/index.php/Base_Facilities)\n*   7 = Text & Image (eg. [Alien Life Forms](https://www.ufopaedia.org/index.php/Alien_Life_Forms), [UFO Components](https://www.ufopaedia.org/index.php/UFO_Components))\n*   8 = Text (eg. [Alien Research](https://www.ufopaedia.org/index.php/Alien_Research))\n*   9 = [UFO](https://www.ufopaedia.org/index.php/UFO)\n*   10 = [TFTD](https://www.ufopaedia.org/index.php/TFTD)\n*   11 = TFTD [Subs](https://www.ufopaedia.org/index.php/Subs)\n*   12 = TFTD [Sub Armaments](https://www.ufopaedia.org/index.php/Sub_Armaments)\n*   13 = TFTD [Submersible Weapons Systems](https://www.ufopaedia.org/index.php/Submersible_Weapons_Systems)\n*   14 = TFTD [Equipment](https://www.ufopaedia.org/index.php/Equipment_(TFTD))\n*   15 = TFTD [Armour](https://www.ufopaedia.org/index.php/Armour_(TFTD))\n*   16 = TFTD [Base Facilities](https://www.ufopaedia.org/index.php/Base_Facilities_(TFTD))\n*   17 = TFTD [Alien Subs](https://www.ufopaedia.org/index.php/Alien_Subs)\n\nIn OXCE, the TFTD-style articles can also be used in UFO-based mods.",
       "default": "required"
     },
     "section": {
@@ -3539,11 +3539,11 @@
       "default": "false"
     },
     "requires": {
-      "description": "List of [topics](#Research) (string IDs) that must be researched to unlock this article. If none are specified, this article is unlocked from the start.\n\nIf using lootable weapons ('alien' weapons that can be used without research) needing a research to fully unlock, make sure to define it on both the weapon and ammo. Otherwise the damage reading is visible on the inventory screen using \\[ALT\\] on a clip.",
+      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this article. If none are specified, this article is unlocked from the start.\n\nIf using lootable weapons ('alien' weapons that can be used without research) needing a research to fully unlock, make sure to define it on both the weapon and ammo. Otherwise the damage reading is visible on the inventory screen using \\[ALT\\] on a clip.",
       "default": "-"
     },
     "image_id": {
-      "description": "Filename of the [background image](/index.php/UP001.SPK-UP042.SPK \"UP001.SPK-UP042.SPK\") displayed on this article, if applicable.\n\nIn OXCE:\n\n*   This attribute can be used also for _Vehicle_ articles\n*   If the name contains a **\"\\_CPAL\" suffix**, its (custom) palette will be used instead of the default one. Relevant for _Craft, CraftWeapon, TextImage and Vehicle (HWP)_ articles. More info here: [https://openxcom.org/forum/index.php/topic,4957.0.html](https://openxcom.org/forum/index.php/topic,4957.0.html)",
+      "description": "Filename of the [background image](https://www.ufopaedia.org/index.php/UP001.SPK-UP042.SPK) displayed on this article, if applicable.\n\nIn OXCE:\n\n*   This attribute can be used also for _Vehicle_ articles\n*   If the name contains a **\"\\_CPAL\" suffix**, its (custom) palette will be used instead of the default one. Relevant for _Craft, CraftWeapon, TextImage and Vehicle (HWP)_ articles. More info here: [https://openxcom.org/forum/index.php/topic,4957.0.html](https://openxcom.org/forum/index.php/topic,4957.0.html)",
       "default": "-"
     },
     "text": {
@@ -3591,7 +3591,7 @@
       "default": "required"
     },
     "points": {
-      "description": "[Score](/index.php/Score \"Score\") allocated to aliens for successfully completing this mission.",
+      "description": "[Score](https://www.ufopaedia.org/index.php/Score) allocated to aliens for successfully completing this mission.",
       "default": "0"
     },
     "waves": {
@@ -3659,7 +3659,7 @@
       "default": "-"
     },
     "ufo": {
-      "description": "String ID of the [UFO](#UFOs) to spawn.",
+      "description": "String ID of the [UFO](https://www.ufopaedia.org#UFOs) to spawn.",
       "default": "required"
     },
     "count": {
@@ -3667,7 +3667,7 @@
       "default": "0"
     },
     "trajectory": {
-      "description": "String ID of the [trajectory](#UFO_Trajectories) for this UFO to use when entering Earth's atmosphere.",
+      "description": "String ID of the [trajectory](https://www.ufopaedia.org#UFO_Trajectories) for this UFO to use when entering Earth's atmosphere.",
       "default": "required"
     },
     "timer": {
@@ -4269,7 +4269,7 @@
   },
   "globalVariables": {
     "fontName": {
-      "description": "Name of \\*.dat file, placed in Language folder, which describes used [font collection](/index.php/Font_collection_(OpenXcom) \"Font collection (OpenXcom)\").",
+      "description": "Name of \\*.dat file, placed in Language folder, which describes used [font collection](https://www.ufopaedia.org/index.php/Font_collection_(OpenXcom)).",
       "default": "Font.dat"
     },
     "disableUnderwaterSounds": {

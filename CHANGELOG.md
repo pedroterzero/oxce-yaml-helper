@@ -1,3 +1,7 @@
+v0.3.2
+=
+- Fixed ufopaedia links
+
 v0.3.1
 =
 - Added more robust documentation support
