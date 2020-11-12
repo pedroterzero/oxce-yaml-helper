@@ -24,7 +24,8 @@ export class KeyDetector {
      * @param document current document
      */
     public static getRangeOfKeyAtPosition(position: Position, document: TextDocument): Range | undefined {
-        const stringRegex = /\*[A-Za-z0-9_]+|(\*?[A-Z0-9_]+(\.(PCK|SPK|SCR))?)/g;
+        // const stringRegex = /\*[A-Za-z0-9_]+|(\*?[A-Z0-9_]+(\.(PCK|SPK|SCR))?)/g;
+        const stringRegex = /\*?[a-zA-Z0-9_]+(\.(PCK|SPK|SCR)|:)?/g;
         return document.getWordRangeAtPosition(position, stringRegex);
     }
 
@@ -38,6 +39,22 @@ export class KeyDetector {
         }
 
         if (value.key.match(/^STR_[A-Z0-9_]+$/g)) {
+            return value;
+        }
+
+        return;
+    }
+
+    /**
+     * Checks whether this is a valid property
+     * @param value
+     */
+    public static isValidPropertyKey(value: KeyMatch | undefined): KeyMatch | undefined {
+        if (!value) {
+            return;
+        }
+
+        if (value.key.match(/:$/g)) {
             return value;
         }
 

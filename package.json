@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom (Extended) YAML Helper",
     "description": "Provides go to definition support for OpenXcom (extended) mods, among other things",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "author": {
         "name": "pedroterzero"
     },
@@ -53,6 +53,13 @@
                     ],
                     "default": "en-US",
                     "description": "Locale to use when showing translations on hovering"
+                },
+                "oxcYamlHelper.showDocumentationHover": {
+                    "type": [
+                        "boolean"
+                    ],
+                    "default": true,
+                    "description": "Show documentation for properties on hover. Disable this if you find this annoying"
                 },
                 "oxcYamlHelper.attemptCRLFFix": {
                     "type": [
