@@ -1,3 +1,7 @@
+# v0.3.7
+- Fix documentation hover
+- No longer offer 'go to definition' for numeric properties that are not linked
+
 # v0.3.6
 - Added `*.rul` language hint
 

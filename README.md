@@ -7,6 +7,9 @@ Welcome to the OXC(E) YAML Helper thingy. For lack of a better name.
 * Adds **'Documentation Hover' support** (currently for most but not all properties). This means hovering over a property, for example `requiresBuy`, will show the documentation for it. This saves some trips to the wiki! Disableable in settings.
 * Adds **'Image preview' support for sprites and images** (through [Image Preview Extension](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-gutter-preview)).
 
+## How to install VScode and this extension
+Please see [this walkthrough guide](https://github.com/pedroterzero/oxce-yaml-helper/blob/main/INSTALL.md)!
+
 ## How to use it
 
 ### Definitions
@@ -33,8 +36,6 @@ Hover over any image reference to get an image preview.
 - Is clicking to a definition taking you to a wrong (seemingly random) place in a ruleset? This is because the [YAML parser](https://www.npmjs.com/package/yaml) used assumes UNIX line endings. Therefore this tool may not correctly work on Windows with CRLF files. I have tried to work around this, but I'm not sure yet if it's reliable.
 
 ## Todo/ideas
-- Implement translations
-- Show string translation on hover
 - Implement problem finding (missing definitions, missing sprite ids, et cetera)
 
 ## Todo/dev

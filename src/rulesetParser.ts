@@ -7,6 +7,7 @@ import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
 import { rulesetDefinitionFinder } from "./rulesetDefinitionFinder";
 import { rulesetVariableFinder } from "./rulesetVariableFinder";
 import { rulesetTranslationFinder } from "./rulesetTranslationFinder";
+import { typedProperties } from "./typedProperties";
 
 export interface ParsedDocument {
     parsed: YAMLDocument,
@@ -75,6 +76,10 @@ export class RulesetParser {
     }
 
     public async getDefinitionsByName(workspaceFolder: WorkspaceFolder, key: string, ruleType: RuleType | undefined): Promise<Location[]> {
+        if (ruleType && this.isUndefinableNumericProperty(ruleType, key)) {
+            return [];
+        }
+
         const promises: Thenable<Location | undefined>[] = [];
 
         const definitions = rulesetTree.getDefinitionsByName(key, workspaceFolder, ruleType);
@@ -103,6 +108,15 @@ export class RulesetParser {
         });
 
         return resolvedLocations;
+    }
+
+    private isUndefinableNumericProperty(ruleType: RuleType, key: string): boolean {
+        if (parseInt(key).toString() !== key) {
+            // not an integer
+            return false;
+        }
+
+        return !typedProperties.isNumericProperty(ruleType.type, ruleType.key);
     }
 
     /**

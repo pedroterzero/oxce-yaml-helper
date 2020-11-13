@@ -94,8 +94,8 @@ export class KeyDetector {
         const text = document.getText().slice(0, document.offsetAt(range.start));
 
         for (const line of text.split("\n").reverse()) {
-            if (line.trim().match(/^[a-zA-Z]+:$/)) {
-                return line.trim().slice(0, -1);
+            if (line.trimEnd().match(/^[a-zA-Z]+:$/)) {
+                return line.trimEnd().slice(0, -1);
             }
         }
 

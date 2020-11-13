@@ -5,7 +5,7 @@ type typePropertyHints = {
     [key: string]: string[]
 }
 
-type typePropertyLinks = {
+type typeProperties = {
     [key: string]: {
         [key: string]: typePropertyLink
     }
@@ -13,6 +13,7 @@ type typePropertyLinks = {
 
 type typePropertyLink = {
     target: string;
+    type?: 'numeric'
 }
 
 type logicOverrides = {
@@ -49,7 +50,7 @@ export class typedProperties {
         ufoTrajectories: ['id'],
     };
 
-    private static typePropertyLinks: typePropertyLinks = {
+    private static typeProperties: typeProperties = {
         crafts: {
             sprite: {target: 'extraSprites.INTICON.PCK.files'},
         },
@@ -65,28 +66,28 @@ export class typedProperties {
             // getOneFree: {target: 'research'},
         },
         items: {
-            bigSprite: {target: 'extraSprites.BIGOBS.PCK.files'},
-            explosionHitSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            fireSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            floorSprite: {target: 'extraSprites.FLOOROB.PCK.files'},
-            handSprite: {target: 'extraSprites.HANDOB.PCK.files'},
-            hitAnimation: {target: 'extraSprites.X1.PCK.files'},
-            hitSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            hitMissSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            meleeAnimation: {target: 'extraSprites.HIT.PCK.files'},
-            meleeHitSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            meleeSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            psiSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            psiMissSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            reloadSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            specialIconSprite: {target: 'extraSprites.SPICONS.DAT.files'},
+            bigSprite: {target: 'extraSprites.BIGOBS.PCK.files', type: 'numeric'},
+            explosionHitSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            fireSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            floorSprite: {target: 'extraSprites.FLOOROB.PCK.files', type: 'numeric'},
+            handSprite: {target: 'extraSprites.HANDOB.PCK.files', type: 'numeric'},
+            hitAnimation: {target: 'extraSprites.X1.PCK.files', type: 'numeric'},
+            hitSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            hitMissSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            meleeAnimation: {target: 'extraSprites.HIT.PCK.files', type: 'numeric'},
+            meleeHitSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            meleeSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            psiSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            psiMissSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            reloadSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            specialIconSprite: {target: 'extraSprites.SPICONS.DAT.files', type: 'numeric'},
         },
         units: {
-            aggroSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            berserkSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            deathSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            moveSound: {target: 'extraSounds.BATTLE.CAT.files'},
-            panicSound: {target: 'extraSounds.BATTLE.CAT.files'},
+            aggroSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            berserkSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            deathSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            moveSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
+            panicSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
         }
     }
 
@@ -158,11 +159,11 @@ export class typedProperties {
             return true;
         }
 
-        if (!(sourceRuleType.type in this.typePropertyLinks)) {
+        if (!(sourceRuleType.type in this.typeProperties)) {
             return true;
         }
 
-        const link = this.typePropertyLinks[sourceRuleType.type];
+        const link = this.typeProperties[sourceRuleType.type];
         if (!(sourceRuleType.key in link)) {
             return true;
         }
@@ -235,5 +236,24 @@ export class typedProperties {
 
     public static isStoreVariable(key: string) {
         return (key in this.storeVariables);
+    }
+
+        /**
+     * Checks that a provided type key is supposed to be numeric
+     * @param type
+     * @param key
+     */
+    public static isNumericProperty(type: string, key: string): boolean {
+        if (!(type in this.typeProperties)) {
+            return false;
+        }
+
+        const property = this.typeProperties[type];
+        if (!(key in property)) {
+            return false;
+        }
+
+        // logger.debug(`type ${type}.${key} is ${(property[key].type || '')}`);
+        return (property[key].type || '') === 'numeric';
     }
 }
