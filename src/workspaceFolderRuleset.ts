@@ -1,10 +1,11 @@
 import { Uri, workspace, WorkspaceFolder } from "vscode";
-import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations } from "./rulesetTree";
+import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 
 export type RulesetFile = { file: Uri, definitions: Definition[] }
+export type ReferenceFile = { file: Uri, references: Match[] }
 export type VariableFile = { file: Uri, variables: Variables }
 export type TranslationFile = { file: Uri, translations: Translations }
 
@@ -16,6 +17,7 @@ export class WorkspaceFolderRuleset {
     public definitionsLookup: {[key: string]: DefinitionLookup[]} = {};
     public rulesetFiles: RulesetFile[] = [];
     public variableFiles: VariableFile[] = [];
+    public referenceFiles: ReferenceFile[] = [];
     public translationFiles: TranslationFile[] = [];
     private variables: Variables = {};
     private translations: Translations = {};
@@ -34,7 +36,21 @@ export class WorkspaceFolderRuleset {
             );
         });
 
-        logger.debug('Number of type names', Object.keys(this.definitionsLookup).length);
+        logger.debug('Total number of (unique) definitions: ', Object.keys(this.definitionsLookup).length);
+    }
+
+    public mergeReferencesIntoRulesetTree(references: Match[], sourceFile: Uri) {
+        this.addRulesetReferenceFile(references, sourceFile || null);
+        this.variables = {};
+
+        this.variableFiles.forEach((file) => {
+            this.variables = deepmerge(
+                this.variables,
+                file.variables
+            );
+        });
+
+//        logger.debug('Number of variables', Object.keys(this.variables).length);
     }
 
     public mergeVariablesIntoRulesetTree(variables: Variables, sourceFile: Uri) {
@@ -135,6 +151,14 @@ export class WorkspaceFolderRuleset {
             this.rulesetFiles = this.rulesetFiles.filter(tp => tp.file && tp.file.path !== rulesetFile.file.path);
         }
         this.rulesetFiles.push(rulesetFile);
+    }
+
+    private addRulesetReferenceFile(references: Match[], sourceFile: Uri) {
+        const referenceFile = { references, file: sourceFile };
+        if (this.referenceFiles.length > 0 && referenceFile.file) {
+            this.referenceFiles = this.referenceFiles.filter(tp => tp.file && tp.file.path !== referenceFile.file.path);
+        }
+        this.referenceFiles.push(referenceFile);
     }
 
     private addRulesetVariableFile(variables: Variables, sourceFile: Uri) {

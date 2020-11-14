@@ -1,6 +1,6 @@
 import { TextDocument, workspace, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
 import { logger } from "./logger";
-import { Definition, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
+import { Definition, Match, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
 import { Document, parseDocument } from 'yaml';
 import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
 import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
@@ -23,6 +23,7 @@ export interface YAMLDocument {
 export interface YAMLDocumentItem {
     key: any;
     value: any;
+    type: string;
 }
 
 export interface YAMLNode {
@@ -30,12 +31,16 @@ export interface YAMLNode {
 }
 
 export type JsonObject = {
-    [key: string]: string | Record<string, unknown>;
+    [key: string]: string | Record<string, unknown>[];
 };
 
 export class RulesetParser {
-    public getDefinitions(doc: YAMLDocument): Definition[] {
-        return rulesetDefinitionFinder.findAllDefinitionsInYamlDocument(doc);
+    public getReferencesRecursively(doc: YAMLDocument): Match[] {
+        return rulesetRecursiveKeyRetriever.findAllReferencesInYamlDocument(doc);
+    }
+
+    public getDefinitionsFromReferences(references: Match[] | undefined): Definition[] {
+        return rulesetDefinitionFinder.getDefinitionsFromReferences(references);
     }
 
     public getVariables(doc: any): Variables {
@@ -62,7 +67,7 @@ export class RulesetParser {
         // logger.debug(`Searching for type ${key} in ${document.fileName}`);
         sourceRange = this.fixRangesForWindowsLineEndingsIfNeeded(document, sourceRange, true);
 
-        const rule = rulesetRecursiveKeyRetriever.getKeyInformationFromYAML(document.getText(), key, sourceRange);
+        const rule = rulesetRecursiveKeyRetriever.getKeyInformationFromYAML(this.parseDocument(document.getText()).parsed, key, sourceRange);
         if (!rule) {
             return;
         }

@@ -23,6 +23,13 @@ export type Translation = {
     value: string
 }
 
+export type Match = {
+    key: string,
+    path: string,
+    range: [number, number],
+    metadata?: Record<string, unknown>
+}
+
 export type Definition = BaseDefinition & {
     // field: typeKey,
     name: string,
@@ -50,6 +57,10 @@ export class RulesetTree {
 
     public mergeIntoTree(definitions: Definition[], workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeIntoRulesetTree(definitions, sourceFile);
+    }
+
+    public mergeReferencesIntoTree(definitions: Match[], workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeReferencesIntoRulesetTree(definitions, sourceFile);
     }
 
     public mergeVariablesIntoTree(variables: Variables, workspaceFolder: WorkspaceFolder, sourceFile: Uri) {

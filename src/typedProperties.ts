@@ -71,7 +71,7 @@ export class typedProperties {
             fireSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
             floorSprite: {target: 'extraSprites.FLOOROB.PCK.files', type: 'numeric'},
             handSprite: {target: 'extraSprites.HANDOB.PCK.files', type: 'numeric'},
-            hitAnimation: {target: 'extraSprites.X1.PCK.files', type: 'numeric'},
+            hitAnimation: {target: 'extraSprites.SMOKE.PCK.files', type: 'numeric'},
             hitSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
             hitMissSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
             meleeAnimation: {target: 'extraSprites.HIT.PCK.files', type: 'numeric'},
@@ -108,23 +108,12 @@ export class typedProperties {
         'ftaGame': {}
     }
 
-    public static isTypePropertyForKey (ruleType: string, rule: any, key: string): boolean {
-        if (typeof rule !== 'object') {
-            // for now, only handle objects
-            return false;
+    public static isDefinitionPropertyForPath (type: string, key: string): boolean {
+        if (type in this.typePropertyHints) {
+            return this.typePropertyHints[type].indexOf(key) !== -1;
         }
 
-        const typeKey = this.getTypeKey(rule, ruleType);
-        if (!typeKey) {
-            return false;
-        }
-
-        const property = rule[typeKey];
-        if (property === key || property.indexOf(key + '.') === 0) {
-            return true;
-        }
-
-        return false;
+        return key === 'type';
     }
 
     public static getTypeKey(rule: any, ruleType: string): string | undefined {
@@ -219,7 +208,7 @@ export class typedProperties {
             const damageType = ruleType.metadata.damageType as number;
 
             if (['2', '3', '6', '9'].indexOf(damageType.toString()) !== -1) {
-                override.target = 'extraSprites.SMOKE.PCK.files';
+                override.target = 'extraSprites.X1.PCK.files';
             }
         }
 
