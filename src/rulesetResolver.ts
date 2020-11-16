@@ -21,6 +21,11 @@ export class RulesetResolver implements Disposable {
         await this.loadYamlFiles();
         progress.report({ increment: 100 });
         logger.debug(`yaml files loaded, took ${((new Date()).getTime() - start.getTime()) / 1000}s`);
+
+        this.onDidLoadRulesheet(this.ruleSheetReloaded.bind(this, progress));
+
+        this.validateReferences();
+
         this.registerFileWatcher();
         this.onDidLoadEmitter.emit('didLoad');
     }
@@ -49,6 +54,10 @@ export class RulesetResolver implements Disposable {
         const increment = Math.round((1 / totalFiles) * 100);
 
         progress.report({increment: increment, message: `${file} (${filesLoaded}/${totalFiles})`});
+    }
+
+    private ruleSheetReloaded (): void {
+        this.validateReferences();
     }
 
     private async loadYamlFiles(): Promise<undefined | void[][]> {
@@ -146,6 +155,16 @@ export class RulesetResolver implements Disposable {
         }
 
         return rulesetTree.getTranslation(key, folder);
+    }
+
+    private validateReferences() {
+        if (!workspace.workspaceFolders) {
+            return;
+        }
+
+        workspace.workspaceFolders.map(workspaceFolder => {
+            rulesetTree.checkDefinitions(workspaceFolder);
+        });
     }
 
     public dispose() {

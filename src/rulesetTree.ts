@@ -107,9 +107,14 @@ export class RulesetTree {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getNumberOfParsedDefinitionFiles();
     }
 
-    public getTranslation(key: string, workspaceFolder: WorkspaceFolder): any {
+    public getTranslation(key: string, workspaceFolder: WorkspaceFolder): string | undefined {
         logger.debug(`getTranslation key ${key} workspaceFolder ${workspaceFolder}`);
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getTranslation(key);
+    }
+
+    public checkDefinitions(workspaceFolder: WorkspaceFolder): any {
+        logger.debug(`checkDefinitions workspaceFolder ${workspaceFolder}`);
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.checkDefinitions();
     }
 }
 

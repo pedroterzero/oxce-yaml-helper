@@ -82,6 +82,12 @@ export class RulesetRecursiveKeyRetriever {
         } else {
             entry = entry as Scalar;
             const value = entry.value;
+            const range = (typeof value === 'object' && 'range' in value) ? value.range : entry.range;
+
+            if ('type' in entry && ['QUOTE_DOUBLE', 'QUOTE_SINGLE', 'ALIAS'].indexOf(entry.type as string) !== -1) {
+                // ignore regular strings, also ALIAS for now?
+                return;
+            }
 
             if (typeof value === 'boolean' || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
                 // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
@@ -91,7 +97,7 @@ export class RulesetRecursiveKeyRetriever {
             return {
                 key: value,
                 path,
-                range: entry.range || [0, 0],
+                range,
             };
         }
 
@@ -113,14 +119,28 @@ export class RulesetRecursiveKeyRetriever {
 
                 const result = this.processItems(ruleProperty.value, newPath, matches, lookupAll);
                 if (result) {
-                    result.metadata = this.addMetadata(path, entry);
+                    const metadata = this.addMetadata(path, entry);
+                    if (metadata) {
+                        result.metadata = metadata;
+                    }
                     matches.push(result);
                 } else {
                     // logger.debug('Definitive match found by range (string)'/*, key*/, path, entry);
-
                     let value = ruleProperty.value;
-                    if (ruleProperty.type === 'SCALAR') { // i.e. Scalar
-                        value = value.value;
+                    let range = ruleProperty.range;
+
+                    if (typeof value === 'object' && 'type' in value && value.type === 'ALIAS') {
+                        // ignore aliases for now(?)
+                        return;
+                    }
+                    if (['MAP', 'FLOW_SEQ', 'SEQ'].indexOf(value.type) !== -1) {
+                        this.loopEntry(value, newPath, matches, lookupAll);
+                        return;
+                    }
+
+                    if (['PAIR', 'SCALAR',].indexOf(ruleProperty.type) !== -1) { // i.e. Scalar
+                        value = ruleProperty.value.value;
+                        range = ruleProperty.value.range;
                     }
 
                     if (typeof value === 'boolean' || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
@@ -128,14 +148,19 @@ export class RulesetRecursiveKeyRetriever {
                         return;
                     }
 
-                    const metadata = this.addMetadata(path, entry);
-
-                    matches.push({
+                    const match: Match = {
                         key: value,
                         path,
-                        range: ruleProperty.value.range || [0, 0],
-                        metadata
-                    });
+                        range,
+                    };
+
+                    const metadata = this.addMetadata(path, entry);
+                    if (metadata) {
+                        match.metadata = metadata;
+                    }
+
+                    // console.log(`range1 ${range[0]}:${range[1]}`);
+                    matches.push(match);
                 }
             }
         });
