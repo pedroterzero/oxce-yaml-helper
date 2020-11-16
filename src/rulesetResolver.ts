@@ -1,4 +1,4 @@
-import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress, window } from 'vscode';
+import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress, window, ExtensionContext, FileType } from 'vscode';
 import { logger } from "./logger";
 import { rulesetTree, Translation } from "./rulesetTree";
 import { EventEmitter } from "events";
@@ -6,9 +6,14 @@ import { rulesetParser } from "./rulesetParser";
 import deepmerge = require('deepmerge');
 
 export class RulesetResolver implements Disposable {
+    private context?: ExtensionContext;
     private fileSystemWatcher?: FileSystemWatcher;
     private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
+
+    public setExtensionContent(context: ExtensionContext): void {
+        this.context = context;
+    }
 
     public async load(progress: Progress<{ message?: string; increment?: number }>): Promise<void> {
         this.init();
@@ -80,12 +85,30 @@ export class RulesetResolver implements Disposable {
         files = deepmerge(files, await workspace.findFiles('**/Language/*.yml'));
 
         files = files.filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
+
+        await this.getAssetRulesets(files);
+
         if (files.length === 0) {
             logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not an OXC(E) project.`);
             return files;
         }
 
         return files;
+    }
+
+    private async getAssetRulesets(files: Uri[]) {
+        const extensionPath = this.context?.extensionPath + '/src/assets/xcom1';
+        if (this.context) {
+            const assets = await workspace.fs.readDirectory(Uri.joinPath(this.context.extensionUri, 'src/assets/xcom1'));
+
+            for (const [name, type] of assets) {
+                if (type === FileType.File) {
+                    if (name.endsWith('.rul')) {
+                        files.push(Uri.file(extensionPath + '/' + name));
+                    }
+                }
+            }
+        }
     }
 
     private registerFileWatcher(): void {
@@ -158,12 +181,13 @@ export class RulesetResolver implements Disposable {
     }
 
     private validateReferences() {
-        if (!workspace.workspaceFolders) {
+        if (!workspace.workspaceFolders || !this.context) {
             return;
         }
 
+        const assetPath = this.context.extensionPath + '/src/assets/xcom1';
         workspace.workspaceFolders.map(workspaceFolder => {
-            rulesetTree.checkDefinitions(workspaceFolder);
+            rulesetTree.checkDefinitions(workspaceFolder, assetPath);
         });
     }
 

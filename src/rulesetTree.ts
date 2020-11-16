@@ -112,9 +112,9 @@ export class RulesetTree {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getTranslation(key);
     }
 
-    public checkDefinitions(workspaceFolder: WorkspaceFolder): any {
+    public checkDefinitions(workspaceFolder: WorkspaceFolder, assetPath: string): any {
         logger.debug(`checkDefinitions workspaceFolder ${workspaceFolder}`);
-        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.checkDefinitions();
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.checkDefinitions(assetPath);
     }
 }
 

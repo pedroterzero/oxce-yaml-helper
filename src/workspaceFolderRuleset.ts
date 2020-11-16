@@ -1,27 +1,28 @@
-import { Diagnostic, DiagnosticSeverity, languages, Range, Uri, workspace, WorkspaceFolder } from "vscode";
+import { languages, Uri, workspace, WorkspaceFolder } from "vscode";
 import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
+import { rulesetDefinitionChecker } from "./rulesetDefinitionChecker";
 
 export type RulesetFile = { file: Uri, definitions: Definition[] }
 export type ReferenceFile = { file: Uri, references: Match[] }
 export type VariableFile = { file: Uri, variables: Variables }
 export type TranslationFile = { file: Uri, translations: Translations }
 
-type TypeLookup = {
+export type TypeLookup = {
     [key: string]: DefinitionLookup[];
 };
 
 export class WorkspaceFolderRuleset {
-    public definitionsLookup: {[key: string]: DefinitionLookup[]} = {};
+    public definitionsLookup: TypeLookup = {};
     public rulesetFiles: RulesetFile[] = [];
     public variableFiles: VariableFile[] = [];
     public referenceFiles: ReferenceFile[] = [];
     public translationFiles: TranslationFile[] = [];
     private variables: Variables = {};
     private translations: Translations = {};
-    private references: Match[] = [];
+//    private references: Match[] = [];
 
     private diagnosticCollection = languages.createDiagnosticCollection();
 
@@ -45,14 +46,14 @@ export class WorkspaceFolderRuleset {
     public mergeReferencesIntoRulesetTree(references: Match[], sourceFile: Uri) {
         // TODO: fairly sure all this is only needed for definition checking
         this.addRulesetReferenceFile(references, sourceFile || null);
-        this.references = [];
+/*        this.references = [];
 
         this.referenceFiles.forEach((file) => {
             this.references = deepmerge(
                 this.references,
                 file.references
             );
-        });
+        });*/
 
     //    logger.debug('Number of references', Object.keys(this.references).length);
     }
@@ -199,39 +200,16 @@ export class WorkspaceFolderRuleset {
         return this.translations[locale][key];
     }
 
-    public checkDefinitions() {
-        logger.debug('CLEARING');
+    public checkDefinitions(assetPath: string) {
         this.diagnosticCollection.clear();
 
         for (const file of this.referenceFiles) {
-            const diagnostics : Diagnostic[] = [];
-
-            for (const ref of file.references) {
-                // console.log(`ref key ${ref.key} path ${ref.path}`);
-                // if (ref.key !== 'STR_ORDER_SUIT_CORPSE') {
-                //     continue;
-                // }
-
-                if (!(ref.key in this.definitionsLookup)) {
-                    // workspace.openTextDocument(definition.file.path).then((document: TextDocument)
-                    const doc = workspace.textDocuments.find(doc => doc.uri.path === file.file.path);
-                    if (!doc) {
-                        return;
-                    }
-
-                    let range = new Range(doc.positionAt(ref.range[0]), doc.positionAt(ref.range[1]));
-                    const text = doc.getText(range);
-                    if (text.trim().length < text.length) {
-                        // deal with trailing whitespace/CRLF
-                        range = new Range(doc.positionAt(ref.range[0]), doc.positionAt(ref.range[1] - (text.length - text.trim().length)));
-                    }
-
-                    diagnostics.push(new Diagnostic(range, `${ref.key} does not exist`, DiagnosticSeverity.Warning));
-                    logger.debug('ADDING');
-
-
-                }
+            if (file.file.path.startsWith(assetPath + '/')) {
+                // do not check assets obviously
+                continue;
             }
+
+            const diagnostics = rulesetDefinitionChecker.checkFile(file, this.definitionsLookup);
 
             this.diagnosticCollection.set(Uri.file(file.file.path), diagnostics);
         }

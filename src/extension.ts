@@ -17,6 +17,7 @@ function loadWithProgress(): void{
 
 export function activate(context: ExtensionContext) {
     loadWithProgress();
+    rulesetResolver.setExtensionContent(context);
     context.subscriptions.push(rulesetResolver);
     context.subscriptions.push(workspace.onDidChangeWorkspaceFolders(() => loadWithProgress()));
 

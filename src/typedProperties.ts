@@ -41,10 +41,12 @@ export class typedProperties {
         diplomacyFactions: ['name'],              // FtA
         events: ['name'],                         // FtA
         extraSprites: ['type', 'typeSingle'],
+        facilities: ['type', 'provideBaseFunc'],
+        invs: ['id'],
         manufacture: ['name'],
         research: ['name'],
-        // soldierBonuses: ['name'],
-        // soldierTransformation: ['name'],
+        soldierBonuses: ['name'],
+        soldierTransformation: ['name'],
         terrains: ['name'],
         ufopaedia: ['id'],
         ufoTrajectories: ['id'],

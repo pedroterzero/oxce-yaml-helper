@@ -61,9 +61,9 @@ export class RulesetRecursiveKeyRetriever {
                         // const propertiesFlat = ruleProperties.toJSON() as {[key: string]: string | Record<string, unknown>};
                         const propertiesFlat = (ruleProperties as YAMLMap).toJSON() as JsonObject;
                         this.handleExtraFiles(propertiesFlat, ruleProperties, matches, ruleType);
-                    } else {
-                        this.processItems(ruleProperties, ruleType.key.value, matches, lookupAll);
                     }
+
+                    this.processItems(ruleProperties, ruleType.key.value, matches, lookupAll);
                 });
             }
         });
@@ -125,33 +125,19 @@ export class RulesetRecursiveKeyRetriever {
                     }
                     matches.push(result);
                 } else {
-                    // logger.debug('Definitive match found by range (string)'/*, key*/, path, entry);
-                    let value = ruleProperty.value;
-                    let range = ruleProperty.range;
-
-                    if (typeof value === 'object' && 'type' in value && value.type === 'ALIAS') {
-                        // ignore aliases for now(?)
+                    const parsed = this.getRulePropertyType(ruleProperty, path, lookupAll);
+                    if (parsed.stop) {
                         return;
                     }
-                    if (['MAP', 'FLOW_SEQ', 'SEQ'].indexOf(value.type) !== -1) {
-                        this.loopEntry(value, newPath, matches, lookupAll);
+                    if (parsed.loop) {
+                        // already done by processitems above?
+                        // this.loopEntry(parsed.value, newPath, matches, lookupAll);
                         return;
                     }
-
-                    if (['PAIR', 'SCALAR',].indexOf(ruleProperty.type) !== -1) { // i.e. Scalar
-                        value = ruleProperty.value.value;
-                        range = ruleProperty.value.range;
-                    }
-
-                    if (typeof value === 'boolean' || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
-                        // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
-                        return;
-                    }
-
                     const match: Match = {
-                        key: value,
+                        key: parsed.value,
                         path,
-                        range,
+                        range: parsed.range,
                     };
 
                     const metadata = this.addMetadata(path, entry);
@@ -164,6 +150,43 @@ export class RulesetRecursiveKeyRetriever {
                 }
             }
         });
+    }
+
+    private getRulePropertyType(ruleProperty: any, path: string, lookupAll: boolean) {
+        let value = ruleProperty.value;
+        let range = ruleProperty.range;
+
+        const ignoreTypes = ['QUOTE_DOUBLE', 'QUOTE_SINGLE', 'ALIAS'];
+
+        if (!value || ignoreTypes.indexOf(ruleProperty.type) !== -1) {
+            // empty value (happens with empty string for example) or type that we ignore
+            return {stop: true};
+        }
+
+        if (typeof value === 'object' && 'type' in value && ignoreTypes.indexOf(value.type) !== -1) {
+            // ignore aliases for now(?)
+            return {stop: true};
+        }
+        if (['MAP', 'FLOW_SEQ', 'SEQ'].indexOf(value.type) !== -1) {
+            return {value, loop: true};
+            // this.loopEntry(value, newPath, matches, lookupAll);
+            // return;
+        }
+
+        if (['PAIR', 'SCALAR',].indexOf(ruleProperty.type) !== -1) { // i.e. Scalar
+            value = ruleProperty.value.value;
+            range = ruleProperty.value.range;
+        }
+
+        if (typeof value === 'boolean' || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
+            // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
+            return {stop: true};
+        }
+
+        return {
+            value,
+            range
+        };
     }
 
     private isFloat(value: any) {
