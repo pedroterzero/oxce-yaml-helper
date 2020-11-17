@@ -78,6 +78,7 @@ export class RulesetDefinitionChecker {
     private typeLinks: {[key: string]: string[]} = {
         'armors.corpseBattle': ['items'],
         'items.categories': ['itemCategories'],
+        'items.tags': ['extended.tags.RuleItem'],
         'startingBase.crafts[].type': ['crafts'],
         'startingBase.crafts[].weapons[].type': ['craftWeapons'],
         'startingBase.facilities[].type': ['facilities'],

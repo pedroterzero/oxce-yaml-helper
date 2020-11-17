@@ -145,7 +145,7 @@ export class typedProperties {
         }
 
         // check if this a key definition
-        if (this.keyDefinitionTypes.indexOf(type + '.' + key) !== -1) {
+        if (this.isKeyDefinitionType(type + '.' + key)) {
             return true;
         }
 
@@ -154,6 +154,10 @@ export class typedProperties {
         }
 
         return key === 'type';
+    }
+
+    public static isKeyDefinitionType(type: string) {
+        return this.keyDefinitionTypes.indexOf(type) !== -1;
     }
 
     public static getTypeKey(rule: any, ruleType: string): string | undefined {

@@ -22,6 +22,10 @@ export class RulesetDefinitionFinder {
 
             if (extraFiles || typedProperties.isDefinitionPropertyForPath(type, key)) {
                 // console.log(`definition ${ref.path} ${ref.key}`);
+                if (typedProperties.isKeyDefinitionType(ref.path)) {
+                    // restore stripped key from type
+                    type = ref.path;
+                }
 
                 const definition: Definition = {
                     // I am not sure about this, but this is the way it seems to work now
