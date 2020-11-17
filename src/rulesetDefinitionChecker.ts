@@ -30,20 +30,27 @@ export class RulesetDefinitionChecker {
         'MAN_1M3', 'MAN_2', 'MAN_3'
     ];
 
+    private builtinPalettes = [
+        'BACKPALS.DAT', 'PAL_BASESCAPE', 'PAL_BATTLEPEDIA', 'PAL_BATTLESCAPE', 'PAL_GEOSCAPE', 'PAL_GRAPHS', 'PAL_UFOPAEDIA'
+    ]
+
     private builtinTypes: {[key: string]: string[]} = {
         'alienDeployments.alertBackground': this.builtinBackgrounds,
         'alienDeployments.briefing.background': this.builtinBackgrounds,
         'alienDeployments.extendedObjectiveType': ['STR_EVACUATION', 'STR_FRIENDLY_VIP', 'STR_ITEM_EXTRACTION'], // FtA
+        'alienDeployments.loseCutscene': ['loseGame'],
+        'alienDeployments.winCutscene': ['winGame'],
         'alienMissions.waves[].ufo': ['dummy'],
         'armors.spriteInv': this.builtinArmorSprites,
         'armors.spriteSheet': [
             'CELATID.PCK', 'CIVM.PCK', 'CHRYS.PCK', 'CYBER.PCK', 'FLOATER.PCK', 'ETHEREAL.PCK', 'MUTON.PCK',
             'SECTOID.PCK', 'SILACOID.PCK', 'SNAKEMAN.PCK', 'X_REAP.PCK', 'X_ROB.PCK',
-            'XCOM_1.PCK', 'XCOM_2.PCK', 'ZOMBIE.PCK'
+            'XCOM_0.PCK', 'XCOM_1.PCK', 'XCOM_2.PCK', 'ZOMBIE.PCK'
         ],
         'armors.storeItem': ['STR_NONE'],
         'converter.markers': ['STR_UFO', 'STR_TERROR_SITE', 'STR_LANDING_SITE', 'STR_CRASH_SITE', 'STR_WAYPOINT'],
         'converter.alienRanks': ['_COMMANDER', '_LEADER', '_ENGINEER', '_MEDIC', '_NAVIGATOR', '_SOLDIER', '_TERRORIST'],
+        'customPalettes.target': this.builtinPalettes,
         'enviroEffects.paletteTransformations.PAL_BATTLESCAPE': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
         'events.background': this.builtinBackgrounds,
         'interfaces.backgroundImage': this.builtinBackgrounds,
@@ -51,12 +58,14 @@ export class RulesetDefinitionChecker {
             'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
             'STR_EQUIPMENT', 'STR_WEAPON'
         ],
+        'manufacture.spawnedPersonType': ['STR_ENGINEER', 'STR_SCIENTIST'],
         'units.rank': [
             'STR_LIVE_COMMANDER', 'STR_LIVE_ENGINEER', 'STR_LIVE_LEADER', 'STR_LIVE_MEDIC',
             'STR_LIVE_NAVIGATOR', 'STR_LIVE_SOLDIER', 'STR_LIVE_TERRORIST',
             'STR_CIVILIAN' /* OXCE */
         ],
         'startingBase.crafts[].status': ['STR_READY', 'STR_REPAIRS'],
+        'startingConditions.allowedItems': ['STR_NONE'],
         'startingConditions.allowedVehicles': ['STR_NONE'],
         'ufos.size': ['STR_LARGE', 'STR_MEDIUM_UC', 'STR_SMALL', 'STR_VERY_LARGE', 'STR_VERY_SMALL'],
         'units.civilianRecoveryType': ['STR_ENGINEER', 'STR_SCIENTIST'],
@@ -109,6 +118,7 @@ export class RulesetDefinitionChecker {
         'armors.layersDefaultPrefix',
         'armors.scripts.selectUnitSprite',
         'armors.spriteInv', // TODO: FIX THIS%
+        'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
         'alienDeployments.terrains', // may want to check that the files exist
         'alienDeployments.briefing.music', // not sure about this one (check that files exist? stock?)
         'battleScripts.commands[].spawnBlocks', // FtA
@@ -129,8 +139,10 @@ export class RulesetDefinitionChecker {
         // 'facilities.mapName', // may want to check that the files exist
         'interfaces.elements[].id', // could type check this, but the validator probably catches these
         'interfaces.palette', // could type check this, but the validator probably catches these
+        'items.scripts.createItem',
         'mapScripts.commands[].direction',
         'mapScripts.commands[].verticalLevels[].terrain', // may want to check that the files exist
+        'missionScripts.varName', // seems it can be ignored (according to Finnik)
         'soldiers.soldierNames', // may want to check that the files exist
         'terrains.mapBlocks[].name', // check that the mapblock files exist
         'terrains.mapDataSets', // check that the terrains exist
@@ -147,6 +159,7 @@ export class RulesetDefinitionChecker {
         'alienDeployments.alert',
         'alienDeployments.alertDescription',
         'alienDeployments.briefing.desc',
+        'alienDeployments.briefing.title',
         'alienDeployments.markerName',
         'alienDeployments.objectiveComplete',
         'alienDeployments.objectivePopup',
@@ -162,7 +175,8 @@ export class RulesetDefinitionChecker {
         'items.confMelee.name',
         'items.confSnap.name',
         'items.medikitActionName',
-        'items.name', // mnot sure
+        'items.name', // not sure
+        'items.primeActionMessage',
         'items.primeActionName',
         'items.psiAttackName',
         'items.unprimeActionName',
