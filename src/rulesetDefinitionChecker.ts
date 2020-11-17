@@ -72,7 +72,6 @@ export class RulesetDefinitionChecker {
     private handSpriteIds = [-1, 127];
 
     private builtinResourceIds: {[key: string]: number[]} = {
-        'items.aggroSound': this.soundIds,
         'items.bigSprite': this.bigSpriteIds,
         'items.explosionHitSound': this.soundIds,
         'items.fireSound': this.soundIds,
@@ -83,12 +82,14 @@ export class RulesetDefinitionChecker {
         'items.meleeSound': this.soundIds,
         'items.meleeHitSound': this.soundIds,
         'items.specialIconSprite': [-1, 2],
+        'units.aggroSound': this.soundIds,
         'units.deathSound': this.soundIds,
         'units.moveSound': this.soundIds,
     };
 
     private typeLinks: {[key: string]: string[]} = {
         'armors.corpseBattle': ['items'],
+        'alienDeployments.data[].itemSets[]': ['items'], // could check if it's a weapon?
         'items.categories': ['itemCategories'],
         'items.tags': ['extended.tags.RuleItem'],
         'startingBase.crafts[].type': ['crafts'],
@@ -262,8 +263,7 @@ export class RulesetDefinitionChecker {
 
     private typeExists(ref: Match): boolean {
         if (ref.path.match(/^[a-z]+\.delete$/i)) {
-            // don't care about the delete keys
-            // HANDLE delete!
+            // we can't really check deletes, because the types are deleted by the time we get here. TODO to fix even that
             return false;
         }
         if (ref.path.startsWith('extraStrings.') || ref.path.startsWith('extended.scripts.')) {
