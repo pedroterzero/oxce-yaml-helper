@@ -63,6 +63,11 @@ export class typedProperties {
         'facilities.buildCostItems',
         'startingBase.items',
         'startingBase.randomSoldiers',
+        'extended.tags.BattleItem',
+        'extended.tags.BattleUnit',
+        'extended.tags.RuleArmor',
+        'extended.tags.RuleItem',
+        'extended.tags.RuleSoldierBonus',
     ];
 
     private static typeProperties: typeProperties = {

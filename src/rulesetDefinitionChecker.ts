@@ -84,7 +84,7 @@ export class RulesetDefinitionChecker {
         'startingBase.items': ['items'],
         'startingBase.randomSoldiers': ['soldiers'],
         'facilities.requires': ['research'],
-        'facilities.mapName': ['terrains.mapBlocks'],
+        'facilities.mapName': ['terrains.mapBlocks[]'],
         'facilities.destroyedFacility': ['facilities'],
         'facilities.buildCostItems': ['items'],
         'facilities.buildOverFacilities': ['facilities'],
@@ -103,6 +103,12 @@ export class RulesetDefinitionChecker {
         'crafts.battlescapeTerrainData.name', // may want to check that the files exist
         'cutscenes.videos', // may want to check that the files exist
         'cutscenes.slideshow.slides[].imagePath', // may want to check that the files exist
+        // 'extended.scripts',
+        'extended.tags.BattleItem',
+        'extended.tags.BattleUnit',
+        'extended.tags.RuleArmor',
+        'extended.tags.RuleItem',
+        'extended.tags.RuleSoldierBonus',
         'extraSprites.fileSingle', // may want to check that the files exist
         // 'facilities.mapName', // may want to check that the files exist
         'interfaces.elements[].id', // could type check this, but the validator probably catches these
@@ -227,7 +233,7 @@ export class RulesetDefinitionChecker {
             // HANDLE delete!
             return false;
         }
-        if (ref.path.indexOf('extraStrings.') === 0) {
+        if (ref.path.startsWith('extraStrings.') || ref.path.startsWith('extended.scripts.')) {
             // ignore extraStrings for now(?)
             return false;
         }
