@@ -104,11 +104,11 @@ export class RulesetDefinitionChecker {
         'cutscenes.videos', // may want to check that the files exist
         'cutscenes.slideshow.slides[].imagePath', // may want to check that the files exist
         // 'extended.scripts',
-        'extended.tags.BattleItem',
-        'extended.tags.BattleUnit',
-        'extended.tags.RuleArmor',
-        'extended.tags.RuleItem',
-        'extended.tags.RuleSoldierBonus',
+        // 'extended.tags.BattleItem',
+        // 'extended.tags.BattleUnit',
+        // 'extended.tags.RuleArmor',
+        // 'extended.tags.RuleItem',
+        // 'extended.tags.RuleSoldierBonus',
         'extraSprites.fileSingle', // may want to check that the files exist
         // 'facilities.mapName', // may want to check that the files exist
         'interfaces.elements[].id', // could type check this, but the validator probably catches these

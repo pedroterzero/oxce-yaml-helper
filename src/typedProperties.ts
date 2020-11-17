@@ -60,9 +60,19 @@ export class typedProperties {
     ];
 
     private static keyReferenceTypes: string[] = [
+        'extended.tags.BattleItem',
+        'extended.tags.BattleUnit',
+        'extended.tags.RuleArmor',
+        'extended.tags.RuleItem',
+        'extended.tags.RuleSoldierBonus',
+        'items.tags',
         'facilities.buildCostItems',
         'startingBase.items',
         'startingBase.randomSoldiers',
+    ];
+
+    // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
+    private static keyDefinitionTypes: string[] = [
         'extended.tags.BattleItem',
         'extended.tags.BattleUnit',
         'extended.tags.RuleArmor',
@@ -132,6 +142,11 @@ export class typedProperties {
         if (this.vetoTypes.indexOf(type) !== -1) {
             // explicitly blacklist some paths
             return false;
+        }
+
+        // check if this a key definition
+        if (this.keyDefinitionTypes.indexOf(type + '.' + key) !== -1) {
+            return true;
         }
 
         if (type in this.typePropertyHints) {
