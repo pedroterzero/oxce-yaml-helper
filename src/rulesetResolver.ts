@@ -1,9 +1,10 @@
-import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress, window, ExtensionContext, FileType } from 'vscode';
+import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress, window, ExtensionContext, FileType, ConfigurationTarget } from 'vscode';
 import { logger } from "./logger";
 import { rulesetTree, Translation } from "./rulesetTree";
 import { EventEmitter } from "events";
 import { rulesetParser } from "./rulesetParser";
 import deepmerge = require('deepmerge');
+import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 
 export class RulesetResolver implements Disposable {
     private context?: ExtensionContext;
@@ -200,6 +201,44 @@ export class RulesetResolver implements Disposable {
         const assetPath = this.context.extensionPath + '/src/assets/xcom1';
         workspace.workspaceFolders.map(workspaceFolder => {
             rulesetTree.checkDefinitions(workspaceFolder, assetPath);
+        });
+
+        this.checkForCommonProblems();
+    }
+
+    private checkForCommonProblems() {
+        const problemsByPath = rulesetDefinitionChecker.getProblemsByPath();
+        const itemsCategories = problemsByPath['items.categories'] || 0;
+        const manufactureCategory = problemsByPath['manufacture.category'] || 0;
+
+        if (itemsCategories + manufactureCategory > 25) {
+            this.proposeDisableCategories();
+        }
+    }
+
+    private proposeDisableCategories() {
+        if (workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories') !== 'yes') {
+            return;
+        }
+
+        const message = 'There are many missing category references in these rulesets. Would you like to ignore these from now on?';
+
+        const choices = {
+            yes: 'Yes',
+            notNow: 'Not now',
+            always: 'No and don\'t ask again',
+        };
+
+        window.showInformationMessage(
+            message, ...Object.values(choices)
+        ).then((result) => {
+            if (result === choices.yes) {
+                workspace.getConfiguration('oxcYamlHelper').update('validateCategories', 'no', ConfigurationTarget.Workspace);
+            // } else if (result === choices.notNow) {
+            //     console.log(result);
+            } else if (result === choices.always) {
+                workspace.getConfiguration('oxcYamlHelper').update('validateCategories', 'always', ConfigurationTarget.Workspace);
+            }
         });
     }
 

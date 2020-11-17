@@ -84,7 +84,9 @@ export class RulesetRecursiveKeyRetriever {
             // console.log('looping PAIR', path + '.' + entry.key.value);
             this.processItems(entry.value, path + '.' + entry.key.value, matches, lookupAll);
         } else if ('items' in entry) {
-            this.loopEntry(entry, path, matches, lookupAll);
+            if (entry.items.length > 0) {
+                this.loopEntry(entry, path, matches, lookupAll);
+            }
         } else {
             entry = entry as Scalar;
             const value = entry.value;
@@ -188,7 +190,7 @@ export class RulesetRecursiveKeyRetriever {
             // ignore aliases for now(?)
             return {stop: true};
         }
-        if (['MAP', 'FLOW_SEQ', 'SEQ'].indexOf(value.type) !== -1) {
+        if (['MAP', 'FLOW_SEQ', 'SEQ', 'FLOW_MAP'].indexOf(value.type) !== -1) {
             return {value, loop: true};
             // this.loopEntry(value, newPath, matches, lookupAll);
             // return;

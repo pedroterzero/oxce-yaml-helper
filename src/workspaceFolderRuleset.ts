@@ -162,6 +162,7 @@ export class WorkspaceFolderRuleset {
 
     public checkDefinitions(assetPath: string) {
         this.diagnosticCollection.clear();
+        rulesetDefinitionChecker.clear();
 
         for (const file of this.referenceFiles) {
             if (file.file.path.startsWith(assetPath + '/')) {

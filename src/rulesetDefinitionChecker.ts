@@ -54,7 +54,6 @@ export class RulesetDefinitionChecker {
         'units.rank': [
             'STR_LIVE_COMMANDER', 'STR_LIVE_ENGINEER', 'STR_LIVE_LEADER', 'STR_LIVE_MEDIC',
             'STR_LIVE_NAVIGATOR', 'STR_LIVE_SOLDIER', 'STR_LIVE_TERRORIST',
-
             'STR_CIVILIAN' /* OXCE */
         ],
         'startingBase.crafts[].status': ['STR_READY', 'STR_REPAIRS'],
@@ -63,6 +62,8 @@ export class RulesetDefinitionChecker {
         'units.civilianRecoveryType': ['STR_ENGINEER', 'STR_SCIENTIST'],
         'ufopaedia.image_id': this.builtinUfopaediaImages,
     };
+
+    private problemsByPath: {[key: string]: number} = {};
 
     private soundIds = [-1, 54];
     private smokeIds = [-1, 55];
@@ -239,6 +240,18 @@ export class RulesetDefinitionChecker {
         const myRange = rulesetParser.fixRangesForWindowsLineEndingsIfNeeded(doc, ref.range);
         const range = new Range(doc.positionAt(myRange[0]), doc.positionAt(myRange[1]));
 
+        if (!(ref.path in this.problemsByPath)) {
+            this.problemsByPath[ref.path] = 0;
+        }
+
+        this.problemsByPath[ref.path]++;
+
+        if (workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories') === 'no') {
+            if (['items.categories', 'manufacture.category'].indexOf(ref.path) !== -1) {
+                return;
+            }
+        }
+
         // const text = doc.getText(range);
         // if (text.trim().length < text.length) {
         //     // deal with trailing whitespace/CRLF
@@ -282,6 +295,13 @@ export class RulesetDefinitionChecker {
         return true;
     }
 
+    public getProblemsByPath() {
+        return this.problemsByPath;
+    }
+
+    public clear() {
+        this.problemsByPath = {};
+    }
 }
 
 export const rulesetDefinitionChecker = new RulesetDefinitionChecker();
