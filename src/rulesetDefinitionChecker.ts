@@ -75,7 +75,17 @@ export class RulesetDefinitionChecker {
     };
 
     private typeLinks: {[key: string]: string[]} = {
-        'armors.corpseBattle': ['items']
+        'startingBase.facilities': ['facilities'], // TODO: FIX THIS%
+        'startingBase.randomSoldiers': ['soldiers'], // TODO: FIX THIS%
+        'startingBase.items': ['items'], // TODO: FIX THIS%
+        //'startingBase.crafts': ['crafts'], crafts to crafts and also weapons to craftWeapons
+        'facilities.requires': ['research'],
+        'facilities.mapName': ['terrains.mapBlocks'], // TODO: FIX THIS%
+        'facilities.destroyedFacility': ['facilities'],
+        'facilities.buildCostItems': ['items'], // TODO: FIX THIS%
+        'facilities.buildOverFacilities': ['facilities'],
+        'armors.corpseBattle': ['items'],
+        'items.categories': ['itemCategories']
     };
 
     private ignoreTypes = [
