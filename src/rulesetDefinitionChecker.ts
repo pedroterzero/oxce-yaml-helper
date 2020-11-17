@@ -50,6 +50,7 @@ export class RulesetDefinitionChecker {
 
             'STR_CIVILIAN' /* OXCE */
         ],
+        'startingBase.crafts[].status': ['STR_REPAIRS'],
         'ufos.size': ['STR_LARGE', 'STR_MEDIUM_UC', 'STR_SMALL', 'STR_VERY_LARGE', 'STR_VERY_SMALL'],
         'units.civilianRecoveryType': ['STR_ENGINEER', 'STR_SCIENTIST'],
         'ufopaedia.image_id': this.builtinUfopaediaImages,
@@ -75,17 +76,19 @@ export class RulesetDefinitionChecker {
     };
 
     private typeLinks: {[key: string]: string[]} = {
-        'startingBase.facilities': ['facilities'], // TODO: FIX THIS%
-        'startingBase.randomSoldiers': ['soldiers'], // TODO: FIX THIS%
-        'startingBase.items': ['items'], // TODO: FIX THIS%
-        //'startingBase.crafts': ['crafts'], crafts to crafts and also weapons to craftWeapons
+        'armors.corpseBattle': ['items'],
+        'items.categories': ['itemCategories'],
+        'startingBase.crafts[].type': ['crafts'],
+        'startingBase.crafts[].weapons[].type': ['craftWeapons'],
+        'startingBase.facilities[].type': ['facilities'],
+        'startingBase.items': ['items'],
+        'startingBase.randomSoldiers': ['soldiers'],
         'facilities.requires': ['research'],
         'facilities.mapName': ['terrains.mapBlocks'], // TODO: FIX THIS%
         'facilities.destroyedFacility': ['facilities'],
-        'facilities.buildCostItems': ['items'], // TODO: FIX THIS%
+        'facilities.buildCostItems': ['items'],
         'facilities.buildOverFacilities': ['facilities'],
-        'armors.corpseBattle': ['items'],
-        'items.categories': ['itemCategories']
+        'research.requiresBaseFunc': ['facilities'], // should also check provideBaseFunc, really. but there's probably no overlap
     };
 
     private ignoreTypes = [

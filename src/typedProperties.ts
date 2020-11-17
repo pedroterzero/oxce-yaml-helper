@@ -52,6 +52,18 @@ export class typedProperties {
         ufoTrajectories: ['id'],
     };
 
+    private static vetoTypes: string[] = [
+        'startingBase.crafts[]',
+        'startingBase.crafts[].weapons[]',
+        'startingBase.facilities[]',
+    ];
+
+    private static keyReferenceTypes: string[] = [
+        'facilities.buildCostItems',
+        'startingBase.items',
+        'startingBase.randomSoldiers',
+    ];
+
     private static typeProperties: typeProperties = {
         crafts: {
             sprite: {target: 'extraSprites.INTICON.PCK.files'},
@@ -111,6 +123,11 @@ export class typedProperties {
     }
 
     public static isDefinitionPropertyForPath (type: string, key: string): boolean {
+        if (this.vetoTypes.indexOf(type) !== -1) {
+            // explicitly blacklist some paths
+            return false;
+        }
+
         if (type in this.typePropertyHints) {
             return this.typePropertyHints[type].indexOf(key) !== -1;
         }
@@ -246,5 +263,9 @@ export class typedProperties {
 
         // logger.debug(`type ${type}.${key} is ${(property[key].type || '')}`);
         return (property[key].type || '') === 'numeric';
+    }
+
+    public static isKeyReferencePath(path: string) {
+        return this.keyReferenceTypes.indexOf(path) !== -1;
     }
 }

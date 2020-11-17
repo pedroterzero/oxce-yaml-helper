@@ -75,8 +75,14 @@ export class RulesetRecursiveKeyRetriever {
         if (entry === null) {
             // this should actually not happen, but happens if there are parse errors in yaml (like missing values)
             logger.error(`found a null value at ${path} -- ignoring`);
+        } else if (typedProperties.isKeyReferencePath(path)) {
+            this.processKeyReferencePath(entry, path, matches);
         } else if (typeof entry === 'string' || typeof entry === 'number') {
             return;
+        } else if (entry.type === 'PAIR') {
+            // i.e. startingbase
+            // console.log('looping PAIR', path + '.' + entry.key.value);
+            this.processItems(entry.value, path + '.' + entry.key.value, matches, lookupAll);
         } else if ('items' in entry) {
             this.loopEntry(entry, path, matches, lookupAll);
         } else {
@@ -102,6 +108,21 @@ export class RulesetRecursiveKeyRetriever {
         }
 
         return;
+    }
+    processKeyReferencePath(entry: Entry, path: string, matches: Match[]) {
+        if (typeof entry !== 'object' || !('items' in entry)) {
+            return;
+        }
+
+        const map = entry as YAMLMap;
+
+        for (const item of map.items) {
+            matches.push({
+                key: item.key.value,
+                path,
+                range: item.key.range,
+            });
+        }
     }
 
     private loopEntry(entry: YAMLSeq, path: string, matches: Match[], lookupAll: boolean) {

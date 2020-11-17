@@ -5,7 +5,7 @@ import { rulesetParser } from "./rulesetParser";
 export class RulesetDefinitionProvider implements DefinitionProvider {
 
     provideDefinition(document: TextDocument, position: Position): ProviderResult<Definition> {
-        const value = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document);
+        const value = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document, false);
         if (!value?.key) {
             return;
         }
