@@ -36,9 +36,16 @@ export class RulesetDefinitionChecker {
         'alienDeployments.extendedObjectiveType': ['STR_EVACUATION', 'STR_FRIENDLY_VIP', 'STR_ITEM_EXTRACTION'], // FtA
         'alienMissions.waves[].ufo': ['dummy'],
         'armors.spriteInv': this.builtinArmorSprites,
-        'armors.spriteSheet': ['CHRYS.PCK', 'XCOM_1.PCK', 'XCOM_2.PCK', 'ZOMBIE.PCK'],
+        'armors.spriteSheet': [
+            'CELATID.PCK', 'CIVM.PCK', 'CHRYS.PCK', 'CYBER.PCK', 'FLOATER.PCK', 'ETHEREAL.PCK', 'MUTON.PCK',
+            'SECTOID.PCK', 'SILACOID.PCK', 'SNAKEMAN.PCK', 'X_REAP.PCK', 'X_ROB.PCK',
+            'XCOM_1.PCK', 'XCOM_2.PCK', 'ZOMBIE.PCK'
+        ],
         'armors.storeItem': ['STR_NONE'],
+        'converter.markers': ['STR_UFO', 'STR_TERROR_SITE', 'STR_LANDING_SITE', 'STR_CRASH_SITE', 'STR_WAYPOINT'],
+        'converter.alienRanks': ['_COMMANDER', '_LEADER', '_ENGINEER', '_MEDIC', '_NAVIGATOR', '_SOLDIER', '_TERRORIST'],
         'enviroEffects.paletteTransformations.PAL_BATTLESCAPE': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
+        'events.background': this.builtinBackgrounds,
         'interfaces.backgroundImage': this.builtinBackgrounds,
         'manufacture.category': [
             'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
@@ -50,7 +57,8 @@ export class RulesetDefinitionChecker {
 
             'STR_CIVILIAN' /* OXCE */
         ],
-        'startingBase.crafts[].status': ['STR_REPAIRS'],
+        'startingBase.crafts[].status': ['STR_READY', 'STR_REPAIRS'],
+        'startingConditions.allowedVehicles': ['STR_NONE'],
         'ufos.size': ['STR_LARGE', 'STR_MEDIUM_UC', 'STR_SMALL', 'STR_VERY_LARGE', 'STR_VERY_SMALL'],
         'units.civilianRecoveryType': ['STR_ENGINEER', 'STR_SCIENTIST'],
         'ufopaedia.image_id': this.builtinUfopaediaImages,
@@ -63,7 +71,9 @@ export class RulesetDefinitionChecker {
     private handSpriteIds = [-1, 127];
 
     private builtinResourceIds: {[key: string]: number[]} = {
+        'items.aggroSound': this.soundIds,
         'items.bigSprite': this.bigSpriteIds,
+        'items.explosionHitSound': this.soundIds,
         'items.fireSound': this.soundIds,
         'items.floorSprite': this.floorSpriteIds,
         'items.handSprite': this.handSpriteIds,
@@ -71,6 +81,7 @@ export class RulesetDefinitionChecker {
         'items.hitSound': this.soundIds,
         'items.meleeSound': this.soundIds,
         'items.meleeHitSound': this.soundIds,
+        'items.specialIconSprite': [-1, 2],
         'units.deathSound': this.soundIds,
         'units.moveSound': this.soundIds,
     };
@@ -94,6 +105,7 @@ export class RulesetDefinitionChecker {
 
     private ignoreTypes = [
         'armors.layersDefaultPrefix',
+        'armors.scripts.selectUnitSprite',
         'armors.spriteInv', // TODO: FIX THIS%
         'alienDeployments.terrains', // may want to check that the files exist
         'alienDeployments.briefing.music', // not sure about this one (check that files exist? stock?)
@@ -104,6 +116,7 @@ export class RulesetDefinitionChecker {
         'crafts.battlescapeTerrainData.name', // may want to check that the files exist
         'cutscenes.videos', // may want to check that the files exist
         'cutscenes.slideshow.slides[].imagePath', // may want to check that the files exist
+        'customPalettes.file', // may want to check that the files exist
         // 'extended.scripts',
         // 'extended.tags.BattleItem',
         // 'extended.tags.BattleUnit',
@@ -131,10 +144,13 @@ export class RulesetDefinitionChecker {
     private stringTypes = [
         'alienDeployments.alert',
         'alienDeployments.alertDescription',
-        'alienDeployments.markerName',
         'alienDeployments.briefing.desc',
+        'alienDeployments.markerName',
+        'alienDeployments.objectiveComplete',
+        'alienDeployments.objectivePopup',
         'covertOperations.description', // FtA
         'covertOperations.successDescription', // FtA
+        'commendations.description',
         'crafts.weaponStrings',
         'cutscenes.slideshow.slides[].caption',
         'diplomacyFactions.description', // FtA
@@ -144,6 +160,9 @@ export class RulesetDefinitionChecker {
         'items.confMelee.name',
         'items.confSnap.name',
         'items.medikitActionName',
+        'items.name', // mnot sure
+        'items.primeActionName',
+        'items.psiAttackName',
         'items.unprimeActionName',
         'regions.missionZones[][]',
         'soldiers.rankStrings',
