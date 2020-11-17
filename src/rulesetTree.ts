@@ -112,6 +112,10 @@ export class RulesetTree {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getTranslation(key);
     }
 
+    refresh(workspaceFolder: WorkspaceFolder) {
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.refresh();
+    }
+
     public checkDefinitions(workspaceFolder: WorkspaceFolder, assetPath: string): any {
         logger.debug(`checkDefinitions workspaceFolder ${workspaceFolder}`);
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.checkDefinitions(assetPath);

@@ -31,61 +31,19 @@ export class WorkspaceFolderRuleset {
 
     public mergeIntoRulesetTree(definitions: Definition[], sourceFile: Uri) {
         this.addRulesetFile(definitions, sourceFile || null);
-        this.definitionsLookup = {};
-
-        this.rulesetFiles.forEach((ruleset) => {
-            this.definitionsLookup = deepmerge(
-                this.definitionsLookup,
-                this.getLookups(ruleset.definitions, ruleset.file)
-            );
-        });
-
-        logger.debug('Total number of (unique) definitions: ', Object.keys(this.definitionsLookup).length);
     }
 
     public mergeReferencesIntoRulesetTree(references: Match[], sourceFile: Uri) {
-        // TODO: fairly sure all this is only needed for definition checking
         this.addRulesetReferenceFile(references, sourceFile || null);
-/*        this.references = [];
-
-        this.referenceFiles.forEach((file) => {
-            this.references = deepmerge(
-                this.references,
-                file.references
-            );
-        });*/
-
-    //    logger.debug('Number of references', Object.keys(this.references).length);
     }
 
     public mergeVariablesIntoRulesetTree(variables: Variables, sourceFile: Uri) {
         this.addRulesetVariableFile(variables, sourceFile || null);
-        this.variables = {};
-
-        this.variableFiles.forEach((file) => {
-            this.variables = deepmerge(
-                this.variables,
-                file.variables
-            );
-        });
-
-//        logger.debug('Number of variables', Object.keys(this.variables).length);
     }
 
     public mergeTranslationsIntoTree(translations: Translation[], sourceFile: Uri) {
         const lookups = this.getTranslationLookups(translations);
-
         this.addRulesetTranslationFile(lookups, sourceFile || null);
-        this.translations = {};
-
-        this.translationFiles.forEach((file) => {
-            this.translations = deepmerge(
-                this.translations,
-                file.translations
-            );
-        });
-
-        // logger.debug(`Number of translations for ${this.getLocale()}: ${Object.keys(this.translations[locale]).length}`);
     }
 
     private getTranslationLookups(translations: Translation[]): Translations {
@@ -101,8 +59,6 @@ export class WorkspaceFolderRuleset {
 
         return grouped;
     }
-
-
 
     private getLookups(definitions: Definition[], sourceFile: Uri): TypeLookup {
         const lookups: TypeLookup = {};
@@ -200,6 +156,10 @@ export class WorkspaceFolderRuleset {
         return this.translations[locale][key];
     }
 
+    public refresh() {
+        this.createLookups();
+    }
+
     public checkDefinitions(assetPath: string) {
         this.diagnosticCollection.clear();
 
@@ -214,11 +174,52 @@ export class WorkspaceFolderRuleset {
             this.diagnosticCollection.set(Uri.file(file.file.path), diagnostics);
         }
 
-        // if (!(key in this.definitionsLookup)) {
-            // return false;
-        // }
-
         return true;
+    }
+
+    private createLookups() {
+        this.createDefinitionLookup();
+        this.createVariableLookup();
+        this.createTranslationLookup();
+    }
+
+    private createDefinitionLookup() {
+        this.definitionsLookup = {};
+
+        this.rulesetFiles.forEach((ruleset) => {
+            this.definitionsLookup = deepmerge(
+                this.definitionsLookup,
+                this.getLookups(ruleset.definitions, ruleset.file)
+            );
+        });
+
+        logger.debug('Total number of (unique) definitions: ', Object.keys(this.definitionsLookup).length);
+    }
+
+    private createVariableLookup () {
+        this.variables = {};
+
+        this.variableFiles.forEach((file) => {
+            this.variables = deepmerge(
+                this.variables,
+                file.variables
+            );
+        });
+
+    //    logger.debug('Number of variables', Object.keys(this.variables).length);
+    }
+
+    private createTranslationLookup () {
+        this.translations = {};
+
+        this.translationFiles.forEach((file) => {
+            this.translations = deepmerge(
+                this.translations,
+                file.translations
+            );
+        });
+
+        // logger.debug(`Number of translations for ${this.getLocale()}: ${Object.keys(this.translations[locale]).length}`);
     }
 
     private getLocale (): string {

@@ -29,7 +29,7 @@ export class RulesetResolver implements Disposable {
 
         this.onDidLoadRulesheet(this.ruleSheetReloaded.bind(this, progress));
 
-        this.validateReferences();
+        this.refreshWorkspaceFolderRulesets();
 
         this.registerFileWatcher();
         this.onDidLoadEmitter.emit('didLoad');
@@ -62,7 +62,7 @@ export class RulesetResolver implements Disposable {
     }
 
     private ruleSheetReloaded (): void {
-        this.validateReferences();
+        this.refreshWorkspaceFolderRulesets();
     }
 
     private async loadYamlFiles(): Promise<undefined | void[][]> {
@@ -178,6 +178,18 @@ export class RulesetResolver implements Disposable {
         }
 
         return rulesetTree.getTranslation(key, folder);
+    }
+
+    private refreshWorkspaceFolderRulesets () {
+        if (!workspace.workspaceFolders || !this.context) {
+            return;
+        }
+
+        workspace.workspaceFolders.map(workspaceFolder => {
+            rulesetTree.refresh(workspaceFolder);
+        });
+
+        this.validateReferences();
     }
 
     private validateReferences() {
