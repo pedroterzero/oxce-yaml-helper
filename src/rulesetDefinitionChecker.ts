@@ -84,7 +84,7 @@ export class RulesetDefinitionChecker {
         'startingBase.items': ['items'],
         'startingBase.randomSoldiers': ['soldiers'],
         'facilities.requires': ['research'],
-        'facilities.mapName': ['terrains.mapBlocks'], // TODO: FIX THIS%
+        'facilities.mapName': ['terrains.mapBlocks'],
         'facilities.destroyedFacility': ['facilities'],
         'facilities.buildCostItems': ['items'],
         'facilities.buildOverFacilities': ['facilities'],
@@ -104,7 +104,7 @@ export class RulesetDefinitionChecker {
         'cutscenes.videos', // may want to check that the files exist
         'cutscenes.slideshow.slides[].imagePath', // may want to check that the files exist
         'extraSprites.fileSingle', // may want to check that the files exist
-        'facilities.mapName', // may want to check that the files exist
+        // 'facilities.mapName', // may want to check that the files exist
         'interfaces.elements[].id', // could type check this, but the validator probably catches these
         'interfaces.palette', // could type check this, but the validator probably catches these
         'mapScripts.commands[].direction',
