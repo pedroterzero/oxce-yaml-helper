@@ -20,7 +20,7 @@ export class RulesetDefinitionFinder {
                 type = ref.path;
             }
 
-            if (extraFiles || typedProperties.isDefinitionPropertyForPath(type, key)) {
+            if (extraFiles || typedProperties.isDefinitionPropertyForPath(type, key, ref.key)) {
                 // console.log(`definition ${ref.path} ${ref.key}`);
                 if (typedProperties.isKeyDefinitionType(ref.path) || typedProperties.isArrayDefinitionTypes(ref.path)) {
                     // restore stripped key from type

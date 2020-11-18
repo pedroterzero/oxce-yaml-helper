@@ -140,7 +140,7 @@ export class RulesetParser {
         }
 
         if (document.eol === EndOfLine.CRLF) {
-            logger.debug(`Range before adjusting for CRLF: ${range[0]}:${range[1]}`);
+            // logger.debug(`Range before adjusting for CRLF: ${range[0]}:${range[1]}`);
 
             // find offset
             let lineBreaks = 0;

@@ -49,17 +49,24 @@ export class typedProperties {
         soldierBonuses: ['name'],
         soldierTransformation: ['name'],
         terrains: ['name'],
-        'terrains.mapBlocks[]': ['name'],
+        // 'terrains.mapBlocks[]': ['name'],
         ufopaedia: ['id'],
         ufoTrajectories: ['id'],
     };
 
     private static vetoTypes: string[] = [
+        'extraStrings',
+        'mapScripts.commands[]',
+        'mapScripts.commands[].tunnelData.MCDReplacements[]',
         'mapScripts.commands[].verticalLevels[]',
         'startingBase.crafts[]',
         'startingBase.crafts[].weapons[]',
         'startingBase.facilities[]',
     ];
+
+    private static vetoTypeValues: {[key: string]: string[]} = {
+        // 'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
+    };
 
     // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
     private static keyDefinitionTypes: string[] = [
@@ -154,9 +161,11 @@ export class typedProperties {
         this.addTypeLinks();
     }
 
-    public static isDefinitionPropertyForPath (type: string, key: string): boolean {
+    public static isDefinitionPropertyForPath (type: string, key: string, value: string): boolean {
         if (this.vetoTypes.indexOf(type) !== -1) {
             // explicitly blacklist some paths
+            return false;
+        } else if (type in this.vetoTypeValues && this.vetoTypeValues[type].indexOf(value) !== -1) {
             return false;
         }
 

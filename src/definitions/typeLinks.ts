@@ -31,7 +31,7 @@ export const typeLinks: {[key: string]: string[]} = {
     'armors.specialWeapon': ['items'],
     'armors.storeItem': ['items'],
     'armors.tags': ['extended.tags.RuleArmor'],
-    'armors.units': ['units'],
+    // 'armors.units': ['units'],
     'crafts.refuelItem': ['items'],
     'crafts.requires': ['research'],
     'crafts.weaponStrings': ['craftWeapons.weaponType'], //not sure if syntax correct (is this just a translatable?)

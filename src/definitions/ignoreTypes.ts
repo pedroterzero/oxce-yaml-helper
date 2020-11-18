@@ -22,7 +22,9 @@ export const ignoreTypes = [
     'interfaces.elements[].id', // could type check this, but the validator probably catches these
     'interfaces.palette', // could type check this, but the validator probably catches these
     'items.scripts.createItem',
+    'mapScripts.commands[].type',
     'mapScripts.commands[].direction',
+    'mapScripts.commands[].tunnelData.MCDReplacements[].type',
     'mapScripts.commands[].verticalLevels[].type', // validator should get it
     'missionScripts.varName', // seems it can be ignored (according to Finnik)
     'soldiers.soldierNames', // may want to check that the files exist

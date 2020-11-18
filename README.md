@@ -38,15 +38,14 @@ Hover over any image reference to get an image preview.
 ## Todo/ideas
 - Implement missing translation keys
 - Implement missing files
-- Add cache for ruleset files (md5sum, and store results)
 - Preview Vanilla resources?
-- Duplicate type definitions (items.type with same name)
 - Fix changes outside of vscode (they reload the editor state)
 
 ## Todo/dev
 - Look for 0 definitions to find missing types like alienRaces
+- List all distinct types so we can see ones we need to veto
 
 ## Credits
 - Inspired (that's not really the right word) by https://github.com/shanehofstetter/rails-i18n-vscode
-- Finnik for testing and suggestions
+- Finnik for testing, suggestions and helping out on ruleset linking rules
 - Everyone else that has anything to do with OpenXCOM or OXCE

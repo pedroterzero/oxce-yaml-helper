@@ -166,6 +166,7 @@ export class WorkspaceFolderRuleset {
     public checkDefinitions(assetPath: string) {
         this.diagnosticCollection.clear();
         rulesetDefinitionChecker.clear();
+        rulesetDefinitionChecker.init(this.definitionsLookup);
 
         for (const file of this.referenceFiles) {
             if (file.file.path.startsWith(assetPath + '/')) {
@@ -173,7 +174,7 @@ export class WorkspaceFolderRuleset {
                 continue;
             }
 
-            const diagnostics = rulesetDefinitionChecker.checkFile(file, this.definitionsLookup);
+            const diagnostics = rulesetDefinitionChecker.checkFile(file, this.definitionsLookup, this.workspaceFolder.uri.path);
 
             // logger.debug(`diagnostic: ${file.file.path} has ${diagnostics.length} diagnostics from ${file.references.length} references`);
             this.diagnosticCollection.set(Uri.file(file.file.path), diagnostics);
