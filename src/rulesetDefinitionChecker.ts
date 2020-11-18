@@ -8,7 +8,6 @@ import { ignoreTypes } from "./definitions/ignoreTypes";
 import { stringTypes } from "./definitions/stringTypes";
 import { rulesetResolver } from "./extension";
 import { logger } from "./logger";
-import { appendFile } from "fs";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -57,7 +56,7 @@ export class RulesetDefinitionChecker {
         }
 
         const duplicates = this.duplicatesPerFile[doc.fileName];
-        const messages = [];
+        // const messages = [];
         for (const duplicate of duplicates) {
             const parts = [];
             for (const dupdef of duplicate.duplicates) {
@@ -76,11 +75,11 @@ export class RulesetDefinitionChecker {
             const range = new Range(doc.positionAt(myRange[0]), doc.positionAt(myRange[1]));
 
             diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
-            messages.push(message);
+            // messages.push(message);
 
         }
 
-        appendFile(workspacePath + '/messages.txt', doc.fileName.slice(workspacePath.length + 1) + "\n==========\n" + messages.join("\n") + "\n\n", () => { return; });
+        // appendFile(workspacePath + '/messages.txt', doc.fileName.slice(workspacePath.length + 1) + "\n==========\n" + messages.join("\n") + "\n\n", () => { return; });
     }
 
     private checkReferences(doc: TextDocument, file: ReferenceFile, lookup: TypeLookup, diagnostics: Diagnostic[]) {
