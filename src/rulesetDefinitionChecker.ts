@@ -61,10 +61,13 @@ export class RulesetDefinitionChecker {
         for (const duplicate of duplicates) {
             const parts = [];
             for (const dupdef of duplicate.duplicates) {
-                const range = rulesetParser.fixRangesForWindowsLineEndingsIfNeeded(doc, dupdef.range);
-                const pos = doc.positionAt(range[0]);
+                const doc = workspace.textDocuments.find(doc => doc.uri.path === dupdef.file.path);
+                if (doc) {
+                    const range = rulesetParser.fixRangesForWindowsLineEndingsIfNeeded(doc, dupdef.range);
+                    const pos = doc.positionAt(range[0]);
 
-                parts.push(`${dupdef.file.path.slice(workspacePath.length + 1)} line ${pos.line}`);
+                    parts.push(`${dupdef.file.path.slice(workspacePath.length + 1)} line ${pos.line}`);
+                }
             }
 
             const message = `${duplicate.definition.type} ${duplicate.key} is duplicate, also exists in:\n\t${parts.join("\n\t")}`;
@@ -78,16 +81,6 @@ export class RulesetDefinitionChecker {
         }
 
         appendFile(workspacePath + '/messages.txt', doc.fileName.slice(workspacePath.length + 1) + "\n==========\n" + messages.join("\n") + "\n\n", () => { return; });
-        // workspace.fs.readFile(Uri.file(workspacePath + '/messages.txt'), new TextEncoder().encode(messages.join("\n")));
-//        console.log('foo', duplicates);
-
-                // const parts = [];
-        // for (const dupdef of mydefs) {
-        //     parts.push(`${dupdef.file.path.slice(workspacePath.length + 1)}:${dupdef.range[0]} ${dupdef.range[1]}`);
-        // }
-
-        // const message = `${type} is duplicate, also exists in ${parts.join(', ')}`;
-        // console.log(message);
     }
 
     private checkReferences(doc: TextDocument, file: ReferenceFile, lookup: TypeLookup, diagnostics: Diagnostic[]) {
@@ -117,46 +110,39 @@ export class RulesetDefinitionChecker {
 
         logger.debug(`Existing lookups: ${Object.keys(lookup).length}`);
 
-        // const dupes: {{key: string]: {[key: string]: DefinitionLookup[]} = {};
         const dupes = this.getDuplicatesByKeyAndType(lookup);
         logger.debug(`Number of types that have duplicates: ${Object.keys(dupes).length}`);
 
         for (const type in dupes) {
             for (const defs of Object.values(dupes[type])) {
-                for (const idx1 in defs) {
-                    // first loop, build the message for defs that is not this one
-                    const def = defs[idx1];
-
-                    const mydefs = [];
-                    for (const idx2 in defs) {
-                        // inner loop, get defs that aren't this one
-                        if (idx1 !== idx2) {
-                            mydefs.push(defs[idx2]);
-                        }
-                        // console.log(type, def.file.path.slice(workspacePath.length + 1), def.range[0], ':', def.range[1]);
-                    }
-
-                    if (!(def.file.path in this.duplicatesPerFile)) {
-                        this.duplicatesPerFile[def.file.path] = [];
-                    }
-
-                    this.duplicatesPerFile[def.file.path].push({
-                        key: type,
-                        definition: def,
-                        duplicates: mydefs,
-                    });
-                    // const parts = [];
-                    // for (const dupdef of mydefs) {
-                    //     parts.push(`${dupdef.file.path.slice(workspacePath.length + 1)}:${dupdef.range[0]} ${dupdef.range[1]}`);
-                    // }
-
-                    // const message = `${type} is duplicate, also exists in ${parts.join(', ')}`;
-                    // console.log(message);
-                }
+                this.groupDuplicatesByFile(defs, type);
             }
         }
-        // console.log('dupQQ', );
-        // console.log('dup', dupes);
+    }
+
+    private groupDuplicatesByFile(defs: DefinitionLookup[], type: string) {
+        for (const idx1 in defs) {
+            // first loop, build the message for defs that is not this one
+            const def = defs[idx1];
+
+            const mydefs = [];
+            for (const idx2 in defs) {
+                // inner loop, get defs that aren't this one
+                if (idx1 !== idx2) {
+                    mydefs.push(defs[idx2]);
+                }
+            }
+
+            if (!(def.file.path in this.duplicatesPerFile)) {
+                this.duplicatesPerFile[def.file.path] = [];
+            }
+
+            this.duplicatesPerFile[def.file.path].push({
+                key: type,
+                definition: def,
+                duplicates: mydefs,
+            });
+        }
     }
 
     private getDuplicatesByKeyAndType(lookup: TypeLookup) {
@@ -183,11 +169,11 @@ export class RulesetDefinitionChecker {
 
         for (const def of keyDefs) {
             if (def.type in this.ignoreTypeValues && this.ignoreTypeValues[def.type].indexOf(key) !== -1) {
-                return;// keys;
+                return;
             }
             for (const re of this.ignoreDefinitionRegexes) {
                 if (re.exec(def.type)) {
-                    return;// keys;
+                    return;
                 }
             }
 
@@ -211,14 +197,7 @@ export class RulesetDefinitionChecker {
         for (const type in duplicates) {
             const typeDupes = duplicates[type];
             if (typeDupes.length > 1) {
-                // if (!(type in dupes[key])) {
-                //     dupes[key] = {};
-                // }
                 ret[type] = typeDupes;
-                // for (const def of typeDupes) {
-                //     // this.diagnosticsPerFile[def.file.path] = {};
-                //     console.log(`"${key}" has duplicate(s) (${def.type}) ${def.file.path}:${def.range[0]}`);
-                // }
             }
         }
 
