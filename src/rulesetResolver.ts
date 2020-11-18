@@ -1,10 +1,18 @@
 import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress, window, ExtensionContext, FileType, ConfigurationTarget } from 'vscode';
 import { logger } from "./logger";
-import { rulesetTree, Translation } from "./rulesetTree";
+import { Definition, Match, rulesetTree, Translation, Variables } from "./rulesetTree";
 import { EventEmitter } from "events";
 import { rulesetParser } from "./rulesetParser";
 import deepmerge = require('deepmerge');
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
+import { rulesetFileCacheManager } from './rulesetFileCacheManager';
+
+export type ParsedRuleset = {
+    definitions?: Definition[];
+    references?: Match[];
+    variables?: Variables;
+    translations: Translation[];
+};
 
 export class RulesetResolver implements Disposable {
     private context?: ExtensionContext;
@@ -15,6 +23,7 @@ export class RulesetResolver implements Disposable {
 
     public setExtensionContent(context: ExtensionContext): void {
         this.context = context;
+        rulesetFileCacheManager.setExtensionContent(context);
     }
 
     public async load(progress: Progress<{ message?: string; increment?: number }>): Promise<void> {
@@ -132,15 +141,41 @@ export class RulesetResolver implements Disposable {
     }
 
     private async loadYamlIntoTree(file: Uri, workspaceFolder?: WorkspaceFolder, numberOfFiles?: number): Promise<void> {
+        if (!workspaceFolder) {
+            workspaceFolder = workspace.getWorkspaceFolder(file);
+        }
+        if (!workspaceFolder) {
+            throw new Error('workspace folder could not be found');
+        }
+
+        let parsed: ParsedRuleset | undefined = await rulesetFileCacheManager.retrieve(file);
+        if (parsed) {
+            logger.debug(`Retrieved ${file.path} from cache`);
+        } else {
+            parsed = await this.parseDocument(file, workspaceFolder);
+        }
+        if (!parsed) {
+            return;
+        }
+
+        if (parsed.definitions) {
+            rulesetTree.mergeIntoTree(parsed.definitions, workspaceFolder, file);
+        }
+        if (parsed.references) {
+            rulesetTree.mergeReferencesIntoTree(parsed.references, workspaceFolder, file);
+        }
+        if (parsed.variables) {
+            rulesetTree.mergeVariablesIntoTree(parsed.variables, workspaceFolder, file);
+        }
+
+        rulesetTree.mergeTranslationsIntoTree(parsed.translations, workspaceFolder, file);
+
+        this.onDidLoadEmitter.emit('didLoadRulesheet', file.path.slice(workspaceFolder.uri.path.length + 1), rulesetTree.getNumberOfParsedDefinitionFiles(workspaceFolder), numberOfFiles);
+    }
+
+    private async parseDocument(file: Uri, workspaceFolder: WorkspaceFolder): Promise<ParsedRuleset | undefined> {
         const document = await workspace.openTextDocument(file.path);
         try {
-            if (!workspaceFolder) {
-                workspaceFolder = workspace.getWorkspaceFolder(file);
-            }
-            if (!workspaceFolder) {
-                throw new Error('workspace folder could not be found');
-            }
-
             const doc = rulesetParser.parseDocument(document.getText());
             const docObject = doc.regular.toJSON();
 
@@ -148,8 +183,10 @@ export class RulesetResolver implements Disposable {
             const isLanguageFile = file.path.indexOf('Language/') !== -1 && file.path.slice(file.path.lastIndexOf('.')) === '.yml';
 
             let translations: Translation[] = [];
+            let parsed: ParsedRuleset;
             if (isLanguageFile) {
                 translations = rulesetParser.getTranslationsFromLanguageFile(docObject);
+                parsed = {translations};
             } else {
                 const references = rulesetParser.getReferencesRecursively(doc.parsed);
                 logger.debug(`found ${references?.length} references in file ${workspaceFile}`);
@@ -160,17 +197,17 @@ export class RulesetResolver implements Disposable {
                 const variables = rulesetParser.getVariables(docObject);
                 translations = rulesetParser.getTranslations(docObject);
 
-                rulesetTree.mergeIntoTree(definitions, workspaceFolder, file);
-                rulesetTree.mergeReferencesIntoTree(references, workspaceFolder, file);
-                rulesetTree.mergeVariablesIntoTree(variables, workspaceFolder, file);
+                parsed = {definitions, references, variables, translations};
             }
 
-            rulesetTree.mergeTranslationsIntoTree(translations, workspaceFolder, file);
+            rulesetFileCacheManager.cache(file, parsed);
 
-            this.onDidLoadEmitter.emit('didLoadRulesheet', workspaceFile, rulesetTree.getNumberOfParsedDefinitionFiles(workspaceFolder), numberOfFiles);
+            return parsed;
         } catch (error) {
             logger.error('loadYamlIntoTree', file.path, error.message);
         }
+
+        return;
     }
 
     public getTranslationForKey(key: string, sourceUri?: Uri): string | undefined {
