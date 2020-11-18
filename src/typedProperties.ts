@@ -1,3 +1,4 @@
+import { typeLinks } from "./definitions/typeLinks";
 import { logger } from "./logger";
 import { RuleType } from "./rulesetTree";
 
@@ -101,11 +102,11 @@ export class typedProperties {
         facilities: {
             spriteFacility: {target: 'extraSprites.BASEBITS.PCK.files'},
         },
-        research: {
-            name: {target: 'ufopaedia'},
-            dependencies: {target: 'research'},
-            // getOneFree: {target: 'research'},
-        },
+        // research: {
+        //     name: {target: 'ufopaedia'},
+        //     dependencies: {target: 'research'},
+        //     // getOneFree: {target: 'research'},
+        // },
         items: {
             bigSprite: {target: 'extraSprites.BIGOBS.PCK.files', type: 'numeric'},
             explosionHitSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
@@ -147,6 +148,10 @@ export class typedProperties {
 
     private static storeVariables: {[key: string]: Record<string, unknown>} = {
         'ftaGame': {}
+    }
+
+    public static init () {
+        this.addTypeLinks();
     }
 
     public static isDefinitionPropertyForPath (type: string, key: string): boolean {
@@ -326,5 +331,27 @@ export class typedProperties {
 
     public static isKeyValueReferencePath(path: string) {
         return this.keyValueReferenceTypes.indexOf(path) !== -1;
+    }
+
+    private static addTypeLinks() {
+        for (const link in typeLinks) {
+            if (link.startsWith('/') && link.endsWith('/')) {
+                continue;
+            }
+
+            // const target = ;
+            const newLink = link.split('.').slice(0, -1).join('.');
+            const key = link.split('.').slice(-1).join('.');
+
+            // console.log(`new link ${newLink} new key ${key}`);
+            if (!(newLink in this.typeProperties)) {
+                this.typeProperties[newLink] = {};
+            }
+
+            // todo what if there is more?
+            this.typeProperties[newLink][key] = {
+                target: typeLinks[link][0]
+            };
+        }
     }
 }
