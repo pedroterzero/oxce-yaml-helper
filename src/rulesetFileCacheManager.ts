@@ -1,7 +1,7 @@
 import { ExtensionContext, Uri, workspace } from "vscode";
 import * as md5File from "md5-file";
 import { existsSync, mkdirSync } from "fs";
-import { get, put } from "cacache";
+import { get, put, rm } from "cacache";
 import { ParsedRuleset } from "./rulesetResolver";
 
 export class RulesetFileCacheManager {
@@ -63,6 +63,8 @@ export class RulesetFileCacheManager {
             }
 
             return ret;
+        } else if (info && info.metadata.hash !== hash) {
+            rm(this.getCachePath(), file.path);
         }
 
         return;
