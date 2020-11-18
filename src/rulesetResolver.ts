@@ -11,6 +11,7 @@ export class RulesetResolver implements Disposable {
     private fileSystemWatcher?: FileSystemWatcher;
     private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
+    private rulesetHierarchy: {[key: string]: string} = {};
 
     public setExtensionContent(context: ExtensionContext): void {
         this.context = context;
@@ -89,6 +90,10 @@ export class RulesetResolver implements Disposable {
 
         await this.getAssetRulesets(files);
 
+        this.rulesetHierarchy.mod = workspaceFolder.uri.path;
+
+        logger.debug(`Hierarchy: ${JSON.stringify(this.rulesetHierarchy)}`);
+
         if (files.length === 0) {
             logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not an OXC(E) project.`);
             return files;
@@ -99,6 +104,8 @@ export class RulesetResolver implements Disposable {
 
     private async getAssetRulesets(files: Uri[]) {
         const extensionPath = this.context?.extensionPath + '/src/assets/xcom1';
+        this.rulesetHierarchy.vanilla = extensionPath;
+
         if (this.context) {
             const assets = await workspace.fs.readDirectory(Uri.joinPath(this.context.extensionUri, 'src/assets/xcom1'));
 
@@ -240,6 +247,10 @@ export class RulesetResolver implements Disposable {
                 workspace.getConfiguration('oxcYamlHelper').update('validateCategories', 'always', ConfigurationTarget.Workspace);
             }
         });
+    }
+
+    public getRulesetHierarchy () {
+        return this.rulesetHierarchy;
     }
 
     public dispose() {

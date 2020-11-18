@@ -64,6 +64,7 @@ export class typedProperties {
         'extended.tags.BattleUnit',
         'extended.tags.RuleArmor',
         'extended.tags.RuleItem',
+        'extended.tags.RuleSoldier',
         'extended.tags.RuleSoldierBonus',
         'items.tags',
         'facilities.buildCostItems',
@@ -77,6 +78,7 @@ export class typedProperties {
         'extended.tags.BattleUnit',
         'extended.tags.RuleArmor',
         'extended.tags.RuleItem',
+        'extended.tags.RuleSoldier',
         'extended.tags.RuleSoldierBonus',
     ];
 
