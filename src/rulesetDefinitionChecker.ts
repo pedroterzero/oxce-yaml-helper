@@ -2,262 +2,13 @@ import { Diagnostic, DiagnosticSeverity, Range, TextDocument, workspace } from "
 import { rulesetParser } from "./rulesetParser";
 import { Match } from "./rulesetTree";
 import { ReferenceFile, TypeLookup } from "./workspaceFolderRuleset";
+import { typeLinks } from "./definitions/typeLinks";
+import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
+import { ignoreTypes } from "./definitions/ignoreTypes";
+import { stringTypes } from "./definitions/stringTypes";
 
 export class RulesetDefinitionChecker {
-    private builtinBackgrounds = [
-        'BACK01.SCR', 'BACK02.SCR', 'BACK03.SCR', 'BACK04.SCR', 'BACK05.SCR',
-        'BACK06.SCR', 'BACK07.SCR', 'BACK08.SCR', 'BACK09.SCR', 'BACK10.SCR',
-        'BACK11.SCR', 'BACK12.SCR', 'BACK13.SCR', 'BACK14.SCR', 'BACK15.SCR',
-        'BACK16.SCR', 'BACK17.SCR',
-    ];
-
-    private builtinUfopaediaImages = [
-        'UP001.SPK', 'UP002.SPK', 'UP003.SPK', 'UP004.SPK', 'UP005.SPK',
-        'UP006.SPK', 'UP007.SPK', 'UP008.SPK', 'UP009.SPK', 'UP010.SPK',
-        'UP011.SPK', 'UP012.SPK', 'UP013.SPK', 'UP014.SPK', 'UP015.SPK',
-        'UP016.SPK', 'UP017.SPK', 'UP018.SPK', 'UP019.SPK', 'UP020.SPK',
-        'UP021.SPK', 'UP022.SPK', 'UP023.SPK', 'UP024.SPK', 'UP025.SPK',
-        'UP026.SPK', 'UP027.SPK', 'UP028.SPK', 'UP029.SPK', 'UP030.SPK',
-        'UP031.SPK', 'UP032.SPK', 'UP033.SPK', 'UP034.SPK', 'UP035.SPK',
-        'UP036.SPK', 'UP037.SPK', 'UP038.SPK', 'UP039.SPK', 'UP040.SPK',
-        'UP041.SPK', 'UP042.SPK',
-    ];
-
-    private builtinArmorSprites = [
-        'MAN_0F0', 'MAN_0F1', 'MAN_0F2', 'MAN_0F3', 'MAN_0M0',
-        'MAN_0M1', 'MAN_0M2', 'MAN_0M3', 'MAN_1F0', 'MAN_1F1',
-        'MAN_1F2', 'MAN_1F3', 'MAN_1M0', 'MAN_1M1', 'MAN_1M2',
-        'MAN_1M3', 'MAN_2', 'MAN_3'
-    ];
-
-    private builtinPalettes = [
-        'BACKPALS.DAT', 'PAL_BASESCAPE', 'PAL_BATTLEPEDIA', 'PAL_BATTLESCAPE', 'PAL_GEOSCAPE', 'PAL_GRAPHS', 'PAL_UFOPAEDIA'
-    ]
-
-    private builtinTypes: {[key: string]: string[]} = {
-        'alienDeployments.alertBackground': this.builtinBackgrounds,
-        'alienDeployments.briefing.background': this.builtinBackgrounds,
-        'alienDeployments.extendedObjectiveType': ['STR_EVACUATION', 'STR_FRIENDLY_VIP', 'STR_ITEM_EXTRACTION'], // FtA
-        'alienMissions.waves[].ufo': ['dummy'],
-        'armors.spriteInv': this.builtinArmorSprites,
-        'armors.spriteSheet': [
-            'CELATID.PCK', 'CIVM.PCK', 'CHRYS.PCK', 'CYBER.PCK', 'FLOATER.PCK', 'ETHEREAL.PCK', 'MUTON.PCK',
-            'SECTOID.PCK', 'SILACOID.PCK', 'SNAKEMAN.PCK', 'X_REAP.PCK', 'X_ROB.PCK',
-            'XCOM_0.PCK', 'XCOM_1.PCK', 'XCOM_2.PCK', 'ZOMBIE.PCK'
-        ],
-        'armors.storeItem': ['STR_NONE'],
-        'converter.markers': ['STR_UFO', 'STR_TERROR_SITE', 'STR_LANDING_SITE', 'STR_CRASH_SITE', 'STR_WAYPOINT'],
-        'converter.alienRanks': ['_COMMANDER', '_LEADER', '_ENGINEER', '_MEDIC', '_NAVIGATOR', '_SOLDIER', '_TERRORIST'],
-        'customPalettes.target': this.builtinPalettes,
-        'enviroEffects.paletteTransformations.PAL_BATTLESCAPE': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
-        'events.background': this.builtinBackgrounds,
-        'interfaces.backgroundImage': this.builtinBackgrounds,
-        'manufacture.category': [
-            'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
-            'STR_EQUIPMENT', 'STR_WEAPON'
-        ],
-        'manufacture.spawnedPersonType': ['STR_ENGINEER', 'STR_SCIENTIST'],
-        'units.rank': [
-            'STR_LIVE_COMMANDER', 'STR_LIVE_ENGINEER', 'STR_LIVE_LEADER', 'STR_LIVE_MEDIC',
-            'STR_LIVE_NAVIGATOR', 'STR_LIVE_SOLDIER', 'STR_LIVE_TERRORIST',
-            'STR_CIVILIAN' /* OXCE */
-        ],
-        'startingBase.crafts[].status': ['STR_READY', 'STR_REPAIRS'],
-        'startingConditions.allowedItems': ['STR_NONE'],
-        'startingConditions.allowedVehicles': ['STR_NONE'],
-        'ufos.size': ['STR_LARGE', 'STR_MEDIUM_UC', 'STR_SMALL', 'STR_VERY_LARGE', 'STR_VERY_SMALL'],
-        'units.civilianRecoveryType': ['STR_ENGINEER', 'STR_SCIENTIST'],
-        'ufopaedia.image_id': this.builtinUfopaediaImages,
-    };
-
     private problemsByPath: {[key: string]: number} = {};
-
-    private soundIds = [-1, 54];
-    private smokeIds = [-1, 55];
-    private bigSpriteIds = [-1, 56];
-    private floorSpriteIds = [-1, 72];
-    private handSpriteIds = [-1, 127];
-
-    private builtinResourceIds: {[key: string]: number[]} = {
-        'items.bigSprite': this.bigSpriteIds,
-        'items.explosionHitSound': this.soundIds,
-        'items.fireSound': this.soundIds,
-        'items.floorSprite': this.floorSpriteIds,
-        'items.handSprite': this.handSpriteIds,
-        'items.hitAnimation': this.smokeIds,
-        'items.hitSound': this.soundIds,
-        'items.meleeSound': this.soundIds,
-        'items.meleeHitSound': this.soundIds,
-        'items.specialIconSprite': [-1, 2],
-        'units.aggroSound': this.soundIds,
-        'units.deathSound': this.soundIds,
-        'units.moveSound': this.soundIds,
-    };
-
-    private typeLinks: {[key: string]: string[]} = {
-        'alienDeployments.data[].itemSets[]': ['items'], // check if correct
-        'startingBase.crafts[].type': ['crafts'],
-        'startingBase.crafts[].weapons[].type': ['craftWeapons'],
-        'startingBase.facilities[].type': ['facilities'],
-        'startingBase.items': ['items'],
-        'startingBase.randomSoldiers': ['soldiers'],
-        'facilities.requires': ['research'],
-        'facilities.mapName': ['terrains.mapBlocks[]'],
-        'facilities.destroyedFacility': ['facilities'],
-        'facilities.buildCostItems': ['items'],
-        'facilities.buildOverFacilities': ['facilities'],
-        'crafts.requires': ['research'],
-        'crafts.weaponStrings': ['craftWeapons.weaponType'], //not sure if syntax correct (is this just a translatable?)
-        'crafts.refuelItem': ['items'],
-        'items.requires': ['research'],
-        'items.requiresBuy': ['research'],
-        'items.requiresBuyBaseFunc': ['facilities.provideBaseFunc'],
-        'items.categories': ['itemCategories'],
-        '/^items\\.ammo\\.[0-3]\\.compatibleAmmo$/': ['items'],
-        'items.defaultInventorySlot': ['invs'],
-        'items.supportedInventorySections': ['invs'],
-        'items.zombieUnit': ['units'],
-        'items.zombieUnitByType.key': ['units'],
-        'items.zombieUnitByType.value': ['units'],
-        'items.zombieUnitByArmorMale.key': ['armors'],
-        'items.zombieUnitByArmorMale.value': ['units'],
-        'items.zombieUnitByArmorFemale.key': ['armors'],
-        'items.zombieUnitByArmorFemale.value': ['units'],
-        'items.spawnUnit': ['units'],
-        'items.tags': ['extended.tags.RuleItem'],
-        'itemCategories.replaceBy': ['itemCategories'],
-        'ufos.raceBonus': ['alienRaces'],
-        'terrains.civilianTypes': ['units'],
-        'terrains.script': ['mapScripts'],
-        'terrains.enviroEffects': ['enviroEffects'],
-        'terrains.mapBlocks[].items': ['items'],
-        'terrains.mapBlocks[].randomizedItems[].itemList': ['items'],
-        'mapScripts.commands[].UFOName': ['ufos'],
-        'mapScripts.commands[].craftName': ['crafts'],
-        'mapScripts.commands[].terrain': ['terrains'],
-        'mapScripts.commands[].randomTerrain': ['terrains'],
-        'mapScripts.commands[].verticalLevels[].terrain': ['terrains'],
-        'armors.requires': ['research'],
-        'armors.corpseBattle': ['items'],
-        'armors.corpseGeo': ['items'],
-        'armors.storeItem': ['items'],
-        'armors.specialWeapon': ['items'],
-        'armors.builtInWeapons': ['items'],
-        'armors.units': ['units'],
-        'armors.tags': ['extended.tags.RuleArmor'],
-        'soldiers.requires': ['research'],
-        'soldiers.armor': ['armors'],
-        'soldiers.skills': ['skills'],
-        'soldiers.specialWeapon': ['items'],
-        'skills.requiredBonuses': ['soldierBonuses'],
-        'soldierTransformation.soldierBonusType': ['soldierBonuses'],
-        'units.armor': ['armors'],
-        'units.spawnUnit': ['units'],
-        'units.psiWeapon': ['items'],
-        'units.builtInWeaponSets[]': ['items'],
-        'alienRaces.members': ['units'],
-        'alienRaces.membersRandom[]': ['units'],
-        'alienRaces.retaliationMission': ['alienMissions'],
-        'alienRaces.baseCustomMission': ['alienDeployments'],
-        'alienRaces.baseCustomDeploy': ['alienDeployments'],
-        'alienDeployments.customUfo': ['ufos'],
-        'alienDeployments.startingCondition': ['startingConditions'],
-        'alienDeployments.enviroEffects': ['enviroEffects'],
-        'alienDeployments.civiliansByType': ['units'],
-        'alienDeployments.terrains': ['terrains'],
-        'alienDeployments.nextStage': ['alienDeployments'],
-        'alienDeployments.race': ['alienRaces'],
-        'alienDeployments.randomRace': ['alienRaces'],
-        'alienDeployments.winCutscene': ['cutscenes'],
-        'alienDeployments.loseCutscene': ['cutscenes'],
-        'alienDeployments.abortCutscene': ['cutscenes'],
-        'alienDeployments.script': ['mapScripts'],
-        'alienDeployments.battleScript': ['battleScripts'], // FtA
-        'alienDeployments.unlockedResearch': ['research'],
-        'alienDeployments.missionBountyItem': ['items'],
-        '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': ['alienDeployments'],
-        'alienDeployments.data[].extraRandomItems[]': ['items'],
-        'alienDeployments.briefing.music': ['musics'],
-        'alienDeployments.briefing.cutscene': ['cutscenes'],
-        //startingConditions and more to go
-
-        'research.requiresBaseFunc': ['facilities.provideBaseFunc'],
-    };
-
-    private ignoreTypes = [
-        'armors.layersDefaultPrefix',
-        'armors.scripts.selectUnitSprite',
-        'armors.spriteInv', // TODO: FIX THIS%
-        'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
-        'battleScripts.commands[].spawnBlocks', // FtA
-        'covertOperations.specialRule', // FtA
-        'crafts.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
-        'crafts.battlescapeTerrainData.mapDataSets', // may want to check that the files exist
-        'crafts.battlescapeTerrainData.name', // may want to check that the files exist
-        'cutscenes.videos', // may want to check that the files exist
-        'cutscenes.slideshow.slides[].imagePath', // may want to check that the files exist
-        'customPalettes.file', // may want to check that the files exist
-        // 'extended.scripts',
-        // 'extended.tags.BattleItem',
-        // 'extended.tags.BattleUnit',
-        // 'extended.tags.RuleArmor',
-        // 'extended.tags.RuleItem',
-        // 'extended.tags.RuleSoldierBonus',
-        'extraSprites.fileSingle', // may want to check that the files exist
-        // 'facilities.mapName', // may want to check that the files exist
-        'interfaces.elements[].id', // could type check this, but the validator probably catches these
-        'interfaces.palette', // could type check this, but the validator probably catches these
-        'items.scripts.createItem',
-        'mapScripts.commands[].direction',
-        'mapScripts.commands[].verticalLevels[].type', // validator should get it
-        'missionScripts.varName', // seems it can be ignored (according to Finnik)
-        'soldiers.soldierNames', // may want to check that the files exist
-        'terrains.mapBlocks[].name', // check that the mapblock files exist
-        'terrains.mapDataSets', // check that the terrains exist
-        'ufos.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
-        'ufos.battlescapeTerrainData.mapDataSets', // may want to check that the files exist
-        'ufos.battlescapeTerrainData.name', // may want to check that the files exist
-        'units.race', // optional according to Finnik
-        // 'units.civilianRecoveryType', // ruleset validator will catch it
-        'units.specialObjectiveType', // FtA, ruleset validator will catch it
-    ];
-
-    // if we want to check that translations exist
-    private stringTypes = [
-        'alienDeployments.alert',
-        'alienDeployments.alertDescription',
-        'alienDeployments.briefing.desc',
-        'alienDeployments.briefing.title',
-        'alienDeployments.markerName',
-        'alienDeployments.objectiveComplete',
-        'alienDeployments.objectivePopup',
-        'covertOperations.description', // FtA
-        'covertOperations.successDescription', // FtA
-        'commendations.description',
-        'crafts.weaponStrings',
-        'cutscenes.slideshow.slides[].caption',
-        'diplomacyFactions.description', // FtA
-        'events.description', // FtA
-        'items.confAimed.name',
-        'items.confAuto.name',
-        'items.confMelee.name',
-        'items.confSnap.name',
-        'items.medikitActionName',
-        'items.name', // not sure
-        'items.primeActionMessage',
-        'items.primeActionName',
-        'items.psiAttackName',
-        'items.unprimeActionName',
-        'regions.missionZones[][]',
-        'soldiers.rankStrings',
-        'ufopaedia.section', // should probably check that the string exists
-        'ufopaedia.text',
-        'ufopaedia.pages[].text',
-        'ufopaedia.pages[].title',
-        // not sure
-        // 'items.categories',
-        // 'manufacture.category',
-    ];
 
     public checkFile(file: ReferenceFile, lookup: TypeLookup): Diagnostic[] {
         const doc = workspace.textDocuments.find(doc => doc.uri.path === file.file.path);
@@ -304,15 +55,15 @@ export class RulesetDefinitionChecker {
      */
     private checkForCorrectTarget(ref: Match, possibleKeys: string[], lookup: TypeLookup) {
         let add = false;
-        if (ref.path in this.typeLinks) {
-            add = this.checkForTypeLinkMatch(this.typeLinks[ref.path], possibleKeys, lookup, ref);
+        if (ref.path in typeLinks) {
+            add = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
         } else {
             // regex match
-            for (const type in this.typeLinks) {
+            for (const type in typeLinks) {
                 if (type.startsWith('/') && type.endsWith('/')) {
                     const regex = new RegExp(type.slice(1, -1));
                     if (regex.exec(ref.path)) {
-                        add = this.checkForTypeLinkMatch(this.typeLinks[type], possibleKeys, lookup, ref);
+                        add = this.checkForTypeLinkMatch(typeLinks[type], possibleKeys, lookup);
                     }
                 }
             }
@@ -321,7 +72,7 @@ export class RulesetDefinitionChecker {
         return add;
     }
 
-    private checkForTypeLinkMatch(typeLinks: string[], possibleKeys: string[], lookup: TypeLookup, ref: Match) {
+    private checkForTypeLinkMatch(typeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
         let add = true;
         for (const key of possibleKeys) {
             if (key in lookup) {
@@ -368,21 +119,21 @@ export class RulesetDefinitionChecker {
             // ignore extraStrings for now(?)
             return false;
         }
-        if (this.ignoreTypes.indexOf(ref.path) !== -1) {
+        if (ignoreTypes.indexOf(ref.path) !== -1) {
             // ignore these assorted types for now
             return false;
         }
-        if (this.stringTypes.indexOf(ref.path) !== -1) {
+        if (stringTypes.indexOf(ref.path) !== -1) {
             // ignore extraStrings for now
             return false;
         }
-        if (ref.path in this.builtinTypes && this.builtinTypes[ref.path].indexOf(ref.key) !== -1) {
+        if (ref.path in builtinTypes && builtinTypes[ref.path].indexOf(ref.key) !== -1) {
             // built in types
             return false;
         }
 
-        if (ref.path in this.builtinResourceIds) {
-            const [min, max] = this.builtinResourceIds[ref.path];
+        if (ref.path in builtinResourceIds) {
+            const [min, max] = builtinResourceIds[ref.path];
 
             if (parseInt(ref.key) >= min && parseInt(ref.key) <= max) {
               // built in resource id
