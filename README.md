@@ -36,7 +36,12 @@ Hover over any image reference to get an image preview.
 - Is clicking to a definition taking you to a wrong (seemingly random) place in a ruleset? This is because the [YAML parser](https://www.npmjs.com/package/yaml) used assumes UNIX line endings. Therefore this tool may not correctly work on Windows with CRLF files. I have tried to work around this, but I'm not sure yet if it's reliable.
 
 ## Todo/ideas
-- Implement problem finding (missing definitions, missing sprite ids, et cetera)
+- Implement missing translation keys
+- Implement missing files
+- Add cache for ruleset files (md5sum, and store results)
+- Preview Vanilla resources?
+- Duplicate type definitions (items.type with same name)
+- Fix changes outside of vscode (they reload the editor state)
 
 ## Todo/dev
 - Look for 0 definitions to find missing types like alienRaces

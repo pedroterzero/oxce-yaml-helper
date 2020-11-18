@@ -77,6 +77,8 @@ export class RulesetRecursiveKeyRetriever {
             logger.error(`found a null value at ${path} -- ignoring`);
         } else if (typedProperties.isKeyReferencePath(path)) {
             this.processKeyReferencePath(entry, path, matches);
+        } else if (typedProperties.isKeyValueReferencePath(path)) {
+            this.processKeyValueReferencePath(entry, path, matches);
         } else if (typeof entry === 'string' || typeof entry === 'number') {
             return;
         } else if (entry.type === 'PAIR') {
@@ -111,7 +113,8 @@ export class RulesetRecursiveKeyRetriever {
 
         return;
     }
-    processKeyReferencePath(entry: Entry, path: string, matches: Match[]) {
+
+    private processKeyReferencePath(entry: Entry, path: string, matches: Match[]) {
         if (typeof entry !== 'object' || !('items' in entry)) {
             return;
         }
@@ -123,6 +126,28 @@ export class RulesetRecursiveKeyRetriever {
                 key: item.key.value,
                 path,
                 range: item.key.range,
+            });
+        }
+    }
+
+    private processKeyValueReferencePath(entry: Entry, path: string, matches: Match[]) {
+        if (typeof entry !== 'object' || !('items' in entry)) {
+            return;
+        }
+
+        const map = entry as YAMLMap;
+
+        for (const item of map.items) {
+            matches.push({
+                key: item.key.value,
+                path: path + '.key',
+                range: item.key.range,
+            });
+
+            matches.push({
+                key: item.value.value,
+                path: path + '.value',
+                range: item.value.range,
             });
         }
     }

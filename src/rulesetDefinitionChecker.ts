@@ -38,8 +38,6 @@ export class RulesetDefinitionChecker {
         'alienDeployments.alertBackground': this.builtinBackgrounds,
         'alienDeployments.briefing.background': this.builtinBackgrounds,
         'alienDeployments.extendedObjectiveType': ['STR_EVACUATION', 'STR_FRIENDLY_VIP', 'STR_ITEM_EXTRACTION'], // FtA
-        'alienDeployments.loseCutscene': ['loseGame'],
-        'alienDeployments.winCutscene': ['winGame'],
         'alienMissions.waves[].ufo': ['dummy'],
         'armors.spriteInv': this.builtinArmorSprites,
         'armors.spriteSheet': [
@@ -97,6 +95,7 @@ export class RulesetDefinitionChecker {
     };
 
     private typeLinks: {[key: string]: string[]} = {
+        'alienDeployments.data[].itemSets[]': ['items'], // check if correct
         'startingBase.crafts[].type': ['crafts'],
         'startingBase.crafts[].weapons[].type': ['craftWeapons'],
         'startingBase.facilities[].type': ['facilities'],
@@ -108,16 +107,22 @@ export class RulesetDefinitionChecker {
         'facilities.buildCostItems': ['items'],
         'facilities.buildOverFacilities': ['facilities'],
         'crafts.requires': ['research'],
-        'crafts.weaponStrings': ['craftWeapons.weaponType'], //not sure if syntax correct
+        'crafts.weaponStrings': ['craftWeapons.weaponType'], //not sure if syntax correct (is this just a translatable?)
         'crafts.refuelItem': ['items'],
         'items.requires': ['research'],
         'items.requiresBuy': ['research'],
+        'items.requiresBuyBaseFunc': ['facilities.provideBaseFunc'],
         'items.categories': ['itemCategories'],
-        //'items.ammo.compatibleAmmo': ['items'], //TODO
+        '/^items\\.ammo\\.[0-3]\\.compatibleAmmo$/': ['items'],
         'items.defaultInventorySlot': ['invs'],
         'items.supportedInventorySections': ['invs'],
         'items.zombieUnit': ['units'],
-        //more here, zombieUnitByArmorMale, zombieUnitByArmorFemale and zombieUnitByType
+        'items.zombieUnitByType.key': ['units'],
+        'items.zombieUnitByType.value': ['units'],
+        'items.zombieUnitByArmorMale.key': ['armors'],
+        'items.zombieUnitByArmorMale.value': ['units'],
+        'items.zombieUnitByArmorFemale.key': ['armors'],
+        'items.zombieUnitByArmorFemale.value': ['units'],
         'items.spawnUnit': ['units'],
         'items.tags': ['extended.tags.RuleItem'],
         'itemCategories.replaceBy': ['itemCategories'],
@@ -125,13 +130,13 @@ export class RulesetDefinitionChecker {
         'terrains.civilianTypes': ['units'],
         'terrains.script': ['mapScripts'],
         'terrains.enviroEffects': ['enviroEffects'],
-        'terrains.mapBlocks.items': ['items'],
-        'terrains.mapBlocks.randomizedItems.itemList': ['items'],
+        'terrains.mapBlocks[].items': ['items'],
+        'terrains.mapBlocks[].randomizedItems[].itemList': ['items'],
         'mapScripts.commands[].UFOName': ['ufos'],
         'mapScripts.commands[].craftName': ['crafts'],
-        'mapScripts.commands[].terrain': ['terrain'],
-        'mapScripts.commands[].randomTerrain': ['terrain'],
-        //TODO handle verticalLevels is a hell https://openxcom.org/forum/index.php/topic,5316.0.html
+        'mapScripts.commands[].terrain': ['terrains'],
+        'mapScripts.commands[].randomTerrain': ['terrains'],
+        'mapScripts.commands[].verticalLevels[].terrain': ['terrains'],
         'armors.requires': ['research'],
         'armors.corpseBattle': ['items'],
         'armors.corpseGeo': ['items'],
@@ -142,16 +147,16 @@ export class RulesetDefinitionChecker {
         'armors.tags': ['extended.tags.RuleArmor'],
         'soldiers.requires': ['research'],
         'soldiers.armor': ['armors'],
-        'soldiers.skills': ['armors'],
+        'soldiers.skills': ['skills'],
         'soldiers.specialWeapon': ['items'],
         'skills.requiredBonuses': ['soldierBonuses'],
         'soldierTransformation.soldierBonusType': ['soldierBonuses'],
         'units.armor': ['armors'],
         'units.spawnUnit': ['units'],
         'units.psiWeapon': ['items'],
-        'units.builtInWeaponSets': ['items'],
+        'units.builtInWeaponSets[]': ['items'],
         'alienRaces.members': ['units'],
-        'alienRaces.membersRandom': ['units'],
+        'alienRaces.membersRandom[]': ['units'],
         'alienRaces.retaliationMission': ['alienMissions'],
         'alienRaces.baseCustomMission': ['alienDeployments'],
         'alienRaces.baseCustomDeploy': ['alienDeployments'],
@@ -167,17 +172,16 @@ export class RulesetDefinitionChecker {
         'alienDeployments.loseCutscene': ['cutscenes'],
         'alienDeployments.abortCutscene': ['cutscenes'],
         'alienDeployments.script': ['mapScripts'],
-        'alienDeployments.battleScript': ['battleScripts'],
+        'alienDeployments.battleScript': ['battleScripts'], // FtA
         'alienDeployments.unlockedResearch': ['research'],
         'alienDeployments.missionBountyItem': ['items'],
-        'alienDeployments.alienBaseUpgrades': ['alienDeployments'],
-        'alienDeployments.data.itemSets': ['items'],
-        'alienDeployments.data.extraRandomItems': ['items'],
+        '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': ['alienDeployments'],
+        'alienDeployments.data[].extraRandomItems[]': ['items'],
         'alienDeployments.briefing.music': ['musics'],
         'alienDeployments.briefing.cutscene': ['cutscenes'],
         //startingConditions and more to go
 
-        'research.requiresBaseFunc': ['facilities'], // should also check provideBaseFunc, really. but there's probably no overlap
+        'research.requiresBaseFunc': ['facilities.provideBaseFunc'],
     };
 
     private ignoreTypes = [
@@ -185,8 +189,6 @@ export class RulesetDefinitionChecker {
         'armors.scripts.selectUnitSprite',
         'armors.spriteInv', // TODO: FIX THIS%
         'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
-        'alienDeployments.terrains', // may want to check that the files exist
-        'alienDeployments.briefing.music', // not sure about this one (check that files exist? stock?)
         'battleScripts.commands[].spawnBlocks', // FtA
         'covertOperations.specialRule', // FtA
         'crafts.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
@@ -207,7 +209,7 @@ export class RulesetDefinitionChecker {
         'interfaces.palette', // could type check this, but the validator probably catches these
         'items.scripts.createItem',
         'mapScripts.commands[].direction',
-        'mapScripts.commands[].verticalLevels[].terrain', // may want to check that the files exist
+        'mapScripts.commands[].verticalLevels[].type', // validator should get it
         'missionScripts.varName', // seems it can be ignored (according to Finnik)
         'soldiers.soldierNames', // may want to check that the files exist
         'terrains.mapBlocks[].name', // check that the mapblock files exist
@@ -303,13 +305,29 @@ export class RulesetDefinitionChecker {
     private checkForCorrectTarget(ref: Match, possibleKeys: string[], lookup: TypeLookup) {
         let add = false;
         if (ref.path in this.typeLinks) {
-            add = true;
-            for (const key of possibleKeys) {
-                if (key in lookup) {
-                    for (const result of lookup[key]) {
-                        if (this.typeLinks[ref.path].indexOf(result.type) !== -1) {
-                            add = false;
-                        }
+            add = this.checkForTypeLinkMatch(this.typeLinks[ref.path], possibleKeys, lookup, ref);
+        } else {
+            // regex match
+            for (const type in this.typeLinks) {
+                if (type.startsWith('/') && type.endsWith('/')) {
+                    const regex = new RegExp(type.slice(1, -1));
+                    if (regex.exec(ref.path)) {
+                        add = this.checkForTypeLinkMatch(this.typeLinks[type], possibleKeys, lookup, ref);
+                    }
+                }
+            }
+        }
+
+        return add;
+    }
+
+    private checkForTypeLinkMatch(typeLinks: string[], possibleKeys: string[], lookup: TypeLookup, ref: Match) {
+        let add = true;
+        for (const key of possibleKeys) {
+            if (key in lookup) {
+                for (const result of lookup[key]) {
+                    if (typeLinks.indexOf(result.type) !== -1) {
+                        add = false;
                     }
                 }
             }

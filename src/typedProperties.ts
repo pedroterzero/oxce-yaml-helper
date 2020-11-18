@@ -54,22 +54,10 @@ export class typedProperties {
     };
 
     private static vetoTypes: string[] = [
+        'mapScripts.commands[].verticalLevels[]',
         'startingBase.crafts[]',
         'startingBase.crafts[].weapons[]',
         'startingBase.facilities[]',
-    ];
-
-    private static keyReferenceTypes: string[] = [
-        'extended.tags.BattleItem',
-        'extended.tags.BattleUnit',
-        'extended.tags.RuleArmor',
-        'extended.tags.RuleItem',
-        'extended.tags.RuleSoldier',
-        'extended.tags.RuleSoldierBonus',
-        'items.tags',
-        'facilities.buildCostItems',
-        'startingBase.items',
-        'startingBase.randomSoldiers',
     ];
 
     // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
@@ -80,6 +68,27 @@ export class typedProperties {
         'extended.tags.RuleItem',
         'extended.tags.RuleSoldier',
         'extended.tags.RuleSoldierBonus',
+    ];
+
+    private static keyReferenceTypes: string[] = typedProperties.keyDefinitionTypes.concat([
+        'alienDeployments.civiliansByType',
+        'items.tags',
+        'facilities.buildCostItems',
+        'startingBase.items',
+        'startingBase.randomSoldiers',
+        'ufos.raceBonus',
+        'terrains.mapBlocks[].items',
+        '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/',
+    ]);
+
+    private static keyValueReferenceTypes: string[] = [
+        'items.zombieUnitByType',
+        'items.zombieUnitByArmorFemale',
+        'items.zombieUnitByArmorMale',
+    ];
+
+    private static arrayDefinitionTypes: string[] = [
+        'facilities.provideBaseFunc',
     ];
 
     private static typeProperties: typeProperties = {
@@ -160,6 +169,10 @@ export class typedProperties {
 
     public static isKeyDefinitionType(type: string) {
         return this.keyDefinitionTypes.indexOf(type) !== -1;
+    }
+
+    public static isArrayDefinitionTypes(type: string) {
+        return this.arrayDefinitionTypes.indexOf(type) !== -1;
     }
 
     public static getTypeKey(rule: any, ruleType: string): string | undefined {
@@ -292,7 +305,26 @@ export class typedProperties {
         return (property[key].type || '') === 'numeric';
     }
 
-    public static isKeyReferencePath(path: string) {
-        return this.keyReferenceTypes.indexOf(path) !== -1;
+    public static isKeyReferencePath(path: string): boolean {
+        const match = this.keyReferenceTypes.indexOf(path) !== -1;
+        if (match) {
+            return true;
+        }
+
+        // allow regex
+        for (const type of this.keyReferenceTypes) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                const regex = new RegExp(type.slice(1, -1));
+                if (regex.exec(path)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static isKeyValueReferencePath(path: string) {
+        return this.keyValueReferenceTypes.indexOf(path) !== -1;
     }
 }

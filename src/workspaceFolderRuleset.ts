@@ -4,7 +4,7 @@ import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 import { rulesetDefinitionChecker } from "./rulesetDefinitionChecker";
-import { rulesetResolver } from "./extension";
+import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
 
 export type RulesetFile = { file: Uri, definitions: Definition[] }
 export type ReferenceFile = { file: Uri, references: Match[] }
@@ -24,6 +24,7 @@ export class WorkspaceFolderRuleset {
     private variables: Variables = {};
     private translations: Translations = {};
 //    private references: Match[] = [];
+    private hierarchy = new WorkspaceFolderRulesetHierarchy(this);
 
     private diagnosticCollection = languages.createDiagnosticCollection();
 
@@ -158,54 +159,8 @@ export class WorkspaceFolderRuleset {
     }
 
     public refresh() {
-        this.handleDeletes();
+        this.hierarchy.handleDeletes();
         this.createLookups();
-    }
-
-    public handleDeletes() {
-        const hierarchy = rulesetResolver.getRulesetHierarchy();
-
-        const deletes = this.getDeletes(hierarchy);
-
-        for (const idx in this.rulesetFiles) {
-            const file = this.rulesetFiles[idx];
-            if (!file.file.path.startsWith(hierarchy.vanilla + '/')) {
-                continue;
-            }
-
-            // console.log(`definitions before deleting: ${Object.keys(file.definitions).length} (${file.file.path})`);
-
-            for (const del of deletes) {
-                for (const defIndex in file.definitions) {
-                    const def = file.definitions[defIndex];
-                    if (del.key === def.name && del.path === def.type) {
-                        delete file.definitions[defIndex];
-                    }
-                }
-            }
-
-            this.rulesetFiles[idx].definitions = Object.values(file.definitions);
-            // console.log(`definitions after deleting: ${Object.keys(file.definitions).length} (${file.file.path})`);
-        }
-    }
-
-    private getDeletes(hierarchy: { [key: string]: string; }) {
-        const modFiles = this.referenceFiles.filter(file => file.file.path.startsWith(hierarchy.mod + '/'));
-        const parsed = [];
-        for (const file of modFiles) {
-            const refs = file.references.filter(ref => ref.path.match(/^[a-zA-Z]+\.delete$/));
-
-            for (const ref of refs) {
-                const section = ref.path.slice(0, ref.path.indexOf('.'));
-
-                parsed.push({
-                    path: section,
-                    key: ref.key,
-                });
-            }
-        }
-
-        return parsed;
     }
 
     public checkDefinitions(assetPath: string) {
@@ -220,6 +175,7 @@ export class WorkspaceFolderRuleset {
 
             const diagnostics = rulesetDefinitionChecker.checkFile(file, this.definitionsLookup);
 
+            // logger.debug(`diagnostic: ${file.file.path} has ${diagnostics.length} diagnostics from ${file.references.length} references`);
             this.diagnosticCollection.set(Uri.file(file.file.path), diagnostics);
         }
 

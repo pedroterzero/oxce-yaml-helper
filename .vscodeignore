@@ -9,3 +9,4 @@ vsc-extension-quickstart.md
 tslint.json
 docs/*.gif
 docs/install
+!src/assets/xcom1/*.rul

@@ -125,6 +125,7 @@ export class RulesetResolver implements Disposable {
         }
         this.fileSystemWatcher = workspace.createFileSystemWatcher('**/' + this.yamlPattern);
         this.fileSystemWatcher.onDidChange((e: Uri) => {
+            // TODO fix this so it works well for changing outside VSCode. Right now, document.getText() will be outdated.
             logger.debug('reloading ruleset file:', e.path);
             this.loadYamlIntoTree(e);
         });

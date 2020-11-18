@@ -22,7 +22,7 @@ export class RulesetDefinitionFinder {
 
             if (extraFiles || typedProperties.isDefinitionPropertyForPath(type, key)) {
                 // console.log(`definition ${ref.path} ${ref.key}`);
-                if (typedProperties.isKeyDefinitionType(ref.path)) {
+                if (typedProperties.isKeyDefinitionType(ref.path) || typedProperties.isArrayDefinitionTypes(ref.path)) {
                     // restore stripped key from type
                     type = ref.path;
                 }
@@ -38,6 +38,7 @@ export class RulesetDefinitionFinder {
                     definition.metadata = ref.metadata;
                 }
 
+                // console.debug(`def: ${definition.name} (${definition.type})`);
                 definitions.push(definition);
             }
         }

@@ -66,6 +66,18 @@
                     "default": "yes",
                     "description": "Show documentation for properties on hover. It can be disabled if you find it annoying. By default it shows the full documentation entry, `short` only shows the first line"
                 },
+                "oxcYamlHelper.validateCategories": {
+                    "type": [
+                        "string"
+                    ],
+                    "enum": [
+                        "yes",
+                        "no",
+                        "always"
+                    ],
+                    "default": "yes",
+                    "description": "Performs checks on categories. These seem to be undefined a lot of the time, so the check can be turned off here."
+                },
                 "oxcYamlHelper.attemptCRLFFix": {
                     "type": [
                         "boolean"
@@ -110,7 +122,7 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
+        "postinstall": "#node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
