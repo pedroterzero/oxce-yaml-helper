@@ -71,8 +71,10 @@ export class typedProperties {
 
     // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
     private static keyDefinitionTypes: string[] = [
+        'extended.tags.BattleGame',
         'extended.tags.BattleItem',
         'extended.tags.BattleUnit',
+        'extended.tags.GeoscapeSoldier',
         'extended.tags.RuleArmor',
         'extended.tags.RuleItem',
         'extended.tags.RuleSoldier',

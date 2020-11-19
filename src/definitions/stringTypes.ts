@@ -12,6 +12,9 @@ export const stringTypes = [
     'crafts.weaponStrings',
     'cutscenes.slideshow.slides[].caption',
     'diplomacyFactions.description', // FtA
+    'enviroEffects.environmentalConditions.STR_FRIENDLY.message',
+    'enviroEffects.environmentalConditions.STR_HOSTILE.message',
+    'enviroEffects.environmentalConditions.STR_NEUTRAL.message',
     'events.description', // FtA
     'items.confAimed.name',
     'items.confAuto.name',

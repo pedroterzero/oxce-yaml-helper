@@ -148,7 +148,7 @@ export class RulesetResolver implements Disposable {
             throw new Error('workspace folder could not be found');
         }
 
-        let parsed: ParsedRuleset | undefined = await rulesetFileCacheManager.retrieve(file);
+        let parsed: ParsedRuleset | undefined;// = await rulesetFileCacheManager.retrieve(file);
         if (parsed) {
             logger.debug(`Retrieved ${file.path} from cache`);
         } else {
@@ -200,7 +200,7 @@ export class RulesetResolver implements Disposable {
                 parsed = {definitions, references, variables, translations};
             }
 
-            rulesetFileCacheManager.cache(file, parsed);
+            // rulesetFileCacheManager.cache(file, parsed);
 
             return parsed;
         } catch (error) {

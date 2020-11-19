@@ -1,5 +1,6 @@
 export const ignoreTypes = [
     'armors.layersDefaultPrefix',
+    'armors.scripts.damageUnit',
     'armors.scripts.selectUnitSprite',
     'armors.spriteInv', // TODO: FIX THIS%
     'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)

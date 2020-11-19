@@ -158,7 +158,7 @@ export class RulesetParser {
             correctRange[0] += lineBreaks;
             correctRange[1] += lineBreaks;
 
-            logger.debug(`Range after adjusting for CRLF: ${correctRange[0]}:${correctRange[1]} (reverse: ${reverse})`);
+            // logger.debug(`Range after adjusting for CRLF: ${correctRange[0]}:${correctRange[1]} (reverse: ${reverse})`);
         }
 
         return correctRange;

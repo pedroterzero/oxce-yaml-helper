@@ -13,6 +13,7 @@ export class RulesetFileCacheManager {
         this.init();
     }
     private init() {
+        return;
         if (!this.context) {
             return;
         }
