@@ -55,6 +55,7 @@ export class typedProperties {
     };
 
     private static vetoTypes: string[] = [
+        'battleScripts.commands[]', // FtA
         'extraStrings',
         'mapScripts.commands[]',
         'mapScripts.commands[].tunnelData.MCDReplacements[]',

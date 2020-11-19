@@ -23,7 +23,9 @@ export class RulesetDefinitionChecker {
     private duplicatesPerFile: {[key: string]: DuplicateMatches[]} = {};
 
     private ignoreDefinitionRegexes: RegExp[] = [
-        /^extraSprites\.files\.\d+$/
+        /^extraSprites\.files\.\d+$/,
+        /^extended\.tags\.([a-zA-Z]+)$/,
+        /^facilities\.provideBaseFunc$/,
     ];
 
     private ignoreTypeValues: {[key: string]: string[]} = {

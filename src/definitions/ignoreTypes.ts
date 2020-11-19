@@ -4,6 +4,7 @@ export const ignoreTypes = [
     'armors.spriteInv', // TODO: FIX THIS%
     'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
     'battleScripts.commands[].spawnBlocks', // FtA
+    'battleScripts.commands[].type', // FtA
     'covertOperations.specialRule', // FtA
     'crafts.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
     'crafts.battlescapeTerrainData.mapDataSets', // may want to check that the files exist
