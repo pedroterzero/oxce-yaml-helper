@@ -53,11 +53,11 @@ export class RulesetDefinitionChecker {
     }
 
     private addDuplicateDefinitions(doc: TextDocument, diagnostics: Diagnostic[], workspacePath: string) {
-        if (!(doc.fileName in this.duplicatesPerFile)) {
+        if (!(doc.uri.path in this.duplicatesPerFile)) {
             return;
         }
 
-        const duplicates = this.duplicatesPerFile[doc.fileName];
+        const duplicates = this.duplicatesPerFile[doc.uri.path];
         // const messages = [];
         for (const duplicate of duplicates) {
             const parts = [];
