@@ -30,7 +30,7 @@ export const ignoreTypes = [
     'mapScripts.commands[].verticalLevels[].type', // validator should get it
     'missionScripts.varName', // seems it can be ignored (according to Finnik)
     'soldiers.soldierNames', // may want to check that the files exist
-    'terrains.mapBlocks[].name', // check that the mapblock files exist
+    // 'terrains.mapBlocks[].name', // check that the mapblock files exist
     'terrains.mapDataSets', // check that the terrains exist
     'ufos.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
     'ufos.battlescapeTerrainData.mapDataSets', // may want to check that the files exist

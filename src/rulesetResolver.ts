@@ -19,7 +19,7 @@ export class RulesetResolver implements Disposable {
     private fileSystemWatcher?: FileSystemWatcher;
     private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
-    private rulesetHierarchy: {[key: string]: string} = {};
+    private rulesetHierarchy: {[key: string]: Uri} = {};
 
     public setExtensionContent(context: ExtensionContext): void {
         this.context = context;
@@ -99,7 +99,7 @@ export class RulesetResolver implements Disposable {
 
         await this.getAssetRulesets(files);
 
-        this.rulesetHierarchy.mod = workspaceFolder.uri.path;
+        this.rulesetHierarchy.mod = workspaceFolder.uri;
 
         logger.debug(`Hierarchy: ${JSON.stringify(this.rulesetHierarchy)}`);
 
@@ -112,16 +112,20 @@ export class RulesetResolver implements Disposable {
     }
 
     private async getAssetRulesets(files: Uri[]) {
-        const extensionPath = this.context?.extensionPath + '/src/assets/xcom1';
-        this.rulesetHierarchy.vanilla = extensionPath;
+        if (!this.context) {
+            throw new Error('Couldn\'t get extension context');
+        }
+
+        const extensionUri = Uri.joinPath(this.context.extensionUri, '/src/assets/xcom1');
+        this.rulesetHierarchy.vanilla = extensionUri;
 
         if (this.context) {
-            const assets = await workspace.fs.readDirectory(Uri.joinPath(this.context.extensionUri, 'src/assets/xcom1'));
+            const assets = await workspace.fs.readDirectory(extensionUri);
 
             for (const [name, type] of assets) {
                 if (type === FileType.File) {
                     if (name.endsWith('.rul')) {
-                        files.push(Uri.file(extensionPath + '/' + name));
+                        files.push(Uri.joinPath(extensionUri, '/', name));
                     }
                 }
             }
@@ -243,9 +247,9 @@ export class RulesetResolver implements Disposable {
             return;
         }
 
-        const assetPath = this.context.extensionPath + '/src/assets/xcom1';
+        const assetUri = Uri.joinPath(this.context.extensionUri, '/src/assets/xcom1');
         workspace.workspaceFolders.map(workspaceFolder => {
-            rulesetTree.checkDefinitions(workspaceFolder, assetPath);
+            rulesetTree.checkDefinitions(workspaceFolder, assetUri);
         });
 
         this.checkForCommonProblems();

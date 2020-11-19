@@ -49,7 +49,7 @@ export class typedProperties {
         soldierBonuses: ['name'],
         soldierTransformation: ['name'],
         terrains: ['name'],
-        // 'terrains.mapBlocks[]': ['name'],
+        'terrains.mapBlocks[]': ['name'],
         ufopaedia: ['id'],
         ufoTrajectories: ['id'],
     };

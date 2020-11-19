@@ -1,4 +1,4 @@
-import { Diagnostic, DiagnosticSeverity, Range, TextDocument, workspace } from "vscode";
+import { Diagnostic, DiagnosticSeverity, Range, TextDocument, Uri, workspace } from "vscode";
 import { rulesetParser } from "./rulesetParser";
 import { DefinitionLookup, Match } from "./rulesetTree";
 import { ReferenceFile, TypeLookup } from "./workspaceFolderRuleset";
@@ -26,6 +26,7 @@ export class RulesetDefinitionChecker {
         /^extraSprites\.files\.\d+$/,
         /^extended\.tags\.([a-zA-Z]+)$/,
         /^facilities\.provideBaseFunc$/,
+        /^terrains\.mapBlocks\[\]$/,
     ];
 
     private ignoreTypeValues: {[key: string]: string[]} = {
@@ -167,7 +168,7 @@ export class RulesetDefinitionChecker {
         return dupes;
     }
 
-    private getDuplicateKeys (keyDefs: DefinitionLookup[], key: string, hierarchy: { [key: string]: string; }): Duplicates | undefined {
+    private getDuplicateKeys (keyDefs: DefinitionLookup[], key: string, hierarchy: { [key: string]: Uri; }): Duplicates | undefined {
         const duplicates: Duplicates = {};
 
         for (const def of keyDefs) {
@@ -180,7 +181,7 @@ export class RulesetDefinitionChecker {
                 }
             }
 
-            if (def.file.path.indexOf(hierarchy.mod) !== 0) {
+            if (def.file.path.indexOf(hierarchy.mod.path) !== 0) {
                 continue;
             }
 

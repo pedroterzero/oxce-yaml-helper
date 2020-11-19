@@ -163,13 +163,13 @@ export class WorkspaceFolderRuleset {
         this.createLookups();
     }
 
-    public checkDefinitions(assetPath: string) {
+    public checkDefinitions(assetUri: Uri) {
         this.diagnosticCollection.clear();
         rulesetDefinitionChecker.clear();
         rulesetDefinitionChecker.init(this.definitionsLookup);
 
         for (const file of this.referenceFiles) {
-            if (file.file.path.startsWith(assetPath + '/')) {
+            if (file.file.path.startsWith(Uri.joinPath(assetUri, '/').path)) {
                 // do not check assets obviously
                 continue;
             }

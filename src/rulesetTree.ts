@@ -116,9 +116,9 @@ export class RulesetTree {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.refresh();
     }
 
-    public checkDefinitions(workspaceFolder: WorkspaceFolder, assetPath: string): any {
+    public checkDefinitions(workspaceFolder: WorkspaceFolder, assetUri: Uri): any {
         logger.debug(`checkDefinitions workspaceFolder ${workspaceFolder}`);
-        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.checkDefinitions(assetPath);
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.checkDefinitions(assetUri);
     }
 }
 
