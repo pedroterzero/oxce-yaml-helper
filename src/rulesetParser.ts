@@ -135,9 +135,9 @@ export class RulesetParser {
      */
     public fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: [number, number], reverse = false): [number, number] {
         const correctRange = {...range};
-        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('attemptCRLFFix')) {
-            return correctRange;
-        }
+        // if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('attemptCRLFFix')) {
+        //     return correctRange;
+        // }
 
         if (document.eol === EndOfLine.CRLF) {
             // logger.debug(`Range before adjusting for CRLF: ${range[0]}:${range[1]}`);

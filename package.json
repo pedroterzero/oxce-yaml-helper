@@ -76,14 +76,18 @@
                         "always"
                     ],
                     "default": "yes",
-                    "description": "Performs checks on categories. These seem to be undefined a lot of the time, so the check can be turned off here."
+                    "markdownDescription": "Performs checks on categories. These seem to be undefined a lot of the time, so the check can be turned off here.\n\n&nbsp;\n\n**Reload vscode after changing this!**"
                 },
-                "oxcYamlHelper.attemptCRLFFix": {
+                "oxcYamlHelper.findDuplicateDefinitions": {
                     "type": [
-                        "boolean"
+                        "string"
                     ],
-                    "default": true,
-                    "description": "Attempt to work around files using CRLF. If you're having problems with wrong positions, disable this and convert rulesets to LF"
+                    "enum": [
+                        "yes",
+                        "no"
+                    ],
+                    "default": "no",
+                    "markdownDescription": "Finds duplicate definitions. For example if a research called `STR_MEDI_KIT` is defined twice, it will tell you. Disabled by default for now.\n\n&nbsp;\n\n**Reload vscode after changing this!**"
                 },
                 "oxcYamlHelper.prompts.noRecommendImagePreview": {
                     "type": [

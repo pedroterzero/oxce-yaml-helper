@@ -105,7 +105,9 @@ export class RulesetDefinitionChecker {
         this.duplicatesPerFile = {};
 
         // disable for now
-        return;
+        if (workspace.getConfiguration('oxcYamlHelper').get<string>('findDuplicateDefinitions') !== 'yes') {
+            return;
+        }
 
         logger.debug(`Existing lookups: ${Object.keys(lookup).length}`);
 
