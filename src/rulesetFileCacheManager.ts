@@ -13,13 +13,12 @@ export class RulesetFileCacheManager {
         this.init();
     }
     private init() {
-        return;
         if (!this.context) {
             return;
         }
 
         if (!existsSync(this.getCachePath())) {
-            mkdirSync(this.getCachePath());
+            mkdirSync(this.getCachePath(), { recursive: true });
         }
     }
 
@@ -28,7 +27,7 @@ export class RulesetFileCacheManager {
             throw new Error('No extension context');
         }
 
-        return Uri.joinPath(this.context.globalStorageUri, '/' + this.CACHE_DIR).path;
+        return Uri.joinPath(this.context.globalStorageUri, '/', this.CACHE_DIR).fsPath;
     }
 
     public cache(file: Uri, data: ParsedRuleset) {
@@ -36,18 +35,21 @@ export class RulesetFileCacheManager {
             return;
         }
 
-        const hash = md5File.sync(file.path);
-        put(this.getCachePath(), file.path, JSON.stringify(data), {metadata: {hash}});
+        const path = file.fsPath;
+        const hash = md5File.sync(path);
+        put(this.getCachePath(), path, JSON.stringify(data), {metadata: {hash}});
     }
 
     public async retrieve(file: Uri) {
+        const path = file.fsPath;
+
         // have to do this, otherwise the problems won't show
-        await workspace.openTextDocument(file.path);
-        const info = await get.info(this.getCachePath(), file.path);
-        const hash = md5File.sync(file.path);
+        await workspace.openTextDocument(path);
+        const info = await get.info(this.getCachePath(), path);
+        const hash = md5File.sync(path);
 
         if (info && info.metadata.hash === hash) {
-            const cache = await get(this.getCachePath(), file.path);
+            const cache = await get(this.getCachePath(), path);
             const parsed = JSON.parse(cache.data.toString());
 
             const ret: ParsedRuleset = {
@@ -65,7 +67,7 @@ export class RulesetFileCacheManager {
 
             return ret;
         } else if (info && info.metadata.hash !== hash) {
-            rm(this.getCachePath(), file.path);
+            rm(this.getCachePath(), path);
         }
 
         return;
