@@ -77,11 +77,17 @@ export class WorkspaceFolderRuleset {
     }
 
     private getDefinitionLookup(definition: Definition, sourceFile: Uri): DefinitionLookup {
-        return {
+        const ret: DefinitionLookup = {
             type: definition.type,
             range: definition.range,
-            file: sourceFile
+            file: sourceFile,
         };
+
+        if ('metadata' in definition) {
+            ret.metadata = definition.metadata;
+        }
+
+        return ret;
     }
 
     /**

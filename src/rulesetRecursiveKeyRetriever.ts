@@ -104,11 +104,17 @@ export class RulesetRecursiveKeyRetriever {
                 return;
             }
 
-            return {
+            const ret: Match = {
                 key: value,
                 path,
                 range,
             };
+
+            if (entry.comment) {
+                ret.metadata = {_comment: entry.comment.trim()};
+            }
+
+            return ret;
         }
 
         return;
@@ -169,7 +175,7 @@ export class RulesetRecursiveKeyRetriever {
                 if (result) {
                     const metadata = this.addMetadata(path, entry);
                     if (metadata) {
-                        result.metadata = metadata;
+                        result.metadata = Object.assign(metadata, result.metadata ?? {});
                     }
                     matches.push(result);
                 } else {

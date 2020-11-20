@@ -72,7 +72,7 @@ export class RulesetDefinitionChecker {
                 }
             }
 
-            const message = `${duplicate.definition.type} ${duplicate.key} is duplicate, also exists in:\n\t${parts.join("\n\t")}`;
+            const message = `${duplicate.definition.type} ${duplicate.key} is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\t${parts.join("\n\t")}`;
 
             const myRange = rulesetParser.fixRangesForWindowsLineEndingsIfNeeded(doc, duplicate.definition.range);
             const range = new Range(doc.positionAt(myRange[0]), doc.positionAt(myRange[1]));
@@ -171,6 +171,11 @@ export class RulesetDefinitionChecker {
         const duplicates: Duplicates = {};
 
         for (const def of keyDefs) {
+            if (def.metadata && '_comment' in def.metadata && (def.metadata._comment as string).includes('ignoreDuplicate')) {
+                // explicitly ignored by comment
+                return;
+            }
+
             if (def.type in this.ignoreTypeValues && this.ignoreTypeValues[def.type].indexOf(key) !== -1) {
                 return;
             }
