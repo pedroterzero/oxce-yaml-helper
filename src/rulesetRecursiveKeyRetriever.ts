@@ -252,16 +252,17 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private addMetadata(path: string, entry: YAMLSeq): Record<string, unknown> | undefined {
-        const fields = typedProperties.getMetadataFieldsForType(path);
+        const fields = typedProperties.getMetadataFieldsForType(path, entry.toJSON());
         if (!fields) {
             return;
         }
 
         const properties = entry.toJSON() as {[key: string]: any};
         const metadata: Record<string, unknown> = {};
-        for (const field of fields) {
-            if (properties && field in properties) {
-                metadata[field] = properties[field];
+        for (const fieldKey in fields) {
+            const fieldName = fields[fieldKey];
+            if (properties && fieldName in properties) {
+                metadata[fieldKey] = properties[fieldName];
             }
         }
 

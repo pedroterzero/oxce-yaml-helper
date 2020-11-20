@@ -93,12 +93,12 @@ export class RulesetDefinitionChecker {
 
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
-                this.addDiagnostic(doc, ref, diagnostics, `"${ref.key}" does not exist (${ref.path})`);
+                this.addReferenceDiagnostic(doc, ref, diagnostics);
             } else {
                 const add = this.checkForCorrectTarget(ref, possibleKeys, lookup);
 
                 if (add) {
-                    this.addDiagnostic(doc, ref, diagnostics, `"${ref.key}" does not exist (${ref.path})`);
+                    this.addReferenceDiagnostic(doc, ref, diagnostics);
                 }
             }
         }
@@ -257,7 +257,7 @@ export class RulesetDefinitionChecker {
         return add;
     }
 
-    private addDiagnostic(doc: TextDocument, ref: Match | DefinitionLookup, diagnostics: Diagnostic[], message: string) {
+    private addReferenceDiagnostic(doc: TextDocument, ref: Match, diagnostics: Diagnostic[]) {
         const myRange = rulesetParser.fixRangesForWindowsLineEndingsIfNeeded(doc, ref.range);
         const range = new Range(doc.positionAt(myRange[0]), doc.positionAt(myRange[1]));
 
@@ -275,11 +275,11 @@ export class RulesetDefinitionChecker {
             }
         }
 
-        // const text = doc.getText(range);
-        // if (text.trim().length < text.length) {
-        //     // deal with trailing whitespace/CRLF
-        //     range = new Range(doc.positionAt(ref.range[0]), doc.positionAt(ref.range[1] - (text.length - text.trim().length)));
-        // }
+        let message = `"${ref.key}" does not exist (${ref.path})`;
+        if (ref.metadata && ref.metadata.type) {
+            message += ` for ${ref.metadata.type}`;
+        }
+
         diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
     }
 

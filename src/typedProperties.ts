@@ -291,12 +291,24 @@ export class typedProperties {
         return override;
     }
 
-    public static getMetadataFieldsForType(ruleType: string): string[] | undefined {
-        if (!(ruleType in this.metadataFields)) {
+    public static getMetadataFieldsForType(ruleType: string, rule: any): {[key: string]: string} | undefined {
+        const typeKey = this.getTypeKey(rule, ruleType);
+        const metadataFields: {[key: string]: string} = {};
+        if (typeKey) {
+            metadataFields.type = typeKey;
+        }
+
+        if (ruleType in this.metadataFields) {
+            for (const field of  this.metadataFields[ruleType]) {
+                metadataFields[field] = field;
+            }
+        }
+
+        if (Object.keys(metadataFields).length === 0) {
             return;
         }
 
-        return this.metadataFields[ruleType];
+        return metadataFields;
     }
 
     public static isStoreVariable(key: string) {
