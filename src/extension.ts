@@ -5,6 +5,7 @@ import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';
 import { RulesetHoverProvider } from './rulesetHoverProvider';
+import { ConfigurationWatcher } from './configurationWatcher';
 
 export const rulesetResolver = new RulesetResolver();
 
@@ -29,4 +30,6 @@ export function activate(context: ExtensionContext) {
 
     // load the recommender
     new ExtensionRecommender;
+    // and config watcher
+    new ConfigurationWatcher;
 }

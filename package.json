@@ -28,9 +28,7 @@
             "title": "OpenXcom (Extended) YAML Helper",
             "properties": {
                 "oxcYamlHelper.debugLevel": {
-                    "type": [
-                        "integer"
-                    ],
+                    "type": "integer",
                     "enum": [
                         0,
                         1,
@@ -41,23 +39,17 @@
                     "description": "logging verbosity (0 = all logs, 3 = only errors)"
                 },
                 "oxcYamlHelper.ruleFilesPattern": {
-                    "type": [
-                        "string"
-                    ],
+                    "type": "string",
                     "default": "**/*.rul",
                     "description": "Rules files location (i.e. Rulesets/**/*.rul)"
                 },
                 "oxcYamlHelper.translationLocale": {
-                    "type": [
-                        "string"
-                    ],
+                    "type":  "string",
                     "default": "en-US",
                     "description": "Locale to use when showing translations on hovering"
                 },
                 "oxcYamlHelper.showDocumentationHover": {
-                    "type": [
-                        "string"
-                    ],
+                    "type": "string",
                     "enum": [
                         "yes",
                         "short",
@@ -67,46 +59,32 @@
                     "description": "Show documentation for properties on hover. It can be disabled if you find it annoying. By default it shows the full documentation entry, `short` only shows the first line"
                 },
                 "oxcYamlHelper.validateCategories": {
-                    "type": [
-                        "string"
-                    ],
+                    "type": "string",
                     "enum": [
                         "yes",
                         "no",
                         "always"
                     ],
                     "default": "yes",
-                    "markdownDescription": "Performs checks on categories. These seem to be undefined a lot of the time, so the check can be turned off here.\n\n&nbsp;\n\n**Reload vscode after changing this!**"
+                    "markdownDescription": "Performs checks on categories. These seem to be undefined a lot of the time, so the check can be turned off here."
                 },
                 "oxcYamlHelper.findDuplicateDefinitions": {
-                    "type": [
-                        "string"
-                    ],
-                    "enum": [
-                        "yes",
-                        "no"
-                    ],
-                    "default": "no",
-                    "markdownDescription": "Finds duplicate definitions. For example if a research called `STR_MEDI_KIT` is defined twice, it will tell you. Disabled by default for now.\n\n&nbsp;\n\n**Reload vscode after changing this!**"
+                    "type": "boolean",
+                    "default": "false",
+                    "markdownDescription": "Finds duplicate definitions. For example if a research called `STR_MEDI_KIT` is defined twice, it will tell you. Disabled by default for now."
                 },
                 "oxcYamlHelper.prompts.noRecommendImagePreview": {
-                    "type": [
-                        "boolean"
-                    ],
+                    "type": "boolean",
                     "default": false,
                     "description": "Stop prompting for Image Preview extension"
                 },
                 "oxcYamlHelper.prompts.noRecommendOpenXcomFtaRulesetTools": {
-                    "type": [
-                        "boolean"
-                    ],
+                    "type": "boolean",
                     "default": false,
                     "description": "Stop prompting for OpenXCOM FtA Ruleset Tools extension"
                 },
                 "oxcYamlHelper.prompts.noRecommendOpenXcomRulesetTools": {
-                    "type": [
-                        "boolean"
-                    ],
+                    "type": "boolean",
                     "default": false,
                     "description": "Stop prompting for OpenXCOM Ruleset Tools extension"
                 }

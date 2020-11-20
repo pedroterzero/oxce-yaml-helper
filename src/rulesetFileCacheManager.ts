@@ -41,6 +41,10 @@ export class RulesetFileCacheManager {
     }
 
     public async retrieve(file: Uri) {
+        if (workspace.getConfiguration('oxcYamlHelper').get<boolean>('disableCache')) {
+            return;
+        }
+
         const path = file.fsPath;
 
         // have to do this, otherwise the problems won't show

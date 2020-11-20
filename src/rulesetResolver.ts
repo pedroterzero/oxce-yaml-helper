@@ -237,7 +237,7 @@ export class RulesetResolver implements Disposable {
         return rulesetTree.getTranslation(key, folder);
     }
 
-    private refreshWorkspaceFolderRulesets () {
+    public refreshWorkspaceFolderRulesets () {
         if (!workspace.workspaceFolders || !this.context) {
             return;
         }
