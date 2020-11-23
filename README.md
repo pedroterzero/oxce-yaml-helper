@@ -44,6 +44,7 @@ Hover over any image reference to get an image preview.
 - Fix for TFTD
 - Unused definition warnings
 - Find references
+- More complex reference checking (like is an item actually an HWP, etc)
 
 ## Todo/dev
 - List all distinct types so we can see ones we need to veto

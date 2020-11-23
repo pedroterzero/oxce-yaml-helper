@@ -72,11 +72,16 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private processItems(entry: Entry, path: string, matches: Match[], lookupAll: boolean): Match | undefined {
+        if (typedProperties.isKeyReferencePath(path)) {
+            // do this separately, because the values for the keys could yield yet more references (see research.getOneFreeProtected)
+            this.processKeyReferencePath(entry, path, matches);
+        }
+
         if (entry === null) {
             // this should actually not happen, but happens if there are parse errors in yaml (like missing values)
             logger.error(`found a null value at ${path} -- ignoring`);
-        } else if (typedProperties.isKeyReferencePath(path)) {
-            this.processKeyReferencePath(entry, path, matches);
+        // } else if (typedProperties.isKeyReferencePath(path)) {
+        //     this.processKeyReferencePath(entry, path, matches);
         } else if (typedProperties.isKeyValueReferencePath(path)) {
             this.processKeyValueReferencePath(entry, path, matches);
         } else if (typeof entry === 'string' || typeof entry === 'number') {
@@ -162,7 +167,12 @@ export class RulesetRecursiveKeyRetriever {
         entry.items.forEach((ruleProperty) => {
             if ('items' in ruleProperty) {
                 // console.log(`looping ${ruleProperty} path ${path}[]`);
-                this.loopEntry(ruleProperty, path + '[]', matches, lookupAll);
+                if (typedProperties.isKeyReferencePath(path + '[]')) {
+                    // this is quite unfortunate, but needed for things like manufacture.randomProducedItems[][]
+                    this.processItems(ruleProperty, path + '[]', matches, lookupAll);
+                } else {
+                    this.loopEntry(ruleProperty, path + '[]', matches, lookupAll);
+                }
             } else {
                 let newPath = path;
                 if (['PLAIN', 'QUOTE_DOUBLE', 'QUOTE_SINGLE'].indexOf(ruleProperty.type) !== -1) {
