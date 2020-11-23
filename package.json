@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom (Extended) YAML Helper",
     "description": "Provides go to definition support for OpenXcom (extended) mods, among other things",
-    "version": "0.3.7",
+    "version": "0.4.0-alpha1",
     "author": {
         "name": "pedroterzero"
     },
@@ -27,17 +27,6 @@
             "type": "object",
             "title": "OpenXcom (Extended) YAML Helper",
             "properties": {
-                "oxcYamlHelper.debugLevel": {
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1,
-                        2,
-                        3
-                    ],
-                    "default": 1,
-                    "description": "logging verbosity (0 = all logs, 3 = only errors)"
-                },
                 "oxcYamlHelper.ruleFilesPattern": {
                     "type": "string",
                     "default": "**/*.rul",

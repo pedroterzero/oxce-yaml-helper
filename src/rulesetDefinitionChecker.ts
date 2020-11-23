@@ -170,18 +170,19 @@ export class RulesetDefinitionChecker {
     private getDuplicateKeys (keyDefs: DefinitionLookup[], key: string, hierarchy: { [key: string]: Uri; }): Duplicates | undefined {
         const duplicates: Duplicates = {};
 
+        definitions:
         for (const def of keyDefs) {
             if (def.metadata && '_comment' in def.metadata && (def.metadata._comment as string).includes('ignoreDuplicate')) {
                 // explicitly ignored by comment
-                return;
+                continue;
             }
 
             if (def.type in this.ignoreTypeValues && this.ignoreTypeValues[def.type].indexOf(key) !== -1) {
-                return;
+                continue;
             }
             for (const re of this.ignoreDefinitionRegexes) {
                 if (re.exec(def.type)) {
-                    return;
+                    continue definitions;
                 }
             }
 

@@ -23,7 +23,7 @@ export class ConfigurationWatcher {
             }
 
             if (event.affectsConfiguration('oxcYamlHelper.validateCategories')) {
-                if (this.determineValidateCategoriesRestartNeeded(this.validateCategories)) {
+                if (this.determineValidateCategoriesRefreshNeeded(this.validateCategories)) {
                     // this.requestRestart();
                     rulesetResolver.refreshWorkspaceFolderRulesets();
                 }
@@ -31,10 +31,8 @@ export class ConfigurationWatcher {
         });
     }
 
-    private determineValidateCategoriesRestartNeeded(oldValue: string) {
-        // update (update: don't actually need to update, because until a restart happens the 'initial' setting is the permanent one)
+    private determineValidateCategoriesRefreshNeeded(oldValue: string) {
         this.validateCategories = this.getValidateCategories();
-        // update2, update references instead??
 
         let restart = false;
         if (!this.validateCategories) {
