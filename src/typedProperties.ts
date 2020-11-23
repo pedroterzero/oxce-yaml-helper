@@ -98,6 +98,7 @@ export class typedProperties {
         'covertOperations.successReputationScore', // FtA
         'diplomacyFactions.helpTreatyEvents', // FtA
         'diplomacyFactions.helpTreatyMissions', // FtA
+        'enviroEffects.environmentalConditions',
         'events.everyMultiItemList',
         'events.weightedItemList',
         'eventScripts.itemTriggers',
@@ -128,6 +129,8 @@ export class typedProperties {
     ]);
 
     private static keyValueReferenceTypes: string[] = [
+        'enviroEffects.armorTransformations',
+        'enviroEffects.paletteTransformations',
         'items.zombieUnitByType',
         'items.zombieUnitByArmorFemale',
         'items.zombieUnitByArmorMale',

@@ -28,6 +28,8 @@ const builtinPalettes = [
     'BACKPALS.DAT', 'PAL_BASESCAPE', 'PAL_BATTLEPEDIA', 'PAL_BATTLESCAPE', 'PAL_GEOSCAPE', 'PAL_GRAPHS', 'PAL_UFOPAEDIA'
 ];
 
+const factions = ['STR_FRIENDLY', 'STR_HOSTILE', 'STR_NEUTRAL'];
+
 const soundIds = [-1, 54];
 const smokeIds = [-1, 55];
 const bigSpriteIds = [-1, 56];
@@ -65,7 +67,9 @@ export const builtinTypes: {[key: string]: string[]} = {
     'converter.markers': ['STR_UFO', 'STR_TERROR_SITE', 'STR_LANDING_SITE', 'STR_CRASH_SITE', 'STR_WAYPOINT'],
     'converter.alienRanks': ['_COMMANDER', '_LEADER', '_ENGINEER', '_MEDIC', '_NAVIGATOR', '_SOLDIER', '_TERRORIST'],
     'customPalettes.target': builtinPalettes,
+    'enviroEffects.paletteTransformations.key': ['PAL_BATTLESCAPE'],
     'enviroEffects.paletteTransformations.PAL_BATTLESCAPE': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
+    'enviroEffects.environmentalConditions': factions,
     'events.background': builtinBackgrounds,
     'interfaces.backgroundImage': builtinBackgrounds,
     'manufacture.category': [
