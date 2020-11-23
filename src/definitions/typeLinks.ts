@@ -1,7 +1,36 @@
-export const typeLinks: {[key: string]: string[]} = {
+const ftaTypeLinks: {[key: string]: string[]} = {
+    'alienDeployments.battleScript': ['battleScripts'], // FtA
+    'battleScripts.commands[].unitSet': ['units'], // FtA part
+    'covertOperations.successEvent': ['events'],
+    'covertOperations.failureEvent': ['events'],
+    'covertOperations.progressEvent': ['events'],
+    'covertOperations.successWeightedItemList': ['items'], // untested
+    'covertOperations.failureWeightedItemList': ['items'], // untested
+    'covertOperations.successResearchList': ['research'],
+    'covertOperations.failureResearchList': ['research'],
+    'covertOperations.successMissions': ['alienMissions'], // untested
+    'covertOperations.failureMissions': ['alienMissions'], // untested
+    'covertOperations.instantTrapDeployment': ['alienDeployments'],
+    'covertOperations.instantSuccessDeployment': ['alienDeployments'],
+    'covertOperations.successReputationScore ': ['diplomacyFactions'],
+    'covertOperations.failureReputationScore ': ['diplomacyFactions'],
+    'covertOperations.requires': ['research'],
+    'covertOperations.requiresBaseFunc': ['facilities.provideBaseFunc'],
+    'covertOperations.requiredItems': ['items'],
+    'covertOperations.allowedArmor': ['armors'],
+    'covertOperations.soldierTypeEffectiveness': ['soldiers'], // untested
+    '/^events\\.customAnswers\\.[0-3]\\.title$/': ['events'], // untested
+    'diplomacyFactions.discoverResearch': ['research'],
+    'diplomacyFactions.discoverEvent': ['events'],
+    'diplomacyFactions.helpTreatyMissions': ['missionScripts'],
+    'diplomacyFactions.helpTreatyEvents': ['eventScripts'],
+    // sellingSet - this is changing ATM by Stoddard dramatically
+    'units.altRecoveredUnit': ['units']
+};
+
+export const typeLinks: {[key: string]: string[]} = Object.assign(ftaTypeLinks, {
     'alienDeployments.abortCutscene': ['cutscenes'],
     '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': ['alienDeployments'],
-    'alienDeployments.battleScript': ['battleScripts'], // FtA
     'alienDeployments.briefing.cutscene': ['cutscenes'],
     'alienDeployments.briefing.music': ['musics'],
     'alienDeployments.civiliansByType': ['units'],
@@ -34,7 +63,7 @@ export const typeLinks: {[key: string]: string[]} = {
     'armors.units': ['soldiers'],
     'crafts.refuelItem': ['items'],
     'crafts.requires': ['research'],
-    'crafts.weaponStrings': ['craftWeapons.weaponType'],
+    'crafts.weaponStrings': ['craftWeapons.weaponType'], // (is this just a translatable?)
     'facilities.buildCostItems': ['items'],
     'facilities.buildOverFacilities': ['facilities'],
     'facilities.destroyedFacility': ['facilities'],
@@ -71,7 +100,7 @@ export const typeLinks: {[key: string]: string[]} = {
     'research.disables': ['research'],
     'research.getOneFree': ['research'],
     'research.getOneFreeProtected': ['research'],
-    'research.sequentialGetOneFree': ['research'],
+    '/^research\\.getOneFreeProtected\\.[a-zA-Z0-9_]+$/': ['research'],
     'research.requires': ['research'],
     'research.requiresBaseFunc': ['facilities.provideBaseFunc'],
     'skills.requiredBonuses': ['soldierBonuses'],
@@ -91,11 +120,12 @@ export const typeLinks: {[key: string]: string[]} = {
     'terrains.mapBlocks[].randomizedItems[].itemList': ['items'],
     'terrains.script': ['mapScripts'],
     'ufos.raceBonus': ['alienRaces'],
-    'units.armor': ['soldiers'],
+    'units.armor': ['armors'],
     'units.builtInWeaponSets[]': ['items'],
     'units.psiWeapon': ['items'],
     'units.spawnUnit': ['units'],
-    'startingConditions.defaultArmor': ['armors'],
+    'startingConditions.defaultArmor': ['soldiers'],
+    '/^startingConditions\\.defaultArmor\\.[a-zA-Z0-9_]+$/': ['armors'],
     'startingConditions.allowedArmors': ['armors'],
     'startingConditions.forbiddenArmors': ['armors'],
     'startingConditions.allowedVehicles': ['units'],
@@ -114,23 +144,23 @@ export const typeLinks: {[key: string]: string[]} = {
     'manufacture.requiresBaseFunc': ['facilities.provideBaseFunc'],
     'manufacture.requiredItems': ['items'],
     'manufacture.producedItems': ['items'],
-    'manufacture.randomProducedItems': ['items'],
+    'manufacture.randomProducedItems[][]': ['items'],
     'manufacture.spawnedPersonType': ['soldiers'], // also scientists and engineers
     'manufactureShortcut.startFrom': ['manufacture'],
     'manufactureShortcut.breakDownItems': ['manufacture'],
-    'manufactureShortcut.breakDownRequires': ['research'],
-    'manufactureShortcut.breakDownRequiresBaseFunc': ['facilities.provideBaseFunc'],
+    // 'manufactureShortcut.breakDownRequires': ['research'],
+    // 'manufactureShortcut.breakDownRequiresBaseFunc': ['facilities.provideBaseFunc'],
     'ufopaedia.requires': ['research'],
     'ufopaedia.weapon': ['items'],
     'alienMissions.spawnUfo': ['ufos'],
     'alienMissions.interruptResearch': ['research'],
-    'alienMissions.raceWeights': ['alienRaces'],
+    '/^alienMissions\\.raceWeights\\.\\d+$/': ['alienRaces'],
     'alienMissions.siteType': ['alienDeployments'],
     'alienMissions.operationBaseType': ['alienDeployments'],
-    'alienMissions.regionWeights': ['regions'],
-    'missionScripts.missionWeights': ['alienMissions'],
-    'missionScripts.raceWeights': ['alienRaces'],
-    'missionScripts.regionWeights': ['regions'],
+    '/^alienMissions\\.regionWeights\\.\\d+$/': ['regions'],
+    '/^missionScripts\\.missionWeights\\.\\d+$/': ['alienMissions'],
+    '/^missionScripts\\.raceWeights\\.\\d+$/': ['alienRaces'],
+    '/^missionScripts\\.regionWeights\\.\\d+$/': ['regions'],
     'missionScripts.researchTriggers': ['research'],
     'missionScripts.itemTriggers': ['items'],
     'missionScripts.facilityTriggers': ['facilities'],
@@ -141,7 +171,7 @@ export const typeLinks: {[key: string]: string[]} = {
     'arcScripts.facilityTriggers': ['facilities'],
     'eventScripts.oneTimeSequentialEvents': ['events'],
     'eventScripts.oneTimeRandomEvents': ['events'],
-    'eventScripts.eventWeights': ['events'],
+    '/^eventScripts\\.eventWeights\\.\\d+$/': ['events'],
     'eventScripts.researchTriggers': ['research'],
     'eventScripts.itemTriggers': ['items'],
     'eventScripts.facilityTriggers': ['facilities'],
@@ -153,30 +183,4 @@ export const typeLinks: {[key: string]: string[]} = {
     'events.weightedItemList': ['items'],
     'events.researchList': ['research'],
     'events.interruptResearch': ['research'],
-    'battleScripts.unitSet': ['units'], // FtA part
-    'covertOperations.successEvent': ['events'],
-    'covertOperations.failureEvent': ['events'],
-    'covertOperations.progressEvent': ['events'],
-    'covertOperations.successWeightedItemList': ['items'],
-    'covertOperations.failureWeightedItemList': ['items'],
-    'covertOperations.successResearchList': ['research'],
-    'covertOperations.failureResearchList': ['research'],
-    'covertOperations.successMissions': ['alienMissions'],
-    'covertOperations.failureMissions': ['alienMissions'],
-    'covertOperations.instantTrapDeployment': ['alienDeployments'],
-    'covertOperations.instantSuccessDeployment': ['alienDeployments'],
-    'covertOperations.successReputationScore ': ['diplomacyFactions'],
-    'covertOperations.failureReputationScore ': ['diplomacyFactions'],
-    'covertOperations.requires': ['research'],
-    'covertOperations.requiresBaseFunc': ['facilities.provideBaseFunc'],
-    'covertOperations.requiredItems': ['items'],
-    'covertOperations.allowedArmor': ['armors'],
-    'covertOperations.soldierTypeEffectiveness': ['soldiers'],
-    '/^events\\.customAnswers\\.[0-3]\\.title$/': ['events'],
-    'diplomacyFactions.discoverResearch': ['research'],
-    'diplomacyFactions.discoverEvent': ['events'],
-    'diplomacyFactions.helpTreatyMissions': ['alienMissions'],
-    'diplomacyFactions.helpTreatyEvents': ['events'],
-    // sellingSet - this is changing ATM by Stoddard dramatically
-    'units.altRecoveredUnit ': ['units']
-};
+});

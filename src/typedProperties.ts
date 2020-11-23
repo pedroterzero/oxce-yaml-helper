@@ -45,6 +45,7 @@ export class typedProperties {
         facilities: ['type', 'provideBaseFunc'],
         invs: ['id'],
         manufacture: ['name'],
+        manufactureShortcut: ['name'],
         research: ['name'],
         soldierBonuses: ['name'],
         soldierTransformation: ['name'],
@@ -82,14 +83,48 @@ export class typedProperties {
     ];
 
     private static keyReferenceTypes: string[] = typedProperties.keyDefinitionTypes.concat([
+        'arcScripts.randomArcs',
+        'arcScripts.researchTriggers',
+        'arcScripts.itemTriggers',
+        'arcScripts.facilityTriggers',
         'alienDeployments.civiliansByType',
-        'items.tags',
+        '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/',
+        '/^alienMissions\\.raceWeights\\.\\d+$/',
+        '/^alienMissions\\.regionWeights\\.\\d+$/',
+        'covertOperations.instantSuccessDeployment', // FtA
+        'covertOperations.instantTrapDeployment', // FtA
+        'covertOperations.failureReputationScore', // FtA
+        'covertOperations.requiredItems', // FtA
+        'covertOperations.successReputationScore', // FtA
+        'diplomacyFactions.helpTreatyEvents', // FtA
+        'diplomacyFactions.helpTreatyMissions', // FtA
+        'events.everyMultiItemList',
+        'events.weightedItemList',
+        'eventScripts.itemTriggers',
+        'eventScripts.facilityTriggers',
+        'eventScripts.oneTimeRandomEvents',
+        '/^eventScripts\\.eventWeights\\.\\d+$/',
+        'eventScripts.researchTriggers',
         'facilities.buildCostItems',
+        'items.tags',
+        'manufacture.requiredItems',
+        'manufacture.producedItems',
+        'manufacture.randomProducedItems[][]',
+        '/^missionScripts\\.missionWeights\\.\\d+$/',
+        '/^missionScripts\\.raceWeights\\.\\d+$/',
+        '/^missionScripts\\.regionWeights\\.\\d+$/',
+        // '/^manufacture\\.randomProducedItems[][]\\.[a-zA-Z0-9_]+$/',
+        'missionScripts.researchTriggers',
+        'missionScripts.itemTriggers',
+        'missionScripts.facilityTriggers',
+        'research.getOneFreeProtected',
         'startingBase.items',
         'startingBase.randomSoldiers',
+        'startingConditions.defaultArmor',
+        '/^startingConditions\\.defaultArmor\\.[a-zA-Z0-9_]+$/',
+        'startingConditions.requiredItems',
         'ufos.raceBonus',
         'terrains.mapBlocks[].items',
-        '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/',
     ]);
 
     private static keyValueReferenceTypes: string[] = [
