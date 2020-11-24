@@ -72,6 +72,7 @@ export class typedProperties {
 
     // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
     private static keyDefinitionTypes: string[] = [
+        // not 100% sure about these yet. Perhaps they should only work for the current file? maybe they're not deifnitions at all?
         'extended.tags.BattleGame',
         'extended.tags.BattleItem',
         'extended.tags.BattleUnit',

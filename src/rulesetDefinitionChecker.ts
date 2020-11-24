@@ -29,6 +29,8 @@ export class RulesetDefinitionChecker {
         /^terrains\.mapBlocks\[\]$/,
     ];
 
+    private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
+
     private ignoreTypeValues: {[key: string]: string[]} = {
         'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
         'extraSounds': ['BATTLE.CAT'],
@@ -36,8 +38,8 @@ export class RulesetDefinitionChecker {
 
     public init(lookup: TypeLookup) {
         this.checkDefinitions(lookup);
+        this.loadRegexes();
     }
-
 
     public checkFile(file: ReferenceFile, lookup: TypeLookup, workspacePath: string): Diagnostic[] {
         const doc = workspace.textDocuments.find(doc => doc.uri.path === file.file.path);
@@ -306,7 +308,8 @@ export class RulesetDefinitionChecker {
             return false;
         }
         if (ref.path in builtinTypes && builtinTypes[ref.path].indexOf(ref.key) !== -1) {
-            // built in types
+            return false;
+        } else if (this.matchesBuiltinTypeRegex(ref.path, ref.key)) {
             return false;
         }
 
@@ -322,12 +325,31 @@ export class RulesetDefinitionChecker {
         return true;
     }
 
+    private matchesBuiltinTypeRegex(path: string, key: string): boolean {
+        for (const item of this.builtinTypeRegexes) {
+            return item.regex.exec(path) && item.values.includes(key) || false;
+        }
+
+        return false;
+    }
+
     public getProblemsByPath() {
         return this.problemsByPath;
     }
 
     public clear() {
         this.problemsByPath = {};
+    }
+
+    private loadRegexes () {
+        for (const type in builtinTypes) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.builtinTypeRegexes.push({
+                    regex: new RegExp(type.slice(1, -1)),
+                    values: builtinTypes[type]
+                });
+            }
+        }
     }
 }
 

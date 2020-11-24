@@ -1,3 +1,6 @@
+/**
+ * Prevent the following types being checked as references
+ */
 export const ignoreTypes = [
     'armors.layersDefaultPrefix',
     'armors.scripts.damageUnit',

@@ -71,6 +71,7 @@ export const builtinTypes: {[key: string]: string[]} = {
     'enviroEffects.paletteTransformations.PAL_BATTLESCAPE': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
     'enviroEffects.environmentalConditions': factions,
     'events.background': builtinBackgrounds,
+    '/^extended\\.tags\\.(Rule(Armor|Item)|Battle(Item|Unit)).[a-zA-Z0-9_]+$/': ['int'],
     'interfaces.backgroundImage': builtinBackgrounds,
     'manufacture.category': [
         'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
