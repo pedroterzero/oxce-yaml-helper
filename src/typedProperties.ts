@@ -143,13 +143,13 @@ export class typedProperties {
 
     private static typeProperties: typeProperties = {
         crafts: {
-            sprite: {target: 'extraSprites.INTICON.PCK.files'},
+            sprite: {target: 'extraSprites.INTICON.PCK.files', type: 'numeric'},
         },
         craftWeapons: {
-            sprite: {target: 'extraSprites.INTICON.PCK.files'},
+            sprite: {target: 'extraSprites.INTICON.PCK.files', type: 'numeric'},
         },
         facilities: {
-            spriteFacility: {target: 'extraSprites.BASEBITS.PCK.files'},
+            spriteFacility: {target: 'extraSprites.BASEBITS.PCK.files', type: 'numeric'},
         },
         // research: {
         //     name: {target: 'ufopaedia'},
@@ -354,7 +354,7 @@ export class typedProperties {
         return (key in this.storeVariables);
     }
 
-        /**
+    /**
      * Checks that a provided type key is supposed to be numeric
      * @param type
      * @param key
