@@ -68,7 +68,7 @@ export const builtinTypes: {[key: string]: string[]} = {
     'converter.alienRanks': ['_COMMANDER', '_LEADER', '_ENGINEER', '_MEDIC', '_NAVIGATOR', '_SOLDIER', '_TERRORIST'],
     'customPalettes.target': builtinPalettes,
     'enviroEffects.paletteTransformations.key': ['PAL_BATTLESCAPE'],
-    'enviroEffects.paletteTransformations.PAL_BATTLESCAPE': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
+    'enviroEffects.paletteTransformations.value': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
     'enviroEffects.environmentalConditions': factions,
     'events.background': builtinBackgrounds,
     '/^extended\\.tags\\.(Rule(Armor|Item)|Battle(Item|Unit)).[a-zA-Z0-9_]+$/': ['int'],
