@@ -9,6 +9,7 @@ export type RuleType = { type: string; key: string; metadata?: Record<string, un
 type BaseDefinition = {
     type: string,
     range: [number, number],
+    rangePosition: [[number, number], [number, number]],
     metadata?: Record<string, unknown>
 };
 
@@ -27,6 +28,7 @@ export type Match = {
     key: string,
     path: string,
     range: [number, number],
+    rangePosition?: [[number, number], [number, number]],
     metadata?: Record<string, unknown>
 }
 

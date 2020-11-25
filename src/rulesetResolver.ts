@@ -63,6 +63,10 @@ export class RulesetResolver implements Disposable {
         }
         logger.debug('using pattern', this.yamlPattern);
 
+        // workspace.onDidCloseTextDocument((e) => {
+        //     logger.debug(`[${(new Date()).toISOString()}] closing textDocument (remaining: ${workspace.textDocuments.length}) ${e.fileName}`);
+        // });
+
         rulesetTree.init();
     }
 
@@ -200,6 +204,7 @@ export class RulesetResolver implements Disposable {
                 parsed = {translations};
             } else {
                 const references = rulesetParser.getReferencesRecursively(doc.parsed);
+                rulesetParser.addRangePositions(references, document);
                 logger.debug(`found ${references?.length} references in file ${workspaceFile}`);
                 const definitions = rulesetParser.getDefinitionsFromReferences(references);
                 logger.debug(`found ${definitions.length} definitions in file ${workspaceFile}`);

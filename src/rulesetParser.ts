@@ -1,4 +1,4 @@
-import { TextDocument, workspace, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
+import { TextDocument, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
 import { logger } from "./logger";
 import { Definition, Match, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
 import { Document, parseDocument } from 'yaml';
@@ -84,39 +84,29 @@ export class RulesetParser {
         return rulesetRefnodeFinder.findRefNodeInDocument(file, key);
     }
 
-    public async getDefinitionsByName(workspaceFolder: WorkspaceFolder, key: string, ruleType: RuleType | undefined): Promise<Location[]> {
+    public getDefinitionsByName(workspaceFolder: WorkspaceFolder, key: string, ruleType: RuleType | undefined): Location[] {
         if (ruleType && this.isUndefinableNumericProperty(ruleType, key)) {
             return [];
         }
-
-        const promises: Thenable<Location | undefined>[] = [];
 
         const definitions = rulesetTree.getDefinitionsByName(key, workspaceFolder, ruleType);
         if (!definitions) {
             return [];
         }
 
+        const locations = [];
         for (const definition of definitions) {
-            promises.push(workspace.openTextDocument(definition.file.path).then((document: TextDocument) => {
-                // take care of CRLF
-                const range = this.fixRangesForWindowsLineEndingsIfNeeded(document, definition.range);
-
+            if (definition.rangePosition) {
+                const range = definition.range;
                 logger.debug(`opening ${definition.file.path.slice(workspaceFolder.uri.path.length + 1)} at ${range[0]}:${range[1]}`);
 
-                return new Location(definition.file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
-            }));
+                locations.push(
+                    new Location(definition.file, new Range(...definition.rangePosition[0], ...definition.rangePosition[1]))
+                );
+            }
         }
 
-        const values = await Promise.all(promises);
-
-        const resolvedLocations: Location[] = [];
-        values.forEach(resolved => {
-            if (resolved) {
-                resolvedLocations.push(resolved);
-            }
-        });
-
-        return resolvedLocations;
+        return locations;
     }
 
     private isUndefinableNumericProperty(ruleType: RuleType, key: string): boolean {
@@ -126,6 +116,16 @@ export class RulesetParser {
         }
 
         return !typedProperties.isNumericProperty(ruleType.type, ruleType.key);
+    }
+
+    public addRangePositions(references: Match[], document: TextDocument) {
+        for (const ref of references) {
+            ref.range = this.fixRangesForWindowsLineEndingsIfNeeded(document, ref.range);
+            ref.rangePosition = [
+                [document.positionAt(ref.range[0]).line, document.positionAt(ref.range[0]).character],
+                [document.positionAt(ref.range[1]).line, document.positionAt(ref.range[1]).character]
+            ];
+        }
     }
 
     /**

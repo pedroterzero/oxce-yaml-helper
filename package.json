@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom (Extended) YAML Helper",
     "description": "Provides go to definition support for OpenXcom (extended) mods, among other things",
-    "version": "0.4.0-alpha3",
+    "version": "0.4.0-alpha4",
     "author": {
         "name": "pedroterzero"
     },
@@ -33,7 +33,7 @@
                     "description": "Rules files location (i.e. Rulesets/**/*.rul)"
                 },
                 "oxcYamlHelper.translationLocale": {
-                    "type":  "string",
+                    "type": "string",
                     "default": "en-US",
                     "description": "Locale to use when showing translations on hovering"
                 },
@@ -108,7 +108,6 @@
     "dependencies": {
         "cacache": "^15.0.5",
         "deepmerge": "^4.2.2",
-        "md5-file": "^5.0.0",
         "yaml": "^1.10.0"
     }
 }

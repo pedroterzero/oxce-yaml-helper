@@ -27,11 +27,16 @@ export class RulesetDefinitionFinder {
                     type = ref.path;
                 }
 
+                if (!ref.rangePosition) {
+                    throw new Error(`No rangePosition found for ${ref}`);
+                }
+
                 const definition: Definition = {
                     // I am not sure about this, but this is the way it seems to work now
                     type,
                     name: ref.key,
                     range: ref.range,
+                    rangePosition: ref.rangePosition,
                 };
 
                 if ('metadata' in ref) {

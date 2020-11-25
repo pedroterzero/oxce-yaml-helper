@@ -81,6 +81,7 @@ export class WorkspaceFolderRuleset {
             type: definition.type,
             range: definition.range,
             file: sourceFile,
+            rangePosition: definition.rangePosition
         };
 
         if ('metadata' in definition) {
@@ -174,6 +175,7 @@ export class WorkspaceFolderRuleset {
         rulesetDefinitionChecker.clear();
         rulesetDefinitionChecker.init(this.definitionsLookup);
 
+//        logger.debug(`[${(new Date()).toISOString()}] Number of textDocuments in workspace: ${workspace.textDocuments.length}`);
         for (const file of this.referenceFiles) {
             if (file.file.path.startsWith(Uri.joinPath(assetUri, '/').path)) {
                 // do not check assets obviously

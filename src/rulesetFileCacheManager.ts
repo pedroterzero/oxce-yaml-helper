@@ -1,12 +1,13 @@
-import { ExtensionContext, Uri, workspace } from "vscode";
-import * as md5File from "md5-file";
-import { existsSync, mkdirSync } from "fs";
+import { ExtensionContext, extensions, Uri, workspace } from "vscode";
+import { existsSync, mkdirSync, readFileSync } from "fs";
 import { get, put, rm } from "cacache";
 import { ParsedRuleset } from "./rulesetResolver";
+import { createHash } from "crypto";
 
 export class RulesetFileCacheManager {
     private CACHE_DIR = 'oxchelper';
     private context?: ExtensionContext;
+    private version = extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version;
 
     public setExtensionContent(context: ExtensionContext): void {
         this.context = context;
@@ -36,7 +37,7 @@ export class RulesetFileCacheManager {
         }
 
         const path = file.fsPath;
-        const hash = md5File.sync(path);
+        const hash = createHash('md5').update(readFileSync(path).toString() + this.version).digest('hex');
         put(this.getCachePath(), path, JSON.stringify(data), {metadata: {hash}});
     }
 
@@ -46,11 +47,8 @@ export class RulesetFileCacheManager {
         }
 
         const path = file.fsPath;
-
-        // have to do this, otherwise the problems won't show
-        await workspace.openTextDocument(path);
         const info = await get.info(this.getCachePath(), path);
-        const hash = md5File.sync(path);
+        const hash = createHash('md5').update(readFileSync(path).toString() + this.version).digest('hex');
 
         if (info && info.metadata.hash === hash) {
             const cache = await get(this.getCachePath(), path);

@@ -1,5 +1,4 @@
-import { Diagnostic, DiagnosticSeverity, Range, TextDocument, Uri, workspace } from "vscode";
-import { rulesetParser } from "./rulesetParser";
+import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from "vscode";
 import { DefinitionLookup, Match } from "./rulesetTree";
 import { ReferenceFile, TypeLookup } from "./workspaceFolderRuleset";
 import { typeLinks } from "./definitions/typeLinks";
@@ -42,42 +41,30 @@ export class RulesetDefinitionChecker {
     }
 
     public checkFile(file: ReferenceFile, lookup: TypeLookup, workspacePath: string): Diagnostic[] {
-        const doc = workspace.textDocuments.find(doc => doc.uri.path === file.file.path);
-        if (!doc) {
-            return [];
-        }
-
         const diagnostics : Diagnostic[] = [];
 
-        this.checkReferences(doc, file, lookup, diagnostics);
-        this.addDuplicateDefinitions(doc, diagnostics, workspacePath);
+        this.checkReferences(file, lookup, diagnostics);
+        this.addDuplicateDefinitions(file, diagnostics, workspacePath);
 
         return diagnostics;
     }
 
-    private addDuplicateDefinitions(doc: TextDocument, diagnostics: Diagnostic[], workspacePath: string) {
-        if (!(doc.uri.path in this.duplicatesPerFile)) {
+    private addDuplicateDefinitions(file: ReferenceFile, diagnostics: Diagnostic[], workspacePath: string) {
+        if (!(file.file.path in this.duplicatesPerFile)) {
             return;
         }
 
-        const duplicates = this.duplicatesPerFile[doc.uri.path];
+        const duplicates = this.duplicatesPerFile[file.file.path];
         // const messages = [];
         for (const duplicate of duplicates) {
             const parts = [];
             for (const dupdef of duplicate.duplicates) {
-                const doc = workspace.textDocuments.find(doc => doc.uri.path === dupdef.file.path);
-                if (doc) {
-                    const range = rulesetParser.fixRangesForWindowsLineEndingsIfNeeded(doc, dupdef.range);
-                    const pos = doc.positionAt(range[0]);
-
-                    parts.push(`${dupdef.file.path.slice(workspacePath.length + 1)} line ${pos.line}`);
-                }
+                parts.push(`${dupdef.file.path.slice(workspacePath.length + 1)} line ${dupdef.rangePosition[0][0]}`);
             }
 
             const message = `${duplicate.definition.type} ${duplicate.key} is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\t${parts.join("\n\t")}`;
 
-            const myRange = rulesetParser.fixRangesForWindowsLineEndingsIfNeeded(doc, duplicate.definition.range);
-            const range = new Range(doc.positionAt(myRange[0]), doc.positionAt(myRange[1]));
+            const range = new Range(...duplicate.definition.rangePosition[0], ...duplicate.definition.rangePosition[1]);
 
             diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
             // messages.push(message);
@@ -87,7 +74,7 @@ export class RulesetDefinitionChecker {
         // appendFile(workspacePath + '/messages.txt', doc.fileName.slice(workspacePath.length + 1) + "\n==========\n" + messages.join("\n") + "\n\n", () => { return; });
     }
 
-    private checkReferences(doc: TextDocument, file: ReferenceFile, lookup: TypeLookup, diagnostics: Diagnostic[]) {
+    private checkReferences(file: ReferenceFile, lookup: TypeLookup, diagnostics: Diagnostic[]) {
         for (const ref of file.references) {
             if (!this.typeExists(ref)) {
                 continue;
@@ -95,12 +82,12 @@ export class RulesetDefinitionChecker {
 
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
-                this.addReferenceDiagnostic(doc, ref, diagnostics);
+                this.addReferenceDiagnostic(ref, diagnostics);
             } else {
                 const add = this.checkForCorrectTarget(ref, possibleKeys, lookup);
 
                 if (add) {
-                    this.addReferenceDiagnostic(doc, ref, diagnostics);
+                    this.addReferenceDiagnostic(ref, diagnostics);
                 }
             }
         }
@@ -264,9 +251,12 @@ export class RulesetDefinitionChecker {
         return add;
     }
 
-    private addReferenceDiagnostic(doc: TextDocument, ref: Match, diagnostics: Diagnostic[]) {
-        const myRange = rulesetParser.fixRangesForWindowsLineEndingsIfNeeded(doc, ref.range);
-        const range = new Range(doc.positionAt(myRange[0]), doc.positionAt(myRange[1]));
+    private addReferenceDiagnostic(ref: Match, diagnostics: Diagnostic[]) {
+        if (!ref.rangePosition) {
+            throw new Error('rangePosition missing');
+        }
+
+        const range = new Range(...ref.rangePosition[0], ...ref.rangePosition[1]);
 
         if ('path' in ref) {
             if (!(ref.path in this.problemsByPath)) {
