@@ -1,6 +1,6 @@
 import { ExtensionContext, extensions, Uri, workspace } from "vscode";
 import { existsSync, mkdirSync, readFileSync } from "fs";
-import { get, put, rm } from "cacache";
+import { load } from "flat-cache";
 import { ParsedRuleset } from "./rulesetResolver";
 import { createHash } from "crypto";
 
@@ -31,14 +31,22 @@ export class RulesetFileCacheManager {
         return Uri.joinPath(this.context.globalStorageUri, '/', this.CACHE_DIR).fsPath;
     }
 
-    public cache(file: Uri, data: ParsedRuleset) {
+    public put(file: Uri, data: ParsedRuleset) {
         if (!this.context) {
             return;
         }
 
         const path = file.fsPath;
         const hash = createHash('md5').update(readFileSync(path).toString() + this.version).digest('hex');
-        put(this.getCachePath(), path, JSON.stringify(data), {metadata: {hash}});
+
+        const cache = this.getCache(file);
+        cache.setKey('metadata', {hash});
+        cache.setKey('data', JSON.parse(JSON.stringify(data)));
+        cache.save();
+    }
+
+    private getCache(file: Uri) {
+        return load(file.path.replace(/\//g, '_'), this.getCachePath());
     }
 
     public async retrieve(file: Uri) {
@@ -47,12 +55,13 @@ export class RulesetFileCacheManager {
         }
 
         const path = file.fsPath;
-        const info = await get.info(this.getCachePath(), path);
         const hash = createHash('md5').update(readFileSync(path).toString() + this.version).digest('hex');
 
-        if (info && info.metadata.hash === hash) {
-            const cache = await get(this.getCachePath(), path);
-            const parsed = JSON.parse(cache.data.toString());
+        const cache = this.getCache(file);
+        const result = cache.all();
+
+        if (result && result.metadata?.hash === hash) {
+            const parsed = result.data;
 
             const ret: ParsedRuleset = {
                 translations: 'translations' in parsed ? parsed.translations : [],
@@ -68,8 +77,8 @@ export class RulesetFileCacheManager {
             }
 
             return ret;
-        } else if (info && info.metadata.hash !== hash) {
-            rm(this.getCachePath(), path);
+        } else if (result && result.metadata?.hash !== hash) {
+            cache.removeCacheFile();
         }
 
         return;

@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom (Extended) YAML Helper",
     "description": "Provides go to definition support for OpenXcom (extended) mods, among other things",
-    "version": "0.4.0-alpha4",
+    "version": "0.4.0-alpha5",
     "author": {
         "name": "pedroterzero"
     },
@@ -90,14 +90,15 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
+        "vscode:prepublish": "npm run build",
+        "build": "npm run compile;rm -rf out/assets/xcom1;cp -a src/assets/xcom1 out/assets/xcom1",
+        "compile": "rm -rf out/*;tsc -p ./",
         "watch": "tsc -watch -p ./",
         "postinstall": "#node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "@types/cacache": "^12.0.1",
+        "@types/flat-cache": "^2.0.0",
         "@types/node": "^14.14.7",
         "@types/vscode": "^1.51.0",
         "@typescript-eslint/eslint-plugin": "^4.7.0",
@@ -106,8 +107,8 @@
         "typescript": "^4.0.5"
     },
     "dependencies": {
-        "cacache": "^15.0.5",
         "deepmerge": "^4.2.2",
+        "flat-cache": "^3.0.4",
         "yaml": "^1.10.0"
     }
 }

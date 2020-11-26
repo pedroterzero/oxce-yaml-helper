@@ -6,6 +6,7 @@ import { rulesetParser } from "./rulesetParser";
 import deepmerge = require('deepmerge');
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { rulesetFileCacheManager } from './rulesetFileCacheManager';
+import { existsSync } from 'fs';
 
 export type ParsedRuleset = {
     definitions?: Definition[];
@@ -123,20 +124,16 @@ export class RulesetResolver implements Disposable {
     }
 
     private async getAssetRulesets(files: Uri[]) {
-        if (!this.context) {
-            throw new Error('Couldn\'t get extension context');
-        }
-
-        const extensionUri = Uri.joinPath(this.context.extensionUri, '/src/assets/xcom1');
-        this.rulesetHierarchy.vanilla = extensionUri;
+        const assetPath = this.getAssetUri();
+        this.rulesetHierarchy.vanilla = assetPath;
 
         if (this.context) {
-            const assets = await workspace.fs.readDirectory(extensionUri);
+            const assets = await workspace.fs.readDirectory(assetPath);
 
             for (const [name, type] of assets) {
                 if (type === FileType.File) {
                     if (name.endsWith('.rul')) {
-                        files.push(Uri.joinPath(extensionUri, '/', name));
+                        files.push(Uri.joinPath(assetPath, '/', name));
                     }
                 }
             }
@@ -216,7 +213,7 @@ export class RulesetResolver implements Disposable {
                 parsed = {definitions, references, variables, translations};
             }
 
-            rulesetFileCacheManager.cache(file, parsed);
+            rulesetFileCacheManager.put(file, parsed);
 
             return parsed;
         } catch (error) {
@@ -259,9 +256,8 @@ export class RulesetResolver implements Disposable {
             return;
         }
 
-        const assetUri = Uri.joinPath(this.context.extensionUri, '/src/assets/xcom1');
         workspace.workspaceFolders.map(workspaceFolder => {
-            rulesetTree.checkDefinitions(workspaceFolder, assetUri);
+            rulesetTree.checkDefinitions(workspaceFolder, this.getAssetUri());
         });
 
         this.checkForCommonProblems();
@@ -301,6 +297,19 @@ export class RulesetResolver implements Disposable {
                 workspace.getConfiguration('oxcYamlHelper').update('validateCategories', 'always', ConfigurationTarget.Workspace);
             }
         });
+    }
+
+    private getAssetUri() {
+        if (!this.context) {
+            throw new Error('Couldn\'t get extension context');
+        }
+
+        let path = 'out/assets/xcom1';
+        if (existsSync(Uri.joinPath(this.context.extensionUri, '/src/assets/xcom1').fsPath)) {
+            path = 'src/assets/xcom1';
+        }
+
+        return Uri.joinPath(this.context.extensionUri, '/' + path);
     }
 
     public getRulesetHierarchy () {
