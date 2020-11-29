@@ -28,15 +28,22 @@ const builtinPalettes = [
     'BACKPALS.DAT', 'PAL_BASESCAPE', 'PAL_BATTLEPEDIA', 'PAL_BATTLESCAPE', 'PAL_GEOSCAPE', 'PAL_GRAPHS', 'PAL_UFOPAEDIA'
 ];
 
+type idRange = [number, number];
+
 const factions = ['STR_FRIENDLY', 'STR_HOSTILE', 'STR_NEUTRAL'];
 
-const soundIds = [-1, 54];
-const smokeIds = [-1, 55];
-const bigSpriteIds = [-1, 56];
-const floorSpriteIds = [-1, 72];
-const handSpriteIds = [-1, 127];
+const intIconIds: idRange = [-1, 15];
+const basebitsIds: idRange = [-1, 53];
+const soundIds: idRange = [-1, 54];
+const smokeIds: idRange = [-1, 55];
+const bigSpriteIds: idRange = [-1, 56];
+const floorSpriteIds: idRange = [-1, 72];
+const handSpriteIds:idRange = [-1, 127];
 
-export const builtinResourceIds: {[key: string]: number[]} = {
+export const builtinResourceIds: {[key: string]: idRange} = {
+    'crafts.sprite': intIconIds,
+    'craftWeapons.sprite': intIconIds,
+    'facilities.spriteFacility': basebitsIds,
     'items.bigSprite': bigSpriteIds,
     'items.explosionHitSound': soundIds,
     'items.fireSound': soundIds,
@@ -59,8 +66,8 @@ export const builtinTypes: {[key: string]: string[]} = {
     'alienMissions.waves[].ufo': ['dummy'],
     'armors.spriteInv': builtinArmorSprites,
     'armors.spriteSheet': [
-        'CELATID.PCK', 'CIVM.PCK', 'CHRYS.PCK', 'CYBER.PCK', 'FLOATER.PCK', 'ETHEREAL.PCK', 'MUTON.PCK',
-        'SECTOID.PCK', 'SILACOID.PCK', 'SNAKEMAN.PCK', 'X_REAP.PCK', 'X_ROB.PCK',
+        'CELATID.PCK', 'CIVF.PCK', 'CIVM.PCK', 'CHRYS.PCK', 'CYBER.PCK', 'FLOATER.PCK', 'ETHEREAL.PCK', 'MUTON.PCK',
+        'SECTOID.PCK', 'SILACOID.PCK', 'SNAKEMAN.PCK', 'TANKS.PCK', 'X_REAP.PCK', 'X_ROB.PCK',
         'XCOM_0.PCK', 'XCOM_1.PCK', 'XCOM_2.PCK', 'ZOMBIE.PCK'
     ],
     'armors.storeItem': ['STR_NONE'],
@@ -71,7 +78,7 @@ export const builtinTypes: {[key: string]: string[]} = {
     'enviroEffects.paletteTransformations.value': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
     'enviroEffects.environmentalConditions': factions,
     'events.background': builtinBackgrounds,
-    '/^extended\\.tags\\.(Rule(Armor|Item)|Battle(Item|Unit)).[a-zA-Z0-9_]+$/': ['int'],
+    '/^extended\\.tags\\.(Rule(Armor|Item|Soldier|SoldierBonus)|Battle(Item|Game|Unit))\\.[a-zA-Z0-9_]+$/': ['int'],
     'interfaces.backgroundImage': builtinBackgrounds,
     'manufacture.category': [
         'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
@@ -83,7 +90,7 @@ export const builtinTypes: {[key: string]: string[]} = {
         'STR_LIVE_NAVIGATOR', 'STR_LIVE_SOLDIER', 'STR_LIVE_TERRORIST',
         'STR_CIVILIAN' /* OXCE */
     ],
-    'startingBase.crafts[].status': ['STR_READY', 'STR_REPAIRS'],
+    '/^startingBase(Beginner|Experienced|Veteran|Genius|Superhuman)?\\.crafts\\[\\]\\.status$/': ['STR_READY', 'STR_REPAIRS'],
     'startingConditions.allowedItems': ['STR_NONE'],
     'startingConditions.allowedVehicles': ['STR_NONE'],
     'ufos.size': ['STR_LARGE', 'STR_MEDIUM_UC', 'STR_SMALL', 'STR_VERY_LARGE', 'STR_VERY_SMALL'],

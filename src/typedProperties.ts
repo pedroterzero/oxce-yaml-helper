@@ -64,6 +64,22 @@ export class typedProperties {
         'startingBase.crafts[]',
         'startingBase.crafts[].weapons[]',
         'startingBase.facilities[]',
+        // reinstate regex for this?
+        'startingBaseBeginner.crafts[]',
+        'startingBaseBeginner.crafts[].weapons[]',
+        'startingBaseBeginner.facilities[]',
+        'startingBaseExperienced.crafts[]',
+        'startingBaseExperienced.crafts[].weapons[]',
+        'startingBaseExperienced.facilities[]',
+        'startingBaseVeteran.crafts[]',
+        'startingBaseVeteran.crafts[].weapons[]',
+        'startingBaseVeteran.facilities[]',
+        'startingBaseGenius.crafts[]',
+        'startingBaseGenius.crafts[].weapons[]',
+        'startingBaseGenius.facilities[]',
+        'startingBaseSuperhuman.crafts[]',
+        'startingBaseSuperhuman.crafts[].weapons[]',
+        'startingBaseSuperhuman.facilities[]',
     ];
 
     private static vetoTypeValues: {[key: string]: string[]} = {

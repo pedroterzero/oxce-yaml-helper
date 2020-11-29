@@ -4,6 +4,8 @@
 export const ignoreTypes = [
     'armors.layersDefaultPrefix',
     'armors.scripts.damageUnit',
+    'armors.scripts.hitUnit',
+    'armors.scripts.recolorUnitSprite',
     'armors.scripts.selectUnitSprite',
     'armors.spriteInv', // TODO: FIX THIS%
     'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
@@ -27,6 +29,7 @@ export const ignoreTypes = [
     'interfaces.elements[].id', // could type check this, but the validator probably catches these
     'interfaces.palette', // could type check this, but the validator probably catches these
     'items.scripts.createItem',
+    'items.scripts.selectItemSprite',
     'mapScripts.commands[].type',
     'mapScripts.commands[].direction',
     'mapScripts.commands[].tunnelData.MCDReplacements[].type',

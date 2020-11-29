@@ -35,9 +35,12 @@ export class RulesetDefinitionChecker {
         'extraSounds': ['BATTLE.CAT'],
     };
 
+    public constructor() {
+        this.loadRegexes();
+    }
+
     public init(lookup: TypeLookup) {
         this.checkDefinitions(lookup);
-        this.loadRegexes();
     }
 
     public checkFile(file: ReferenceFile, lookup: TypeLookup, workspacePath: string): Diagnostic[] {
@@ -317,7 +320,9 @@ export class RulesetDefinitionChecker {
 
     private matchesBuiltinTypeRegex(path: string, key: string): boolean {
         for (const item of this.builtinTypeRegexes) {
-            return item.regex.exec(path) && item.values.includes(key) || false;
+            if (item.regex.exec(path) && item.values.includes(key)) {
+                return true;
+            }
         }
 
         return false;
