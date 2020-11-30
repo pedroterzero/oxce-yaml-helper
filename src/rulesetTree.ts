@@ -73,6 +73,10 @@ export class RulesetTree {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeTranslationsIntoTree(translations, sourceFile);
     }
 
+    public deleteFileFromTree(workspaceFolder: WorkspaceFolder, file: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.deleteFileFromTree(file);
+    }
+
     public getWorkspaceFolders(): WorkspaceFolder[] {
         return this.workspaceFolderRulesets.map((workspaceFolderRuleset) => workspaceFolderRuleset.workspaceFolder);
     }
@@ -114,8 +118,12 @@ export class RulesetTree {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getTranslation(key);
     }
 
-    refresh(workspaceFolder: WorkspaceFolder) {
+    public refresh(workspaceFolder: WorkspaceFolder) {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.refresh();
+    }
+
+    public getDiagnosticCollection(workspaceFolder: WorkspaceFolder) {
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getDiagnosticCollection();
     }
 
     public checkDefinitions(workspaceFolder: WorkspaceFolder, assetUri: Uri): any {

@@ -1,4 +1,4 @@
-import { languages, Uri, workspace, WorkspaceFolder } from "vscode";
+import { DiagnosticCollection, languages, Uri, workspace, WorkspaceFolder } from "vscode";
 import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
@@ -46,6 +46,13 @@ export class WorkspaceFolderRuleset {
     public mergeTranslationsIntoTree(translations: Translation[], sourceFile: Uri) {
         const lookups = this.getTranslationLookups(translations);
         this.addRulesetTranslationFile(lookups, sourceFile || null);
+    }
+
+    public deleteFileFromTree(file: Uri) {
+        delete this.rulesetFiles[this.rulesetFiles.findIndex(collection => collection.file.path === file.path)];
+        delete this.variableFiles[this.variableFiles.findIndex(collection => collection.file.path === file.path)];
+        delete this.referenceFiles[this.referenceFiles.findIndex(collection => collection.file.path === file.path)];
+        delete this.translationFiles[this.translationFiles.findIndex(collection => collection.file.path === file.path)];
     }
 
     private getTranslationLookups(translations: Translation[]): Translations {
@@ -168,6 +175,10 @@ export class WorkspaceFolderRuleset {
     public refresh() {
         this.hierarchy.handleDeletes();
         this.createLookups();
+    }
+
+    public getDiagnosticCollection(): DiagnosticCollection {
+        return this.diagnosticCollection;
     }
 
     public checkDefinitions(assetUri: Uri) {
