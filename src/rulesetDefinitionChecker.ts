@@ -1,12 +1,14 @@
 import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from "vscode";
 import { DefinitionLookup, Match } from "./rulesetTree";
-import { ReferenceFile, TypeLookup } from "./workspaceFolderRuleset";
+import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 import { typeLinks } from "./definitions/typeLinks";
 import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
 import { ignoreTypes } from "./definitions/ignoreTypes";
 import { stringTypes } from "./definitions/stringTypes";
 import { rulesetResolver } from "./extension";
 import { logger } from "./logger";
+import { FilesWithDiagnostics, LogicHandler } from "./logic/logicHandler";
+import { mergeAndConcat } from "merge-anything";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -35,21 +37,36 @@ export class RulesetDefinitionChecker {
         'extraSounds': ['BATTLE.CAT'],
     };
 
+    private logicHandler = new LogicHandler;
+
     public constructor() {
         this.loadRegexes();
     }
 
     public init(lookup: TypeLookup) {
         this.checkDefinitions(lookup);
+        this.logicHandler = new LogicHandler;
     }
 
-    public checkFile(file: ReferenceFile, lookup: TypeLookup, workspacePath: string): Diagnostic[] {
+    public checkFile(file: ReferenceFile, ruleset: WorkspaceFolderRuleset, workspacePath: string): Diagnostic[] {
         const diagnostics : Diagnostic[] = [];
 
-        this.checkReferences(file, lookup, diagnostics);
+        this.checkReferences(file, ruleset.definitionsLookup, diagnostics);
         this.addDuplicateDefinitions(file, diagnostics, workspacePath);
 
+        let logicData;
+        if ((logicData = ruleset.getLogicData(file.file))) {
+            console.log('checking!');
+            this.logicHandler.check(file.file, diagnostics, logicData);
+        }
+
         return diagnostics;
+    }
+
+    public checkRelationLogic(diagnosticsPerFile: FilesWithDiagnostics): FilesWithDiagnostics {
+        const additionalFilesWithDiagnostics = this.logicHandler.checkRelationLogic();
+
+        return mergeAndConcat(diagnosticsPerFile, additionalFilesWithDiagnostics) as FilesWithDiagnostics;
     }
 
     private addDuplicateDefinitions(file: ReferenceFile, diagnostics: Diagnostic[], workspacePath: string) {
@@ -85,12 +102,17 @@ export class RulesetDefinitionChecker {
 
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
-                this.addReferenceDiagnostic(ref, diagnostics);
-            } else {
-                const add = this.checkForCorrectTarget(ref, possibleKeys, lookup);
+                    if (ref.path in typeLinks && typeLinks[ref.path].includes('_dummy_')) {
+                        // ignore dummy logic
+                        continue;
+                    }
 
-                if (add) {
                     this.addReferenceDiagnostic(ref, diagnostics);
+            } else {
+                if (!this.checkForCorrectTarget(ref, possibleKeys, lookup)) {
+                   this.logicHandler.storeRelationLogicReference(ref, file);
+                } else {
+                   this.addReferenceDiagnostic(ref, diagnostics);
                 }
             }
         }
@@ -226,7 +248,7 @@ export class RulesetDefinitionChecker {
         if (ref.path in typeLinks) {
             add = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
         } else {
-            // regex match
+            // regex match (TODO build regexes in advance)
             for (const type in typeLinks) {
                 if (type.startsWith('/') && type.endsWith('/')) {
                     const regex = new RegExp(type.slice(1, -1));
@@ -241,6 +263,11 @@ export class RulesetDefinitionChecker {
     }
 
     private checkForTypeLinkMatch(typeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
+        if (typeLinks.includes('_dummy_')) {
+            // shortcut for dummy (custom logic)
+            return false;
+        }
+
         let add = true;
         for (const key of possibleKeys) {
             if (key in lookup) {

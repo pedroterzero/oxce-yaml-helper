@@ -50,6 +50,7 @@ Hover over any image reference to get an image preview.
 - List all distinct types so we can see ones we need to veto
 - Fix changes outside of vscode (reloading gets the editor state, not the fs state)
 - Use virtual documents for vanilla assets: https://code.visualstudio.com/api/extension-guides/virtual-documents
+- Check `typedProperties.addTypeLinks` for correct splitting?
 
 ## Credits
 - Inspired (that's not really the right word) by https://github.com/shanehofstetter/rails-i18n-vscode

@@ -1,6 +1,6 @@
 import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress, window, ExtensionContext, FileType, ConfigurationTarget } from 'vscode';
 import { logger } from "./logger";
-import { Definition, Match, rulesetTree, Translation, Variables } from "./rulesetTree";
+import { Definition, LogicDataEntry, Match, rulesetTree, Translation, Variables } from "./rulesetTree";
 import { EventEmitter } from "events";
 import { rulesetParser } from "./rulesetParser";
 import deepmerge = require('deepmerge');
@@ -13,6 +13,7 @@ export type ParsedRuleset = {
     references?: Match[];
     variables?: Variables;
     translations: Translation[];
+    logicData?: LogicDataEntry[];
 };
 
 export class RulesetResolver implements Disposable {
@@ -248,6 +249,9 @@ export class RulesetResolver implements Disposable {
         if (parsed.variables) {
             rulesetTree.mergeVariablesIntoTree(parsed.variables, workspaceFolder, file);
         }
+        if (parsed.logicData) {
+            rulesetTree.mergeLogicDataIntoTree(parsed.logicData, workspaceFolder, file);
+        }
 
         rulesetTree.mergeTranslationsIntoTree(parsed.translations, workspaceFolder, file);
 
@@ -270,9 +274,11 @@ export class RulesetResolver implements Disposable {
                 translations = rulesetParser.getTranslationsFromLanguageFile(docObject);
                 parsed = {translations};
             } else {
-                const references = rulesetParser.getReferencesRecursively(doc.parsed);
+                const [references, logicData] = rulesetParser.getReferencesRecursively(doc.parsed);
                 rulesetParser.addRangePositions(references, document);
+                rulesetParser.addRangePositions(logicData, document);
                 logger.debug(`found ${references?.length} references in file ${workspaceFile}`);
+                logger.debug(`found ${logicData?.length} logic data entries in file ${workspaceFile}`);
                 const definitions = rulesetParser.getDefinitionsFromReferences(references);
                 logger.debug(`found ${definitions.length} definitions in file ${workspaceFile}`);
 
@@ -280,7 +286,7 @@ export class RulesetResolver implements Disposable {
                 const variables = rulesetParser.getVariables(docObject);
                 translations = rulesetParser.getTranslations(docObject);
 
-                parsed = {definitions, references, variables, translations};
+                parsed = {definitions, references, variables, translations, logicData};
             }
 
             rulesetFileCacheManager.put(file, parsed);

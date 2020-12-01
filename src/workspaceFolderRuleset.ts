@@ -1,15 +1,17 @@
 import { DiagnosticCollection, languages, Uri, workspace, WorkspaceFolder } from "vscode";
-import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match } from "./rulesetTree";
+import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match, LogicDataEntry } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 import { rulesetDefinitionChecker } from "./rulesetDefinitionChecker";
 import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
+import { FilesWithDiagnostics } from "./logic/logicHandler";
 
 export type RulesetFile = { file: Uri, definitions: Definition[] }
 export type ReferenceFile = { file: Uri, references: Match[] }
 export type VariableFile = { file: Uri, variables: Variables }
 export type TranslationFile = { file: Uri, translations: Translations }
+export type LogicDataFile = { file: Uri, logicData: {[key: string]: LogicDataEntry[]} }
 
 export type TypeLookup = {
     [key: string]: DefinitionLookup[];
@@ -21,6 +23,7 @@ export class WorkspaceFolderRuleset {
     public variableFiles: VariableFile[] = [];
     public referenceFiles: ReferenceFile[] = [];
     public translationFiles: TranslationFile[] = [];
+    public logicDataFiles: LogicDataFile[] = [];
     private variables: Variables = {};
     private translations: Translations = {};
 //    private references: Match[] = [];
@@ -48,11 +51,17 @@ export class WorkspaceFolderRuleset {
         this.addRulesetTranslationFile(lookups, sourceFile || null);
     }
 
+    public mergeLogicDataIntoTree(logicData: LogicDataEntry[], sourceFile: Uri) {
+        const lookups = this.getLogicDataLookups(logicData);
+        this.addRulesetLogicDataFile(lookups, sourceFile || null);
+    }
+
     public deleteFileFromTree(file: Uri) {
         delete this.rulesetFiles[this.rulesetFiles.findIndex(collection => collection.file.path === file.path)];
         delete this.variableFiles[this.variableFiles.findIndex(collection => collection.file.path === file.path)];
         delete this.referenceFiles[this.referenceFiles.findIndex(collection => collection.file.path === file.path)];
         delete this.translationFiles[this.translationFiles.findIndex(collection => collection.file.path === file.path)];
+        delete this.logicDataFiles[this.logicDataFiles.findIndex(collection => collection.file.path === file.path)];
     }
 
     private getTranslationLookups(translations: Translation[]): Translations {
@@ -64,6 +73,20 @@ export class WorkspaceFolderRuleset {
             }
 
             grouped[translation.language][translation.key] = translation.value;
+        }
+
+        return grouped;
+    }
+
+    private getLogicDataLookups(logicData: LogicDataEntry[]) {
+        const grouped: {[key: string]: LogicDataEntry[]} = {};
+
+        for (const entry of logicData) {
+            if (!(entry.path in grouped)) {
+                grouped[entry.path] = [];
+            }
+
+           grouped[entry.path].push(entry);
         }
 
         return grouped;
@@ -154,6 +177,14 @@ export class WorkspaceFolderRuleset {
         this.translationFiles.push(translationFile);
     }
 
+    private addRulesetLogicDataFile(logicData: { [key: string]: LogicDataEntry[]; }, sourceFile: Uri) {
+        const logicDataFile = { logicData, file: sourceFile };
+        if (this.logicDataFiles.length > 0 && logicDataFile.file) {
+            this.logicDataFiles = this.logicDataFiles.filter(tp => tp.file && tp.file.path !== logicDataFile.file.path);
+        }
+        this.logicDataFiles.push(logicDataFile);
+    }
+
     public getVariables(): Variables {
         return this.variables;
     }
@@ -181,25 +212,41 @@ export class WorkspaceFolderRuleset {
         return this.diagnosticCollection;
     }
 
+    // TODO refactor this to checkFile (because it does more now), also move it
     public checkDefinitions(assetUri: Uri) {
         this.diagnosticCollection.clear();
         rulesetDefinitionChecker.clear();
         rulesetDefinitionChecker.init(this.definitionsLookup);
 
 //        logger.debug(`[${(new Date()).toISOString()}] Number of textDocuments in workspace: ${workspace.textDocuments.length}`);
+        const diagnosticsPerFile: FilesWithDiagnostics = {};
         for (const file of this.referenceFiles) {
             if (file.file.path.startsWith(Uri.joinPath(assetUri, '/').path)) {
                 // do not check assets obviously
                 continue;
             }
 
-            const diagnostics = rulesetDefinitionChecker.checkFile(file, this.definitionsLookup, this.workspaceFolder.uri.path);
+            const diagnostics = rulesetDefinitionChecker.checkFile(file, this, this.workspaceFolder.uri.path);
 
             // logger.debug(`diagnostic: ${file.file.path} has ${diagnostics.length} diagnostics from ${file.references.length} references`);
-            this.diagnosticCollection.set(Uri.file(file.file.path), diagnostics);
+            diagnosticsPerFile[file.file.path] = diagnostics;
+            // this.diagnosticCollection.set(Uri.file(file.file.path), diagnostics);
         }
 
-        return true;
+        const combinedDiagnosticsPerFile = rulesetDefinitionChecker.checkRelationLogic(diagnosticsPerFile);
+
+        for (const file in combinedDiagnosticsPerFile) {
+            this.diagnosticCollection.set(Uri.file(file), combinedDiagnosticsPerFile[file]);
+        }
+    }
+
+    public getLogicData(file: Uri) {
+        const logicFile = this.logicDataFiles.find(logicFile => file === logicFile.file && Object.keys(logicFile.logicData).length > 0);
+        if (logicFile) {
+            return logicFile.logicData;
+        }
+
+        return;
     }
 
     private createLookups() {

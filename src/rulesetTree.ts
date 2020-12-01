@@ -24,12 +24,20 @@ export type Translation = {
     value: string
 }
 
-export type Match = {
-    key: string,
-    path: string,
+export interface RangedEntryInterface {
     range: [number, number],
     rangePosition?: [[number, number], [number, number]],
+}
+
+export interface Match extends RangedEntryInterface {
+    key: string,
+    path: string,
     metadata?: Record<string, unknown>
+}
+
+export interface LogicDataEntry extends RangedEntryInterface {
+    path: string,
+    data: Record<string, any>,
 }
 
 export type Definition = BaseDefinition & {
@@ -71,6 +79,10 @@ export class RulesetTree {
 
     public mergeTranslationsIntoTree(translations: Translation[], workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeTranslationsIntoTree(translations, sourceFile);
+    }
+
+    public mergeLogicDataIntoTree(logicData: LogicDataEntry[], workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeLogicDataIntoTree(logicData, sourceFile);
     }
 
     public deleteFileFromTree(workspaceFolder: WorkspaceFolder, file: Uri) {
@@ -126,7 +138,7 @@ export class RulesetTree {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getDiagnosticCollection();
     }
 
-    public checkDefinitions(workspaceFolder: WorkspaceFolder, assetUri: Uri): any {
+    public checkDefinitions(workspaceFolder: WorkspaceFolder, assetUri: Uri) {
         logger.debug(`checkDefinitions workspaceFolder ${workspaceFolder}`);
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.checkDefinitions(assetUri);
     }

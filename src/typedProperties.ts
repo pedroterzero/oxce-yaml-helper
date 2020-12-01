@@ -1,5 +1,6 @@
 import { typeLinks } from "./definitions/typeLinks";
 import { logger } from "./logger";
+import { LogicHandler } from "./logic/logicHandler";
 import { RuleType } from "./rulesetTree";
 
 type typePropertyHints = {
@@ -158,6 +159,11 @@ export class typedProperties {
     ];
 
     private static typeProperties: typeProperties = {
+        mapScripts: {
+            'commands[].crossingGroup': {target: '_dummy_', type: 'numeric'},
+            'commands[].groups': {target: '_dummy_', type: 'numeric'},
+            'commands[].verticalGroup': {target: '_dummy_', type: 'numeric'},
+        },
         crafts: {
             sprite: {target: 'extraSprites.INTICON.PCK.files', type: 'numeric'},
         },
@@ -215,8 +221,11 @@ export class typedProperties {
         'ftaGame': {}
     }
 
+    private static additionalLogicPaths: string[] = [];
+
     public static init () {
         this.addTypeLinks();
+        this.getAdditionalLogicPaths();
     }
 
     public static isDefinitionPropertyForPath (type: string, key: string, value: string): boolean {
@@ -267,6 +276,10 @@ export class typedProperties {
         }
 
         return typeKey;
+    }
+
+    public static getPossibleTypeKeys(ruleType: string): string[] {
+        return this.typePropertyHints[ruleType] || ['type'];
     }
 
     /**
@@ -412,15 +425,20 @@ export class typedProperties {
         return this.keyValueReferenceTypes.indexOf(path) !== -1;
     }
 
+    public static isAdditionalLogicPath(path: string) {
+        return this.additionalLogicPaths.includes(path);
+    }
+
     private static addTypeLinks() {
         for (const link in typeLinks) {
             if (link.startsWith('/') && link.endsWith('/')) {
                 continue;
             }
 
-            // const target = ;
             const newLink = link.split('.').slice(0, -1).join('.');
             const key = link.split('.').slice(-1).join('.');
+            // const newLink = link.split('.').slice(0, 1).join('.');
+            // const key = link.split('.').slice(1).join('.');
 
             // console.log(`new link ${newLink} new key ${key}`);
             if (!(newLink in this.typeProperties)) {
@@ -432,5 +450,9 @@ export class typedProperties {
                 target: typeLinks[link][0]
             };
         }
+    }
+
+    private static getAdditionalLogicPaths () {
+        this.additionalLogicPaths = (new LogicHandler).getPaths();
     }
 }

@@ -1,6 +1,6 @@
 import { TextDocument, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
 import { logger } from "./logger";
-import { Definition, Match, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
+import { Definition, LogicDataEntry, Match, RangedEntryInterface, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
 import { Document, parseDocument } from 'yaml';
 import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
 import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
@@ -39,7 +39,7 @@ export class RulesetParser {
         typedProperties.init();
     }
 
-    public getReferencesRecursively(doc: YAMLDocument): Match[] {
+    public getReferencesRecursively(doc: YAMLDocument): [Match[], LogicDataEntry[]] {
         return rulesetRecursiveKeyRetriever.findAllReferencesInYamlDocument(doc);
     }
 
@@ -118,7 +118,7 @@ export class RulesetParser {
         return !typedProperties.isNumericProperty(ruleType.type, ruleType.key);
     }
 
-    public addRangePositions(references: Match[], document: TextDocument) {
+    public addRangePositions(references: RangedEntryInterface[], document: TextDocument) {
         for (const ref of references) {
             ref.range = this.fixRangesForWindowsLineEndingsIfNeeded(document, ref.range);
             ref.rangePosition = [

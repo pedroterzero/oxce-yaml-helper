@@ -1,0 +1,111 @@
+import { Diagnostic, DiagnosticSeverity, Range, Uri } from "vscode";
+import { LogicDataEntry, Match } from "../rulesetTree";
+import { ReferenceFile } from "../workspaceFolderRuleset";
+import { FilesWithDiagnostics } from "./logicHandler";
+
+export type LogicEntries = { [key: string]: LogicDataEntry[]; };
+export type LogicCheckMethods = {[key: string]: [(data: any) => void]}
+
+export interface LogicInterface {
+    getDiagnosticsPerFile(): FilesWithDiagnostics;
+    getFields(): string[];
+    check(data: LogicEntries, file: Uri, diagnostics: Diagnostic[]): void;
+    checkRelationLogic(): void;
+    storeRelationLogicReference(ref: Match, file: ReferenceFile): void;
+}
+
+export class BaseLogic implements LogicInterface {
+    protected fields: LogicCheckMethods = {};
+    protected relatedFieldLogicMethods: {[key: string]: (key: string) => void} = {};
+    protected diagnostics?: Diagnostic[];
+    protected diagnosticsPerFile: {[key: string]: Diagnostic[]} = {};
+    protected file?: Uri;
+
+    protected referencesToCheck: {[key: string]: {ref: Match, file: Uri}[]} = {};
+
+    // public constructor () {
+    // }
+
+    public getFields(): string[] {
+        return Object.keys(this.fields);
+    }
+
+    public getRelatedLogicFields(): string[] {
+        return Object.keys(this.relatedFieldLogicMethods);
+    }
+
+    public getDiagnosticsPerFile(): FilesWithDiagnostics {
+        return this.diagnosticsPerFile;
+    }
+
+    protected generic(_entries: LogicDataEntry[]) {
+        //
+    }
+
+    public check(data: LogicEntries, file: Uri, diagnostics: Diagnostic[]) {
+        this.diagnostics = diagnostics;
+        this.file = file;
+        const fields = this.getFields();
+
+        for (const key in data) {
+            if (fields.includes(key)) {
+                if (key in this.fields) {
+                    for (let method of this.fields[key]) {
+                        method = method.bind(this);
+                        method(data[key]);
+                    }
+                } else {
+                    const method = this.generic.bind(this);
+                    method(data[key]);
+                }
+            }
+        }
+    }
+
+    public checkRelationLogic(): void {
+        for (const key in this.relatedFieldLogicMethods) {
+            this.relatedFieldLogicMethods[key].bind(this)(key);
+        }
+    }
+
+    public storeRelationLogicReference(ref: Match, file: ReferenceFile): void {
+        if (!(ref.path in this.referencesToCheck)) {
+            this.referencesToCheck[ref.path] = [];
+        }
+
+        this.referencesToCheck[ref.path].push({
+            ref,
+            file: file.file
+        });
+    }
+
+    protected addDiagnosticForLogicEntry(entry: LogicDataEntry, message: string) {
+        if (!entry.rangePosition) {
+            throw new Error('rangePosition missing');
+        }
+        if (!this.diagnostics) {
+            throw new Error('diagnostics missing');
+        }
+
+        const range = new Range(...entry.rangePosition[0], ...entry.rangePosition[1]);
+
+        this.diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
+    }
+
+    protected addDiagnosticForReference(ref: { ref: Match; file: Uri; }, message: string, severity: DiagnosticSeverity = DiagnosticSeverity.Warning) {
+        if (!ref.ref.rangePosition) {
+            throw new Error('rangePosition missing');
+        }
+        if (!this.diagnostics) {
+            throw new Error('diagnostics missing');
+        }
+
+        const range = new Range(...ref.ref.rangePosition[0], ...ref.ref.rangePosition[1]);
+
+        if (!(ref.file.path in this.diagnosticsPerFile)) {
+            this.diagnosticsPerFile[ref.file.path] = [];
+        }
+
+        this.diagnosticsPerFile[ref.file.path].push(new Diagnostic(range, message, severity));
+    }
+}
