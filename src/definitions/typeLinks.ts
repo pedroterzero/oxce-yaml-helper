@@ -74,6 +74,8 @@ export const typeLinks: {[key: string]: string[]} = Object.assign(ftaTypeLinks, 
     'armors.units': ['soldiers'],
     'crafts.refuelItem': ['items'],
     'crafts.requires': ['research'],
+    'craftWeapons.clip': ['items'],
+    'craftWeapons.launcher': ['items'],
     // 'crafts.weaponStrings': ['craftWeapons.weaponType'], // (is this just a translatable?)
     //enviroEffects
     'enviroEffects.armorTransformations.key': ['armors'], // should only match builtins
