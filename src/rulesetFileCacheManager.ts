@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync } from "fs";
 import { load } from "flat-cache";
 import { ParsedRuleset } from "./rulesetResolver";
 import { createHash } from "crypto";
+import { rulesetResolver } from "./extension";
 
 export class RulesetFileCacheManager {
     private CACHE_DIR = 'oxchelper';
@@ -50,7 +51,7 @@ export class RulesetFileCacheManager {
     }
 
     public async retrieve(file: Uri) {
-        if (workspace.getConfiguration('oxcYamlHelper').get<boolean>('disableCache')) {
+        if (!this.useCache(file)) {
             return;
         }
 
@@ -82,6 +83,33 @@ export class RulesetFileCacheManager {
         }
 
         return;
+    }
+
+    private useCache(file: Uri): boolean {
+        const cacheStrategy = workspace.getConfiguration('oxcYamlHelper').get<string>('cacheStrategy');
+        if (!cacheStrategy) {
+            return true;
+        }
+
+        if (cacheStrategy === 'nothing') {
+            return false;
+        }
+
+        const cacheAssets = ['all', 'only cache languages, assets', 'only cache assets'].includes(cacheStrategy);
+        const cacheLanguages = ['all', 'only cache languages', 'only cache languages, assets'].includes(cacheStrategy);
+
+        const isAssetFile = file.path.startsWith(rulesetResolver.getRulesetHierarchy().vanilla.path + '/');
+        const isLanguageFile = file.path.match(/\/Language\/[^/]+\.yml$/i);
+
+        if (!cacheAssets && isAssetFile) {
+            return false;
+        } else if (!cacheLanguages && isLanguageFile) {
+            return false;
+        } else if (!isAssetFile && !isLanguageFile && cacheStrategy !== 'all') {
+            return false;
+        }
+
+        return true;
     }
 }
 

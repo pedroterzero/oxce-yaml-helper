@@ -37,6 +37,17 @@
                     "default": "en-US",
                     "description": "Locale to use when showing translations on hovering"
                 },
+                "oxcYamlHelper.cacheStrategy": {
+                    "type": "string",
+                    "enum": [
+                        "all",
+                        "only cache languages",
+                        "only cache languages, assets",
+                        "only cache assets",
+                        "nothing"
+                    ],
+                    "default": "all"
+                },
                 "oxcYamlHelper.showDocumentationHover": {
                     "type": "string",
                     "enum": [
