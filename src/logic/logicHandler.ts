@@ -5,8 +5,10 @@ import { LogicInterface } from "./baseLogic";
 import { MapScriptsLogic } from "./mapScriptsLogic";
 import { RegionsLogic } from "./regionsLogic";
 import { mergeAndConcat } from "merge-anything";
+import { CraftWeaponsLogic } from "./craftWeaponsLogic";
 
 const handlers = [
+    CraftWeaponsLogic,
     MapScriptsLogic,
     RegionsLogic
     // TerrainsLogic
@@ -73,6 +75,19 @@ export class LogicHandler {
 
         return paths;
     }
+
+    public getNumericFields(): string[] {
+        const fields: {[key: string]: boolean} = {};
+        for (const handler of handlers) {
+            const handlerObject = new handler();
+            for (const field of handlerObject.getNumericFields()) {
+                fields[field] = true;
+            }
+        }
+
+        return Object.keys(fields).sort();
+    }
+
 }
 
 // export const logicHandler = new LogicHandler();

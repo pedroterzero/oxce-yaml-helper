@@ -56,7 +56,7 @@ export class RulesetDefinitionChecker {
 
         let logicData;
         if ((logicData = ruleset.getLogicData(file.file))) {
-            console.log('checking!');
+            // console.log(`checking! ${file.file.path}`);
             this.logicHandler.check(file.file, diagnostics, logicData);
         }
 
@@ -100,18 +100,17 @@ export class RulesetDefinitionChecker {
                 continue;
             }
 
+            if (ref.path in typeLinks && typeLinks[ref.path].includes('_dummy_')) {
+                // dummy field indicates custom logic, so don't process the rest of this function
+                this.logicHandler.storeRelationLogicReference(ref, file);
+                continue;
+            }
+
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
-                    if (ref.path in typeLinks && typeLinks[ref.path].includes('_dummy_')) {
-                        // ignore dummy logic
-                        continue;
-                    }
-
                     this.addReferenceDiagnostic(ref, diagnostics);
             } else {
-                if (!this.checkForCorrectTarget(ref, possibleKeys, lookup)) {
-                   this.logicHandler.storeRelationLogicReference(ref, file);
-                } else {
+                if (this.checkForCorrectTarget(ref, possibleKeys, lookup)) {
                    this.addReferenceDiagnostic(ref, diagnostics);
                 }
             }

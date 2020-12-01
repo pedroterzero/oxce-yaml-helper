@@ -1,3 +1,5 @@
+import { LogicHandler } from "../logic/logicHandler";
+
 const ftaTypeLinks: {[key: string]: string[]} = {
     'alienDeployments.battleScript': ['battleScripts'], // FtA
     'battleScripts.commands[].unitSet': ['units'], // FtA part
@@ -129,13 +131,9 @@ export const typeLinks: {[key: string]: string[]} = Object.assign(ftaTypeLinks, 
     'manufactureShortcut.breakDownItems': ['manufacture'],
     'manufactureShortcut.startFrom': ['manufacture'],
     'mapScripts.commands[].craftName': ['crafts'],
-    // maybe also import reversely from typedProperties.typeProperties so these don't need to be here
-    'mapScripts.commands[].crossingGroup': ['_dummy_'],
-    'mapScripts.commands[].groups': ['_dummy_'],
     'mapScripts.commands[].randomTerrain': ['terrains'],
     'mapScripts.commands[].terrain': ['terrains'],
     'mapScripts.commands[].UFOName': ['ufos'],
-    'mapScripts.commands[].verticalGroup': ['_dummy_'],
     'mapScripts.commands[].verticalLevels[].terrain': ['terrains'],
     'missionScripts.facilityTriggers': ['facilities'],
     'missionScripts.itemTriggers': ['items'],
@@ -194,3 +192,8 @@ export const typeLinks: {[key: string]: string[]} = Object.assign(ftaTypeLinks, 
     'units.psiWeapon': ['items'],
     'units.spawnUnit': ['units']
 });
+
+// add numeric fields from logic handler
+for (const field of (new LogicHandler).getNumericFields()) {
+    typeLinks[field] = ['_dummy_'];
+}

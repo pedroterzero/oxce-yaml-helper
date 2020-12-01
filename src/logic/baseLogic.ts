@@ -9,6 +9,7 @@ export type LogicCheckMethods = {[key: string]: [(data: any) => void]}
 export interface LogicInterface {
     getDiagnosticsPerFile(): FilesWithDiagnostics;
     getFields(): string[];
+    getNumericFields(): string[];
     check(data: LogicEntries, file: Uri, diagnostics: Diagnostic[]): void;
     checkRelationLogic(): void;
     storeRelationLogicReference(ref: Match, file: ReferenceFile): void;
@@ -16,6 +17,11 @@ export interface LogicInterface {
 
 export class BaseLogic implements LogicInterface {
     protected fields: LogicCheckMethods = {};
+    /**
+     * numeric fields makes sure numeric references get picked up by the recursive retriever
+     * then also that they get properly handled (not treated as a regular reference)
+     */
+    protected numericFields: string[] = [];
     protected relatedFieldLogicMethods: {[key: string]: (key: string) => void} = {};
     protected diagnostics?: Diagnostic[];
     protected diagnosticsPerFile: {[key: string]: Diagnostic[]} = {};
@@ -28,6 +34,10 @@ export class BaseLogic implements LogicInterface {
 
     public getFields(): string[] {
         return Object.keys(this.fields);
+    }
+
+    public getNumericFields(): string[] {
+        return this.numericFields;
     }
 
     public getRelatedLogicFields(): string[] {

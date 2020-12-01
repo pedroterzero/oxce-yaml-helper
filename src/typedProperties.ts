@@ -159,11 +159,6 @@ export class typedProperties {
     ];
 
     private static typeProperties: typeProperties = {
-        mapScripts: {
-            'commands[].crossingGroup': {target: '_dummy_', type: 'numeric'},
-            'commands[].groups': {target: '_dummy_', type: 'numeric'},
-            'commands[].verticalGroup': {target: '_dummy_', type: 'numeric'},
-        },
         crafts: {
             sprite: {target: 'extraSprites.INTICON.PCK.files', type: 'numeric'},
         },
@@ -173,11 +168,6 @@ export class typedProperties {
         facilities: {
             spriteFacility: {target: 'extraSprites.BASEBITS.PCK.files', type: 'numeric'},
         },
-        // research: {
-        //     name: {target: 'ufopaedia'},
-        //     dependencies: {target: 'research'},
-        //     // getOneFree: {target: 'research'},
-        // },
         items: {
             bigSprite: {target: 'extraSprites.BIGOBS.PCK.files', type: 'numeric'},
             explosionHitSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
@@ -449,6 +439,11 @@ export class typedProperties {
             this.typeProperties[newLink][key] = {
                 target: typeLinks[link][0]
             };
+
+            if (typeLinks[link][0] === '_dummy_') {
+                // add dummies as numeric
+                this.typeProperties[newLink][key].type = 'numeric';
+            }
         }
     }
 

@@ -76,6 +76,8 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private processItems(entry: Entry, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, lookupAll: boolean): Match | undefined {
+        this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
+
         if (typedProperties.isKeyReferencePath(path)) {
             // do this separately, because the values for the keys could yield yet more references (see research.getOneFreeProtected)
             this.processKeyReferencePath(entry, path, matches);
@@ -180,14 +182,7 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private loopEntry(entry: YAMLSeq, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, lookupAll: boolean) {
-        if (typedProperties.isAdditionalLogicPath(path)) {
-            logicData.push({
-                path,
-                data: entry.toJSON(),
-                range: entry.range || [0, 0],
-                // names: namesByPath
-            });
-        }
+        this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
 
         entry.items.forEach((ruleProperty) => {
             if ('items' in ruleProperty) {
@@ -243,6 +238,21 @@ export class RulesetRecursiveKeyRetriever {
                 }
             }
         });
+    }
+
+    private checkForAdditionalLogicPath(path: string, logicData: LogicDataEntry[], entry: Entry, namesByPath: {[key: string]: string}) {
+        if (typedProperties.isAdditionalLogicPath(path)) {
+            if (typeof entry !== 'object' || !('toJSON' in entry) || !('range' in entry)) {
+                return;
+            }
+
+            logicData.push({
+                path,
+                data: entry.toJSON(),
+                range: entry.range || [0, 0],
+                names: namesByPath
+            });
+        }
     }
 
     /**

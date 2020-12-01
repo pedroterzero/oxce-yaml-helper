@@ -13,6 +13,9 @@ export class MapScriptsLogic extends BaseLogic {
         'mapScripts.commands[].groups': this.checkGroupReferences,
     }
 
+    // numeric fields makes sure numeric references get picked up by the recursive retriever
+    protected numericFields = Object.keys(this.relatedFieldLogicMethods);
+
     private mapBlockGroups: {[key: string]: number[]} = {};
 
     public getFields(): string[] {

@@ -38,6 +38,7 @@ export interface Match extends RangedEntryInterface {
 export interface LogicDataEntry extends RangedEntryInterface {
     path: string,
     data: Record<string, any>,
+    names: {[key: string]: string}
 }
 
 export type Definition = BaseDefinition & {
