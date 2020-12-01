@@ -23,6 +23,7 @@ export class RulesetResolver implements Disposable {
     private rulesetHierarchy: {[key: string]: Uri} = {};
     private processingFiles: {[key: string]: boolean} = {};
     private deletingFiles: {[key: string]: boolean} = {};
+    private savedFiles: {[key: string]: boolean} = {};
 
     public setExtensionContent(context: ExtensionContext): void {
         this.context = context;
@@ -166,18 +167,29 @@ export class RulesetResolver implements Disposable {
 
     private handleFileChanges(watcher: FileSystemWatcher) {
         watcher.onDidChange((e: Uri) => {
-            this.processingFiles[e.path] = true;
-
-            const folder = workspace.getWorkspaceFolder(Uri.file(e.path));
-            if (folder) {
-                rulesetTree.getDiagnosticCollection(folder)?.clear();
+            const isSavedFile = e.path in this.savedFiles;
+            if (isSavedFile) {
+                // saved files don't get a `onDidChangeTextDocument`, so handle it differently
+                delete this.savedFiles[e.path];
+            } else {
+                this.processingFiles[e.path] = true;
             }
+
+            // const folder = workspace.getWorkspaceFolder(Uri.file(e.path));
+            // if (folder) {
+            //     rulesetTree.getDiagnosticCollection(folder)?.clear();
+            // }
 
             logger.debug(`reloading ruleset file: ${e.path} (processing: ${Object.keys(this.processingFiles).length}) (deleted: ${Object.keys(this.deletingFiles).length})`);
-            if (!workspace.textDocuments.find(wsFile => wsFile.fileName === e.path)) {
-//                logger.debug(`textdocument not open for file ${e.path}, loading`);
+            if (isSavedFile || !workspace.textDocuments.find(wsFile => wsFile.fileName === e.path)) {
+                // logger.debug(`textdocument not open for file ${e.path}, loading`);
                 this.loadYamlIntoTree(e);
             }
+        });
+
+        workspace.onDidSaveTextDocument((e) => {
+            // logger.debug(`textdoc saved: ${e.uri.path}`);
+            this.savedFiles[e.uri.path] = true;
         });
 
         workspace.onDidChangeTextDocument((e) => {
@@ -222,6 +234,7 @@ export class RulesetResolver implements Disposable {
             parsed = await this.parseDocument(file, workspaceFolder);
         }
         if (!parsed) {
+            logger.error(`Could not parse/retrieve from cache ${file.path}`);
             delete this.processingFiles[file.path];
             return;
         }
