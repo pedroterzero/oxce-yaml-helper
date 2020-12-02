@@ -1,12 +1,13 @@
 import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from "vscode";
 import { DefinitionLookup, Match } from "./rulesetTree";
 import { ReferenceFile, TypeLookup } from "./workspaceFolderRuleset";
-import { typeLinks } from "./definitions/typeLinks";
+import { typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
 import { ignoreTypes } from "./definitions/ignoreTypes";
 import { stringTypes } from "./definitions/stringTypes";
 import { rulesetResolver } from "./extension";
 import { logger } from "./logger";
+import { typeHintMessages } from "./definitions/typeHintMessages";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -86,6 +87,7 @@ export class RulesetDefinitionChecker {
 
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
+                // can never match because the key simply does not exist for any type
                 this.addReferenceDiagnostic(ref, diagnostics);
             } else {
                 const add = this.checkForCorrectTarget(ref, possibleKeys, lookup);
@@ -207,17 +209,11 @@ export class RulesetDefinitionChecker {
     }
 
     private getPossibleKeys(ref: Match) {
-        let possibleKeys = [ref.key];
-
-        if (ref.path === 'armors.spriteInv') {
-            possibleKeys.push(ref.key + '.SPK');
+        if (ref.path in typeLinksPossibleKeys) {
+            return typeLinksPossibleKeys[ref.path](ref.key);
         }
 
-        if (ref.path === 'craftWeapons.sprite') {
-            possibleKeys = [ref.key + 5/*, ref.key + 48*/];
-        }
-
-        return possibleKeys;
+        return [ref.key];
     }
 
     /**
@@ -243,18 +239,46 @@ export class RulesetDefinitionChecker {
         return add;
     }
 
-    private checkForTypeLinkMatch(typeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
-        let add = true;
-        for (const key of possibleKeys) {
-            if (key in lookup) {
-                for (const result of lookup[key]) {
-                    if (typeLinks.indexOf(result.type) !== -1) {
-                        add = false;
+    private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
+        const typeLinks = this.processTypeLinks(rawTypeLinks, possibleKeys);
+
+        const matches: {[key: string]: boolean} = {};
+        for (const target in typeLinks) {
+            for (const key of typeLinks[target]) {
+                if (key in lookup) {
+                    for (const result of lookup[key]) {
+                        if (target === result.type) {
+                            matches[target] = true;
+                        }
                     }
                 }
             }
         }
-        return add;
+
+        // if we have found the number of matches we expect (1 per target typeLink), it's OK
+        return Object.values(matches).length !== Object.values(typeLinks).length;
+    }
+
+    private processTypeLinks(rawTypeLinks: string[], rawPossibleKeys: string[]) {
+        let possibleKeys = rawPossibleKeys;
+        const matchType = possibleKeys.includes('_all_') ? 'all' : 'any';
+        possibleKeys = possibleKeys.filter(key => !['_any_', '_all_'].includes(key));
+
+        if (matchType === 'all' && rawTypeLinks.length !== possibleKeys.length) {
+            logger.error(`Number of typeLinks fields (${JSON.stringify(rawTypeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
+            // throw new Error(`Number of typeLinks fields (${JSON.stringify(rawTypeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
+        }
+
+        const typeValues: {[key: string]: string[]} = {};
+        for (const index in rawTypeLinks) {
+            if (matchType === 'all') {
+                typeValues[rawTypeLinks[index]] = [possibleKeys[index]];
+            } else {
+                typeValues[rawTypeLinks[index]] = possibleKeys;
+            }
+        }
+
+        return typeValues;
     }
 
     private addReferenceDiagnostic(ref: Match, diagnostics: Diagnostic[]) {
@@ -281,6 +305,10 @@ export class RulesetDefinitionChecker {
         let message = `"${ref.key}" does not exist (${ref.path})`;
         if (ref.metadata && ref.metadata.type) {
             message += ` for ${ref.metadata.type}`;
+        }
+
+        if (ref.path in typeHintMessages) {
+            message += `\nHint: ${typeHintMessages[ref.path](ref.key).trim()}`;
         }
 
         diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));

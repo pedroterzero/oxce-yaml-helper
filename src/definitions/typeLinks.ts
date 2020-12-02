@@ -34,10 +34,8 @@ const ftaTypeLinks: TypeLinks = {
 };
 
 const spriteTypeLinks: TypeLinks = {
-    'crafts.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files'],
-    // 'craftWeapons.sprite': ['_numeric_', ['extraSprites.INTICON.PCK.files', 5], ['extraSprites.BASEBITS.PCK.files', 48]]
-    // 'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files||5', 'extraSprites.BASEBITS.PCK.files||48']
-    'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files'],
+    'crafts.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
+    'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
     'facilities.spriteFacility': ['_numeric_', 'extraSprites.BASEBITS.PCK.files'],
     'items.bigSprite': ['_numeric_', 'extraSprites.BIGOBS.PCK.files'],
     'items.floorSprite': ['_numeric_', 'extraSprites.FLOOROB.PCK.files'],
@@ -107,6 +105,7 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
     'armors.requires': ['research'],
     'armors.specialWeapon': ['items'],
     'armors.storeItem': ['items'],
+    'armors.spriteInv': ['extraSprites'],
     'armors.tags': ['extended.tags.RuleArmor'],
     'armors.units': ['soldiers'],
     'crafts.refuelItem': ['items'],
@@ -227,3 +226,23 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
     'units.psiWeapon': ['items'],
     'units.spawnUnit': ['units']
 });
+
+export const typeLinksPossibleKeys: {[key: string]: (key: string) => string[]} = {
+    // could improve this even more to make this all for the [MF][0123] variants?
+    'armors.spriteInv': (key) => [
+        '_any_',
+        key,
+        key + '.PCK',
+        key + '.SPK',
+        key + 'F0.SPK',
+        key + 'F1.SPK',
+        key + 'F2.SPK',
+        key + 'F3.SPK',
+        key + 'M0.SPK',
+        key + 'M1.SPK',
+        key + 'M2.SPK',
+        key + 'M3.SPK',
+    ],
+    'craftWeapons.sprite': (key) => ['_all_', key + 5, key + 48],
+    'crafts.sprite': (key) => ['_all_', key, key + 11, key + 33],
+};

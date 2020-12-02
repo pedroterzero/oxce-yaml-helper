@@ -21,7 +21,7 @@ const builtinArmorSprites = [
     'MAN_0F0', 'MAN_0F1', 'MAN_0F2', 'MAN_0F3', 'MAN_0M0',
     'MAN_0M1', 'MAN_0M2', 'MAN_0M3', 'MAN_1F0', 'MAN_1F1',
     'MAN_1F2', 'MAN_1F3', 'MAN_1M0', 'MAN_1M1', 'MAN_1M2',
-    'MAN_1M3', 'MAN_2', 'MAN_3'
+    'MAN_1M3', 'MAN_1', 'MAN_2', 'MAN_3'
 ];
 
 const builtinPalettes = [

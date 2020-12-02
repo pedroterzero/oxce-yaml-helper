@@ -414,6 +414,8 @@ export class typedProperties {
             if (links.find(item => item === '_numeric_')) {
                 numeric = true;
                 links = links.filter(item => item !== '_numeric_');
+                // also remove from typeLinks itself
+                typeLinks[link] = links;
             }
 
             // TODO what if there is more?
