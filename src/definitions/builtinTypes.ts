@@ -45,6 +45,7 @@ export const builtinResourceIds: {[key: string]: idRange} = {
     'craftWeapons.sprite': intIconIds,
     'facilities.spriteFacility': basebitsIds,
     'items.bigSprite': bigSpriteIds,
+    'items.bulletSprite': [-1, 9],
     'items.explosionHitSound': soundIds,
     'items.fireSound': soundIds,
     'items.floorSprite': floorSpriteIds,

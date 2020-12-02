@@ -1,6 +1,6 @@
-import { typeLinks } from "./definitions/typeLinks";
+import { typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { logger } from "./logger";
-import { RuleType } from "./rulesetTree";
+import { Match, RuleType } from "./rulesetTree";
 
 type typePropertyHints = {
     [key: string]: string[]
@@ -18,7 +18,7 @@ type typePropertyLink = {
 }
 
 
-type logicMethod = (key: string, ruleType: RuleType) => LogicOverride[];
+type logicMethod = (key: string, path: string, ruleType: RuleType | Match) => LogicOverride[];
 
 type logicOverrides = {
     [key: string]: logicMethod;
@@ -160,12 +160,16 @@ export class typedProperties {
     // fully built from typeLinks now
     private static typeProperties: typeProperties = {};
 
-    private static logicOverrides: logicOverrides = {
-        'crafts.sprite': typedProperties.craftsSpriteLogic,
-        'craftWeapons.sprite': typedProperties.craftWeaponsSpriteLogic,
-        'items.bulletSprite': typedProperties.bulletSpriteLogic,
+    // ATTENTION: when adding logic here, it also needs to be happen when checking references
+    private static metadataLogicOverrides: logicOverrides = {
         'items.hitAnimation':  typedProperties.hitAnimationLogic,
     }
+
+    private static logicOverrides: logicOverrides = Object.assign({}, typedProperties.metadataLogicOverrides, {
+        'crafts.sprite': typedProperties.typeLinksLogic,
+        'craftWeapons.sprite': typedProperties.typeLinksLogic,
+        'items.bulletSprite': typedProperties.typeLinksLogic,
+    });
 
     private static metadataFields: metadataFields = {
         'items': ['damageType'],
@@ -254,24 +258,42 @@ export class typedProperties {
         return link[sourceRuleType.key].target === ruleType;
     }
 
-    public static checkForLogicOverrides(key: string, sourceRuleType: RuleType | undefined): LogicOverride[] {
+    public static checkForMetadataLogicOverrides(reference: Match): LogicOverride[] | undefined {
+        if (reference.path in this.metadataLogicOverrides) {
+            return this.checkForLogicOverrides(reference);
+        }
+
+        return;
+    }
+
+    public static checkForLogicOverrides(reference: Match, dummy?: undefined): LogicOverride[];
+    public static checkForLogicOverrides(key: string, sourceRuleType: RuleType | undefined): LogicOverride[];
+    public static checkForLogicOverrides(param: string | Match, sourceRuleType: RuleType | undefined): LogicOverride[] {
+        if (typeof param === 'object') { // reference
+            return this.getLogicOverrides(param.key, param.path, param);
+        }
+
+        const key = param as string;
+
         if (!sourceRuleType) {
             return [this.getBaseOverride(key)];
         }
 
-        const fullType = sourceRuleType.type + '.' + sourceRuleType.key;
+        return this.getLogicOverrides(key, sourceRuleType.type + '.' + sourceRuleType.key, sourceRuleType);
+    }
 
-        if (!(fullType in this.logicOverrides)) {
+    private static getLogicOverrides(key: string, path: string, reference: Match | RuleType): LogicOverride[] {
+        if (!(path in this.logicOverrides)) {
             return [this.getBaseOverride(key)];
         }
 
-        const overrides = this.logicOverrides[fullType].bind(this)(key, sourceRuleType);
+        const overrides = this.logicOverrides[path].bind(this)(key, path, reference);
         for (const override of overrides) {
             if (key !== override.key) {
-                logger.debug(`Overriding key for ${fullType} from ${key} to ${override.key}`);
+                logger.debug(`Overriding key for ${path} from ${key} to ${override.key}`);
             }
             if (override.target) {
-                logger.debug(`Overriding target type for ${fullType}=${key} to ${override.target}`);
+                logger.debug(`Overriding target type for ${path}=${key} to ${override.target}`);
             }
         }
 
@@ -285,35 +307,27 @@ export class typedProperties {
         };
     }
 
-    private static bulletSpriteLogic(key: string): LogicOverride[] {
-        const override = this.getBaseOverride(key);
-        override.key = (parseInt(key) * 35).toString();
-        return [override];
+    /**
+     * Makes it possible to use the same logic as is used in the reference checker from typeLinks without writing 'extra' code
+     * @param key
+     * @param path
+     */
+    private static typeLinksLogic(key: string, path: string): LogicOverride[] {
+        const targets = typeLinks[path];
+        const keys = typeLinksPossibleKeys[path](key).filter(key => !['_all_', '_any_'].includes(key));
+
+        const overrides: LogicOverride[] = [];
+        for (const key in targets) {
+            overrides.push({
+                key: keys[key],
+                target: targets[key]
+            });
+        }
+
+        return overrides;
     }
 
-    private static craftsSpriteLogic(key: string): LogicOverride[] {
-        const dogfightOverride = typedProperties.getBaseOverride(key);
-        dogfightOverride.key = (parseInt(key) + 11).toString();
-
-        const basebitsOverride = typedProperties.getBaseOverride(key);
-        basebitsOverride.target = 'extraSprites.BASEBITS.PCK.files';
-        basebitsOverride.key = (parseInt(key) + 33).toString();
-
-        return [typedProperties.getBaseOverride(key), dogfightOverride, basebitsOverride];
-    }
-
-    private static craftWeaponsSpriteLogic(key: string): LogicOverride[] {
-        const override = typedProperties.getBaseOverride(key);
-        override.key = (parseInt(key) + 5).toString();
-
-        const basebitsOverride = typedProperties.getBaseOverride(key);
-        basebitsOverride.target = 'extraSprites.BASEBITS.PCK.files';
-        basebitsOverride.key = (parseInt(key) + 48).toString();
-
-        return [override, basebitsOverride];
-    }
-
-    private static hitAnimationLogic(key: string, ruleType: RuleType): LogicOverride[] {
+    private static hitAnimationLogic(key: string, _path: string, ruleType: RuleType | Match): LogicOverride[] {
         const override = typedProperties.getBaseOverride(key);
 
         if (!ruleType?.metadata) {

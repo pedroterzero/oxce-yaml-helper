@@ -8,6 +8,7 @@ import { stringTypes } from "./definitions/stringTypes";
 import { rulesetResolver } from "./extension";
 import { logger } from "./logger";
 import { typeHintMessages } from "./definitions/typeHintMessages";
+import { typedProperties } from "./typedProperties";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -223,6 +224,12 @@ export class RulesetDefinitionChecker {
      * @param lookup
      */
     private checkForCorrectTarget(ref: Match, possibleKeys: string[], lookup: TypeLookup) {
+        // TODO check if we still need this with the new logic checker?
+        const override = this.checkForLogicOverrides(ref, lookup);
+        if (typeof override !== 'undefined') {
+            return override;
+        }
+
         let add = false;
         if (ref.path in typeLinks) {
             add = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
@@ -237,6 +244,23 @@ export class RulesetDefinitionChecker {
         }
 
         return add;
+    }
+
+    private checkForLogicOverrides (ref: Match, lookup: TypeLookup) {
+        const overrides = typedProperties.checkForMetadataLogicOverrides(ref);
+        if (overrides) {
+            for (const override of overrides) {
+                if (override.target) {
+                    return this.checkForTypeLinkMatch([override.target], [override.key], lookup);
+                }
+
+                // TODO handle key overrides?
+            }
+
+            return false;
+        }
+
+        return;
     }
 
     private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
