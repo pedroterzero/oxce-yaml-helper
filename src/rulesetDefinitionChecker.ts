@@ -29,6 +29,7 @@ export class RulesetDefinitionChecker {
     ];
 
     private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
+    private typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
 
     private ignoreTypeValues: {[key: string]: string[]} = {
         'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
@@ -206,10 +207,14 @@ export class RulesetDefinitionChecker {
     }
 
     private getPossibleKeys(ref: Match) {
-        const possibleKeys = [ref.key];
+        let possibleKeys = [ref.key];
 
         if (ref.path === 'armors.spriteInv') {
             possibleKeys.push(ref.key + '.SPK');
+        }
+
+        if (ref.path === 'craftWeapons.sprite') {
+            possibleKeys = [ref.key + 5/*, ref.key + 48*/];
         }
 
         return possibleKeys;
@@ -227,12 +232,10 @@ export class RulesetDefinitionChecker {
             add = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
         } else {
             // regex match
-            for (const type in typeLinks) {
-                if (type.startsWith('/') && type.endsWith('/')) {
-                    const regex = new RegExp(type.slice(1, -1));
-                    if (regex.exec(ref.path)) {
-                        add = this.checkForTypeLinkMatch(typeLinks[type], possibleKeys, lookup);
-                    }
+            for (const type in this.typeLinkRegexes) {
+                const regex = this.typeLinkRegexes[type].regex;
+                if (regex.exec(ref.path)) {
+                    add = this.checkForTypeLinkMatch(this.typeLinkRegexes[type].values, possibleKeys, lookup);
                 }
             }
         }
@@ -342,6 +345,15 @@ export class RulesetDefinitionChecker {
                 this.builtinTypeRegexes.push({
                     regex: new RegExp(type.slice(1, -1)),
                     values: builtinTypes[type]
+                });
+            }
+        }
+
+        for (const type in typeLinks) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.typeLinkRegexes.push({
+                    regex: new RegExp(type.slice(1, -1)),
+                    values: typeLinks[type]
                 });
             }
         }

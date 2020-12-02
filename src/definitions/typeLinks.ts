@@ -1,6 +1,11 @@
-const ftaTypeLinks: {[key: string]: string[]} = {
-    'alienDeployments.battleScript': ['battleScripts'], // FtA
-    'battleScripts.commands[].unitSet': ['units'], // FtA part
+type TypeLinks = {
+    [key: string]: string[]
+    // [key: string]: (string | [string, number])[];
+};
+
+const ftaTypeLinks: TypeLinks = {
+    'alienDeployments.battleScript': ['battleScripts'],
+    'battleScripts.commands[].unitSet': ['units'],
     'covertOperations.successEvent': ['events'],
     'covertOperations.failureEvent': ['events'],
     'covertOperations.progressEvent': ['events'],
@@ -28,7 +33,39 @@ const ftaTypeLinks: {[key: string]: string[]} = {
     'units.altRecoveredUnit': ['units']
 };
 
-export const typeLinks: {[key: string]: string[]} = Object.assign(ftaTypeLinks, {
+const spriteTypeLinks: TypeLinks = {
+    'crafts.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files'],
+    // 'craftWeapons.sprite': ['_numeric_', ['extraSprites.INTICON.PCK.files', 5], ['extraSprites.BASEBITS.PCK.files', 48]]
+    // 'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files||5', 'extraSprites.BASEBITS.PCK.files||48']
+    'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files'],
+    'facilities.spriteFacility': ['_numeric_', 'extraSprites.BASEBITS.PCK.files'],
+    'items.bigSprite': ['_numeric_', 'extraSprites.BIGOBS.PCK.files'],
+    'items.floorSprite': ['_numeric_', 'extraSprites.FLOOROB.PCK.files'],
+    'items.handSprite': ['_numeric_', 'extraSprites.HANDOB.PCK.files'],
+    'items.hitAnimation': ['_numeric_', 'extraSprites.SMOKE.PCK.files'],
+    'items.meleeAnimation': ['_numeric_', 'extraSprites.HIT.PCK.files'],
+    'items.specialIconSprite': ['_numeric_', 'extraSprites.SPICONS.DAT.files'],
+};
+
+const BATTLE_CAT = 'extraSounds.BATTLE.CAT.files';
+const soundTypeLinks: TypeLinks = {
+    'items.explosionHitSound': ['_numeric_', BATTLE_CAT],
+    'items.fireSound': ['_numeric_', BATTLE_CAT],
+    'items.hitSound': ['_numeric_', BATTLE_CAT],
+    'items.hitMissSound': ['_numeric_', BATTLE_CAT],
+    'items.meleeHitSound': ['_numeric_', BATTLE_CAT],
+    'items.meleeSound': ['_numeric_', BATTLE_CAT],
+    'items.psiSound': ['_numeric_', BATTLE_CAT],
+    'items.psiMissSound': ['_numeric_', BATTLE_CAT],
+    'items.reloadSound': ['_numeric_', BATTLE_CAT],
+    'units.aggroSound': ['_numeric_', BATTLE_CAT],
+    'units.berserkSound': ['_numeric_', BATTLE_CAT],
+    'units.deathSound': ['_numeric_', BATTLE_CAT],
+    'units.moveSound': ['_numeric_', BATTLE_CAT],
+    'units.panicSound': ['_numeric_', BATTLE_CAT],
+};
+
+export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLinks, soundTypeLinks, {
     'alienDeployments.abortCutscene': ['cutscenes'],
     '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': ['alienDeployments'],
     'alienDeployments.briefing.cutscene': ['cutscenes'],

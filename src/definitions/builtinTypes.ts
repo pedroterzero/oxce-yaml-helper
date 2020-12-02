@@ -51,6 +51,7 @@ export const builtinResourceIds: {[key: string]: idRange} = {
     'items.handSprite': handSpriteIds,
     'items.hitAnimation': smokeIds,
     'items.hitSound': soundIds,
+    'items.meleeAnimation': [0, 3],
     'items.meleeSound': soundIds,
     'items.meleeHitSound': soundIds,
     'items.specialIconSprite': [-1, 2],
