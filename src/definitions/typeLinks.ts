@@ -154,7 +154,7 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
     'items.zombieUnitByArmorFemale.value': ['units'],
     'items.zombieUnitByArmorMale.key': ['armors'],
     'items.zombieUnitByArmorMale.value': ['units'],
-    'items.zombieUnitByType.key': ['units'],
+    'items.zombieUnitByType.key': ['_any_', 'soldiers', 'units'], // match any of these
     'items.zombieUnitByType.value': ['units'],
     'manufacture.producedItems': ['items'],
     'manufacture.randomProducedItems[][]': ['items'],

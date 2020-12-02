@@ -240,7 +240,7 @@ export class RulesetDefinitionChecker {
     }
 
     private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
-        const typeLinks = this.processTypeLinks(rawTypeLinks, possibleKeys);
+        const {matchType, typeValues: typeLinks} = this.processTypeLinks(rawTypeLinks, possibleKeys);
 
         const matches: {[key: string]: boolean} = {};
         for (const target in typeLinks) {
@@ -255,30 +255,37 @@ export class RulesetDefinitionChecker {
             }
         }
 
-        // if we have found the number of matches we expect (1 per target typeLink), it's OK
-        return Object.values(matches).length !== Object.values(typeLinks).length;
+        if (matchType === 'any') {
+            // if we have found any match, it's OK
+            return Object.values(matches).length === 0;
+        } else {
+            // if we have found the number of matches we expect (1 per target typeLink), it's OK
+            return Object.values(matches).length !== Object.values(typeLinks).length;
+        }
     }
 
     private processTypeLinks(rawTypeLinks: string[], rawPossibleKeys: string[]) {
-        let possibleKeys = rawPossibleKeys;
-        const matchType = possibleKeys.includes('_all_') ? 'all' : 'any';
-        possibleKeys = possibleKeys.filter(key => !['_any_', '_all_'].includes(key));
+        const keyMatchType = rawPossibleKeys.includes('_all_') ? 'all' : 'any';
+        const possibleKeys = rawPossibleKeys.filter(key => !['_any_', '_all_'].includes(key));
 
-        if (matchType === 'all' && rawTypeLinks.length !== possibleKeys.length) {
-            logger.error(`Number of typeLinks fields (${JSON.stringify(rawTypeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
+        const matchType = rawTypeLinks.includes('_any_') ? 'any' : 'all';
+        const typeLinks = rawTypeLinks.filter(key => !['_any_', '_all_'].includes(key));
+
+        if (keyMatchType === 'all' && typeLinks.length !== possibleKeys.length) {
+            logger.error(`Number of typeLinks fields (${JSON.stringify(typeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
             // throw new Error(`Number of typeLinks fields (${JSON.stringify(rawTypeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
         }
 
         const typeValues: {[key: string]: string[]} = {};
-        for (const index in rawTypeLinks) {
-            if (matchType === 'all') {
-                typeValues[rawTypeLinks[index]] = [possibleKeys[index]];
+        for (const index in typeLinks) {
+            if (keyMatchType === 'all') {
+                typeValues[typeLinks[index]] = [possibleKeys[index]];
             } else {
-                typeValues[rawTypeLinks[index]] = possibleKeys;
+                typeValues[typeLinks[index]] = possibleKeys;
             }
         }
 
-        return typeValues;
+        return {matchType, typeValues};
     }
 
     private addReferenceDiagnostic(ref: Match, diagnostics: Diagnostic[]) {
