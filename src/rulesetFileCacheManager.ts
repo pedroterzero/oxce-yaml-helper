@@ -67,15 +67,12 @@ export class RulesetFileCacheManager {
             const ret: ParsedRuleset = {
                 translations: 'translations' in parsed ? parsed.translations : [],
             };
-            if ('definitions' in parsed) {
-                ret.definitions = parsed.definitions;
-            }
-            if ('references' in parsed) {
-                ret.references = parsed.references;
-            }
-            if ('variables' in parsed) {
-                ret.variables = parsed.variables;
-            }
+            (['definitions', 'references', 'variables', 'logicData']).forEach(key => {
+                const mykey = key as keyof ParsedRuleset;
+                if (mykey in parsed) {
+                    ret[mykey] = parsed[key];
+                }
+            });
 
             return ret;
         } else if (result && result.metadata?.hash !== hash) {

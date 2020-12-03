@@ -4,6 +4,7 @@ import { BaseLogic } from "./baseLogic";
 
 export class MapScriptsLogic extends BaseLogic {
     private additionalFields = [
+        // 'terrains.mapBlocks[].groups' // need terrains.script too
         'terrains' // we need to know the terrain data to find existing groups
     ];
 

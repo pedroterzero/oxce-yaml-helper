@@ -48,22 +48,22 @@ const spriteTypeLinks: TypeLinks = {
     'items.specialIconSprite': ['_numeric_', 'extraSprites.SPICONS.DAT.files'],
 };
 
-const BATTLE_CAT = 'extraSounds.BATTLE.CAT.files';
+const BATTLE_CAT = ['_numeric_', 'extraSounds.BATTLE.CAT.files'];
 const soundTypeLinks: TypeLinks = {
-    'items.explosionHitSound': ['_numeric_', BATTLE_CAT],
-    'items.fireSound': ['_numeric_', BATTLE_CAT],
-    'items.hitSound': ['_numeric_', BATTLE_CAT],
-    'items.hitMissSound': ['_numeric_', BATTLE_CAT],
-    'items.meleeHitSound': ['_numeric_', BATTLE_CAT],
-    'items.meleeSound': ['_numeric_', BATTLE_CAT],
-    'items.psiSound': ['_numeric_', BATTLE_CAT],
-    'items.psiMissSound': ['_numeric_', BATTLE_CAT],
-    'items.reloadSound': ['_numeric_', BATTLE_CAT],
-    'units.aggroSound': ['_numeric_', BATTLE_CAT],
-    'units.berserkSound': ['_numeric_', BATTLE_CAT],
-    'units.deathSound': ['_numeric_', BATTLE_CAT],
-    'units.moveSound': ['_numeric_', BATTLE_CAT],
-    'units.panicSound': ['_numeric_', BATTLE_CAT],
+    'items.explosionHitSound': BATTLE_CAT,
+    'items.fireSound': BATTLE_CAT,
+    'items.hitSound': BATTLE_CAT,
+    'items.hitMissSound': BATTLE_CAT,
+    'items.meleeHitSound': BATTLE_CAT,
+    'items.meleeSound': BATTLE_CAT,
+    'items.psiSound': BATTLE_CAT,
+    'items.psiMissSound': BATTLE_CAT,
+    'items.reloadSound': BATTLE_CAT,
+    'units.aggroSound': BATTLE_CAT,
+    'units.berserkSound': BATTLE_CAT,
+    'units.deathSound': BATTLE_CAT,
+    'units.moveSound': BATTLE_CAT,
+    'units.panicSound': BATTLE_CAT,
 };
 
 export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLinks, soundTypeLinks, {
@@ -232,7 +232,7 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
 
 // add numeric fields from logic handler
 for (const field of (new LogicHandler).getNumericFields()) {
-    typeLinks[field] = ['_dummy_'];
+    typeLinks[field] = ['_numeric_', '_dummy_'];
 }
 
 export const typeLinksPossibleKeys: {[key: string]: (key: string) => string[]} = {

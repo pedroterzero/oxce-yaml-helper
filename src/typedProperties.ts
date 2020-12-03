@@ -425,10 +425,8 @@ export class typedProperties {
                 continue;
             }
 
-            const newLink = link.split('.').slice(0, -1).join('.');
-            const key = link.split('.').slice(-1).join('.');
-            // const newLink = link.split('.').slice(0, 1).join('.');
-            // const key = link.split('.').slice(1).join('.');
+            const newLink = link.split('.').slice(0, 1).join('.');
+            const key = link.split('.').slice(1).join('.');
 
             // console.log(`new link ${newLink} new key ${key}`);
             if (!(newLink in this.typeProperties)) {
