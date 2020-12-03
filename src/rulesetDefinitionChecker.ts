@@ -112,11 +112,9 @@ export class RulesetDefinitionChecker {
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
                 // can never match because the key simply does not exist for any type
-                    this.addReferenceDiagnostic(ref, diagnostics);
-            } else {
-                if (this.checkForCorrectTarget(ref, possibleKeys, lookup)) {
-                   this.addReferenceDiagnostic(ref, diagnostics);
-                }
+                this.addReferenceDiagnostic(ref, diagnostics);
+            } else if (this.checkForCorrectTarget(ref, possibleKeys, lookup)) {
+                this.addReferenceDiagnostic(ref, diagnostics);
             }
         }
     }
@@ -284,7 +282,7 @@ export class RulesetDefinitionChecker {
         return;
     }
     private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
-        if (typeLinks.includes('_dummy_')) {
+        if (rawTypeLinks.includes('_dummy_')) {
             // shortcut for dummy (custom logic)
             return false;
         }
@@ -299,7 +297,6 @@ export class RulesetDefinitionChecker {
                         if (target === result.type) {
                             matches[target] = true;
                         }
-(??)                        add = false;
                     }
                 }
             }

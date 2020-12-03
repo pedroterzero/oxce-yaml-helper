@@ -458,4 +458,12 @@ export class typedProperties {
     private static getAdditionalLogicPaths () {
         this.additionalLogicPaths = (new LogicHandler).getPaths();
     }
+
+    private static loadRegexes () {
+        for (const type in this.keyReferenceTypes) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.keyReferenceTypesRegexes.push(new RegExp(type.slice(1, -1)));
+            }
+        }
+    }
 }
