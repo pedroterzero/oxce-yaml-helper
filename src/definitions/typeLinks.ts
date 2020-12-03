@@ -33,7 +33,7 @@ const ftaTypeLinks: TypeLinks = {
     'units.altRecoveredUnit': ['units']
 };
 
-const spriteTypeLinks: TypeLinks = {
+export const spriteTypeLinks: TypeLinks = {
     'crafts.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
     'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
     'facilities.spriteFacility': ['_numeric_', 'extraSprites.BASEBITS.PCK.files'],
@@ -47,7 +47,7 @@ const spriteTypeLinks: TypeLinks = {
 };
 
 const BATTLE_CAT = 'extraSounds.BATTLE.CAT.files';
-const soundTypeLinks: TypeLinks = {
+export const soundTypeLinks: TypeLinks = {
     'items.explosionHitSound': ['_numeric_', BATTLE_CAT],
     'items.fireSound': ['_numeric_', BATTLE_CAT],
     'items.hitSound': ['_numeric_', BATTLE_CAT],

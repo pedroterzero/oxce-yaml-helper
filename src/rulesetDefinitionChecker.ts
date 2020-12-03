@@ -1,7 +1,7 @@
 import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from "vscode";
 import { DefinitionLookup, Match } from "./rulesetTree";
 import { ReferenceFile, TypeLookup } from "./workspaceFolderRuleset";
-import { typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
+import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
 import { ignoreTypes } from "./definitions/ignoreTypes";
 import { stringTypes } from "./definitions/stringTypes";
@@ -44,6 +44,8 @@ export class RulesetDefinitionChecker {
         'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
         'extraSounds': ['BATTLE.CAT'],
     };
+
+    private noWarnAboutIncorrectType = Object.keys(spriteTypeLinks).concat(Object.keys(soundTypeLinks));
 
     public constructor() {
         this.loadRegexes();
@@ -347,7 +349,7 @@ export class RulesetDefinitionChecker {
             }
         }
 
-        let message = messageFunction(ref, target);
+        let message = messageFunction.bind(this)(ref, target);
         if (ref.path in typeHintMessages) {
             message += `\nHint: ${typeHintMessages[ref.path](ref.key).trim()}`;
         }
@@ -365,6 +367,10 @@ export class RulesetDefinitionChecker {
     }
 
     private incorrectTypeMessage(ref: Match, target?: TypeMatchResult) {
+        if (this.noWarnAboutIncorrectType.includes(ref.path)) {
+            return this.nonexistantDefinitionMessage(ref);
+        }
+
         let message = `"${ref.key}" is an incorrect type for ${ref.path}.`;
         if (target) {
             // const expected = Object.keys(expected).length
