@@ -127,22 +127,28 @@ export class WorkspaceFolderRuleset {
      * @param sourceRuleType
      */
     public getDefinitionsByName(key: string, sourceRuleType: RuleType | undefined): DefinitionLookup[] {
-        const override = typedProperties.checkForLogicOverrides(key, sourceRuleType);
-        const finalKey = override.key;
+        const overrides = typedProperties.checkForLogicOverrides(key, sourceRuleType);
 
-        if (finalKey in this.definitionsLookup) {
-            const lookups = this.definitionsLookup[finalKey].filter(lookup => {
-                if (override.target) {
-                    return override.target === lookup.type;
-                } else {
-                    return typedProperties.isTargetForSourceRule(sourceRuleType, lookup.type);
+        let matchingLookups: DefinitionLookup[] = [];
+        for (const override of overrides) {
+            const finalKey = override.key;
+
+            if (finalKey in this.definitionsLookup) {
+                const lookups = this.definitionsLookup[finalKey].filter(lookup => {
+                    if (override.target) {
+                        return override.target === lookup.type;
+                    } else {
+                        return typedProperties.isTargetForSourceRule(sourceRuleType, lookup.type);
+                    }
+                });
+
+                if (lookups.length > 0) {
+                    matchingLookups = matchingLookups.concat(lookups);
                 }
-            });
-
-            return lookups;
+            }
         }
 
-        return [];
+        return matchingLookups;
     }
 
     private addRulesetFile(definitions: Definition[], sourceFile: Uri) {

@@ -1,7 +1,7 @@
 {
     "name": "oxc-yaml-helper",
-    "displayName": "OpenXcom (Extended) YAML Helper",
-    "description": "Provides go to definition support for OpenXcom (extended) mods, among other things",
+    "displayName": "OpenXcom Ruleset Linker",
+    "description": "This extension aims to turn Visual Studio code into an OpenXcom ruleset modding IDE. It links rulesets so you can easily navigate between linked rules. It checks for problems in the rulesets, and a lot of other things.",
     "version": "0.5.0-logic-alpha1",
     "author": {
         "name": "pedroterzero"
@@ -25,7 +25,7 @@
     "contributes": {
         "configuration": {
             "type": "object",
-            "title": "OpenXcom (Extended) YAML Helper",
+            "title": "OpenXcom Ruleset Linker",
             "properties": {
                 "oxcYamlHelper.ruleFilesPattern": {
                     "type": "string",

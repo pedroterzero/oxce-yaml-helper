@@ -21,7 +21,7 @@ const builtinArmorSprites = [
     'MAN_0F0', 'MAN_0F1', 'MAN_0F2', 'MAN_0F3', 'MAN_0M0',
     'MAN_0M1', 'MAN_0M2', 'MAN_0M3', 'MAN_1F0', 'MAN_1F1',
     'MAN_1F2', 'MAN_1F3', 'MAN_1M0', 'MAN_1M1', 'MAN_1M2',
-    'MAN_1M3', 'MAN_2', 'MAN_3'
+    'MAN_1M3', 'MAN_1', 'MAN_2', 'MAN_3'
 ];
 
 const builtinPalettes = [
@@ -45,12 +45,14 @@ export const builtinResourceIds: {[key: string]: idRange} = {
     'craftWeapons.sprite': intIconIds,
     'facilities.spriteFacility': basebitsIds,
     'items.bigSprite': bigSpriteIds,
+    'items.bulletSprite': [-1, 9],
     'items.explosionHitSound': soundIds,
     'items.fireSound': soundIds,
     'items.floorSprite': floorSpriteIds,
     'items.handSprite': handSpriteIds,
     'items.hitAnimation': smokeIds,
     'items.hitSound': soundIds,
+    'items.meleeAnimation': [0, 3],
     'items.meleeSound': soundIds,
     'items.meleeHitSound': soundIds,
     'items.specialIconSprite': [-1, 2],

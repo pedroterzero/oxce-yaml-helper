@@ -7,7 +7,6 @@ export const ignoreTypes = [
     'armors.scripts.hitUnit',
     'armors.scripts.recolorUnitSprite',
     'armors.scripts.selectUnitSprite',
-    'armors.spriteInv', // TODO: FIX THIS%
     'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
     'battleScripts.commands[].spawnBlocks', // FtA
     'battleScripts.commands[].type', // FtA

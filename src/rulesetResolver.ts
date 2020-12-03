@@ -334,7 +334,9 @@ export class RulesetResolver implements Disposable {
             rulesetTree.refresh(workspaceFolder);
         });
 
+        const start = new Date();
         this.validateReferences();
+        logger.debug(`rulesets validated, took ${((new Date()).getTime() - start.getTime()) / 1000}s`);
     }
 
     private validateReferences() {

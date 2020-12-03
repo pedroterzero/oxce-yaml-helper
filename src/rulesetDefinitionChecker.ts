@@ -1,7 +1,7 @@
 import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from "vscode";
 import { DefinitionLookup, Match } from "./rulesetTree";
 import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
-import { typeLinks } from "./definitions/typeLinks";
+import { typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
 import { ignoreTypes } from "./definitions/ignoreTypes";
 import { stringTypes } from "./definitions/stringTypes";
@@ -9,6 +9,8 @@ import { rulesetResolver } from "./extension";
 import { logger } from "./logger";
 import { FilesWithDiagnostics, LogicHandler } from "./logic/logicHandler";
 import { mergeAndConcat } from "merge-anything";
+import { typeHintMessages } from "./definitions/typeHintMessages";
+import { typedProperties } from "./typedProperties";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -31,6 +33,7 @@ export class RulesetDefinitionChecker {
     ];
 
     private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
+    private typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
 
     private ignoreTypeValues: {[key: string]: string[]} = {
         'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
@@ -108,6 +111,7 @@ export class RulesetDefinitionChecker {
 
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
+                // can never match because the key simply does not exist for any type
                     this.addReferenceDiagnostic(ref, diagnostics);
             } else {
                 if (this.checkForCorrectTarget(ref, possibleKeys, lookup)) {
@@ -227,13 +231,11 @@ export class RulesetDefinitionChecker {
     }
 
     private getPossibleKeys(ref: Match) {
-        const possibleKeys = [ref.key];
-
-        if (ref.path === 'armors.spriteInv') {
-            possibleKeys.push(ref.key + '.SPK');
+        if (ref.path in typeLinksPossibleKeys) {
+            return typeLinksPossibleKeys[ref.path](ref.key);
         }
 
-        return possibleKeys;
+        return [ref.key];
     }
 
     /**
@@ -243,17 +245,21 @@ export class RulesetDefinitionChecker {
      * @param lookup
      */
     private checkForCorrectTarget(ref: Match, possibleKeys: string[], lookup: TypeLookup) {
+        // TODO check if we still need this with the new logic checker?
+        const override = this.checkForLogicOverrides(ref, lookup);
+        if (typeof override !== 'undefined') {
+            return override;
+        }
+
         let add = false;
         if (ref.path in typeLinks) {
             add = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
         } else {
             // regex match (TODO build regexes in advance)
-            for (const type in typeLinks) {
-                if (type.startsWith('/') && type.endsWith('/')) {
-                    const regex = new RegExp(type.slice(1, -1));
-                    if (regex.exec(ref.path)) {
-                        add = this.checkForTypeLinkMatch(typeLinks[type], possibleKeys, lookup);
-                    }
+            for (const type in this.typeLinkRegexes) {
+                const regex = this.typeLinkRegexes[type].regex;
+                if (regex.exec(ref.path)) {
+                    add = this.checkForTypeLinkMatch(this.typeLinkRegexes[type].values, possibleKeys, lookup);
                 }
             }
         }
@@ -261,23 +267,75 @@ export class RulesetDefinitionChecker {
         return add;
     }
 
-    private checkForTypeLinkMatch(typeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
+    private checkForLogicOverrides (ref: Match, lookup: TypeLookup) {
+        const overrides = typedProperties.checkForMetadataLogicOverrides(ref);
+        if (overrides) {
+            for (const override of overrides) {
+                if (override.target) {
+                    return this.checkForTypeLinkMatch([override.target], [override.key], lookup);
+                }
+
+                // TODO handle key overrides?
+            }
+
+            return false;
+        }
+
+        return;
+    }
+    private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
         if (typeLinks.includes('_dummy_')) {
             // shortcut for dummy (custom logic)
             return false;
         }
 
-        let add = true;
-        for (const key of possibleKeys) {
-            if (key in lookup) {
-                for (const result of lookup[key]) {
-                    if (typeLinks.indexOf(result.type) !== -1) {
-                        add = false;
+        const {matchType, typeValues: typeLinks} = this.processTypeLinks(rawTypeLinks, possibleKeys);
+
+        const matches: {[key: string]: boolean} = {};
+        for (const target in typeLinks) {
+            for (const key of typeLinks[target]) {
+                if (key in lookup) {
+                    for (const result of lookup[key]) {
+                        if (target === result.type) {
+                            matches[target] = true;
+                        }
+(??)                        add = false;
                     }
                 }
             }
         }
-        return add;
+
+        if (matchType === 'any') {
+            // if we have found any match, it's OK
+            return Object.values(matches).length === 0;
+        } else {
+            // if we have found the number of matches we expect (1 per target typeLink), it's OK
+            return Object.values(matches).length !== Object.values(typeLinks).length;
+        }
+    }
+
+    private processTypeLinks(rawTypeLinks: string[], rawPossibleKeys: string[]) {
+        const keyMatchType = rawPossibleKeys.includes('_all_') ? 'all' : 'any';
+        const possibleKeys = rawPossibleKeys.filter(key => !['_any_', '_all_'].includes(key));
+
+        const matchType = rawTypeLinks.includes('_any_') ? 'any' : 'all';
+        const typeLinks = rawTypeLinks.filter(key => !['_any_', '_all_'].includes(key));
+
+        if (keyMatchType === 'all' && typeLinks.length !== possibleKeys.length) {
+            logger.error(`Number of typeLinks fields (${JSON.stringify(typeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
+            // throw new Error(`Number of typeLinks fields (${JSON.stringify(rawTypeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
+        }
+
+        const typeValues: {[key: string]: string[]} = {};
+        for (const index in typeLinks) {
+            if (keyMatchType === 'all') {
+                typeValues[typeLinks[index]] = [possibleKeys[index]];
+            } else {
+                typeValues[typeLinks[index]] = possibleKeys;
+            }
+        }
+
+        return {matchType, typeValues};
     }
 
     private addReferenceDiagnostic(ref: Match, diagnostics: Diagnostic[]) {
@@ -304,6 +362,10 @@ export class RulesetDefinitionChecker {
         let message = `"${ref.key}" does not exist (${ref.path})`;
         if (ref.metadata && ref.metadata.type) {
             message += ` for ${ref.metadata.type}`;
+        }
+
+        if (ref.path in typeHintMessages) {
+            message += `\nHint: ${typeHintMessages[ref.path](ref.key).trim()}`;
         }
 
         diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
@@ -368,6 +430,15 @@ export class RulesetDefinitionChecker {
                 this.builtinTypeRegexes.push({
                     regex: new RegExp(type.slice(1, -1)),
                     values: builtinTypes[type]
+                });
+            }
+        }
+
+        for (const type in typeLinks) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.typeLinkRegexes.push({
+                    regex: new RegExp(type.slice(1, -1)),
+                    values: typeLinks[type]
                 });
             }
         }
