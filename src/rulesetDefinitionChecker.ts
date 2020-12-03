@@ -1,7 +1,7 @@
 import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from "vscode";
 import { DefinitionLookup, Match } from "./rulesetTree";
 import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
-import { typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
+import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
 import { ignoreTypes } from "./definitions/ignoreTypes";
 import { stringTypes } from "./definitions/stringTypes";
@@ -21,6 +21,13 @@ type DuplicateMatches = {
     definition: DefinitionLookup,
     duplicates: DefinitionLookup[]
 };
+
+type TypeMatchResult = {
+    match: boolean,
+    expected: string[],
+    found: string[]
+};
+
 export class RulesetDefinitionChecker {
     private problemsByPath: {[key: string]: number} = {};
     private duplicatesPerFile: {[key: string]: DuplicateMatches[]} = {};
@@ -39,6 +46,8 @@ export class RulesetDefinitionChecker {
         'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
         'extraSounds': ['BATTLE.CAT'],
     };
+
+    private noWarnAboutIncorrectType = Object.keys(spriteTypeLinks).concat(Object.keys(soundTypeLinks));
 
     private logicHandler = new LogicHandler;
 
@@ -112,9 +121,13 @@ export class RulesetDefinitionChecker {
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
                 // can never match because the key simply does not exist for any type
-                this.addReferenceDiagnostic(ref, diagnostics);
-            } else if (this.checkForCorrectTarget(ref, possibleKeys, lookup)) {
-                this.addReferenceDiagnostic(ref, diagnostics);
+                this.addReferenceDiagnostic(ref, diagnostics, this.nonexistantDefinitionMessage);
+            } else {
+                const result = this.checkForCorrectTarget(ref, possibleKeys, lookup);
+
+                if (result && !result.match) {
+                    this.addReferenceDiagnostic(ref, diagnostics, this.incorrectTypeMessage, result);
+                }
             }
         }
     }
@@ -249,20 +262,20 @@ export class RulesetDefinitionChecker {
             return override;
         }
 
-        let add = false;
+        let retval;
         if (ref.path in typeLinks) {
-            add = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
+            retval = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
         } else {
-            // regex match (TODO build regexes in advance)
+            // regex match
             for (const type in this.typeLinkRegexes) {
                 const regex = this.typeLinkRegexes[type].regex;
                 if (regex.exec(ref.path)) {
-                    add = this.checkForTypeLinkMatch(this.typeLinkRegexes[type].values, possibleKeys, lookup);
+                    retval = this.checkForTypeLinkMatch(this.typeLinkRegexes[type].values, possibleKeys, lookup);
                 }
             }
         }
 
-        return add;
+        return retval;
     }
 
     private checkForLogicOverrides (ref: Match, lookup: TypeLookup) {
@@ -281,21 +294,29 @@ export class RulesetDefinitionChecker {
 
         return;
     }
-    private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
+
+    private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup): TypeMatchResult {
         if (rawTypeLinks.includes('_dummy_')) {
             // shortcut for dummy (custom logic)
-            return false;
+            return {match: false, expected: [], found: []};
         }
 
         const {matchType, typeValues: typeLinks} = this.processTypeLinks(rawTypeLinks, possibleKeys);
 
         const matches: {[key: string]: boolean} = {};
+        // store what we expect
+        const expected: {[key: string]: boolean} = {};
+        // store what we found
+        const found: {[key: string]: boolean} = {};
         for (const target in typeLinks) {
+            expected[target] = true;
             for (const key of typeLinks[target]) {
                 if (key in lookup) {
                     for (const result of lookup[key]) {
                         if (target === result.type) {
                             matches[target] = true;
+                        } else {
+                            found[result.type] = true;
                         }
                     }
                 }
@@ -304,10 +325,10 @@ export class RulesetDefinitionChecker {
 
         if (matchType === 'any') {
             // if we have found any match, it's OK
-            return Object.values(matches).length === 0;
+            return {match: Object.values(matches).length > 0, expected: Object.keys(expected), found: Object.keys(found)};
         } else {
             // if we have found the number of matches we expect (1 per target typeLink), it's OK
-            return Object.values(matches).length !== Object.values(typeLinks).length;
+            return {match: Object.values(matches).length === Object.values(typeLinks).length, expected: Object.keys(expected), found: Object.keys(found)};
         }
     }
 
@@ -335,7 +356,7 @@ export class RulesetDefinitionChecker {
         return {matchType, typeValues};
     }
 
-    private addReferenceDiagnostic(ref: Match, diagnostics: Diagnostic[]) {
+    private addReferenceDiagnostic(ref: Match, diagnostics: Diagnostic[], messageFunction: (ref: Match, target?: TypeMatchResult) => string, target?: TypeMatchResult) {
         if (!ref.rangePosition) {
             throw new Error('rangePosition missing');
         }
@@ -356,16 +377,41 @@ export class RulesetDefinitionChecker {
             }
         }
 
-        let message = `"${ref.key}" does not exist (${ref.path})`;
-        if (ref.metadata && ref.metadata.type) {
-            message += ` for ${ref.metadata.type}`;
-        }
-
+        let message = messageFunction.bind(this)(ref, target);
         if (ref.path in typeHintMessages) {
             message += `\nHint: ${typeHintMessages[ref.path](ref.key).trim()}`;
         }
 
         diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
+    }
+
+    private nonexistantDefinitionMessage(ref: Match) {
+        let message = `"${ref.key}" does not exist (${ref.path})`;
+        if (ref.metadata && ref.metadata.type) {
+            message += ` for ${ref.metadata.type}`;
+        }
+
+        return message;
+    }
+
+    private incorrectTypeMessage(ref: Match, target?: TypeMatchResult) {
+        if (this.noWarnAboutIncorrectType.includes(ref.path)) {
+            return this.nonexistantDefinitionMessage(ref);
+        }
+
+        let message = `"${ref.key}" is an incorrect type for ${ref.path}.`;
+        if (target) {
+            // const expected = Object.keys(expected).length
+            message += ` Expected`;
+            if (target.expected.length === 1) {
+                message += ` "${target.expected[0]}"`;
+            } else {
+                message += ` one of "${target.expected.join('", "')}"`;
+            }
+            message += `, found: "${target.found.join('", "')}"`;
+        }
+
+        return message;
     }
 
     private typeExists(ref: Match): boolean {
@@ -428,6 +474,8 @@ export class RulesetDefinitionChecker {
                     regex: new RegExp(type.slice(1, -1)),
                     values: builtinTypes[type]
                 });
+
+                delete builtinResourceIds[type];
             }
         }
 
@@ -437,6 +485,8 @@ export class RulesetDefinitionChecker {
                     regex: new RegExp(type.slice(1, -1)),
                     values: typeLinks[type]
                 });
+
+                delete typeLinks[type];
             }
         }
     }
