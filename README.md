@@ -48,5 +48,5 @@ Any duplicate definitions should then be shown in the problems view.
 
 ## Credits
 - Inspired (that's not really the right word) by https://github.com/shanehofstetter/rails-i18n-vscode
-- @Finnik723 and @Filip-H for testing, suggestions/ideas and helping out on ruleset linking rules.
+- [Finnik](https://github.com/Finnik723) and [Filip H](https://github.com/Filip-H) for testing, suggestions/ideas and helping out on ruleset linking rules.
 - Everyone else that has anything to do with OpenXCOM or OXCE
