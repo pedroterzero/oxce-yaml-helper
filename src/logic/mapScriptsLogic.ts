@@ -25,7 +25,6 @@ export class MapScriptsLogic extends BaseLogic {
 
     protected generic(entries: LogicDataEntry[]) {
         this.storeMapblockGroups(entries);
-        console.log('generic');
     }
 
     // public checkRelationLogic () {
