@@ -173,6 +173,7 @@ export class typedProperties {
 
     private static metadataFields: metadataFields = {
         'items': ['damageType'],
+        'extraSprites.Projectiles': ['height', 'subY'],
     }
 
     private static storeVariables: {[key: string]: Record<string, unknown>} = {

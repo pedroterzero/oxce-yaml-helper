@@ -305,11 +305,18 @@ export class RulesetRecursiveKeyRetriever {
         for (const ruleProperty of ruleProperties.items) {
             if (ruleProperty.key.value === typeKey) {
                 for (const entry of ruleProperty.value.items) {
-                    matches.push({
+                    const metadata = this.addMetadata(ruleType.key.value + '.' + propertiesFlat.type, ruleProperties);
+                    const match: Match = {
                         key: entry.key.value,
                         path: ruleType.key.value + '.' + propertiesFlat.type + '.' + typeKey,
                         range: entry.key.range,
-                    });
+                    };
+
+                    if (metadata) {
+                        match.metadata = metadata;
+                    }
+
+                    matches.push(match);
                 }
             }
         }

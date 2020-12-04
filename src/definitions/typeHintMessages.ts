@@ -11,7 +11,7 @@ export const typeHintMessages: {[key: string]: (value: string) => string} = {
         - And one in BASEBITS.PCK with spriteID ${value + 48} (${value} + 48)
     `,
     'items.bulletSprite': (value) => `
-        this needs an sprite in Projectiles with spriteID ${parseInt(value) * 35} (${value} * 35)
+        this needs a sprite in Projectiles with spriteID ${parseInt(value) * 35} (${value} * 35)
         (see documentation by hovering over "bulletSprite:")
     `,
     'items.hitAnimation': () => `
