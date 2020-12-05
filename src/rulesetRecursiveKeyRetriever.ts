@@ -3,6 +3,7 @@ import { Match, RuleType } from "./rulesetTree";
 import { Scalar, YAMLMap, YAMLSeq } from "yaml/types";
 import { JsonObject, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { typedProperties } from "./typedProperties";
+import * as dotProp from 'dot-prop';
 
 type Entry = YAMLSeq | YAMLDocumentItem | string | Scalar;
 
@@ -268,6 +269,7 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private addMetadata(path: string, entry: YAMLSeq): Record<string, unknown> | undefined {
+        // TODO we seem to come here too many times, check with one item (properties.type === 'STR_12GAUGE_NON_LETHAL_X8')
         const fields = typedProperties.getMetadataFieldsForType(path, entry.toJSON());
         if (!fields) {
             return;
@@ -277,8 +279,8 @@ export class RulesetRecursiveKeyRetriever {
         const metadata: Record<string, unknown> = {};
         for (const fieldKey in fields) {
             const fieldName = fields[fieldKey];
-            if (properties && fieldName in properties) {
-                metadata[fieldKey] = properties[fieldName];
+            if (properties && dotProp.has(properties, fieldName)) {
+                metadata[fieldKey] = dotProp.get(properties, fieldName);
             }
         }
 

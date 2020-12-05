@@ -172,7 +172,7 @@ export class typedProperties {
     });
 
     private static metadataFields: metadataFields = {
-        'items': ['damageType'],
+        'items': ['damageType', 'blastRadius', 'damageAlter.FixRadius'],
         'extraSprites.Projectiles': ['height', 'subY'],
     }
 
@@ -339,7 +339,18 @@ export class typedProperties {
             const damageType = ruleType.metadata.damageType as number;
 
             if (['2', '3', '6', '9'].indexOf(damageType.toString()) !== -1) {
-                override.target = 'extraSprites.X1.PCK.files';
+                let ignore = false;
+                if ('damageAlter.FixRadius' in ruleType.metadata) {
+                    if (ruleType.metadata['damageAlter.FixRadius'] as number === 0) {
+                        ignore = true;
+                    }
+                } else if ('blastRadius' in ruleType.metadata && ruleType.metadata['blastRadius'] as number === 0) {
+                    ignore = true;
+                }
+
+                if (!ignore) {
+                    override.target = 'extraSprites.X1.PCK.files';
+                }
             }
         }
 
