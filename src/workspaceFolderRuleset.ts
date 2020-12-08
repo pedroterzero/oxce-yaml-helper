@@ -61,7 +61,7 @@ export class WorkspaceFolderRuleset {
         this.variableFiles = this.variableFiles.filter(collection => collection.file.path !== file.path);
         this.referenceFiles = this.referenceFiles.filter(collection => collection.file.path !== file.path);
         this.translationFiles = this.translationFiles.filter(collection => collection.file.path !== file.path);
-        delete this.logicDataFiles[this.logicDataFiles.findIndex(collection => collection.file.path === file.path)];
+        this.logicDataFiles = this.logicDataFiles.filter(collection => collection.file.path !== file.path);
     }
 
     private getTranslationLookups(translations: Translation[]): Translations {
