@@ -4,6 +4,7 @@ import { Scalar, YAMLMap, YAMLSeq } from "yaml/types";
 import { JsonObject, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { typedProperties } from "./typedProperties";
 import { LogicHandler } from "./logic/logicHandler";
+import * as dotProp from 'dot-prop';
 
 type Entry = YAMLSeq | YAMLDocumentItem | string | Scalar;
 
@@ -39,7 +40,7 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): [Match[], LogicDataEntry[]] {
-        logger.debug('findKeyInformationInYamlDocument');
+        // logger.debug('findKeyInformationInYamlDocument');
 
         const yamlPairs = yamlDocument.contents.items;
         if (!yamlPairs) {
@@ -322,6 +323,7 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private addMetadata(path: string, entry: YAMLSeq): Record<string, unknown> | undefined {
+        // TODO we seem to come here too many times, check with one item (properties.type === 'STR_12GAUGE_NON_LETHAL_X8')
         const fields = typedProperties.getMetadataFieldsForType(path, entry.toJSON());
         if (!fields) {
             return;
@@ -331,8 +333,8 @@ export class RulesetRecursiveKeyRetriever {
         const metadata: Record<string, unknown> = {};
         for (const fieldKey in fields) {
             const fieldName = fields[fieldKey];
-            if (properties && fieldName in properties) {
-                metadata[fieldKey] = properties[fieldName];
+            if (properties && dotProp.has(properties, fieldName)) {
+                metadata[fieldKey] = dotProp.get(properties, fieldName);
             }
         }
 
@@ -359,11 +361,18 @@ export class RulesetRecursiveKeyRetriever {
         for (const ruleProperty of ruleProperties.items) {
             if (ruleProperty.key.value === typeKey) {
                 for (const entry of ruleProperty.value.items) {
-                    matches.push({
+                    const metadata = this.addMetadata(ruleType.key.value + '.' + propertiesFlat.type, ruleProperties);
+                    const match: Match = {
                         key: entry.key.value,
                         path: ruleType.key.value + '.' + propertiesFlat.type + '.' + typeKey,
                         range: entry.key.range,
-                    });
+                    };
+
+                    if (metadata) {
+                        match.metadata = metadata;
+                    }
+
+                    matches.push(match);
                 }
             }
         }

@@ -1,5 +1,6 @@
 import { typedProperties } from "./typedProperties";
 import { Definition, Match } from "./rulesetTree";
+import { logger } from "./logger";
 
 export class RulesetDefinitionFinder {
     public getDefinitionsFromReferences(references: Match[] | undefined): Definition[] {
@@ -18,6 +19,11 @@ export class RulesetDefinitionFinder {
                 extraFiles = true;
                 // restore full path
                 type = ref.path;
+            }
+
+            // TODO: figure out a proper generic way to do this
+            if (type === 'extraSprites.Projectiles.files') {
+                this.addBulletSprites(ref, references);
             }
 
             if (extraFiles || typedProperties.isDefinitionPropertyForPath(type, key, ref.key)) {
@@ -49,6 +55,30 @@ export class RulesetDefinitionFinder {
         }
 
         return definitions;
+    }
+
+    private addBulletSprites(ref: Match, references: Match[]) {
+        if (!('metadata' in ref) || !ref.metadata || !('height' in ref.metadata) || !('subY' in ref.metadata)) {
+            return;
+        }
+
+        const height = parseInt(ref.metadata.height as string);
+        const subY = parseInt(ref.metadata.subY as string);
+
+
+        if (height < subY || height % subY !== 0) {
+            return;
+        }
+
+        for (let i = 1; i < height / subY; i++) {
+            const newRef = Object.assign({}, ref, {
+                key: ref.key + (i * 35)
+            });
+            delete newRef.metadata; // prevent infinite lolz
+            logger.debug(`adding Projectiles ref key ${newRef.key}`);
+
+            references.push(newRef);
+        }
     }
 }
 

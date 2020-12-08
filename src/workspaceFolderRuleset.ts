@@ -57,10 +57,10 @@ export class WorkspaceFolderRuleset {
     }
 
     public deleteFileFromTree(file: Uri) {
-        delete this.rulesetFiles[this.rulesetFiles.findIndex(collection => collection.file.path === file.path)];
-        delete this.variableFiles[this.variableFiles.findIndex(collection => collection.file.path === file.path)];
-        delete this.referenceFiles[this.referenceFiles.findIndex(collection => collection.file.path === file.path)];
-        delete this.translationFiles[this.translationFiles.findIndex(collection => collection.file.path === file.path)];
+        this.rulesetFiles = this.rulesetFiles.filter(collection => collection.file.path !== file.path);
+        this.variableFiles = this.variableFiles.filter(collection => collection.file.path !== file.path);
+        this.referenceFiles = this.referenceFiles.filter(collection => collection.file.path !== file.path);
+        this.translationFiles = this.translationFiles.filter(collection => collection.file.path !== file.path);
         delete this.logicDataFiles[this.logicDataFiles.findIndex(collection => collection.file.path === file.path)];
     }
 
@@ -225,6 +225,7 @@ export class WorkspaceFolderRuleset {
         rulesetDefinitionChecker.init(this.definitionsLookup);
 
 //        logger.debug(`[${(new Date()).toISOString()}] Number of textDocuments in workspace: ${workspace.textDocuments.length}`);
+        let problems = 0;
         const diagnosticsPerFile: FilesWithDiagnostics = {};
         for (const file of this.referenceFiles) {
             if (file.file.path.startsWith(Uri.joinPath(assetUri, '/').path)) {
@@ -235,6 +236,7 @@ export class WorkspaceFolderRuleset {
             const diagnostics = rulesetDefinitionChecker.checkFile(file, this, this.workspaceFolder.uri.path);
 
             // logger.debug(`diagnostic: ${file.file.path} has ${diagnostics.length} diagnostics from ${file.references.length} references`);
+            problems += diagnostics.length;
             diagnosticsPerFile[file.file.path] = diagnostics;
             // this.diagnosticCollection.set(Uri.file(file.file.path), diagnostics);
         }
@@ -244,6 +246,8 @@ export class WorkspaceFolderRuleset {
         for (const file in combinedDiagnosticsPerFile) {
             this.diagnosticCollection.set(Uri.file(file), combinedDiagnosticsPerFile[file]);
         }
+
+        logger.info(`Total problems found: ${problems}`);
     }
 
     public getLogicData(file: Uri) {

@@ -11,12 +11,12 @@ export const typeHintMessages: {[key: string]: (value: string) => string} = {
         - And one in BASEBITS.PCK with spriteID ${value + 48} (${value} + 48)
     `,
     'items.bulletSprite': (value) => `
-        this needs an sprite in Projectiles with spriteID ${parseInt(value) * 35} (${value} * 35)
+        this needs a sprite in Projectiles with spriteID ${parseInt(value) * 35} (${value} * 35)
         (see documentation by hovering over "bulletSprite:")
     `,
     'items.hitAnimation': () => `
         depending on damageType, this sprite should be in one of two places (see documentation by hovering over "hitAnimation:")
-        - if damageType is 2, 3, 6 or 9 - it should go in X1.PCK
-        - for all other damageTypes it should go in SMOKE.PCK
+        - if damageType is 2, 3, 6 or 9 AND blastRadius is not 0 or damageAlter.FixRadius is not 0 - it should go in X1.PCK
+        - otherwise it should go in SMOKE.PCK
     `,
 };

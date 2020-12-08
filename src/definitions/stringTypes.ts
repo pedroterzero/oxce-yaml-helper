@@ -4,6 +4,8 @@ export const stringTypes = [
     'alienDeployments.briefing.desc',
     'alienDeployments.briefing.title',
     'alienDeployments.markerName',
+    'alienDeployments.missionCompleteText', // FtA
+    'alienDeployments.missionFailedText', // FtA
     'alienDeployments.objectiveComplete',
     'alienDeployments.objectivePopup',
     'covertOperations.description', // FtA
