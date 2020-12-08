@@ -37,7 +37,7 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): Match[] {
-        logger.debug('findKeyInformationInYamlDocument');
+        // logger.debug('findKeyInformationInYamlDocument');
 
         const yamlPairs = yamlDocument.contents.items;
         if (!yamlPairs) {

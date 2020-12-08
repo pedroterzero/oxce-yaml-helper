@@ -158,9 +158,11 @@ export class RulesetResolver implements Disposable {
         this.fileSystemWatcher.onDidDelete((e: Uri) => {
             logger.debug(`file deleted ${e.path}`);
             this.deletingFiles[e.path] = true;
-            this.deleteFileFromTree(e.path);
+            this.deleteFileFromTree(e);
         });
-
+        this.fileSystemWatcher.onDidCreate(async (e: Uri) => {
+            this.loadYamlIntoTree(e);
+        });
 
         this.handleFileChanges(this.fileSystemWatcher);
     }
@@ -181,7 +183,7 @@ export class RulesetResolver implements Disposable {
             // }
 
             logger.debug(`reloading ruleset file: ${e.path} (processing: ${Object.keys(this.processingFiles).length}) (deleted: ${Object.keys(this.deletingFiles).length})`);
-            if (isSavedFile || !workspace.textDocuments.find(wsFile => wsFile.fileName === e.path)) {
+            if (isSavedFile || !workspace.textDocuments.find(wsFile => wsFile.fileName === e.fsPath)) {
                 // logger.debug(`textdocument not open for file ${e.path}, loading`);
                 this.loadYamlIntoTree(e);
             }
@@ -204,8 +206,7 @@ export class RulesetResolver implements Disposable {
         });
     }
 
-    private deleteFileFromTree(path: string) {
-        const file = Uri.file(path);
+    private deleteFileFromTree(file: Uri) {
         const workspaceFolder = workspace.getWorkspaceFolder(file);
         if (!workspaceFolder) {
             throw new Error('workspace folder could not be found');
@@ -215,7 +216,7 @@ export class RulesetResolver implements Disposable {
 
         // trigger a reload (should maybe have its own event)?
 //        logger.debug(`deleted ${path}`);
-        delete this.deletingFiles[path];
+        delete this.deletingFiles[file.path];
         this.onDidLoadEmitter.emit('didLoadRulesheet');
     }
 
@@ -257,6 +258,13 @@ export class RulesetResolver implements Disposable {
 
     private async parseDocument(file: Uri, workspaceFolder: WorkspaceFolder): Promise<ParsedRuleset | undefined> {
         const document = await this.getTextDocument(file);
+        if (document.getText().trim().length === 0) {
+            // new files could be empty
+            return {
+                translations: []
+            };
+        }
+
         try {
             const doc = rulesetParser.parseDocument(document.getText());
             const docObject = doc.regular.toJSON();
@@ -300,7 +308,7 @@ export class RulesetResolver implements Disposable {
             return doc;
         }
 
-        return await workspace.openTextDocument(file.path);
+        return await workspace.openTextDocument(file);
     }
 
     public getTranslationForKey(key: string, sourceUri?: Uri): string | undefined {
