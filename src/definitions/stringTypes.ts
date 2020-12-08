@@ -1,23 +1,27 @@
-export const stringTypes = [
+const ftaStringTypes = [
+    'alienDeployments.missionCompleteText',
+    'alienDeployments.missionFailedText',
+    '/^battleScripts\\.commands\\[\\]\\.messages\\.\\d+\\.(answer|content|title)$/',
+    'covertOperations.description',
+    'covertOperations.successDescription',
+    'diplomacyFactions.description',
+    'events.description',
+];
+
+export const stringTypes = ftaStringTypes.concat([
     'alienDeployments.alert',
     'alienDeployments.alertDescription',
     'alienDeployments.briefing.desc',
     'alienDeployments.briefing.title',
     'alienDeployments.markerName',
-    'alienDeployments.missionCompleteText', // FtA
-    'alienDeployments.missionFailedText', // FtA
     'alienDeployments.objectiveComplete',
     'alienDeployments.objectivePopup',
-    'covertOperations.description', // FtA
-    'covertOperations.successDescription', // FtA
     'commendations.description',
     'crafts.weaponStrings',
     'cutscenes.slideshow.slides[].caption',
-    'diplomacyFactions.description', // FtA
     'enviroEffects.environmentalConditions.STR_FRIENDLY.message',
     'enviroEffects.environmentalConditions.STR_HOSTILE.message',
     'enviroEffects.environmentalConditions.STR_NEUTRAL.message',
-    'events.description', // FtA
     'items.confAimed.name',
     'items.confAuto.name',
     'items.confMelee.name',
@@ -37,4 +41,4 @@ export const stringTypes = [
     // not sure
     // 'items.categories',
     // 'manufacture.category',
-];
+]);
