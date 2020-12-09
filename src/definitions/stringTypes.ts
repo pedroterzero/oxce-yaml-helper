@@ -6,6 +6,8 @@ const ftaStringTypes = [
     'covertOperations.successDescription',
     'diplomacyFactions.description',
     'events.description',
+    '/^globalVariables\\.loyaltyRatings\\.-?\\d+$/',
+    '/^globalVariables\\.reputationLevels\\.-?\\d+$/',
 ];
 
 export const stringTypes = ftaStringTypes.concat([

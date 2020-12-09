@@ -1,3 +1,5 @@
+import { typedProperties } from "../typedProperties";
+
 /**
  * Prevent the following types being checked as references
  */
@@ -43,4 +45,4 @@ export const ignoreTypes = [
     'units.race', // optional according to Finnik
     // 'units.civilianRecoveryType', // ruleset validator will catch it
     'units.specialObjectiveType', // FtA, ruleset validator will catch it
-];
+].concat(typedProperties.getStoreVariables());
