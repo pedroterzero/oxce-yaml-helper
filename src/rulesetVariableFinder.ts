@@ -1,14 +1,23 @@
-import { JsonObject } from "./rulesetParser";
-import { Variables } from "./rulesetTree";
+
+import { Match, Variables } from "./rulesetTree";
 import { typedProperties } from "./typedProperties";
 
 export class RulesetVariableFinder {
-    public findAllVariablesInYamlDocument(doc: JsonObject) {
+    public findAllVariablesInYamlDocument(references: Match[] | undefined) {
         const store: Variables = {};
 
-        for (const key in doc) {
-            if (typedProperties.isStoreVariable(key)) {
-                store[key] = doc[key];
+        if (!references) {
+            return store;
+        }
+
+        for (const ref of references) {
+            if (typedProperties.isStoreVariable(ref.path)) {
+                let path = ref.path;
+                if (path.startsWith('globalVariables.')) {
+                    path = path.split('.').slice(1).join('.');
+                }
+
+                store[path] = ref.key;
             }
         }
 
