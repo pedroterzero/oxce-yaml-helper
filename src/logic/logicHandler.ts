@@ -6,11 +6,13 @@ import { MapScriptsLogic } from "./mapScriptsLogic";
 import { RegionsLogic } from "./regionsLogic";
 import { mergeAndConcat } from "merge-anything";
 import { CraftWeaponsLogic } from "./craftWeaponsLogic";
+import { UfopaediaLogic } from "./ufopaediaLogic";
 
 const handlers = [
     CraftWeaponsLogic,
     MapScriptsLogic,
-    RegionsLogic
+    RegionsLogic,
+    UfopaediaLogic
     // TerrainsLogic
 ];
 

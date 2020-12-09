@@ -30,7 +30,8 @@ export class CraftWeaponsLogic extends BaseLogic {
     }
 
     protected generic(entries: LogicDataEntry[]) {
-        this.storeFieldData(entries);
+        this.clipSizes = this.getFieldData<number>(entries, 'items.clipSize');
+        this.clipTypes = this.getFieldData<string>(entries, 'craftWeapons.clip');
     }
 
     private checkClipSize (key: string) {
@@ -64,21 +65,6 @@ export class CraftWeaponsLogic extends BaseLogic {
                     `'rearmRate of '${ref.ref.key}' is less than clipSize '${clipSize}' for clip '${clipName}'. This will cause a crash on loading OpenXcom!`,
                     DiagnosticSeverity.Error
                 );
-            }
-        }
-    }
-
-    private storeFieldData(entries: LogicDataEntry[]) {
-        for (const entry of entries) {
-            if (entry.path === 'items.clipSize') {
-                if (typeof entry.names?.items === 'string') {
-                    this.clipSizes[entry.names.items] = entry.data as unknown as number;
-                    // this.clipSizes[entry.names.items] = entry;
-                }
-            } else if (entry.path === 'craftWeapons.clip') {
-                if (typeof entry.names?.craftWeapons === 'string') {
-                    this.clipTypes[entry.names.craftWeapons] = entry.data as unknown as string;
-                }
             }
         }
     }
