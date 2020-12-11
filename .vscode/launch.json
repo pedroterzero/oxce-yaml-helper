@@ -31,7 +31,9 @@
             "args": [
                 "--disable-extensions",
                 "--extensionDevelopmentPath=${workspaceFolder}",
-                "--extensionTestsPath=${workspaceFolder}/out/test"
+                // "--extensionTestsPath=${workspaceFolder}/out/test/suite/index-coverage",
+                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index",
+                "${workspaceFolder}/src/test/suite/fixtures"
             ],
             "outFiles": [
                 "${workspaceFolder}/out/test/**/*.js"

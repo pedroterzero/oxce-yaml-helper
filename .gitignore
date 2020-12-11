@@ -6,3 +6,5 @@ node_modules
 *.patch
 .history
 .attic
+coverage
+.nyc_output

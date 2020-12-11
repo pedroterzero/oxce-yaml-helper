@@ -16,6 +16,7 @@ export type ParsedRuleset = {
 };
 
 export class RulesetResolver implements Disposable {
+    private loaded = false;
     private context?: ExtensionContext;
     private fileSystemWatcher?: FileSystemWatcher;
     private yamlPattern = '**/*.rul';
@@ -24,6 +25,10 @@ export class RulesetResolver implements Disposable {
     private processingFiles: {[key: string]: boolean} = {};
     private deletingFiles: {[key: string]: boolean} = {};
     private savedFiles: {[key: string]: boolean} = {};
+
+    public isLoaded() {
+        return this.loaded;
+    }
 
     public setExtensionContent(context: ExtensionContext): void {
         this.context = context;
@@ -47,10 +52,12 @@ export class RulesetResolver implements Disposable {
         this.refreshWorkspaceFolderRulesets();
 
         this.registerFileWatcher();
+
+        this.loaded = true;
         this.onDidLoadEmitter.emit('didLoad');
     }
 
-    public onDidLoad(listener: () => any) {
+    public onDidLoad(listener: () => void) {
         this.onDidLoadEmitter.addListener('didLoad', listener);
     }
 
@@ -100,7 +107,7 @@ export class RulesetResolver implements Disposable {
             logger.debug('loading yaml files for workspace dir:', workspaceFolder.name);
             const files = await this.getYamlFilesForWorkspaceFolder(workspaceFolder);
             return Promise.all(files.map(file => {
-                logger.debug('loading ruleset file:', file.path.slice(workspaceFolder.uri.path.length + 1));
+                logger.debug(`loading ruleset file: ${this.getCleanFile(file, workspaceFolder.uri)}`);
                 return this.loadYamlIntoTree(file, workspaceFolder, files.length);
             }));
         }));
@@ -269,7 +276,6 @@ export class RulesetResolver implements Disposable {
             const doc = rulesetParser.parseDocument(document.getText());
             const docObject = doc.regular.toJSON();
 
-            const workspaceFile = file.path.slice(workspaceFolder.uri.path.length + 1);
             const isLanguageFile = file.path.indexOf('Language/') !== -1 && file.path.slice(file.path.lastIndexOf('.')) === '.yml';
 
             let translations: Translation[] = [];
@@ -280,9 +286,9 @@ export class RulesetResolver implements Disposable {
             } else {
                 const references = rulesetParser.getReferencesRecursively(doc.parsed);
                 rulesetParser.addRangePositions(references, document);
-                logger.debug(`found ${references?.length} references in file ${workspaceFile}`);
+                logger.debug(`found ${references?.length} references in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
                 const definitions = rulesetParser.getDefinitionsFromReferences(references);
-                logger.debug(`found ${definitions.length} definitions in file ${workspaceFile}`);
+                logger.debug(`found ${definitions.length} definitions in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
 
                 // can't use references (yet), variables and extraStrings are not references (yet) (they are keys, not values)
                 const variables = rulesetParser.getVariables(docObject);
@@ -404,6 +410,18 @@ export class RulesetResolver implements Disposable {
 
     public getRulesetHierarchy () {
         return this.rulesetHierarchy;
+    }
+
+    public getCleanFile (file: Uri, workspaceFolder: Uri) {
+        const assetPath = this.getAssetUri();
+        let fileClean = '';
+        if (file.path.startsWith(assetPath.path)) {
+            fileClean = `<ASSETS>/${file.path.slice(assetPath.path.length + 1)}`;
+        } else {
+            fileClean = file.path.slice(workspaceFolder.path.length + 1);
+        }
+
+        return fileClean;
     }
 
     public dispose() {
