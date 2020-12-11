@@ -1,15 +1,10 @@
 import * as assert from 'assert';
 import * as path from 'path';
-import { Uri, workspace, WorkspaceFolder } from 'vscode';
+import { Uri, WorkspaceFolder } from 'vscode';
 import { RulesetTree } from '../../rulesetTree';
 
 const fixturePath = path.resolve(__dirname, '../../../src/test/suite/fixtures');
-// const itemsPath = path.resolve(fixturePath, 'items.rul');
-const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
-
-if (!workspaceFolder) {
-    throw new Error('Should not happen');
-}
+// const itemsPath = path.resolve(fixturePath, 'items.rul');const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
 
 describe('rulesetTree', () => {
     let rulesetTree: RulesetTree;
@@ -79,9 +74,11 @@ describe('rulesetTree', () => {
         assert.strictEqual(translation, shouldExist ? item.value : undefined);
     };
 
-    const addMockDefinition = (tree: RulesetTree, item: typeof mockDefinition, filename = 'dummy.rul') => {
+    const addMockDefinition = (tree: RulesetTree, item: typeof mockDefinition, filename = 'dummy.rul', refresh = true) => {
         tree.mergeIntoTree([Object.assign(item)], mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, filename)));
-        tree.refresh(mockWorkSpaceFolder);
+        if (refresh) {
+            tree.refresh(mockWorkSpaceFolder);
+        }
     };
 
     const addMockReference = (tree: RulesetTree, item: typeof mockReference, filename = 'dummy.rul') => {
@@ -116,6 +113,7 @@ describe('rulesetTree', () => {
         });
     });
 
+    // also tests getDefinitionsByName()
     describe('mergeIntoTree', () => {
         beforeEach(() => {
             rulesetTree.init();
@@ -137,6 +135,7 @@ describe('rulesetTree', () => {
         });
     });
 
+    // also tests getReferences()
     describe('mergeReferencesIntoTree', () => {
         beforeEach(() => {
             rulesetTree.init();
@@ -158,6 +157,9 @@ describe('rulesetTree', () => {
         });
     });
 
+    // todo: mergeVariablesIntoTree()
+
+    // also tests getTranslation()
     describe('mergeTranslationsIntoTree', () => {
         beforeEach(() => {
             rulesetTree.init();
@@ -178,4 +180,56 @@ describe('rulesetTree', () => {
             assertTranslationExists(rulesetTree, mockTranslation2);
         });
     });
+
+    describe('deleteFileFromTree', () => {
+        beforeEach(() => {
+            rulesetTree.init();
+            addMockDefinition(rulesetTree, mockDefinition, 'dummy.rul');
+            addMockReference(rulesetTree, mockReference, 'dummy.rul');
+            addMockTranslation(rulesetTree, mockTranslation, 'dummy.rul');
+            addMockDefinition(rulesetTree, mockDefinition2, 'dummy2.rul');
+            addMockReference(rulesetTree, mockReference2, 'dummy2.rul');
+            addMockTranslation(rulesetTree, mockTranslation2, 'dummy2.rul');
+        });
+
+        it('removes existing data for file', () => {
+            assertDefinitionExists(rulesetTree, mockDefinition);
+            assertTranslationExists(rulesetTree, mockTranslation);
+            assertReferenceExists(rulesetTree, mockReference);
+            rulesetTree.deleteFileFromTree(mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'dummy.rul')));
+            rulesetTree.refresh(mockWorkSpaceFolder);
+            assertDefinitionExists(rulesetTree, mockDefinition, false);
+            assertTranslationExists(rulesetTree, mockTranslation, false);
+            assertReferenceExists(rulesetTree, mockReference, false);
+        });
+
+        it('does not remove data for unrelated file', () => {
+            rulesetTree.deleteFileFromTree(mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'dummy.rul')));
+            rulesetTree.refresh(mockWorkSpaceFolder);
+            assertDefinitionExists(rulesetTree, mockDefinition2);
+            assertTranslationExists(rulesetTree, mockTranslation2);
+            assertReferenceExists(rulesetTree, mockReference2);
+        });
+    });
+
+
+    describe('refresh', () => {
+        beforeEach(() => {
+            rulesetTree.init();
+        });
+
+        it('refreshes the tree state', () => {
+            addMockDefinition(rulesetTree, mockDefinition, 'dummy.rul', false);
+            assertDefinitionExists(rulesetTree, mockDefinition, false); // should not exist
+            rulesetTree.refresh(mockWorkSpaceFolder);
+            assertDefinitionExists(rulesetTree, mockDefinition); // now it should
+            rulesetTree.deleteFileFromTree(mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'dummy.rul')));
+            assertDefinitionExists(rulesetTree, mockDefinition); // still
+            rulesetTree.refresh(mockWorkSpaceFolder);
+            assertDefinitionExists(rulesetTree, mockDefinition, false); // gone
+        });
+    });
+
+    // todo: getDiagnosticCollection() ?
+    // todo: checkDefinitions()
 });
