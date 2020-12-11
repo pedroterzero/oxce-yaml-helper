@@ -330,7 +330,12 @@ export class RulesetResolver implements Disposable {
             return;
         }
 
-        return rulesetTree.getTranslation(key, folder);
+        const translation = rulesetTree.getTranslation(key, folder);
+        if (!translation) {
+            return `No translation found for locale '${this.getLocale()}' '${key}'!`;
+        }
+
+        return translation;
     }
 
     public refreshWorkspaceFolderRulesets () {
@@ -422,6 +427,10 @@ export class RulesetResolver implements Disposable {
         }
 
         return fileClean;
+    }
+
+    public getLocale(): string {
+        return workspace.getConfiguration('oxcYamlHelper').get<string>('translationLocale') ?? 'en-US';
     }
 
     public dispose() {

@@ -1,10 +1,11 @@
-import { DiagnosticCollection, languages, Uri, workspace, WorkspaceFolder } from "vscode";
+import { DiagnosticCollection, languages, Uri, WorkspaceFolder } from "vscode";
 import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 import { rulesetDefinitionChecker } from "./rulesetDefinitionChecker";
 import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
+import { rulesetResolver } from "./extension";
 
 export type RulesetFile = { file: Uri, definitions: Definition[] }
 export type ReferenceFile = { file: Uri, references: Match[] }
@@ -32,20 +33,20 @@ export class WorkspaceFolderRuleset {
     }
 
     public mergeIntoRulesetTree(definitions: Definition[], sourceFile: Uri) {
-        this.addRulesetFile(definitions, sourceFile || null);
+        this.addRulesetFile(definitions, sourceFile);
     }
 
     public mergeReferencesIntoRulesetTree(references: Match[], sourceFile: Uri) {
-        this.addRulesetReferenceFile(references, sourceFile || null);
+        this.addRulesetReferenceFile(references, sourceFile);
     }
 
     public mergeVariablesIntoRulesetTree(variables: Variables, sourceFile: Uri) {
-        this.addRulesetVariableFile(variables, sourceFile || null);
+        this.addRulesetVariableFile(variables, sourceFile);
     }
 
     public mergeTranslationsIntoTree(translations: Translation[], sourceFile: Uri) {
         const lookups = this.getTranslationLookups(translations);
-        this.addRulesetTranslationFile(lookups, sourceFile || null);
+        this.addRulesetTranslationFile(lookups, sourceFile);
     }
 
     public deleteFileFromTree(file: Uri) {
@@ -164,15 +165,19 @@ export class WorkspaceFolderRuleset {
         return this.variables;
     }
 
+    public getReferences(): Match[] {
+        return this.referenceFiles.flatMap(file => file.references);
+    }
+
     public getNumberOfParsedDefinitionFiles(): number {
         return this.rulesetFiles.length;
     }
 
-    public getTranslation(key: string): string {
-        const locale = this.getLocale();
+    public getTranslation(key: string): string | undefined {
+        const locale = rulesetResolver.getLocale();
 
         if (!(locale in this.translations) || !(key in this.translations[locale])) {
-            return `No translation found for locale '${locale}' '${key}'!`;
+            return;
         }
 
         return this.translations[locale][key];
@@ -255,9 +260,5 @@ export class WorkspaceFolderRuleset {
         });
 
         // logger.debug(`Number of translations for ${this.getLocale()}: ${Object.keys(this.translations[locale]).length}`);
-    }
-
-    private getLocale (): string {
-        return workspace.getConfiguration('oxcYamlHelper').get<string>('translationLocale') ?? 'en-US';
     }
 }
