@@ -1,0 +1,4 @@
+extraStrings:
+  - type: en-US
+    strings:
+      STR_DUMMY_ITEM: Dummy

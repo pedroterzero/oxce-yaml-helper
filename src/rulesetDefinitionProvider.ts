@@ -4,7 +4,7 @@ import { rulesetParser } from "./rulesetParser";
 
 export class RulesetDefinitionProvider implements DefinitionProvider {
 
-    provideDefinition(document: TextDocument, position: Position): ProviderResult<Definition> {
+    public provideDefinition(document: TextDocument, position: Position): ProviderResult<Definition> {
         const value = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document, false);
         if (!value?.key) {
             return;
@@ -28,5 +28,10 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
         const ruleType = rulesetParser.findTypeOfKey(value.key, value.range);
 
         return rulesetParser.getDefinitionsByName(folder, value.key, ruleType);
+    }
+
+    /** @private @deprecated only for testing, do not use (we can't mock TextDocument) */
+    public _testGetDefinitions(value: { key: string; range: Range; }, folder: WorkspaceFolder) {
+        return this.getDefinitions(value, folder);
     }
 }
