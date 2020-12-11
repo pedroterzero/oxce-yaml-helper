@@ -1,6 +1,6 @@
-import { TextDocument, workspace, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
+import { TextDocument, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
 import { logger } from "./logger";
-import { Definition, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
+import { Definition, Match, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
 import { Document, parseDocument } from 'yaml';
 import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
 import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
@@ -23,6 +23,7 @@ export interface YAMLDocument {
 export interface YAMLDocumentItem {
     key: any;
     value: any;
+    type: string;
 }
 
 export interface YAMLNode {
@@ -30,12 +31,20 @@ export interface YAMLNode {
 }
 
 export type JsonObject = {
-    [key: string]: string | Record<string, unknown>;
+    [key: string]: string | Record<string, unknown>[];
 };
 
 export class RulesetParser {
-    public getDefinitions(doc: YAMLDocument): Definition[] {
-        return rulesetDefinitionFinder.findAllDefinitionsInYamlDocument(doc);
+    public constructor() {
+        typedProperties.init();
+    }
+
+    public getReferencesRecursively(doc: YAMLDocument): Match[] {
+        return rulesetRecursiveKeyRetriever.findAllReferencesInYamlDocument(doc);
+    }
+
+    public getDefinitionsFromReferences(references: Match[] | undefined): Definition[] {
+        return rulesetDefinitionFinder.getDefinitionsFromReferences(references);
     }
 
     public getVariables(doc: any): Variables {
@@ -62,7 +71,7 @@ export class RulesetParser {
         // logger.debug(`Searching for type ${key} in ${document.fileName}`);
         sourceRange = this.fixRangesForWindowsLineEndingsIfNeeded(document, sourceRange, true);
 
-        const rule = rulesetRecursiveKeyRetriever.getKeyInformationFromYAML(document.getText(), key, sourceRange);
+        const rule = rulesetRecursiveKeyRetriever.getKeyInformationFromYAML(this.parseDocument(document.getText()).parsed, key, sourceRange);
         if (!rule) {
             return;
         }
@@ -75,39 +84,29 @@ export class RulesetParser {
         return rulesetRefnodeFinder.findRefNodeInDocument(file, key);
     }
 
-    public async getDefinitionsByName(workspaceFolder: WorkspaceFolder, key: string, ruleType: RuleType | undefined): Promise<Location[]> {
+    public getDefinitionsByName(workspaceFolder: WorkspaceFolder, key: string, ruleType: RuleType | undefined): Location[] {
         if (ruleType && this.isUndefinableNumericProperty(ruleType, key)) {
             return [];
         }
-
-        const promises: Thenable<Location | undefined>[] = [];
 
         const definitions = rulesetTree.getDefinitionsByName(key, workspaceFolder, ruleType);
         if (!definitions) {
             return [];
         }
 
+        const locations = [];
         for (const definition of definitions) {
-            promises.push(workspace.openTextDocument(definition.file.path).then((document: TextDocument) => {
-                // take care of CRLF
-                const range = this.fixRangesForWindowsLineEndingsIfNeeded(document, definition.range);
-
+            if (definition.rangePosition) {
+                const range = definition.range;
                 logger.debug(`opening ${definition.file.path.slice(workspaceFolder.uri.path.length + 1)} at ${range[0]}:${range[1]}`);
 
-                return new Location(definition.file, new Range(document.positionAt(range[0]), document.positionAt(range[1])));
-            }));
+                locations.push(
+                    new Location(definition.file, new Range(...definition.rangePosition[0], ...definition.rangePosition[1]))
+                );
+            }
         }
 
-        const values = await Promise.all(promises);
-
-        const resolvedLocations: Location[] = [];
-        values.forEach(resolved => {
-            if (resolved) {
-                resolvedLocations.push(resolved);
-            }
-        });
-
-        return resolvedLocations;
+        return locations;
     }
 
     private isUndefinableNumericProperty(ruleType: RuleType, key: string): boolean {
@@ -119,6 +118,16 @@ export class RulesetParser {
         return !typedProperties.isNumericProperty(ruleType.type, ruleType.key);
     }
 
+    public addRangePositions(references: Match[], document: TextDocument) {
+        for (const ref of references) {
+            ref.range = this.fixRangesForWindowsLineEndingsIfNeeded(document, ref.range);
+            ref.rangePosition = [
+                [document.positionAt(ref.range[0]).line, document.positionAt(ref.range[0]).character],
+                [document.positionAt(ref.range[1]).line, document.positionAt(ref.range[1]).character]
+            ];
+        }
+    }
+
     /**
      * Checks the line endings, and if it's CRLF, corrects for that. Because the parser uses LF.
      * @param document
@@ -126,12 +135,12 @@ export class RulesetParser {
      */
     public fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: [number, number], reverse = false): [number, number] {
         const correctRange = {...range};
-        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('attemptCRLFFix')) {
-            return correctRange;
-        }
+        // if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('attemptCRLFFix')) {
+        //     return correctRange;
+        // }
 
         if (document.eol === EndOfLine.CRLF) {
-            logger.debug(`Range before adjusting for CRLF: ${range[0]}:${range[1]}`);
+            // logger.debug(`Range before adjusting for CRLF: ${range[0]}:${range[1]}`);
 
             // find offset
             let lineBreaks = 0;
@@ -149,7 +158,7 @@ export class RulesetParser {
             correctRange[0] += lineBreaks;
             correctRange[1] += lineBreaks;
 
-            logger.debug(`Range after adjusting for CRLF: ${correctRange[0]}:${correctRange[1]} (reverse: ${reverse})`);
+            // logger.debug(`Range after adjusting for CRLF: ${correctRange[0]}:${correctRange[1]} (reverse: ${reverse})`);
         }
 
         return correctRange;

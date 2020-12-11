@@ -1,5 +1,6 @@
+import { typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { logger } from "./logger";
-import { RuleType } from "./rulesetTree";
+import { Match, RuleType } from "./rulesetTree";
 
 type typePropertyHints = {
     [key: string]: string[]
@@ -16,12 +17,11 @@ type typePropertyLink = {
     type?: 'numeric'
 }
 
-type logicOverrides = {
-    [key: string]: string;
-}
 
-type logicMethods = {
-    [key: string]: (key: string, ruleType: RuleType) => LogicOverride;
+type logicMethod = (key: string, path: string, ruleType: RuleType | Match) => LogicOverride[];
+
+type logicOverrides = {
+    [key: string]: logicMethod;
 }
 
 type metadataFields = {
@@ -41,90 +41,178 @@ export class typedProperties {
         diplomacyFactions: ['name'],              // FtA
         events: ['name'],                         // FtA
         extraSprites: ['type', 'typeSingle'],
+        facilities: ['type', 'provideBaseFunc'],
+        invs: ['id'],
         manufacture: ['name'],
+        manufactureShortcut: ['name'],
         research: ['name'],
-        // soldierBonuses: ['name'],
-        // soldierTransformation: ['name'],
+        soldierBonuses: ['name'],
+        soldierTransformation: ['name'],
         terrains: ['name'],
+        'terrains.mapBlocks[]': ['name'],
         ufopaedia: ['id'],
         ufoTrajectories: ['id'],
     };
 
-    private static typeProperties: typeProperties = {
-        crafts: {
-            sprite: {target: 'extraSprites.INTICON.PCK.files'},
-        },
-        craftWeapons: {
-            sprite: {target: 'extraSprites.INTICON.PCK.files'},
-        },
-        facilities: {
-            spriteFacility: {target: 'extraSprites.BASEBITS.PCK.files'},
-        },
-        research: {
-            name: {target: 'ufopaedia'},
-            dependencies: {target: 'research'},
-            // getOneFree: {target: 'research'},
-        },
-        items: {
-            bigSprite: {target: 'extraSprites.BIGOBS.PCK.files', type: 'numeric'},
-            explosionHitSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            fireSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            floorSprite: {target: 'extraSprites.FLOOROB.PCK.files', type: 'numeric'},
-            handSprite: {target: 'extraSprites.HANDOB.PCK.files', type: 'numeric'},
-            hitAnimation: {target: 'extraSprites.X1.PCK.files', type: 'numeric'},
-            hitSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            hitMissSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            meleeAnimation: {target: 'extraSprites.HIT.PCK.files', type: 'numeric'},
-            meleeHitSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            meleeSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            psiSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            psiMissSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            reloadSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            specialIconSprite: {target: 'extraSprites.SPICONS.DAT.files', type: 'numeric'},
-        },
-        units: {
-            aggroSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            berserkSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            deathSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            moveSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-            panicSound: {target: 'extraSounds.BATTLE.CAT.files', type: 'numeric'},
-        }
-    }
+    private static vetoTypes: string[] = [
+        'battleScripts.commands[]', // FtA
+        'extraStrings',
+        'mapScripts.commands[]',
+        'mapScripts.commands[].tunnelData.MCDReplacements[]',
+        'mapScripts.commands[].verticalLevels[]',
+        'startingBase.crafts[]',
+        'startingBase.crafts[].weapons[]',
+        'startingBase.facilities[]',
+        // reinstate regex for this?
+        'startingBaseBeginner.crafts[]',
+        'startingBaseBeginner.crafts[].weapons[]',
+        'startingBaseBeginner.facilities[]',
+        'startingBaseExperienced.crafts[]',
+        'startingBaseExperienced.crafts[].weapons[]',
+        'startingBaseExperienced.facilities[]',
+        'startingBaseVeteran.crafts[]',
+        'startingBaseVeteran.crafts[].weapons[]',
+        'startingBaseVeteran.facilities[]',
+        'startingBaseGenius.crafts[]',
+        'startingBaseGenius.crafts[].weapons[]',
+        'startingBaseGenius.facilities[]',
+        'startingBaseSuperhuman.crafts[]',
+        'startingBaseSuperhuman.crafts[].weapons[]',
+        'startingBaseSuperhuman.facilities[]',
+    ];
 
-    private static logicOverrides: logicOverrides = {
-        'items.bulletSprite': 'bulletSpriteLogic',
-        'items.hitAnimation': 'hitAnimationLogic',
-    }
-    private static logicMethods: logicMethods = {
-        'bulletSpriteLogic': typedProperties.bulletSpriteLogic,
-        'hitAnimationLogic': typedProperties.hitAnimationLogic,
+    private static vetoTypeValues: {[key: string]: string[]} = {
+        // 'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
     };
 
+    // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
+    private static keyDefinitionTypes: string[] = [
+        // not 100% sure about these yet. Perhaps they should only work for the current file? maybe they're not definitions at all?
+        'extended.tags.BattleGame',
+        'extended.tags.BattleItem',
+        'extended.tags.BattleUnit',
+        'extended.tags.GeoscapeSoldier',
+        'extended.tags.RuleArmor',
+        'extended.tags.RuleItem',
+        'extended.tags.RuleSoldier',
+        'extended.tags.RuleSoldierBonus',
+    ];
+
+    private static keyReferenceTypes: string[] = typedProperties.keyDefinitionTypes.concat([
+        'arcScripts.randomArcs',
+        'arcScripts.researchTriggers',
+        'arcScripts.itemTriggers',
+        'arcScripts.facilityTriggers',
+        'alienDeployments.civiliansByType',
+        '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/',
+        '/^alienMissions\\.raceWeights\\.\\d+$/',
+        '/^alienMissions\\.regionWeights\\.\\d+$/',
+        'covertOperations.instantSuccessDeployment', // FtA
+        'covertOperations.instantTrapDeployment', // FtA
+        'covertOperations.failureReputationScore', // FtA
+        'covertOperations.requiredItems', // FtA
+        'covertOperations.successReputationScore', // FtA
+        'diplomacyFactions.helpTreatyEvents', // FtA
+        'diplomacyFactions.helpTreatyMissions', // FtA
+        'enviroEffects.environmentalConditions',
+        'events.everyMultiItemList',
+        'events.weightedItemList',
+        'eventScripts.itemTriggers',
+        'eventScripts.facilityTriggers',
+        'eventScripts.oneTimeRandomEvents',
+        '/^eventScripts\\.eventWeights\\.\\d+$/',
+        'eventScripts.researchTriggers',
+        'facilities.buildCostItems',
+        'items.tags',
+        'manufacture.requiredItems',
+        'manufacture.producedItems',
+        'manufacture.randomProducedItems[][]',
+        '/^missionScripts\\.missionWeights\\.\\d+$/',
+        '/^missionScripts\\.raceWeights\\.\\d+$/',
+        '/^missionScripts\\.regionWeights\\.\\d+$/',
+        // '/^manufacture\\.randomProducedItems[][]\\.[a-zA-Z0-9_]+$/',
+        'missionScripts.researchTriggers',
+        'missionScripts.itemTriggers',
+        'missionScripts.facilityTriggers',
+        'research.getOneFreeProtected',
+        'startingBase.items',
+        'startingBase.randomSoldiers',
+        'startingConditions.defaultArmor',
+        '/^startingConditions\\.defaultArmor\\.[a-zA-Z0-9_]+$/',
+        'startingConditions.requiredItems',
+        'ufos.raceBonus',
+        'terrains.mapBlocks[].items',
+    ]);
+
+    private static keyValueReferenceTypes: string[] = [
+        'enviroEffects.armorTransformations',
+        'enviroEffects.paletteTransformations',
+        'items.zombieUnitByType',
+        'items.zombieUnitByArmorFemale',
+        'items.zombieUnitByArmorMale',
+    ];
+
+    private static arrayDefinitionTypes: string[] = [
+        'facilities.provideBaseFunc',
+    ];
+
+
+    // fully built from typeLinks now
+    private static typeProperties: typeProperties = {};
+
+    // ATTENTION: when adding logic here, it also needs to be happen when checking references
+    private static metadataLogicOverrides: logicOverrides = {
+        'items.hitAnimation':  typedProperties.hitAnimationLogic,
+    }
+
+    private static logicOverrides: logicOverrides = Object.assign({}, typedProperties.metadataLogicOverrides, {
+        'crafts.sprite': typedProperties.typeLinksLogic,
+        'craftWeapons.sprite': typedProperties.typeLinksLogic,
+        'items.bulletSprite': typedProperties.typeLinksLogic,
+    });
+
     private static metadataFields: metadataFields = {
-        'items': ['damageType'],
+        'items': ['damageType', 'blastRadius', 'damageAlter.FixRadius'],
+        'extraSprites.Projectiles': ['height', 'subY'],
     }
 
     private static storeVariables: {[key: string]: Record<string, unknown>} = {
         'ftaGame': {}
     }
 
-    public static isTypePropertyForKey (ruleType: string, rule: any, key: string): boolean {
-        if (typeof rule !== 'object') {
-            // for now, only handle objects
+    private static keyReferenceTypesRegexes: RegExp[] = [];
+
+    public static init () {
+        this.addTypeLinks();
+        this.loadRegexes();
+    }
+
+    public static isDefinitionPropertyForPath (type: string, key: string, value: string): boolean {
+        if (this.vetoTypes.indexOf(type) !== -1) {
+            // explicitly blacklist some paths
+            return false;
+        } else if (type in this.vetoTypeValues && this.vetoTypeValues[type].indexOf(value) !== -1) {
             return false;
         }
 
-        const typeKey = this.getTypeKey(rule, ruleType);
-        if (!typeKey) {
-            return false;
-        }
-
-        const property = rule[typeKey];
-        if (property === key || property.indexOf(key + '.') === 0) {
+        // check if this a key definition
+        if (this.isKeyDefinitionType(type + '.' + key)) {
             return true;
         }
 
-        return false;
+        if (type in this.typePropertyHints) {
+            return this.typePropertyHints[type].indexOf(key) !== -1;
+        }
+
+        return key === 'type';
+    }
+
+    public static isKeyDefinitionType(type: string) {
+        return this.keyDefinitionTypes.indexOf(type) !== -1;
+    }
+
+    public static isArrayDefinitionTypes(type: string) {
+        return this.arrayDefinitionTypes.indexOf(type) !== -1;
     }
 
     public static getTypeKey(rule: any, ruleType: string): string | undefined {
@@ -171,28 +259,46 @@ export class typedProperties {
         return link[sourceRuleType.key].target === ruleType;
     }
 
-    public static checkForLogicOverrides(key: string, sourceRuleType: RuleType | undefined): LogicOverride {
+    public static checkForMetadataLogicOverrides(reference: Match): LogicOverride[] | undefined {
+        if (reference.path in this.metadataLogicOverrides) {
+            return this.checkForLogicOverrides(reference);
+        }
+
+        return;
+    }
+
+    public static checkForLogicOverrides(reference: Match, dummy?: undefined): LogicOverride[];
+    public static checkForLogicOverrides(key: string, sourceRuleType: RuleType | undefined): LogicOverride[];
+    public static checkForLogicOverrides(param: string | Match, sourceRuleType: RuleType | undefined): LogicOverride[] {
+        if (typeof param === 'object') { // reference
+            return this.getLogicOverrides(param.key, param.path, param);
+        }
+
+        const key = param as string;
+
         if (!sourceRuleType) {
-            return this.getBaseOverride(key);
+            return [this.getBaseOverride(key)];
         }
 
-        const fullType = sourceRuleType.type + '.' + sourceRuleType.key;
+        return this.getLogicOverrides(key, sourceRuleType.type + '.' + sourceRuleType.key, sourceRuleType);
+    }
 
-        if (!(fullType in this.logicOverrides)) {
-            return this.getBaseOverride(key);
+    private static getLogicOverrides(key: string, path: string, reference: Match | RuleType): LogicOverride[] {
+        if (!(path in this.logicOverrides)) {
+            return [this.getBaseOverride(key)];
         }
 
-        const method = this.logicMethods[this.logicOverrides[fullType]].bind(this);
-        const override = method(key, sourceRuleType);
-
-        if (key !== override.key) {
-            logger.debug(`Overriding key for ${fullType} from ${key} to ${override.key}`);
+        const overrides = this.logicOverrides[path].bind(this)(key, path, reference);
+        for (const override of overrides) {
+            if (key !== override.key) {
+                logger.debug(`Overriding key for ${path} from ${key} to ${override.key}`);
+            }
+            if (override.target) {
+                logger.debug(`Overriding target type for ${path}=${key} to ${override.target}`);
+            }
         }
-        if (override.target) {
-            logger.debug(`Overriding target type for ${fullType}=${key} to ${override.target}`);
-        }
 
-        return override;
+        return overrides;
     }
 
     private static getBaseOverride(key: string): LogicOverride {
@@ -202,43 +308,80 @@ export class typedProperties {
         };
     }
 
-    private static bulletSpriteLogic(key: string): LogicOverride {
-        const override = this.getBaseOverride(key);
-        override.key = (parseInt(key) * 35).toString();
-        return override;
+    /**
+     * Makes it possible to use the same logic as is used in the reference checker from typeLinks without writing 'extra' code
+     * @param key
+     * @param path
+     */
+    private static typeLinksLogic(key: string, path: string): LogicOverride[] {
+        const targets = typeLinks[path];
+        const keys = typeLinksPossibleKeys[path](key).filter(key => !['_all_', '_any_'].includes(key));
+
+        const overrides: LogicOverride[] = [];
+        for (const key in targets) {
+            overrides.push({
+                key: keys[key],
+                target: targets[key]
+            });
+        }
+
+        return overrides;
     }
 
-    private static hitAnimationLogic(key: string, ruleType: RuleType): LogicOverride {
+    private static hitAnimationLogic(key: string, _path: string, ruleType: RuleType | Match): LogicOverride[] {
         const override = typedProperties.getBaseOverride(key);
 
         if (!ruleType?.metadata) {
-            return override;
+            return [override];
         }
 
         if ('damageType' in ruleType.metadata) {
             const damageType = ruleType.metadata.damageType as number;
 
             if (['2', '3', '6', '9'].indexOf(damageType.toString()) !== -1) {
-                override.target = 'extraSprites.SMOKE.PCK.files';
+                let ignore = false;
+                if ('damageAlter.FixRadius' in ruleType.metadata) {
+                    if (ruleType.metadata['damageAlter.FixRadius'] as number === 0) {
+                        ignore = true;
+                    }
+                } else if ('blastRadius' in ruleType.metadata && ruleType.metadata['blastRadius'] as number === 0) {
+                    ignore = true;
+                }
+
+                if (!ignore) {
+                    override.target = 'extraSprites.X1.PCK.files';
+                }
             }
         }
 
-        return override;
+        return [override];
     }
 
-    public static getMetadataFieldsForType(ruleType: string): string[] | undefined {
-        if (!(ruleType in this.metadataFields)) {
+    public static getMetadataFieldsForType(ruleType: string, rule: any): {[key: string]: string} | undefined {
+        const typeKey = this.getTypeKey(rule, ruleType);
+        const metadataFields: {[key: string]: string} = {};
+        if (typeKey) {
+            metadataFields.type = typeKey;
+        }
+
+        if (ruleType in this.metadataFields) {
+            for (const field of  this.metadataFields[ruleType]) {
+                metadataFields[field] = field;
+            }
+        }
+
+        if (Object.keys(metadataFields).length === 0) {
             return;
         }
 
-        return this.metadataFields[ruleType];
+        return metadataFields;
     }
 
     public static isStoreVariable(key: string) {
         return (key in this.storeVariables);
     }
 
-        /**
+    /**
      * Checks that a provided type key is supposed to be numeric
      * @param type
      * @param key
@@ -255,5 +398,68 @@ export class typedProperties {
 
         // logger.debug(`type ${type}.${key} is ${(property[key].type || '')}`);
         return (property[key].type || '') === 'numeric';
+    }
+
+    public static isKeyReferencePath(path: string): boolean {
+        const match = this.keyReferenceTypes.indexOf(path) !== -1;
+        if (match) {
+            return true;
+        }
+
+        // allow regex
+        for (const regex of this.keyReferenceTypesRegexes) {
+            if (regex.exec(path)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static isKeyValueReferencePath(path: string) {
+        return this.keyValueReferenceTypes.indexOf(path) !== -1;
+    }
+
+    private static addTypeLinks() {
+        for (const link in typeLinks) {
+            if (link.startsWith('/') && link.endsWith('/')) {
+                continue;
+            }
+
+            // const target = ;
+            const newLink = link.split('.').slice(0, -1).join('.');
+            const key = link.split('.').slice(-1).join('.');
+
+            // console.log(`new link ${newLink} new key ${key}`);
+            if (!(newLink in this.typeProperties)) {
+                this.typeProperties[newLink] = {};
+            }
+
+            let links = typeLinks[link];
+            let numeric = false;
+            if (links.find(item => item === '_numeric_')) {
+                numeric = true;
+                links = links.filter(item => item !== '_numeric_');
+                // also remove from typeLinks itself
+                typeLinks[link] = links;
+            }
+
+            // TODO what if there is more?
+            this.typeProperties[newLink][key] = {
+                target: links[0]
+            };
+
+            if (numeric) {
+                this.typeProperties[newLink][key].type = 'numeric';
+            }
+        }
+    }
+
+    private static loadRegexes () {
+        for (const type in this.keyReferenceTypes) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.keyReferenceTypesRegexes.push(new RegExp(type.slice(1, -1)));
+            }
+        }
     }
 }

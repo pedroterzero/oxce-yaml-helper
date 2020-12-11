@@ -16,6 +16,11 @@
             "outFiles": [
                 "${workspaceFolder}/out/**/*.js"
             ],
+            "skipFiles": [
+                "<node_internals>/**/*.js",
+                // "/home/*/.vscode/extensions/**/*.js", // find out how to get extensions path cross platform
+                // "**/vs/workbench/services/extensions/node/extensionHostProcess.js" // might be a terrible idea
+            ],
             "preLaunchTask": "npm: watch"
         },
         {

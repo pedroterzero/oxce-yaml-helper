@@ -5,6 +5,7 @@ import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';
 import { RulesetHoverProvider } from './rulesetHoverProvider';
+import { ConfigurationWatcher } from './configurationWatcher';
 
 export const rulesetResolver = new RulesetResolver();
 
@@ -17,6 +18,7 @@ function loadWithProgress(): void{
 
 export function activate(context: ExtensionContext) {
     loadWithProgress();
+    rulesetResolver.setExtensionContent(context);
     context.subscriptions.push(rulesetResolver);
     context.subscriptions.push(workspace.onDidChangeWorkspaceFolders(() => loadWithProgress()));
 
@@ -28,4 +30,6 @@ export function activate(context: ExtensionContext) {
 
     // load the recommender
     new ExtensionRecommender;
+    // and config watcher
+    new ConfigurationWatcher;
 }

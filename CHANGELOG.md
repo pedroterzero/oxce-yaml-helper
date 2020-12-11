@@ -1,3 +1,10 @@
+# v0.4.0
+Too much to name, but biggest new features are:
+- Reference checking
+- Translation hover
+- Duplicate definition checking.
+- Under the hood almost everything was rewritten.
+
 # v0.3.7
 - Fix documentation hover
 - No longer offer 'go to definition' for numeric properties that are not linked

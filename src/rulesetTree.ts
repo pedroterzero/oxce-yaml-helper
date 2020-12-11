@@ -9,6 +9,7 @@ export type RuleType = { type: string; key: string; metadata?: Record<string, un
 type BaseDefinition = {
     type: string,
     range: [number, number],
+    rangePosition: [[number, number], [number, number]],
     metadata?: Record<string, unknown>
 };
 
@@ -21,6 +22,14 @@ export type Translation = {
     language: string,
     key: string,
     value: string
+}
+
+export type Match = {
+    key: string,
+    path: string,
+    range: [number, number],
+    rangePosition?: [[number, number], [number, number]],
+    metadata?: Record<string, unknown>
 }
 
 export type Definition = BaseDefinition & {
@@ -52,12 +61,20 @@ export class RulesetTree {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeIntoRulesetTree(definitions, sourceFile);
     }
 
+    public mergeReferencesIntoTree(definitions: Match[], workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeReferencesIntoRulesetTree(definitions, sourceFile);
+    }
+
     public mergeVariablesIntoTree(variables: Variables, workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeVariablesIntoRulesetTree(variables, sourceFile);
     }
 
     public mergeTranslationsIntoTree(translations: Translation[], workspaceFolder: WorkspaceFolder, sourceFile: Uri) {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeTranslationsIntoTree(translations, sourceFile);
+    }
+
+    public deleteFileFromTree(workspaceFolder: WorkspaceFolder, file: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.deleteFileFromTree(file);
     }
 
     public getWorkspaceFolders(): WorkspaceFolder[] {
@@ -96,9 +113,22 @@ export class RulesetTree {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getNumberOfParsedDefinitionFiles();
     }
 
-    public getTranslation(key: string, workspaceFolder: WorkspaceFolder): any {
+    public getTranslation(key: string, workspaceFolder: WorkspaceFolder): string | undefined {
         logger.debug(`getTranslation key ${key} workspaceFolder ${workspaceFolder}`);
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getTranslation(key);
+    }
+
+    public refresh(workspaceFolder: WorkspaceFolder) {
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.refresh();
+    }
+
+    public getDiagnosticCollection(workspaceFolder: WorkspaceFolder) {
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getDiagnosticCollection();
+    }
+
+    public checkDefinitions(workspaceFolder: WorkspaceFolder, assetUri: Uri): any {
+        logger.debug(`checkDefinitions workspaceFolder ${workspaceFolder}`);
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.checkDefinitions(assetUri);
     }
 }
 

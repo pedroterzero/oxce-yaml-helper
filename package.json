@@ -1,8 +1,8 @@
 {
     "name": "oxc-yaml-helper",
-    "displayName": "OpenXcom (Extended) YAML Helper",
-    "description": "Provides go to definition support for OpenXcom (extended) mods, among other things",
-    "version": "0.3.7",
+    "displayName": "OpenXcom Ruleset Linker",
+    "description": "This extension aims to turn Visual Studio code into an OpenXcom ruleset modding IDE. It links rulesets so you can easily navigate between linked rules. It checks for problems in the rulesets, and a lot of other things.",
+    "version": "0.4.0",
     "author": {
         "name": "pedroterzero"
     },
@@ -25,39 +25,31 @@
     "contributes": {
         "configuration": {
             "type": "object",
-            "title": "OpenXcom (Extended) YAML Helper",
+            "title": "OpenXcom Ruleset Linker",
             "properties": {
-                "oxcYamlHelper.debugLevel": {
-                    "type": [
-                        "integer"
-                    ],
-                    "enum": [
-                        0,
-                        1,
-                        2,
-                        3
-                    ],
-                    "default": 1,
-                    "description": "logging verbosity (0 = all logs, 3 = only errors)"
-                },
                 "oxcYamlHelper.ruleFilesPattern": {
-                    "type": [
-                        "string"
-                    ],
+                    "type": "string",
                     "default": "**/*.rul",
                     "description": "Rules files location (i.e. Rulesets/**/*.rul)"
                 },
                 "oxcYamlHelper.translationLocale": {
-                    "type": [
-                        "string"
-                    ],
+                    "type": "string",
                     "default": "en-US",
                     "description": "Locale to use when showing translations on hovering"
                 },
-                "oxcYamlHelper.showDocumentationHover": {
-                    "type": [
-                        "string"
+                "oxcYamlHelper.cacheStrategy": {
+                    "type": "string",
+                    "enum": [
+                        "all",
+                        "only cache languages",
+                        "only cache languages, assets",
+                        "only cache assets",
+                        "nothing"
                     ],
+                    "default": "all"
+                },
+                "oxcYamlHelper.showDocumentationHover": {
+                    "type": "string",
                     "enum": [
                         "yes",
                         "short",
@@ -66,31 +58,33 @@
                     "default": "yes",
                     "description": "Show documentation for properties on hover. It can be disabled if you find it annoying. By default it shows the full documentation entry, `short` only shows the first line"
                 },
-                "oxcYamlHelper.attemptCRLFFix": {
-                    "type": [
-                        "boolean"
+                "oxcYamlHelper.validateCategories": {
+                    "type": "string",
+                    "enum": [
+                        "yes",
+                        "no",
+                        "always"
                     ],
-                    "default": true,
-                    "description": "Attempt to work around files using CRLF. If you're having problems with wrong positions, disable this and convert rulesets to LF"
+                    "default": "yes",
+                    "markdownDescription": "Performs checks on categories. These seem to be undefined a lot of the time, so the check can be turned off here."
+                },
+                "oxcYamlHelper.findDuplicateDefinitions": {
+                    "type": "boolean",
+                    "default": "false",
+                    "markdownDescription": "Finds duplicate definitions. For example if a research called `STR_MEDI_KIT` is defined twice, it will tell you. Disabled by default for now."
                 },
                 "oxcYamlHelper.prompts.noRecommendImagePreview": {
-                    "type": [
-                        "boolean"
-                    ],
+                    "type": "boolean",
                     "default": false,
                     "description": "Stop prompting for Image Preview extension"
                 },
                 "oxcYamlHelper.prompts.noRecommendOpenXcomFtaRulesetTools": {
-                    "type": [
-                        "boolean"
-                    ],
+                    "type": "boolean",
                     "default": false,
                     "description": "Stop prompting for OpenXCOM FtA Ruleset Tools extension"
                 },
                 "oxcYamlHelper.prompts.noRecommendOpenXcomRulesetTools": {
-                    "type": [
-                        "boolean"
-                    ],
+                    "type": "boolean",
                     "default": false,
                     "description": "Stop prompting for OpenXCOM Ruleset Tools extension"
                 }
@@ -107,13 +101,16 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
+        "vscode:prepublish": "npm run build",
+        "build": "npm run compile && cp -a src/assets/xcom1 out/assets/xcom1",
+        "clean": "rm -rf out/*",
+        "compile": "npm run clean && tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
+        "postinstall": "#node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
+        "@types/flat-cache": "^2.0.0",
         "@types/node": "^14.14.7",
         "@types/vscode": "^1.51.0",
         "@typescript-eslint/eslint-plugin": "^4.7.0",
@@ -123,6 +120,8 @@
     },
     "dependencies": {
         "deepmerge": "^4.2.2",
+        "dot-prop": "^6.0.1",
+        "flat-cache": "^3.0.4",
         "yaml": "^1.10.0"
     }
 }
