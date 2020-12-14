@@ -3,6 +3,9 @@
     "files.exclude": {
         "*.vsix": true,
         ".history/**": true,
+        "coverage": true,
+        ".nyc_output": true,
+        ".vscode-test": true,
         "out": false
     },
     "files.watcherExclude": {

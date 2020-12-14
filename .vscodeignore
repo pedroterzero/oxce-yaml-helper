@@ -15,3 +15,5 @@ node_modules/**/*.ts
 node_modules/yaml/browser
 .history
 *.patch
+coverage
+.nyc_output
