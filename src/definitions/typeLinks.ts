@@ -8,6 +8,7 @@ type TypeLinks = {
 const ftaTypeLinks: TypeLinks = {
     'alienDeployments.battleScript': ['battleScripts'],
     'battleScripts.commands[].unitSet': ['units'],
+    '/^battleScripts\\.commands\\[\\]\\.messages\\.\\d+\\.background$/': ['extraSprites'],
     'covertOperations.successEvent': ['events'],
     'covertOperations.failureEvent': ['events'],
     'covertOperations.progressEvent': ['events'],

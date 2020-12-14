@@ -41,6 +41,7 @@ export class RulesetDefinitionChecker {
 
     private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
     private typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
+    private stringTypeRegexes: RegExp[] = [];
 
     private ignoreTypeValues: {[key: string]: string[]} = {
         'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
@@ -427,7 +428,7 @@ export class RulesetDefinitionChecker {
             // ignore these assorted types for now
             return false;
         }
-        if (stringTypes.indexOf(ref.path) !== -1) {
+        if (this.isExtraStringType(ref.path)) {
             // ignore extraStrings for now
             return false;
         }
@@ -447,6 +448,20 @@ export class RulesetDefinitionChecker {
         }
 
         return true;
+    }
+
+    private isExtraStringType(path: string) {
+        if (stringTypes.includes(path)) {
+            return true;
+        }
+
+        for (const regex of this.stringTypeRegexes) {
+            if (regex.exec(path)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private matchesBuiltinTypeRegex(path: string, key: string): boolean {
@@ -487,6 +502,14 @@ export class RulesetDefinitionChecker {
                 });
 
                 delete typeLinks[type];
+            }
+        }
+
+        for (const type of stringTypes) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.stringTypeRegexes.push(new RegExp(type.slice(1, -1)));
+
+                // stringTypes = stringTypes.filter(fType => fType !== type);
             }
         }
     }
