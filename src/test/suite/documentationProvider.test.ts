@@ -29,5 +29,9 @@ describe("documentationProvider", () => {
                 assert.strictEqual(doc, entry.documentation);
             }
         });
+
+        it('returns nothing on invalid property', () => {
+            assert.strictEqual(undefined, documentationProvider.getDocumentationForProperty('bar', 'foo'));
+        });
     });
 });

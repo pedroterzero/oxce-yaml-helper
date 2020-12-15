@@ -29,9 +29,4 @@ export class RulesetDefinitionProvider implements DefinitionProvider {
 
         return rulesetParser.getDefinitionsByName(folder, value.key, ruleType);
     }
-
-    /** @private @deprecated only for testing, do not use (we can't mock TextDocument) */
-    public _testGetDefinitions(value: { key: string; range: Range; }, folder: WorkspaceFolder) {
-        return this.getDefinitions(value, folder);
-    }
 }
