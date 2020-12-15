@@ -1,7 +1,5 @@
 import * as assert from 'assert';
-import { DocumentationProvider } from '../../documentationProvider';
-
-const documentationProvider = new DocumentationProvider();
+import { documentationProvider } from '../../documentationProvider';
 
 const expectedDocumentation = [
     {

@@ -27,7 +27,7 @@ const map: {[key: string]: {to: string, prefix: boolean}} = {
     }
 };
 
-export class DocumentationProvider {
+class DocumentationProvider {
     public getDocumentationForProperty(baseProperty: string, baseType: string | undefined): string | undefined {
         const { type, property } = this.getOverride(baseType, baseProperty);
 
