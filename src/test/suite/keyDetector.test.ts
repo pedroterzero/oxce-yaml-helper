@@ -12,6 +12,8 @@ before(async () => {
     return waitForExtensionLoad(rulesetResolver);
 });
 
+const mockPosition = new Position(1, 18);
+
 describe("keyDetector", () => {
     describe('isValidKey', () => {
         it('validates keys', () => {
@@ -22,7 +24,7 @@ describe("keyDetector", () => {
     describe('getRangeOfKeyAtPosition', () => {
         it('finds range for a key', async () => {
             const document = await workspace.openTextDocument(itemsPath);
-            const range = KeyDetector.getRangeOfKeyAtPosition(new Position(1, 18), document, false);
+            const range = KeyDetector.getRangeOfKeyAtPosition(mockPosition, document, false);
             assert.deepStrictEqual(new Range(1, 10, 1, 24), range);
         });
     });
@@ -80,13 +82,12 @@ describe("keyDetector", () => {
     describe('getAbsoluteKeyFromPositionInDocument', () => {
         it('finds key and range for a position', async () => {
             const document = await workspace.openTextDocument(itemsPath);
-            const position = new Position(1, 18);
             const expectedResult = {
                 key: 'STR_DUMMY_ITEM',
                 range: new Range(1, 10, 1, 24),
             };
 
-            assert.deepStrictEqual(expectedResult, KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document, false));
+            assert.deepStrictEqual(expectedResult, KeyDetector.getAbsoluteKeyFromPositionInDocument(mockPosition, document, false));
         });
 
         it('finds key and range for a position that is a key (not a value)', async () => {
@@ -98,6 +99,16 @@ describe("keyDetector", () => {
             };
 
             assert.deepStrictEqual(expectedResult, KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document, true));
+        });
+    });
+
+    describe('findRuleType', () => {
+        it('finds rule type for a position', async () => {
+            const document = await workspace.openTextDocument(itemsPath);
+            // const range = new Range(1, 10, 1, 24);
+
+            const ruleType = KeyDetector.findRuleType(mockPosition, document);
+            assert.strict('items', ruleType);
         });
     });
 });
