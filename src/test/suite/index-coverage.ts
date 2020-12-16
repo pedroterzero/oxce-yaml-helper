@@ -1,6 +1,7 @@
 import * as glob from "glob";
 import * as Mocha from "mocha";
 import * as path from "path";
+import { report } from "process";
 
 function setupNyc() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -61,12 +62,8 @@ export function run(): Promise <void> {
                 // Run the mocha test
                 mocha.run(async (failures) => {
                     if (nyc) {
-                        await new Promise<void>((resolve) => {
-                            nyc.writeCoverageFile();
-                            nyc.report().then(() => {
-                                resolve();
-                            });
-                        });
+                        nyc.writeCoverageFile();
+                        await nyc.report();
                     }
 
                     if (failures > 0) {
