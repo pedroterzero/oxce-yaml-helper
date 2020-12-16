@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import * as path from 'path';
-import { Uri, WorkspaceFolder } from 'vscode';
-import { RulesetTree } from '../../rulesetTree';
+import { Uri, workspace, WorkspaceFolder } from 'vscode';
+import { RulesetTree, rulesetTree as fixtureRulesetTree } from '../../rulesetTree';
 
 const fixturePath = path.resolve(__dirname, '../../../src/test/suite/fixtures');
 // const itemsPath = path.resolve(fixturePath, 'items.rul');const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
@@ -53,8 +53,8 @@ describe('rulesetTree', () => {
         value: 'Mock Item 2'
     };
 
-    const assertDefinitionExists = (tree: RulesetTree, item: typeof mockDefinition, shouldExist = true) => {
-        const matches = tree.getDefinitionsByName(item.name, mockWorkSpaceFolder, undefined);
+    const assertDefinitionExists = (tree: RulesetTree, item: typeof mockDefinition, shouldExist = true, workspace = mockWorkSpaceFolder) => {
+        const matches = tree.getDefinitionsByName(item.name, workspace, undefined);
         assert.strictEqual(matches?.length, shouldExist ? 1 : 0);
         if (shouldExist) {
             assert.notStrictEqual(matches.find(match => match.type === item.type), undefined);
@@ -110,6 +110,28 @@ describe('rulesetTree', () => {
                 const matches = rulesetTree.getDefinitionsByName(mockDefinition.name, mockWorkSpaceFolder, undefined);
                 assert.strictEqual(matches?.length, 0);
             });
+        });
+    });
+
+    describe('getDefinitionsByName', () => {
+        const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
+
+        it('can retrieve a vanilla definition', () => {
+            assertDefinitionExists(fixtureRulesetTree, {
+                type: 'items',
+                name: 'STR_AVALANCHE_LAUNCHER',
+                range: [0, 0],
+                rangePosition: [[0, 0], [0, 0]],
+            }, true, workspaceFolder);
+        });
+
+        it('can not retrieve a deleted vanilla definition', () => {
+            assertDefinitionExists(fixtureRulesetTree, {
+                type: 'items',
+                name: 'STR_AVALANCHE_MISSILES',
+                range: [0, 0],
+                rangePosition: [[0, 0], [0, 0]],
+            }, false, workspaceFolder);
         });
     });
 

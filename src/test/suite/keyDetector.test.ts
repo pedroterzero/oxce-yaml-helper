@@ -14,7 +14,7 @@ before(async () => {
 
 const mockPosition = new Position(1, 18);
 
-describe("keyDetector", () => {
+describe('keyDetector', () => {
     describe('isValidKey', () => {
         it('validates keys', () => {
             assert.strictEqual(true, KeyDetector.isValidKey('foobar'));

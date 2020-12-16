@@ -9,14 +9,6 @@ const itemsPath = resolve(fixturePath, 'items.rul');
 const itemsUri = Uri.file(itemsPath);
 let originalSetting: string | undefined;
 
-before(() => {
-    originalSetting = workspace.getConfiguration('oxcYamlHelper').get<string>('cacheStrategy');
-});
-
-after(async () => {
-    await workspace.getConfiguration('oxcYamlHelper').update('cacheStrategy', originalSetting);
-});
-
 const mockData = {
     translations: [
         {language: 'en-US', key: 'STR_DUMMY', value: 'DUMMY'}
@@ -24,6 +16,15 @@ const mockData = {
 };
 
 const mockFile = resolve(fixturePath, 'mock.txt');
+
+
+before(() => {
+    originalSetting = workspace.getConfiguration('oxcYamlHelper').get<string>('cacheStrategy');
+});
+
+afterEach(async () => {
+    await workspace.getConfiguration('oxcYamlHelper').update('cacheStrategy', originalSetting);
+});
 
 describe('rulesetFileCacheManager', () => {
     describe('put', () => {

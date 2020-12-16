@@ -42,6 +42,28 @@ describe("Definition Provider", () => {
             assert.strictEqual(definitions[0].range.end.line, 1);
             assert.strictEqual(definitions[0].range.end.character, 24);
         });
+
+        it('finds refnode definition', async () => {
+            const document = await workspace.openTextDocument(itemsPath);
+            const definition = rulesetDefinitionProvider.provideDefinition(document, new Position(5, 15));
+            const uri = Uri.file(itemsPath);
+
+            if (!definition) {
+                assert.fail('Did not get a definition');
+                return;
+            }
+
+            if (!('uri' in definition)) {
+                assert.fail('Did not get a definition');
+                return;
+            }
+
+            assert.strictEqual(definition.uri.path, uri.path);
+            assert.strictEqual(definition.range.start.line, 2);
+            assert.strictEqual(definition.range.start.character, 10);
+            assert.strictEqual(definition.range.end.line, 2);
+            assert.strictEqual(definition.range.end.character, 28);
+        });
     });
 
 /*     describe('getDefinitions', () => {

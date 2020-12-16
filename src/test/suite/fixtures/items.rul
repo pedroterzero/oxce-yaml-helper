@@ -1,3 +1,8 @@
 items:
   - type: STR_DUMMY_ITEM
-    size: 0.1
+    size: &TestReference 0.1
+
+  - type: STR_DUMMY_ITEM2
+    size: *TestReference
+
+  - delete: STR_AVALANCHE_MISSILES

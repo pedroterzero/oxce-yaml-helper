@@ -19,8 +19,12 @@ import { waitForExtensionLoad } from './tools';
 
 const fixturePath = path.resolve(__dirname, '../../../src/test/suite/fixtures');
 
-before(() => {
-    return waitForExtensionLoad(rulesetResolver);
+before(async () => {
+    // open a doc (some stuff needs it to be open, like the recommender)
+    const document = await workspace.openTextDocument(Uri.file(fixturePath + '/items.rul'));
+    await window.showTextDocument(document);
+
+    await waitForExtensionLoad(rulesetResolver);
 });
 
 describe('Extension Test Suite', () => {

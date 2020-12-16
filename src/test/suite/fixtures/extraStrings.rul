@@ -2,3 +2,9 @@ extraStrings:
   - type: en-US
     strings:
       STR_DUMMY_ITEM: Dummy
+  # intentionally broken entries
+  - foo: en-US
+  - type: 0
+    strings: "foo"
+  - type: en-GB
+    strings: "foo"
