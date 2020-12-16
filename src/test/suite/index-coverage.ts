@@ -23,18 +23,18 @@ function setupNyc() {
         hookRunInContext: true,
         hookRunInThisContext: true,
         instrument: true,
-        reporter: ["text", "html"],
+        reporter: ["html"/*, "text"*/],
         require: [
             "ts-node/register",
         ],
         sourceMap: true,
     });
-    // nyc.reset();
+    nyc.reset();
     nyc.wrap();
     return nyc;
 }
 
-export function run(): Promise < void > {
+export function run(): Promise <void> {
 
     const nyc = setupNyc();
 
@@ -59,7 +59,16 @@ export function run(): Promise < void > {
 
             try {
                 // Run the mocha test
-                mocha.run((failures) => {
+                mocha.run(async (failures) => {
+                    if (nyc) {
+                        await new Promise<void>((resolve) => {
+                            nyc.writeCoverageFile();
+                            nyc.report().then(() => {
+                                resolve();
+                            });
+                        });
+                    }
+
                     if (failures > 0) {
                         e(new Error(`${failures} tests failed.`));
                     } else {
@@ -69,11 +78,6 @@ export function run(): Promise < void > {
             } catch (err) {
                 console.error(err);
                 e(err);
-            } finally {
-                if (nyc) {
-                    nyc.writeCoverageFile();
-                    nyc.report();
-                }
             }
         });
     });
