@@ -19,7 +19,7 @@
         "Other"
     ],
     "activationEvents": [
-        "workspaceContains:**/*.rul"
+        "onStartupFinished"
     ],
     "main": "./out/extension",
     "contributes": {

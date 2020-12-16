@@ -13,7 +13,7 @@ function setupNyc() {
             ".attic",
             ".history",
             "node_modules",
-            "**/**.test.js",
+            "out/test/**",
         ],
         extension: [
             ".ts",
@@ -23,13 +23,13 @@ function setupNyc() {
         hookRunInContext: true,
         hookRunInThisContext: true,
         instrument: true,
-        reporter: ["text", "html", "cobertura"],
+        reporter: ["text", "html"],
         require: [
             "ts-node/register",
         ],
         sourceMap: true,
     });
-    nyc.reset();
+    // nyc.reset();
     nyc.wrap();
     return nyc;
 }
@@ -67,7 +67,6 @@ export function run(): Promise < void > {
                     }
                 });
             } catch (err) {
-                // tslint:disable-next-line: no-console
                 console.error(err);
                 e(err);
             } finally {

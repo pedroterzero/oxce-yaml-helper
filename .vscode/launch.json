@@ -32,7 +32,7 @@
                 "--disable-extensions",
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 // "--extensionTestsPath=${workspaceFolder}/out/test/suite/index-coverage",
-                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index",
+                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index-coverage",
                 "${workspaceFolder}/src/test/suite/fixtures"
             ],
             "outFiles": [
