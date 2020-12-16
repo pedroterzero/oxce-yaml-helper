@@ -16,6 +16,11 @@ const expectedDocumentation = [
         type: 'constants',
         property: 'extendedItemReloadCost',
         documentation: "If set to true, the item reload cost equals to \"cost of moving ammo to hand\" + \"cost of reload\".\n\n**Default: false**"
+    },
+    {
+        type: 'ai',
+        property: 'useDelayFirearm',
+        documentation: "Defines a turn, from which the aliens are allowed to use firearms.\n\n**Default: 0**"
     }
 ];
 

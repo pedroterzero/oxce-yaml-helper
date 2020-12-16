@@ -1,0 +1,4 @@
+{
+    "oxcYamlHelper.findDuplicateDefinitions": true,
+    "oxcYamlHelper.cacheStrategy": "nothing"
+}
