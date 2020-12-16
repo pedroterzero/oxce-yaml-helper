@@ -297,7 +297,7 @@ export class RulesetResolver implements Disposable {
                 parsed = {definitions, references, variables, translations};
             }
 
-            rulesetFileCacheManager.put(file, parsed);
+            await rulesetFileCacheManager.put(file, parsed);
 
             return parsed;
         } catch (error) {

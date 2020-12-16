@@ -1,7 +1,6 @@
 import * as glob from "glob";
 import * as Mocha from "mocha";
 import * as path from "path";
-import { report } from "process";
 
 function setupNyc() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
