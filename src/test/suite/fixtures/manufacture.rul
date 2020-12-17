@@ -1,0 +1,4 @@
+manufacture:
+  - name: STR_DUMMY_MANUFACTURE
+    requiredItems:
+      STR_DUMMY_ITEM: 1

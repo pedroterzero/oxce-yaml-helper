@@ -21,6 +21,7 @@ export class RulesetResolver implements Disposable {
     private fileSystemWatcher?: FileSystemWatcher;
     private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
+    private readonly onDidRefreshEmitter: EventEmitter = new EventEmitter();
     private rulesetHierarchy: {[key: string]: Uri} = {};
     private processingFiles: {[key: string]: boolean} = {};
     private deletingFiles: {[key: string]: boolean} = {};
@@ -65,6 +66,14 @@ export class RulesetResolver implements Disposable {
         this.onDidLoadEmitter.addListener('didLoadRulesheet', listener);
     }
 
+    public onDidRefresh(listener: () => void) {
+        this.onDidRefreshEmitter.addListener('didRefresh', listener);
+    }
+
+    public removeOnDidRefresh(listener: () => void) {
+        this.onDidRefreshEmitter.removeListener('didRefresh', listener);
+    }
+
     private init(): void {
         logger.debug('init');
 
@@ -96,6 +105,7 @@ export class RulesetResolver implements Disposable {
 
        logger.info(`refreshing workspace folder rulesets`);
        this.refreshWorkspaceFolderRulesets();
+       this.onDidRefreshEmitter.emit('didRefresh');
     }
 
     private async loadYamlFiles(): Promise<undefined | void[][]> {
