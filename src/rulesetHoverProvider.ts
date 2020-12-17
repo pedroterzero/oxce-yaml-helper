@@ -24,11 +24,7 @@ export class RulesetHoverProvider implements HoverProvider {
         return;
     }
 
-    private provideTranslationHover(value: KeyMatch | undefined): Hover | undefined {
-        if (!value?.key) {
-            return;
-        }
-
+    private provideTranslationHover(value: KeyMatch): Hover | undefined {
         const text = rulesetResolver.getTranslationForKey(value.key);
         if (text) {
             logger.debug(`provideHover for ${value.key} = ${text}`);
@@ -39,12 +35,8 @@ export class RulesetHoverProvider implements HoverProvider {
         return;
     }
 
-    private providePropertyHover(value: KeyMatch | undefined): Hover | undefined {
+    private providePropertyHover(value: KeyMatch): Hover | undefined {
         if (workspace.getConfiguration('oxcYamlHelper').get<string>('showDocumentationHover') === 'no') {
-            return;
-        }
-
-        if (!value?.key) {
             return;
         }
 

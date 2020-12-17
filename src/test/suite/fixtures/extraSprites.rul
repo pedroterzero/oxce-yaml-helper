@@ -1,0 +1,15 @@
+extraSprites:
+  - type: Projectiles
+    height: 3
+    width: 65
+    subX: 3
+    subY: 3
+    files:
+      700: Resources/Weapons/Projectiles/LMG_bullet.png
+  - type: Projectiles
+    height: 6 # should provide 730 and 770, edge case
+    width: 65
+    subX: 3
+    subY: 3
+    files:
+      735: Resources/Weapons/Projectiles/LMG_bullet.png

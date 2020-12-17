@@ -9,4 +9,10 @@ items:
     flatRate: false
     dummy: "dummy" # intentional
 
+  - type: STR_BULLETSPRITE_TEST
+    bulletSprite: 20
+
+  - type: STR_BULLETSPRITE_MULTI_TEST
+    bulletSprite: 22
+
   - delete: STR_AVALANCHE_MISSILES
