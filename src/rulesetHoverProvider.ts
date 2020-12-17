@@ -8,6 +8,9 @@ export class RulesetHoverProvider implements HoverProvider {
 
     public provideHover(document: TextDocument, position: Position): Hover | undefined {
         const value = KeyDetector.getAbsoluteKeyFromPositionInDocument(position, document, true);
+        if (!value) {
+            return;
+        }
 
         const translation = KeyDetector.isValidTranslationKey(value);
         if (translation !== undefined) {
