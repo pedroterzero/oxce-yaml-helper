@@ -5,11 +5,20 @@ extraSprites:
     subX: 3
     subY: 3
     files:
-      700: Resources/Weapons/Projectiles/LMG_bullet.png
+      700: Dummy1.png
   - type: Projectiles
     height: 6 # should provide 730 and 770, edge case
     width: 65
     subX: 3
     subY: 3
     files:
-      735: Resources/Weapons/Projectiles/LMG_bullet.png
+      735: Dummy2.png
+
+# companion to STR_UNDEFINABLE_NUMERIC_PROPERTY (should not be found)
+  - type: BIGOBS.PCK
+    files:
+      100: Dummy3.png
+
+# test ignoreType for fileSingle
+  - typeSingle: DUMMY
+    fileSingle: DUMMY_IGNORE_TYPE

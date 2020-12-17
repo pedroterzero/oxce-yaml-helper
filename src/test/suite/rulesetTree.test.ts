@@ -5,6 +5,7 @@ import { RulesetTree, rulesetTree as fixtureRulesetTree } from '../../rulesetTre
 
 const fixturePath = path.resolve(__dirname, '../../../src/test/suite/fixtures');
 // const itemsPath = path.resolve(fixturePath, 'items.rul');const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
+const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
 
 describe('rulesetTree', () => {
     let rulesetTree: RulesetTree;
@@ -61,12 +62,16 @@ describe('rulesetTree', () => {
         }
     };
 
-    const assertReferenceExists = (tree: RulesetTree, item: typeof mockReference, shouldExist = true) => {
-        const matches = tree.getReferences(mockWorkSpaceFolder)?.filter(ref => ref.key === item.key);
+    const assertReferenceExists = (tree: RulesetTree, item: typeof mockReference, shouldExist = true, workspace = mockWorkSpaceFolder) => {
+        const matches = tree.getReferences(workspace)?.filter(ref => ref.key === item.key);
         assert.strictEqual(matches?.length, shouldExist ? 1 : 0);
-        // if (shouldExist) {
-        //     assert.notStrictEqual(matches.find(ref => ref.path === item.path), undefined);
-        // }
+        if (shouldExist) {
+            const match = matches.find(ref => ref.path === item.path);
+            assert.notStrictEqual(match, undefined);
+            return match;
+        }
+
+        return;
     };
 
     const assertTranslationExists = (tree: RulesetTree, item: typeof mockTranslation, shouldExist = true) => {
@@ -234,6 +239,53 @@ describe('rulesetTree', () => {
         });
     });
 
+    describe('getReferences', () => {
+        // uses fixtures
+        it('can get a key-value reference', () => {
+            assertReferenceExists(fixtureRulesetTree, {
+                key: 'STR_DUMMY_UNIT1',
+                path: 'items.zombieUnitByType.key',
+                range: [0, 0],
+            }, true, workspaceFolder);
+
+            assertReferenceExists(fixtureRulesetTree, {
+                key: 'STR_DUMMY_ZOMBIE_UNIT1',
+                path: 'items.zombieUnitByType.value',
+                range: [0, 0],
+            }, true, workspaceFolder);
+        });
+
+        it('can get an array reference', () => {
+            assertReferenceExists(fixtureRulesetTree, {
+                key: 'STR_DUMMY_AMMO',
+                path: 'items.compatibleAmmo',
+                range: [0, 0],
+            }, true, workspaceFolder);
+        });
+
+        it('can get a nested key reference', () => {
+            // if (workspaceFolder) {
+            //     const refs = fixtureRulesetTree.getReferences(workspaceFolder);
+            //     console.log(refs);
+            // }
+
+            assertReferenceExists(fixtureRulesetTree, {
+                key: 'STR_DUMMY_NESTED_ITEM',
+                path: 'manufacture.randomProducedItems[][]',
+                range: [0, 0],
+            }, true, workspaceFolder);
+        });
+
+        it('can get a reference with a comment', () => {
+            const reference = assertReferenceExists(fixtureRulesetTree, {
+                key: 'STR_COMMENT_TEST',
+                path: 'items.type',
+                range: [0, 0],
+            }, true, workspaceFolder);
+
+            assert.strictEqual('commentTest', reference!.metadata!._comment);
+        });
+    });
 
     describe('refresh', () => {
         beforeEach(() => {

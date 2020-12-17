@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import { readFile, remove, writeFile } from 'fs-extra';
 import * as path from 'path';
-import { Location, Position, Uri, workspace } from 'vscode';
+import { EndOfLine, Location, Position, Uri, window, workspace } from 'vscode';
 import { rulesetResolver } from '../../extension';
 import { RulesetDefinitionProvider } from '../../rulesetDefinitionProvider';
 import { RulesetResolver } from '../../rulesetResolver';
@@ -59,8 +59,8 @@ const deleteTestFile = async (path: string, resolver: RulesetResolver) => {
     const contents = await readFile(path);
 
     await Promise.all([
-        remove(path),
-        waitForRefresh(resolver)
+        waitForRefresh(resolver),
+        remove(path)
     ]);
 
     return contents;
@@ -84,6 +84,30 @@ describe("Definition Provider", () => {
             await checkDefinitions(itemsPath, 15, 19, extraSpritesUri, 14, 6, 14, 9);
         });
 
+        it('finds definition for a key with a comment', async () => {
+            await checkDefinitions(itemsPath, 32, 14, itemsUri, 32, 10, 32, 40);
+        });
+
+        it('finds definition in correct place for CRLF files', async () => {
+            const document = await workspace.openTextDocument(itemsPath);
+            const editor = await window.showTextDocument(document);
+
+            await editor.edit(builder => { builder.setEndOfLine(EndOfLine.CRLF); });
+            // save and wait for refresh so we check both CRLF=>LF and vice versa
+            await document.save();
+            await waitForRefresh(rulesetResolver);
+
+            // same as above
+            await checkDefinitions(itemsPath, 1, 18, itemsUri, 1, 10, 1, 24);
+            await checkDefinitions(itemsPath, 12, 19, extraSpritesUri, 7, 6, 7, 9);
+            await checkDefinitions(itemsPath, 15, 19, extraSpritesUri, 14, 6, 14, 9);
+
+            // restore
+            await editor.edit(builder => { builder.setEndOfLine(EndOfLine.LF); });
+            await document.save();
+            await waitForRefresh(rulesetResolver);
+        });
+
         it('does not find deleted definitions', async () => {
             await checkDefinitions(manufacturePath, 3, 8, itemsUri, 1, 10, 1, 24);
 
@@ -92,6 +116,14 @@ describe("Definition Provider", () => {
 
             // restore file
             await writeFile(itemsPath, contents);
+        });
+
+        it('does not find a undefinable numeric property', async () => {
+            await checkDefinitions(itemsPath, 23, 15);
+        });
+
+        it('does not find a quoted string id', async () => {
+            await checkDefinitions(itemsPath, 37, 14);
         });
 
         it('finds refnode definition', async () => {

@@ -15,4 +15,26 @@ items:
   - type: STR_BULLETSPRITE_MULTI_TEST
     bulletSprite: 22
 
+  - type: STR_KEY_VALUE_REFERENCE_TYPE
+    zombieUnitByType:
+      STR_DUMMY_UNIT1: STR_DUMMY_ZOMBIE_UNIT1
+      STR_DUMMY_UNIT2: STR_DUMMY_ZOMBIE_UNIT2
+
+  - type: STR_UNDEFINABLE_NUMERIC_PROPERTY
+    costBuy: 100
+
+  - type: STR_METADATA_TEST
+    damageType: 1
+
+  - type: STR_ARRAY_REFERENCE
+    compatibleAmmo:
+      - STR_DUMMY_AMMO
+
+  - type: STR_COMMENT_TEST # commentTest
+
+  # empty type test
+  #- type:
+  # string type test
+  - type: 'STR_FOOBAR'
+
   - delete: STR_AVALANCHE_MISSILES
