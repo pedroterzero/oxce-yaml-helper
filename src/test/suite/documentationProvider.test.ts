@@ -24,7 +24,7 @@ const expectedDocumentation = [
     }
 ];
 
-describe("documentationProvider", () => {
+describe('documentationProvider', () => {
     describe('getDocumentationForProperty', () => {
         it('returns the correct documentation', () => {
             for (const entry of expectedDocumentation) {

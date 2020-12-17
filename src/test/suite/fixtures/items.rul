@@ -5,4 +5,8 @@ items:
   - type: STR_DUMMY_ITEM2
     size: *TestReference
 
+  - type: STR_DUMMY_ITEM3
+    flatRate: false
+    dummy: "dummy" # intentional
+
   - delete: STR_AVALANCHE_MISSILES
