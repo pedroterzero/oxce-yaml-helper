@@ -37,4 +37,25 @@ items:
   # string type test
   - type: 'STR_FOOBAR'
 
+  - type: STR_DUPLICATE_CHECK
+  - type: STR_DUPLICATE_CHECK
+
+  - type: STR_REGEX_REF_INCORRECT_TARGET
+    ammo:
+      0:
+        compatibleAmmo: [ STR_DUMMY_MANUFACTURE ]
+
+### MISSING
+### MISSING
+
+  - type: STR_HIT_ANIMATION_TEST
+    hitAnimation: 88
+    damageType: 9
+    blastRadius: 5
+
+  - type: STR_HIT_ANIMATION_TEST_INCORRECT_TARGET
+    hitAnimation: 96
+    damageType: 9
+    blastRadius: 5
+
   - delete: STR_AVALANCHE_MISSILES

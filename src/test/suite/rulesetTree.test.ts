@@ -64,14 +64,10 @@ describe('rulesetTree', () => {
 
     const assertReferenceExists = (tree: RulesetTree, item: typeof mockReference, shouldExist = true, workspace = mockWorkSpaceFolder) => {
         const matches = tree.getReferences(workspace)?.filter(ref => ref.key === item.key);
-        assert.strictEqual(matches?.length, shouldExist ? 1 : 0);
-        if (shouldExist) {
-            const match = matches.find(ref => ref.path === item.path);
-            assert.notStrictEqual(match, undefined);
-            return match;
-        }
+        const filtered = matches?.filter(ref => ref.path === item.path) || [];
+        assert.strictEqual(shouldExist ? 1 : 0, filtered.length || 0);
 
-        return;
+        return filtered.length > 0 ? filtered[0] : undefined;
     };
 
     const assertTranslationExists = (tree: RulesetTree, item: typeof mockTranslation, shouldExist = true) => {

@@ -22,3 +22,22 @@ extraSprites:
 # test ignoreType for fileSingle
   - typeSingle: DUMMY
     fileSingle: DUMMY_IGNORE_TYPE
+
+# test hitAnimation logic
+  - type: X1.PCK
+    files:
+      88: Dummy4.png
+# test hitAnimation logic incorrect target
+  - type: INCORRECT_HITANIMATION_TARGET
+    files:
+      96: Dummy5.png
+
+# test craftWeapons
+  - type: INTICON.PCK
+    files:
+      205: Dummy6.png
+  - type: BASEBITS.PCK
+    files:
+      248: Dummy7.png
+#'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
+#    'craftWeapons.sprite': (key) => ['_all_', `${parseInt(key) + 5}`, `${parseInt(key) + 48}`],
