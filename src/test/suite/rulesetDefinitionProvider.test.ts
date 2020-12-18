@@ -147,6 +147,23 @@ describe("Definition Provider", () => {
             await checkDefinitionSingle(itemsPath, 56, 18);
         });
 
+        it('finds definition for a hitAnimation key that points to SMOKE.PCK (because of blastRadius=0)', async () => {
+            await checkDefinitionSingle(itemsPath, 61, 18, extraSpritesUri, 45, 6, 45, 9);
+        });
+
+        it('finds definition for a hitAnimation key that points to SMOKE.PCK (because of FixRadius=0)', async () => {
+            await checkDefinitionSingle(itemsPath, 66, 18, extraSpritesUri, 45, 6, 45, 9);
+        });
+
+        it('finds definition for a hitAnimation key that points to SMOKE.PCK (because of damageType)', async () => {
+            await checkDefinitionSingle(itemsPath, 72, 18, extraSpritesUri, 45, 6, 45, 9);
+        });
+
+        after(async () => {
+            const document = await workspace.openTextDocument(itemsPath);
+            await window.showTextDocument(document);
+        });
+
         it('finds definitions for a craftWeapons.sprite key', async () => {
             const definitions = await getDefinitions(resolve(fixturePath, 'craftWeapons.rul'), 2, 13, extraSpritesUri, true);
 
@@ -157,6 +174,8 @@ describe("Definition Provider", () => {
             assert.strictEqual(definitions.length, 2);
             checkDefinitionTarget(definitions[0], extraSpritesUri, 37, 6, 37, 9);
             checkDefinitionTarget(definitions[1], extraSpritesUri, 40, 6, 40, 9);
+
+
         });
 
         it('finds refnode definition', async () => {

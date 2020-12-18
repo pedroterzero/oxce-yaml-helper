@@ -39,5 +39,8 @@ extraSprites:
   - type: BASEBITS.PCK
     files:
       248: Dummy7.png
-#'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
-#    'craftWeapons.sprite': (key) => ['_all_', `${parseInt(key) + 5}`, `${parseInt(key) + 48}`],
+
+# test hitAnimation logic (SMOKE)
+  - type: SMOKE.PCK
+    files:
+      104: Dummy9.png

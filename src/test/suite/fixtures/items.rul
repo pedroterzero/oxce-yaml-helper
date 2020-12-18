@@ -58,4 +58,19 @@ items:
     damageType: 9
     blastRadius: 5
 
+  - type: STR_HIT_ANIMATION_NO_BLASTRADIUS_TEST
+    hitAnimation: 104
+    damageType: 9
+    blastRadius: 0
+
+  - type: STR_HIT_ANIMATION_NO_BLASTRADIUS_TEST2
+    hitAnimation: 104
+    damageType: 9
+    damageAlter:
+      FixRadius: 0
+
+  - type: STR_HIT_ANIMATION_SMOKE_DAMAGETYPE
+    hitAnimation: 104
+    damageType: 1
+
   - delete: STR_AVALANCHE_MISSILES
