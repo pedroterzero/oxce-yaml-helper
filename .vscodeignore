@@ -13,5 +13,8 @@ node_modules/**/*.jpg
 node_modules/**/*.md
 node_modules/**/*.ts
 node_modules/yaml/browser
+.attic
 .history
 *.patch
+coverage
+.nyc_output

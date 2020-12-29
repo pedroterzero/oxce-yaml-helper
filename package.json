@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom Ruleset Linker",
     "description": "This extension aims to turn Visual Studio code into an OpenXcom ruleset modding IDE. It links rulesets so you can easily navigate between linked rules. It checks for problems in the rulesets, and a lot of other things.",
-    "version": "0.4.0-rc5-finnik1",
+    "version": "0.5.0-tests",
     "author": {
         "name": "pedroterzero"
     },
@@ -19,7 +19,7 @@
         "Other"
     ],
     "activationEvents": [
-        "workspaceContains:**/*.rul"
+        "onStartupFinished"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -107,16 +107,23 @@
         "compile": "npm run clean && tsc -p ./",
         "watch": "tsc -watch -p ./",
         "postinstall": "#node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        "test": "npm run compile && node ./out/test/runTest.js"
     },
     "devDependencies": {
         "@types/flat-cache": "^2.0.0",
+        "@types/fs-extra": "^9.0.4",
+        "@types/glob": "^7.1.3",
+        "@types/mocha": "^8.2.0",
         "@types/node": "^14.14.7",
         "@types/vscode": "^1.51.0",
         "@typescript-eslint/eslint-plugin": "^4.7.0",
         "@typescript-eslint/parser": "^4.7.0",
         "eslint": "^7.13.0",
-        "typescript": "^4.0.5"
+        "fs-extra": "^9.0.1",
+        "mocha": "^8.2.1",
+        "nyc": "^15.1.0",
+        "typescript": "^4.0.5",
+        "vscode-test": "^1.4.1"
     },
     "dependencies": {
         "deepmerge": "^4.2.2",
