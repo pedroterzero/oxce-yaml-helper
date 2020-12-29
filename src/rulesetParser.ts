@@ -80,7 +80,7 @@ export class RulesetParser {
         return rule;
     }
 
-    public async findRefNodeInDocument(file: Uri, key: string): Promise<Location | undefined> {
+    public findRefNodeInDocument(file: Uri, key: string): Location | undefined {
         return rulesetRefnodeFinder.findRefNodeInDocument(file, key);
     }
 

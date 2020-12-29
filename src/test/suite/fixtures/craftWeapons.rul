@@ -1,0 +1,3 @@
+craftWeapons:
+  - type: STR_DUMMY_CRAFT_WEAPON
+    sprite: 200
