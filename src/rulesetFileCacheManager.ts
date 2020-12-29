@@ -1,5 +1,5 @@
 import { ExtensionContext, extensions, Uri, workspace } from "vscode";
-import { existsSync, mkdirSync, readFileSync } from "fs";
+import { existsSync, mkdirSync, readFile } from "fs-extra";
 import { load } from "flat-cache";
 import { ParsedRuleset } from "./rulesetResolver";
 import { createHash } from "crypto";
@@ -32,18 +32,23 @@ export class RulesetFileCacheManager {
         return Uri.joinPath(this.context.globalStorageUri, '/', this.CACHE_DIR).fsPath;
     }
 
-    public put(file: Uri, data: ParsedRuleset) {
+    public async put(file: Uri, data: ParsedRuleset) {
         if (!this.context) {
             return;
         }
 
         const path = file.fsPath;
-        const hash = createHash('md5').update(readFileSync(path).toString() + this.version).digest('hex');
+        const fileContents = await readFile(path);
+        const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
 
         const cache = this.getCache(file);
         cache.setKey('metadata', {hash});
         cache.setKey('data', JSON.parse(JSON.stringify(data)));
         cache.save();
+    }
+
+    public remove(file: Uri) {
+        this.getCache(file).removeCacheFile();
     }
 
     private getCache(file: Uri) {
@@ -56,7 +61,8 @@ export class RulesetFileCacheManager {
         }
 
         const path = file.fsPath;
-        const hash = createHash('md5').update(readFileSync(path).toString() + this.version).digest('hex');
+        const fileContents = await readFile(path);
+        const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
 
         const cache = this.getCache(file);
         const result = cache.all();

@@ -1,0 +1,46 @@
+extraSprites:
+  - type: Projectiles
+    height: 3
+    width: 65
+    subX: 3
+    subY: 3
+    files:
+      700: Dummy1.png
+  - type: Projectiles
+    height: 6 # should provide 730 and 770, edge case
+    width: 65
+    subX: 3
+    subY: 3
+    files:
+      735: Dummy2.png
+
+# companion to STR_UNDEFINABLE_NUMERIC_PROPERTY (should not be found)
+  - type: BIGOBS.PCK
+    files:
+      100: Dummy3.png
+
+# test ignoreType for fileSingle
+  - typeSingle: DUMMY
+    fileSingle: DUMMY_IGNORE_TYPE
+
+# test hitAnimation logic
+  - type: X1.PCK
+    files:
+      88: Dummy4.png
+# test hitAnimation logic incorrect target
+  - type: INCORRECT_HITANIMATION_TARGET
+    files:
+      96: Dummy5.png
+
+# test craftWeapons
+  - type: INTICON.PCK
+    files:
+      205: Dummy6.png
+  - type: BASEBITS.PCK
+    files:
+      248: Dummy7.png
+
+# test hitAnimation logic (SMOKE)
+  - type: SMOKE.PCK
+    files:
+      104: Dummy9.png
