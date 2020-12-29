@@ -1,4 +1,3 @@
-
 import { Match, Variables } from "./rulesetTree";
 import { typedProperties } from "./typedProperties";
 
