@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import { Uri, workspace } from 'vscode';
 import { rulesetResolver } from '../../extension';
 import { rulesetTree } from '../../rulesetTree';
-import { waitForExtensionLoad } from './tools';
+import { waitForExtensionLoad, waitForRefresh } from './tools';
 
 const fixturePath = resolve(__dirname, '../../../src/test/suite/fixtures');
 const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
@@ -36,43 +36,55 @@ describe('rulesetDefinitionChecker', () => {
         return waitForExtensionLoad(rulesetResolver);
     });
 
-    it('finds a diagnostic for non existing item', async () => {
+    it('finds a diagnostic for non existing item', () => {
         const diagnostic = findDiagnostic('items.rul', '"STR_DUMMY_AMMO" does not exist (items.compatibleAmmo)');
         assert.notStrictEqual(diagnostic, undefined);
     });
 
-    it('finds a diagnostic for non existing builtin-type', async () => {
+    it('finds a diagnostic for non existing builtin-type', () => {
         const diagnostic = findDiagnostic('globalVariables.rul', '"STR_DUMMY_STATUS" does not exist (startingBase.crafts[].status) for STR_DUMMY_CRAFT');
         assert.notStrictEqual(diagnostic, undefined);
     });
 
-    it('does not find a diagnostic for existing builtin-type (int)', async () => {
+    it('does not find a diagnostic for existing builtin-type (int)', () => {
         const diagnostic = findDiagnostic('items.rul', '"3" does not exist (items.meleeAnimation) for STR_BUILTIN_TYPE_TEST');
         assert.strictEqual(diagnostic, undefined);
     });
 
-    it('does not find a diagnostic for existing builtin-type (string)', async () => {
+    it('does not find a diagnostic for existing builtin-type (string)', () => {
         const diagnostic = findDiagnostic('units.rul', '"STR_LIVE_COMMANDER" does not exist (units.rank) for STR_DUMMY_UNIT2');
         assert.strictEqual(diagnostic, undefined);
     });
 
-    it('does not find a diagnostic for existing builtin-type regex', async () => {
+    it('does not find a diagnostic for existing builtin-type regex', () => {
         const diagnostic = findDiagnostic('globalVariables.rul', '"STR_READY" does not exist (startingBase.crafts[].status) for STR_DUMMY_CRAFT');
         assert.strictEqual(diagnostic, undefined);
     });
 
-    it('does not find a diagnostic for string type', async () => {
+    it('does not find a diagnostic for string type', () => {
         const diagnostic = findDiagnostic('items.rul', '"STR_DUMMY_STRING_TYPE" does not exist (items.name) for STR_STRING_TYPE_TEST');
         assert.strictEqual(diagnostic, undefined);
     });
 
-    it('finds a diagnostic for duplicate type', async () => {
+    it('finds a diagnostic for duplicate type', () => {
         const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_CHECK is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\titems.rul line 40");
         assert.notStrictEqual(diagnostic, undefined);
     });
 
-    it('does not finds a diagnostic for ignored duplicate type', async () => {
+    it('does not finds a diagnostic for ignored duplicate type', () => {
         const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_IGNORE_CHECK is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\titems.rul line 48");
         assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for duplicate type if setting is disabled', async () => {
+        const originalSetting = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
+
+        await workspace.getConfiguration('oxcYamlHelper').update('findDuplicateDefinitions', false);
+        // await waitForRefresh(rulesetResolver);
+
+        const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_CHECK is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\titems.rul line 40");
+        assert.strictEqual(diagnostic, undefined);
+
+        await workspace.getConfiguration('oxcYamlHelper').update('findDuplicateDefinitions', originalSetting);
     });
 });
