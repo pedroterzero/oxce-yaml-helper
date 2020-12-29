@@ -1,5 +1,5 @@
 import { DiagnosticCollection, languages, Uri, WorkspaceFolder } from "vscode";
-import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match } from "./rulesetTree";
+import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match, LogicDataEntry } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
@@ -54,7 +54,7 @@ export class WorkspaceFolderRuleset {
 
     public mergeLogicDataIntoTree(logicData: LogicDataEntry[], sourceFile: Uri) {
         const lookups = this.getLogicDataLookups(logicData);
-        this.addRulesetLogicDataFile(lookups, sourceFile || null);
+        this.addRulesetLogicDataFile(lookups, sourceFile);
     }
 
     public deleteFileFromTree(file: Uri) {

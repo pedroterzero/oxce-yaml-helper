@@ -302,7 +302,7 @@ export class RulesetResolver implements Disposable {
                 rulesetParser.addRangePositions(references, document);
                 rulesetParser.addRangePositions(logicData, document);
                 logger.debug(`found ${references?.length} references in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
-                logger.debug(`found ${logicData?.length} logic data entries in file ${workspaceFile}`);
+                logger.debug(`found ${logicData?.length} logic data entries in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
                 const definitions = rulesetParser.getDefinitionsFromReferences(references);
                 logger.debug(`found ${definitions.length} definitions in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
 
