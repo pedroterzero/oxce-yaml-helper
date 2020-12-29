@@ -1,5 +1,6 @@
 {
     "oxcYamlHelper.debugLevel": 3,
     "oxcYamlHelper.findDuplicateDefinitions": true,
-    "oxcYamlHelper.cacheStrategy": "nothing"
+    "oxcYamlHelper.cacheStrategy": "nothing",
+    "oxcYamlHelper.validateCategories": "yes"
 }

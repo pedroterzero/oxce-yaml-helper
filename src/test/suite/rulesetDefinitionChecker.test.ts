@@ -87,4 +87,20 @@ describe('rulesetDefinitionChecker', () => {
 
         await workspace.getConfiguration('oxcYamlHelper').update('findDuplicateDefinitions', originalSetting);
     });
+
+    it('finds a diagnostic for an invalid category', () => {
+        const diagnostic = findDiagnostic('items.rul', '"STR_DUMMY_CATEGORY" does not exist (items.categories)');
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for an invalid category if setting is disabled', async () => {
+        const originalSetting = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
+
+        await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', 'no');
+
+        const diagnostic = findDiagnostic('items.rul', '"STR_DUMMY_CATEGORY" does not exist (items.categories)');
+        assert.strictEqual(diagnostic, undefined);
+
+        await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', originalSetting);
+    });
 });

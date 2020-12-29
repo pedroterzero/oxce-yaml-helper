@@ -79,4 +79,7 @@ items:
   - type: STR_BUILTIN_TYPE_TEST
     meleeAnimation: 3
 
+  - type: STR_CATEGORY_TEST
+    categories: [STR_DUMMY_CATEGORY]
+
   - delete: STR_AVALANCHE_MISSILES
