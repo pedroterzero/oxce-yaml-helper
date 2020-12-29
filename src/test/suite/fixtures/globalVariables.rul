@@ -1,1 +1,8 @@
 ftaGame: true
+
+startingBase:
+  crafts:
+    - type: STR_DUMMY_CRAFT
+      status: STR_READY
+    - type: STR_DUMMY_CRAFT
+      status: STR_DUMMY_STATUS

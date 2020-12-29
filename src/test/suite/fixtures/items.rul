@@ -45,8 +45,8 @@ items:
       0:
         compatibleAmmo: [ STR_DUMMY_MANUFACTURE ]
 
-### MISSING
-### MISSING
+  - type: STR_DUPLICATE_IGNORE_CHECK # ignoreDuplicate
+  - type: STR_DUPLICATE_IGNORE_CHECK
 
   - type: STR_HIT_ANIMATION_TEST
     hitAnimation: 88
@@ -72,5 +72,11 @@ items:
   - type: STR_HIT_ANIMATION_SMOKE_DAMAGETYPE
     hitAnimation: 104
     damageType: 1
+
+  - type: STR_STRING_TYPE_TEST
+    name: STR_DUMMY_STRING_TYPE
+
+  - type: STR_BUILTIN_TYPE_TEST
+    meleeAnimation: 3
 
   - delete: STR_AVALANCHE_MISSILES
