@@ -103,4 +103,9 @@ describe('rulesetDefinitionChecker', () => {
 
         await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', originalSetting);
     });
+
+    it('finds a diagnostic for an invalid globalVariables reference', () => {
+        const diagnostic = findDiagnostic('globalVariables.rul', '"STR_DUMMY_NON_EXISTING_RESEARCH" does not exist (globalVariables.newBaseUnlockResearch)');
+        assert.notStrictEqual(diagnostic, undefined);
+    });
 });
