@@ -14,7 +14,7 @@ export class WorkspaceFolderRulesetHierarchy {
 
         for (const idx in this.ruleset.rulesetFiles) {
             const file =  this.ruleset.rulesetFiles[idx];
-            if (!file.file.path.startsWith(hierarchy.vanilla + '/')) {
+            if (!file.file.path.startsWith(hierarchy.vanilla.path + '/')) {
                 continue;
             }
 

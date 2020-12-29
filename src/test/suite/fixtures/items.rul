@@ -1,0 +1,85 @@
+items:
+  - type: STR_DUMMY_ITEM
+    size: &TestReference 0.1
+
+  - type: STR_DUMMY_ITEM2
+    size: *TestReference
+
+  - type: STR_DUMMY_ITEM3
+    flatRate: false
+    dummy: "dummy" # intentional
+
+  - type: STR_BULLETSPRITE_TEST
+    bulletSprite: 20
+
+  - type: STR_BULLETSPRITE_MULTI_TEST
+    bulletSprite: 22
+
+  - type: STR_KEY_VALUE_REFERENCE_TYPE
+    zombieUnitByType:
+      STR_DUMMY_UNIT1: STR_DUMMY_ZOMBIE_UNIT1
+      STR_DUMMY_UNIT2: STR_DUMMY_ZOMBIE_UNIT2
+
+  - type: STR_UNDEFINABLE_NUMERIC_PROPERTY
+    costBuy: 100
+
+  - type: STR_METADATA_TEST
+    damageType: 1
+
+  - type: STR_ARRAY_REFERENCE
+    compatibleAmmo:
+      - STR_DUMMY_AMMO
+
+  - type: STR_COMMENT_TEST # commentTest
+
+  # empty type test
+  #- type:
+  # string type test
+  - type: 'STR_FOOBAR'
+
+  - type: STR_DUPLICATE_CHECK
+  - type: STR_DUPLICATE_CHECK
+
+  - type: STR_REGEX_REF_INCORRECT_TARGET
+    ammo:
+      0:
+        compatibleAmmo: [ STR_DUMMY_MANUFACTURE ]
+
+  - type: STR_DUPLICATE_IGNORE_CHECK # ignoreDuplicate
+  - type: STR_DUPLICATE_IGNORE_CHECK
+
+  - type: STR_HIT_ANIMATION_TEST
+    hitAnimation: 88
+    damageType: 9
+    blastRadius: 5
+
+  - type: STR_HIT_ANIMATION_TEST_INCORRECT_TARGET
+    hitAnimation: 96
+    damageType: 9
+    blastRadius: 5
+
+  - type: STR_HIT_ANIMATION_NO_BLASTRADIUS_TEST
+    hitAnimation: 104
+    damageType: 9
+    blastRadius: 0
+
+  - type: STR_HIT_ANIMATION_NO_BLASTRADIUS_TEST2
+    hitAnimation: 104
+    damageType: 9
+    damageAlter:
+      FixRadius: 0
+
+  - type: STR_HIT_ANIMATION_SMOKE_DAMAGETYPE
+    hitAnimation: 104
+    damageType: 1
+
+  - type: STR_STRING_TYPE_TEST
+    name: STR_DUMMY_STRING_TYPE
+
+  - type: STR_BUILTIN_TYPE_TEST
+    meleeAnimation: 3
+
+  - type: STR_CATEGORY_TEST
+    categories: [STR_DUMMY_CATEGORY]
+
+  - delete: STR_AVALANCHE_MISSILES

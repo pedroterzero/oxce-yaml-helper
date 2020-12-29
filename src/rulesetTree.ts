@@ -81,6 +81,10 @@ export class RulesetTree {
         return this.workspaceFolderRulesets.map((workspaceFolderRuleset) => workspaceFolderRuleset.workspaceFolder);
     }
 
+    public getReferences(workspaceFolder: WorkspaceFolder): Match[] | undefined {
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getReferences();
+    }
+
     public getVariables(workspaceFolder: WorkspaceFolder): Variables | undefined {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getVariables();
     }

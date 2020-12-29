@@ -16,9 +16,14 @@
         "noUnusedParameters": true, /* Report errors on unused parameters. */
         "resolveJsonModule": true,
     },
+    "include": [
+        "src/**/*",
+    ],
     "exclude": [
         ".attic",
         ".history",
+        ".nyc_output",
+        "coverage",
         "node_modules",
         ".vscode-test"
     ]
