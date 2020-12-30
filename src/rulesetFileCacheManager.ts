@@ -49,7 +49,7 @@ export class RulesetFileCacheManager {
         }
 
         const path = file.fsPath;
-        const fileContents = readFile(path);
+        const fileContents = await readFile(path);
         const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
 
         const cache = this.getCache(file);
