@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import { Uri, workspace } from 'vscode';
 import { rulesetResolver } from '../../extension';
 import { rulesetTree } from '../../rulesetTree';
-import { waitForExtensionLoad, waitForRefresh } from './tools';
+import { waitForExtensionLoad } from './tools';
 
 const fixturePath = resolve(__dirname, '../../../src/test/suite/fixtures');
 const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
