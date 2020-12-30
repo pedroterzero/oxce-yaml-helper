@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom Ruleset Linker",
     "description": "This extension aims to turn Visual Studio code into an OpenXcom ruleset modding IDE. It links rulesets so you can easily navigate between linked rules. It checks for problems in the rulesets, and a lot of other things.",
-    "version": "0.5.0-global-variables",
+    "version": "0.5.0-global-variables-2",
     "author": {
         "name": "pedroterzero"
     },
@@ -19,7 +19,7 @@
         "Other"
     ],
     "activationEvents": [
-        "workspaceContains:**/*.rul"
+        "onStartupFinished"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -106,7 +106,6 @@
         "clean": "rm -rf out/*",
         "compile": "npm run clean && tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "watch:test": "npm run test:prepare && tsc -watch -p ./",
         "postinstall": "#node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./out/test/runTest.js",
         "test:prepare": "node ./out/test/prepare.js",
