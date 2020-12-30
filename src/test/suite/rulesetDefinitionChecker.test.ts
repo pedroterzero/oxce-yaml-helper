@@ -25,8 +25,12 @@ const getDiagnosticsForFile = (uri: Uri) => {
     return diagnosticsFile;
 };
 
-const findDiagnostic = (file: string, expected: string) => {
+const findDiagnostic = (file: string, expected: string, line?: number, char?: number) => {
     const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/${file}`));
+
+    if (line && char) {
+        return diagnosticsFile.find(item => item.message === expected && item.range.start.line === line && item.range.start.character === char);
+    }
 
     return diagnosticsFile.find(item => item.message === expected);
 };
@@ -45,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 13;
+const expectedNumberOfDiagnostics = 14;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -141,8 +145,25 @@ describe('rulesetDefinitionChecker', () => {
         await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', originalSettingValidateCategories);
     });
 
+    // logic checks
     it('finds a diagnostic for an incorrect missionZone', () => {
         const diagnostic = findDiagnostic('regions.rul', 'Crossing the prime meridian requires a different syntax (change to [2,361,3,-4] to fix this). See wiki.');
         assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    const ufopaediaImageErrorMessage =  'Ufopaedia articles with type_ids 1, 2, 3, 7, 10, 11, 12, 13, 14, 15, 16, 17 must have an image_id. Otherwise this will cause a segmentation fault when opening the article!';
+    it('finds a diagnostic for an ufopaedia without image_id', () => {
+        const diagnostic = findDiagnostic('ufopaedia.rul', ufopaediaImageErrorMessage, 2, 13);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for an ufopaedia with image_id', () => {
+        const diagnostic = findDiagnostic('ufopaedia.rul', ufopaediaImageErrorMessage, 4, 13);
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for an ufopaedia that does not need an image type', () => {
+        const diagnostic = findDiagnostic('ufopaedia.rul', ufopaediaImageErrorMessage, 7, 13);
+        assert.strictEqual(diagnostic, undefined);
     });
 });
