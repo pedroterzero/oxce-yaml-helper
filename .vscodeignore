@@ -18,3 +18,4 @@ node_modules/yaml/browser
 *.patch
 coverage
 .nyc_output
+*.orig
