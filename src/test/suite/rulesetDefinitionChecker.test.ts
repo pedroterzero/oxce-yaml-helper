@@ -102,5 +102,11 @@ describe('rulesetDefinitionChecker', () => {
         assert.strictEqual(diagnostic, undefined);
 
         await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', originalSetting);
+        // await waitForValidate(rulesetResolver);
+    });
+
+    it('finds a diagnostic for an incorrect missionZone', () => {
+        const diagnostic = findDiagnostic('regions.rul', 'Crossing the prime meridian requires a different syntax (change to [2,361,3,-4] to fix this). See wiki.');
+        assert.notStrictEqual(diagnostic, undefined);
     });
 });

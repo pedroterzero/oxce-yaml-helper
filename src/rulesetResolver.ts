@@ -55,7 +55,7 @@ export class RulesetResolver implements Disposable {
 
         this.registerFileWatcher();
 
-        this.loaded = true;
+        // this.loaded = true;
         this.onDidLoadEmitter.emit('didLoad');
     }
 
@@ -378,6 +378,8 @@ export class RulesetResolver implements Disposable {
         });
 
         this.checkForCommonProblems();
+
+        this.loaded = true;
     }
 
     private checkForCommonProblems() {

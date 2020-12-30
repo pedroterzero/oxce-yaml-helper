@@ -8,7 +8,7 @@ export class RegionsLogic extends BaseLogic {
 
     public checkMissionCoordinates (entries: LogicDataEntry[]) {
         for (const entry of entries) {
-            const data = entry.data;
+            const data = entry.data.slice();
 
             if (data[0] > data[1]) {
                 data[1] += 360;
