@@ -6,3 +6,7 @@ startingBase:
       status: STR_READY
     - type: STR_DUMMY_CRAFT
       status: STR_DUMMY_STATUS
+
+globe:
+  # should not throw an error (yet, ignoreType currently)
+  data: DUMMY_NON_EXISTING
