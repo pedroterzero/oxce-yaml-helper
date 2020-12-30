@@ -1,5 +1,5 @@
 import { ExtensionContext, extensions, Uri, workspace } from "vscode";
-import { existsSync, mkdirSync, readFile } from "fs-extra";
+import { existsSync, mkdirSync, readFileSync } from "fs";
 import { load } from "flat-cache";
 import { ParsedRuleset } from "./rulesetResolver";
 import { createHash } from "crypto";
@@ -38,7 +38,7 @@ export class RulesetFileCacheManager {
         }
 
         const path = file.fsPath;
-        const fileContents = await readFile(path);
+        const fileContents = readFileSync(path);
         const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
 
         const cache = this.getCache(file);
@@ -61,7 +61,7 @@ export class RulesetFileCacheManager {
         }
 
         const path = file.fsPath;
-        const fileContents = await readFile(path);
+        const fileContents = readFileSync(path);
         const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
 
         const cache = this.getCache(file);

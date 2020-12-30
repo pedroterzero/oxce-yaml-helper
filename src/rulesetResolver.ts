@@ -313,7 +313,8 @@ export class RulesetResolver implements Disposable {
                 parsed = {definitions, references, variables, translations, logicData};
             }
 
-            await rulesetFileCacheManager.put(file, parsed);
+            // don't need to wait for cache to be written
+            /*await */rulesetFileCacheManager.put(file, parsed);
 
             return parsed;
         } catch (error) {
