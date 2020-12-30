@@ -19,7 +19,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onStartupFinished"
+        "workspaceContains:**/*.rul"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -106,8 +106,11 @@
         "clean": "rm -rf out/*",
         "compile": "npm run clean && tsc -p ./",
         "watch": "tsc -watch -p ./",
+        "watch:test": "npm run test:prepare && tsc -watch -p ./",
         "postinstall": "#node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./out/test/runTest.js"
+        "test": "npm run compile && node ./out/test/runTest.js",
+        "test:prepare": "node ./out/test/prepare.js",
+        "test:cleanup": "mv package.json.orig package.json"
     },
     "devDependencies": {
         "@types/flat-cache": "^2.0.0",
