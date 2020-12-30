@@ -34,6 +34,8 @@ export const stringTypes = ftaStringTypes.concat([
     'items.primeActionName',
     'items.psiAttackName',
     'items.unprimeActionName',
+    '/^globalVariables\\.missionRatings\\.-?\\d+$/',
+    '/^globalVariables\\.monthlyRatings\\.-?\\d+$/',
     'regions.missionZones[][]',
     'soldiers.rankStrings',
     'ufopaedia.section', // should probably check that the string exists

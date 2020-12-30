@@ -29,6 +29,8 @@ export class RulesetFileCacheManager {
         } catch (error) {
             if (error.code === 'NOENT') {
                 await mkdir(this.getCachePath(), { recursive: true });
+            } else {
+                throw error;
             }
         }
     }

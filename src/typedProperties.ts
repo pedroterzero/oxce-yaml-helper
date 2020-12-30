@@ -92,6 +92,7 @@ export class typedProperties {
         'loyaltySettings', // FtA
         'mana',
         'missionRatings',
+        'monthlyRatings',
         'recommendedUserOptions',
         'reputationLevels', // FtA
     ];

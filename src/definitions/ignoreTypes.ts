@@ -31,6 +31,7 @@ export const ignoreTypes = [
     'interfaces.palette', // could type check this, but the validator probably catches these
     'items.scripts.createItem',
     'items.scripts.selectItemSprite',
+    'globe.data', // may want to check that the files exist
     'mapScripts.commands[].type',
     'mapScripts.commands[].direction',
     'mapScripts.commands[].tunnelData.MCDReplacements[].type',
