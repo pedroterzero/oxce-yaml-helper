@@ -1,3 +1,11 @@
 craftWeapons:
   - type: STR_DUMMY_CRAFT_WEAPON
     sprite: 200
+
+  - type: STR_REARM_RATE_BAD_TEST
+    clip: STR_REARM_RATE_TEST_AMMO
+    rearmRate: 10
+
+  - type: STR_REARM_RATE_GOOD_TEST
+    clip: STR_REARM_RATE_TEST_AMMO
+    rearmRate: 50

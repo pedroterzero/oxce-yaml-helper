@@ -82,4 +82,7 @@ items:
   - type: STR_CATEGORY_TEST
     categories: [STR_DUMMY_CATEGORY]
 
+  - type: STR_REARM_RATE_TEST_AMMO
+    clipSize: 25
+
   - delete: STR_AVALANCHE_MISSILES

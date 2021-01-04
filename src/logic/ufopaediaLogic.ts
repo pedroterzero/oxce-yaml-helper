@@ -30,7 +30,7 @@ export class UfopaediaLogic extends BaseLogic {
     }
 
     protected generic(entries: LogicDataEntry[]) {
-        this.imageIds = this.getFieldData<string>(entries, 'ufopaedia.image_id');
+        this.imageIds = this.getFieldData<string>(entries, 'ufopaedia.image_id') || {};
     }
 
     private checkImageProvided (key: string) {

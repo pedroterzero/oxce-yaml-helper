@@ -30,8 +30,8 @@ export class CraftWeaponsLogic extends BaseLogic {
     }
 
     protected generic(entries: LogicDataEntry[]) {
-        this.clipSizes = this.getFieldData<number>(entries, 'items.clipSize');
-        this.clipTypes = this.getFieldData<string>(entries, 'craftWeapons.clip');
+        this.clipSizes = this.getFieldData<number>(entries, 'items.clipSize') || this.clipSizes;
+        this.clipTypes = this.getFieldData<string>(entries, 'craftWeapons.clip') || this.clipTypes;
     }
 
     private checkClipSize (key: string) {

@@ -119,7 +119,7 @@ export class BaseLogic implements LogicInterface {
         this.diagnosticsPerFile[ref.file.path].push(new Diagnostic(range, message, severity));
     }
 
-    protected getFieldData<T extends string | number>(entries: LogicDataEntry[], path: string): {[key: string]: T} {
+    protected getFieldData<T extends string | number>(entries: LogicDataEntry[], path: string): {[key: string]: T} | undefined {
         const ret: {[key: string]: T} = {};
         const nameKey = path.split('.')[0];
 
@@ -131,6 +131,6 @@ export class BaseLogic implements LogicInterface {
             }
         }
 
-        return ret;
+        return Object.keys(ret).length > 0 ? ret : undefined;
     }
 }
