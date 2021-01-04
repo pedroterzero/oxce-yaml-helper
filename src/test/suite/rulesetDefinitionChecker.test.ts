@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 15;
+const expectedNumberOfDiagnostics = 18;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -174,6 +174,24 @@ describe('rulesetDefinitionChecker', () => {
 
     it('does not finds a diagnostic for a craftweapon with a correct rearmRate', () => {
         const diagnostic = findDiagnostic('craftWeapons.rul', "'rearmRate of '50' is less than clipSize '25' for clip 'STR_REARM_RATE_TEST_AMMO'. This will cause a crash on loading OpenXcom!", 10, 15);
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for a mapscript command with incorrect groups', () => {
+        let diagnostic = findDiagnostic('mapScripts.rul', `'Group '10' does not exist in terrain for TEST_BAD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`, 5, 21);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('mapScripts.rul', `'Group '10' does not exist in terrain for TEST_BAD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`, 6, 21);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('mapScripts.rul', `'Group '10' does not exist in terrain for TEST_BAD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`, 7, 15);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for a mapscript command with correct groups', () => {
+        let diagnostic = findDiagnostic('mapScripts.rul', `'Group '2' does not exist in terrain for TEST_GOOD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`, 13, 21);
+        assert.strictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('mapScripts.rul', `'Group '2' does not exist in terrain for TEST_GOOD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`, 14, 21);
+        assert.strictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('mapScripts.rul', `'Group '2' does not exist in terrain for TEST_GOOD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`, 15, 15);
         assert.strictEqual(diagnostic, undefined);
     });
 });
