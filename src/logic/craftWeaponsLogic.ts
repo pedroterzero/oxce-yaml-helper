@@ -40,12 +40,10 @@ export class CraftWeaponsLogic extends BaseLogic {
         }
 
         for (const ref of this.referencesToCheck[key]) {
-            const names = ref.ref.metadata?._names as {[key: string]: string};
-            if (!names || !('craftWeapons' in names)) {
+            const name = this.getNameFromMetadata(ref.ref, 'craftWeapons');
+            if (!name) {
                 continue;
             }
-
-            const name = names.craftWeapons;
 
             if (!(name in this.clipTypes)) {
                 continue;

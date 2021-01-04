@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 18;
+const expectedNumberOfDiagnostics = 19;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -193,5 +193,10 @@ describe('rulesetDefinitionChecker', () => {
         assert.strictEqual(diagnostic, undefined);
         diagnostic = findDiagnostic('mapScripts.rul', `'Group '2' does not exist in terrain for TEST_GOOD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`, 15, 15);
         assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an item with confAuto.shots and autoShots', () => {
+        const diagnostic = findDiagnostic('items.rul', 'autoShots and confAuto.shots should not both be set!', 90, 15);
+        assert.notStrictEqual(diagnostic, undefined);
     });
 });

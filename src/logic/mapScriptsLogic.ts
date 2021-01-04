@@ -45,12 +45,10 @@ export class MapScriptsLogic extends BaseLogic {
 
         }
         for (const ref of this.referencesToCheck[key]) {
-            const names = ref.ref.metadata?._names as {[key: string]: string};
-            if (!names || !('mapScripts' in names)) {
+            const name = this.getNameFromMetadata(ref.ref, 'mapScripts');
+            if (!name) {
                 continue;
             }
-
-            const name = names.mapScripts;
 
             if (!(name in this.mapBlockGroups)) {
                 // should this give an error?

@@ -39,13 +39,10 @@ export class UfopaediaLogic extends BaseLogic {
         }
 
         for (const ref of this.referencesToCheck[key]) {
-            const names = ref.ref.metadata?._names as {[key: string]: string};
-            if (!names || !('ufopaedia' in names)) {
+            const name = this.getNameFromMetadata(ref.ref, 'ufopaedia');
+            if (!name) {
                 continue;
             }
-
-            const name = names.ufopaedia;
-
 
             if (!this.imageRequiredTypeIds.includes(parseInt(ref.ref.key))) {
                 continue;

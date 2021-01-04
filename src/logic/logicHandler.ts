@@ -7,9 +7,11 @@ import { RegionsLogic } from "./regionsLogic";
 import { mergeAndConcat } from "merge-anything";
 import { CraftWeaponsLogic } from "./craftWeaponsLogic";
 import { UfopaediaLogic } from "./ufopaediaLogic";
+import { ItemsLogic } from "./itemsLogic";
 
 const handlers = [
     CraftWeaponsLogic,
+    ItemsLogic,
     MapScriptsLogic,
     RegionsLogic,
     UfopaediaLogic

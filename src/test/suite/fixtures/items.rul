@@ -85,4 +85,9 @@ items:
   - type: STR_REARM_RATE_TEST_AMMO
     clipSize: 25
 
+  - type: STR_DUPLICATE_AUTOSHOTS
+    confAuto:
+      shots: 3
+    autoShots: 2
+
   - delete: STR_AVALANCHE_MISSILES

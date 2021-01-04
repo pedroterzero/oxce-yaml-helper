@@ -133,4 +133,13 @@ export class BaseLogic implements LogicInterface {
 
         return Object.keys(ret).length > 0 ? ret : undefined;
     }
+
+    protected getNameFromMetadata (ref: Match, type: string) {
+        const names = ref.metadata?._names as {[key: string]: string};
+        if (names && type in names) {
+            return names[type];
+        }
+
+        return;
+    }
 }
