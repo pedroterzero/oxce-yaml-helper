@@ -6,6 +6,18 @@ export class ItemsLogic extends BaseLogic {
     private additionalNumericFields = [
         'items.confAuto.shots',
         'items.autoShots',
+        'items.costAimed.time',
+        'items.costSnap.time',
+        'items.costAuto.time',
+        'items.costMelee.time',
+        'items.tuAimed',
+        'items.tuSnap',
+        'items.tuAuto',
+        'items.tuMelee',
+        'items.accuracyAimed',
+        'items.accuracySnap',
+        'items.accuracyAuto',
+        'items.accuracyMelee',
     ];
 
     private additionalFields = ([
@@ -15,24 +27,88 @@ export class ItemsLogic extends BaseLogic {
     // this is the field we will be checking
     protected relatedFieldLogicMethods = {
         'items.autoShots': this.checkAutoShots,
-    }
+        'items.costAimed.time': this.checkCostAndAccuracy,
+        'items.costSnap.time': this.checkCostAndAccuracy,
+        'items.costAuto.time': this.checkCostAndAccuracy,
+        'items.costMelee.time': this.checkCostAndAccuracy,
+        'items.tuAimed': this.checkCostAndAccuracy,
+        'items.tuSnap': this.checkCostAndAccuracy,
+        'items.tuAuto': this.checkCostAndAccuracy,
+        'items.tuMelee': this.checkCostAndAccuracy,
+        'items.accuracyAimed': this.checkCostAndAccuracy,
+        'items.accuracySnap': this.checkCostAndAccuracy,
+        'items.accuracyAuto': this.checkCostAndAccuracy,
+        'items.accuracyMelee': this.checkCostAndAccuracy,
+    };
 
     // numeric fields makes sure numeric references get picked up by the recursive retriever, and then
     // and then not handled as regular references but only by this logic
     protected numericFields = Object.keys(this.relatedFieldLogicMethods).concat(this.additionalNumericFields);
 
-    private autoShots: {[key: string]: number} = {};
-    private confAuto: {[key: string]: number} = {};
+    private numericData: {[key: string]: {[key: string]: number}} = {};
 
     public getFields(): string[] {
         return Object.keys(this.fields).concat(this.additionalFields);
     }
 
     protected generic(entries: LogicDataEntry[]) {
-        this.autoShots = this.getFieldData<number>(entries, 'items.autoShots') || this.autoShots;
-        this.confAuto = this.getFieldData<number>(entries, 'items.confAuto.shots') || this.confAuto;
+        for (const field of this.numericFields) {
+            const data = this.getFieldData<number>(entries, field);
+            if (data) {
+                if (this.numericData[field]) {
+                    Object.assign(this.numericData[field], data);
+                } else {
+                    this.numericData[field] = data;
+                }
+            }
+        }
     }
 
+    private checkCostAndAccuracy (key: string) {
+        const matches = key.match(/^items\.(cost|tu|accuracy)(Aimed|Snap|Auto|Melee)(?:\.time)?$/);
+        if (!matches) {
+            return;
+        }
+
+        if (!(key in this.referencesToCheck)) {
+            return;
+        }
+
+        const source = matches[1];
+        const variant = matches[2];
+        for (const ref of this.referencesToCheck[key]) {
+            const name = this.getNameFromMetadata(ref.ref, 'items');
+            if (!name) {
+                continue;
+            }
+
+            // 'items.costAimed.time': this.checkCostAndAccuracy,
+            // 'items.tuAimed': this.checkCostAndAccuracy,
+            // 'items.accuracyAimed': this.checkCostAndAccuracy,
+            let hasTimeunitCost = false;
+            if (name in this.numericData[`items.cost${variant}.time`] && this.numericData[`items.cost${variant}.time`][name] > 0) {
+                hasTimeunitCost = true;
+            } else if (name in this.numericData[`items.tu${variant}`] && this.numericData[`items.tu${variant}`][name] > 0) {
+                hasTimeunitCost = true;
+            }
+
+            let accuracy;
+            if (name in this.numericData[`items.accuracy${variant}`] && this.numericData[`items.accuracy${variant}`][name] > 0) {
+                accuracy = this.numericData[`items.accuracy${variant}`][name];
+            }
+
+            if (source !== 'accuracy' && name in this.numericData[`items.cost${variant}.time`] && name in this.numericData[`items.tu${variant}`]) {
+                this.addDiagnosticForReference(ref, `cost${variant}.time and tu${variant} should not both be set!`);
+            }
+            // could be an else
+            if (hasTimeunitCost && !accuracy) {
+                this.addDiagnosticForReference(ref, `if there's a TU cost for ${variant}, there should be an accuracy setting!`);
+            }
+            if (source == 'accuracy' && accuracy && !hasTimeunitCost) {
+                this.addDiagnosticForReference(ref, `if accuracy is set, there should be a TU cost (cost${variant}.time or tu${variant})!`);
+            }
+       }
+    }
     private checkAutoShots (key: string) {
         if (!(key in this.referencesToCheck)) {
             return;
@@ -40,7 +116,7 @@ export class ItemsLogic extends BaseLogic {
 
         for (const ref of this.referencesToCheck[key]) {
             const name = this.getNameFromMetadata(ref.ref, 'items');
-            if (!name || !(name in this.confAuto) || !(name in this.autoShots)) {
+            if (!name || !(name in this.numericData['items.confAuto.shots']) || !(name in this.numericData['items.autoShots'])) {
                 continue;
             }
 
