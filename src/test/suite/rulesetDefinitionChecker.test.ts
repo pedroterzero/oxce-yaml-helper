@@ -239,4 +239,14 @@ describe('rulesetDefinitionChecker', () => {
         diagnostic = findDiagnostic('items.rul', `if there's a TU cost for Melee, there should be an accuracy setting!`, 104, 12);
         assert.notStrictEqual(diagnostic, undefined);
     });
+
+    it('finds a diagnostic for a craftweapon without a launcher', () => {
+        const diagnostic = findDiagnostic('craftWeapons.rul', `'STR_NO_LAUNCHER_TEST' does not have a launcher: set. This will cause a crash on loading OpenXcom!`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for a craftweapon with a launcher that is not an item', () => {
+        const diagnostic = findDiagnostic('craftWeapons.rul', `'STR_LAUNCHER_WRONG_TYPE_TEST' launcher 'STR_DUMMY_MANUFACTURE': item does not exist. This will cause a crash on loading OpenXcom!`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
 });
