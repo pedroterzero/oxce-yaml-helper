@@ -8,12 +8,14 @@ import { mergeAndConcat } from "merge-anything";
 import { CraftWeaponsLogic } from "./craftWeaponsLogic";
 import { UfopaediaLogic } from "./ufopaediaLogic";
 import { ItemsLogic } from "./itemsLogic";
+import { SoldierTransformationLogic } from "./soldierTransformationLogic";
 
 const handlers = [
     CraftWeaponsLogic,
     ItemsLogic,
     MapScriptsLogic,
     RegionsLogic,
+    SoldierTransformationLogic,
     UfopaediaLogic
     // TerrainsLogic
 ];
@@ -52,6 +54,10 @@ export class LogicHandler {
         }
 
         return diagnostics;
+    }
+
+    public getRelatedLogicFields() {
+        return Object.keys(this.relatedLogicFields);
     }
 
     public isRelatedLogicField(path: string) {

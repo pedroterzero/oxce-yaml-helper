@@ -6,6 +6,7 @@ export class CraftWeaponsLogic extends BaseLogic {
     // we need these additional fields to do our check
     private additionalNumericFields = [
         'items.clipSize', // we need to compare the clipSize to the rearmRate
+        'craftWeapons.rearmRate',
     ];
 
     private additionalFields = [
@@ -22,7 +23,8 @@ export class CraftWeaponsLogic extends BaseLogic {
 
     // numeric fields makes sure numeric references get picked up by the recursive retriever, and then
     // and then not handled as regular references but only by this logic
-    protected numericFields = Object.keys(this.relatedFieldLogicMethods).concat(this.additionalNumericFields);
+    protected numericFields = ([] as string[]).concat(this.additionalNumericFields);
+    // protected numericFields = Object.keys(this.relatedFieldLogicMethods).concat(this.additionalNumericFields);
 
     private weaponData: {[key: string]: {[key: string]: number}} = {};
     private itemData: {[key: string]: {[key: string]: number}} = {};

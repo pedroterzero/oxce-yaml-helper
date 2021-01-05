@@ -232,8 +232,13 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
 });
 
 // add numeric fields from logic handler
-for (const field of (new LogicHandler).getNumericFields()) {
+const handler = new LogicHandler;
+for (const field of handler.getNumericFields()) {
     typeLinks[field] = ['_numeric_', '_dummy_'];
+}
+// add non numeric fields too
+for (const field of handler.getRelatedLogicFields().filter(field => !handler.getNumericFields().includes(field))) {
+    typeLinks[field] = ['_dummy_'];
 }
 
 export const typeLinksPossibleKeys: {[key: string]: (key: string) => string[]} = {
