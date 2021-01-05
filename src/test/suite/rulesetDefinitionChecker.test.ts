@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 19;
+const expectedNumberOfDiagnostics = 35;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -197,6 +197,46 @@ describe('rulesetDefinitionChecker', () => {
 
     it('finds a diagnostic for an item with confAuto.shots and autoShots', () => {
         const diagnostic = findDiagnostic('items.rul', 'autoShots and confAuto.shots should not both be set!', 90, 15);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an item with duplicate tuXXXX and costXXXX.time', () => {
+        let diagnostic = findDiagnostic('items.rul', `costAimed.time and tuAimed should not both be set!`, 93, 13);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `costSnap.time and tuSnap should not both be set!`, 94, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `costAuto.time and tuAuto should not both be set!`, 95, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `costMelee.time and tuMelee should not both be set!`, 96, 13);
+        assert.notStrictEqual(diagnostic, undefined);
+
+        diagnostic = findDiagnostic('items.rul', `costAimed.time and tuAimed should not both be set!`, 98, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `costSnap.time and tuSnap should not both be set!`, 100, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `costAuto.time and tuAuto should not both be set!`, 102, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `costMelee.time and tuMelee should not both be set!`, 104, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an item with a tu cost but no accuracy', () => {
+        let diagnostic = findDiagnostic('items.rul', `if there's a TU cost for Aimed, there should be an accuracy setting!`, 93, 13);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `if there's a TU cost for Snap, there should be an accuracy setting!`, 94, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `if there's a TU cost for Auto, there should be an accuracy setting!`, 95, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `if there's a TU cost for Melee, there should be an accuracy setting!`, 96, 13);
+        assert.notStrictEqual(diagnostic, undefined);
+
+        diagnostic = findDiagnostic('items.rul', `if there's a TU cost for Aimed, there should be an accuracy setting!`, 98, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `if there's a TU cost for Snap, there should be an accuracy setting!`, 100, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `if there's a TU cost for Auto, there should be an accuracy setting!`, 102, 12);
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic('items.rul', `if there's a TU cost for Melee, there should be an accuracy setting!`, 104, 12);
         assert.notStrictEqual(diagnostic, undefined);
     });
 });

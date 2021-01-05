@@ -82,22 +82,26 @@ export class ItemsLogic extends BaseLogic {
                 continue;
             }
 
+            const costTimeKey = `items.cost${variant}.time`;
+            const accuracyKey = `items.accuracy${variant}`;
+            const tuKey = `items.tu${variant}`;
+
             // 'items.costAimed.time': this.checkCostAndAccuracy,
             // 'items.tuAimed': this.checkCostAndAccuracy,
             // 'items.accuracyAimed': this.checkCostAndAccuracy,
             let hasTimeunitCost = false;
-            if (name in this.numericData[`items.cost${variant}.time`] && this.numericData[`items.cost${variant}.time`][name] > 0) {
+            if (costTimeKey in this.numericData && name in this.numericData[costTimeKey] && this.numericData[costTimeKey][name] > 0) {
                 hasTimeunitCost = true;
-            } else if (name in this.numericData[`items.tu${variant}`] && this.numericData[`items.tu${variant}`][name] > 0) {
+            } else if (tuKey in this.numericData && name in this.numericData[tuKey] && this.numericData[tuKey][name] > 0) {
                 hasTimeunitCost = true;
             }
 
             let accuracy;
-            if (name in this.numericData[`items.accuracy${variant}`] && this.numericData[`items.accuracy${variant}`][name] > 0) {
+            if (accuracyKey in this.numericData && name in this.numericData[accuracyKey] && this.numericData[`items.accuracy${variant}`][name] > 0) {
                 accuracy = this.numericData[`items.accuracy${variant}`][name];
             }
 
-            if (source !== 'accuracy' && name in this.numericData[`items.cost${variant}.time`] && name in this.numericData[`items.tu${variant}`]) {
+            if (source !== 'accuracy' && costTimeKey in this.numericData && name in this.numericData[costTimeKey] && tuKey in this.numericData && name in this.numericData[tuKey]) {
                 this.addDiagnosticForReference(ref, `cost${variant}.time and tu${variant} should not both be set!`);
             }
             // could be an else
