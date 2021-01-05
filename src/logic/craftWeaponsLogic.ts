@@ -30,6 +30,7 @@ export class CraftWeaponsLogic extends BaseLogic {
     }
 
     protected generic(entries: LogicDataEntry[]) {
+        // not using collectGenericData here because they're different items
         this.clipSizes = Object.assign(this.clipSizes, this.getFieldData<number>(entries, 'items.clipSize'));
         this.clipTypes = Object.assign(this.clipTypes, this.getFieldData<string>(entries, 'craftWeapons.clip'));
     }

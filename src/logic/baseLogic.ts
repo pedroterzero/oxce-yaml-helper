@@ -134,6 +134,21 @@ export class BaseLogic implements LogicInterface {
         return Object.keys(ret).length > 0 ? ret : undefined;
     }
 
+    protected collectGenericData(entries: LogicDataEntry[], fields: string[], data: { [key: string]: { [key: string]: number | string; }; }) {
+        for (const field of fields) {
+            const fieldData = this.getFieldData<number>(entries, field);
+            if (fieldData) {
+                for (const key in fieldData) {
+                    if (!(key in data)) {
+                        data[key] = {};
+                    }
+
+                    data[key][field] = fieldData[key];
+                }
+            }
+        }
+    }
+
     protected getNameFromMetadata (ref: Match, type: string) {
         const names = ref.metadata?._names as {[key: string]: string};
         if (names && type in names) {

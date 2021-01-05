@@ -45,23 +45,14 @@ export class ItemsLogic extends BaseLogic {
     // and then not handled as regular references but only by this logic
     protected numericFields = Object.keys(this.relatedFieldLogicMethods).concat(this.additionalNumericFields);
 
-    private numericData: {[key: string]: {[key: string]: number}} = {};
+    private data: {[key: string]: {[key: string]: number}} = {};
 
     public getFields(): string[] {
         return Object.keys(this.fields).concat(this.additionalFields);
     }
 
     protected generic(entries: LogicDataEntry[]) {
-        for (const field of this.numericFields) {
-            const data = this.getFieldData<number>(entries, field);
-            if (data) {
-                if (this.numericData[field]) {
-                    Object.assign(this.numericData[field], data);
-                } else {
-                    this.numericData[field] = data;
-                }
-            }
-        }
+        this.collectGenericData(entries, this.numericFields, this.data);
     }
 
     private checkCostAndAccuracy (key: string) {
@@ -78,10 +69,11 @@ export class ItemsLogic extends BaseLogic {
         const variant = matches[2];
         for (const ref of this.referencesToCheck[key]) {
             const name = this.getNameFromMetadata(ref.ref, 'items');
-            if (!name) {
+            if (!name || !(name in this.data)) {
                 continue;
             }
 
+            const data = this.data[name];
             const costTimeKey = `items.cost${variant}.time`;
             const accuracyKey = `items.accuracy${variant}`;
             const tuKey = `items.tu${variant}`;
@@ -89,19 +81,10 @@ export class ItemsLogic extends BaseLogic {
             // 'items.costAimed.time': this.checkCostAndAccuracy,
             // 'items.tuAimed': this.checkCostAndAccuracy,
             // 'items.accuracyAimed': this.checkCostAndAccuracy,
-            let hasTimeunitCost = false;
-            if (costTimeKey in this.numericData && name in this.numericData[costTimeKey] && this.numericData[costTimeKey][name] > 0) {
-                hasTimeunitCost = true;
-            } else if (tuKey in this.numericData && name in this.numericData[tuKey] && this.numericData[tuKey][name] > 0) {
-                hasTimeunitCost = true;
-            }
+            const hasTimeunitCost = (costTimeKey in data && data[costTimeKey] > 0) || (tuKey in data && data[tuKey] > 0);
+            const accuracy = (accuracyKey in data && data[accuracyKey] > 0) ? data[accuracyKey] : undefined;
 
-            let accuracy;
-            if (accuracyKey in this.numericData && name in this.numericData[accuracyKey] && this.numericData[`items.accuracy${variant}`][name] > 0) {
-                accuracy = this.numericData[`items.accuracy${variant}`][name];
-            }
-
-            if (source !== 'accuracy' && costTimeKey in this.numericData && name in this.numericData[costTimeKey] && tuKey in this.numericData && name in this.numericData[tuKey]) {
+            if (source !== 'accuracy' && costTimeKey in data && tuKey in data) {
                 this.addDiagnosticForReference(ref, `cost${variant}.time and tu${variant} should not both be set!`);
             }
             // could be an else
@@ -120,7 +103,7 @@ export class ItemsLogic extends BaseLogic {
 
         for (const ref of this.referencesToCheck[key]) {
             const name = this.getNameFromMetadata(ref.ref, 'items');
-            if (!name || !(name in this.numericData['items.confAuto.shots']) || !(name in this.numericData['items.autoShots'])) {
+            if (!name || !(name in this.data) && !('items.confAuto.shots' in this.data[name]) || !('items.autoShots' in this.data[name])) {
                 continue;
             }
 

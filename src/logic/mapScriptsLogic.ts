@@ -27,18 +27,6 @@ export class MapScriptsLogic extends BaseLogic {
         this.storeMapblockGroups(entries);
     }
 
-    // public checkRelationLogic () {
-    //     this.checkGroupReferences();
-    // }
-
-    // public checkVerticalGroupReferences (key: string) {
-    //     this.checkGroupReferences(key);
-    // }
-
-    // public checkCrossingGroupReferences (key: string) {
-    //     this.checkGroupReferences(key);
-    // }
-
     private checkGroupReferences (key: string) {
         if (!(key in this.referencesToCheck)) {
             return;
