@@ -74,9 +74,9 @@ export class ItemsLogic extends BaseLogic {
             }
 
             const data = this.data[name];
-            const costTimeKey = `items.cost${variant}.time`;
-            const accuracyKey = `items.accuracy${variant}`;
-            const tuKey = `items.tu${variant}`;
+            const costTimeKey = `cost${variant}.time`;
+            const accuracyKey = `accuracy${variant}`;
+            const tuKey = `tu${variant}`;
 
             // 'items.costAimed.time': this.checkCostAndAccuracy,
             // 'items.tuAimed': this.checkCostAndAccuracy,
@@ -103,7 +103,7 @@ export class ItemsLogic extends BaseLogic {
 
         for (const ref of this.referencesToCheck[key]) {
             const name = this.getNameFromMetadata(ref.ref, 'items');
-            if (!name || !(name in this.data) && !('items.confAuto.shots' in this.data[name]) || !('items.autoShots' in this.data[name])) {
+            if (!name || !(name in this.data) && !('confAuto.shots' in this.data[name]) || !('autoShots' in this.data[name])) {
                 continue;
             }
 

@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 35;
+const expectedNumberOfDiagnostics = 38;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -168,12 +168,12 @@ describe('rulesetDefinitionChecker', () => {
     });
 
     it('finds a diagnostic for a craftweapon with an incorrect rearmRate', () => {
-        const diagnostic = findDiagnostic('craftWeapons.rul', "'rearmRate of '10' is less than clipSize '25' for clip 'STR_REARM_RATE_TEST_AMMO'. This will cause a crash on loading OpenXcom!");
+        const diagnostic = findDiagnostic('craftWeapons.rul', "rearmRate of '10' is less than clipSize '25' for clip 'STR_REARM_RATE_TEST_AMMO'. This will cause a crash on loading OpenXcom!");
         assert.notStrictEqual(diagnostic, undefined);
     });
 
     it('does not finds a diagnostic for a craftweapon with a correct rearmRate', () => {
-        const diagnostic = findDiagnostic('craftWeapons.rul', "'rearmRate of '50' is less than clipSize '25' for clip 'STR_REARM_RATE_TEST_AMMO'. This will cause a crash on loading OpenXcom!", 10, 15);
+        const diagnostic = findDiagnostic('craftWeapons.rul', "rearmRate of '50' is less than clipSize '25' for clip 'STR_REARM_RATE_TEST_AMMO'. This will cause a crash on loading OpenXcom!", 10, 15);
         assert.strictEqual(diagnostic, undefined);
     });
 

@@ -136,14 +136,16 @@ export class BaseLogic implements LogicInterface {
 
     protected collectGenericData(entries: LogicDataEntry[], fields: string[], data: { [key: string]: { [key: string]: number | string; }; }) {
         for (const field of fields) {
-            const fieldData = this.getFieldData<number>(entries, field);
+            const fieldData = this.getFieldData<string>(entries, field);
             if (fieldData) {
+                const subFieldName = field.split('.').slice(1).join('.');
+
                 for (const key in fieldData) {
                     if (!(key in data)) {
                         data[key] = {};
                     }
 
-                    data[key][field] = fieldData[key];
+                    data[key][subFieldName] = fieldData[key];
                 }
             }
         }

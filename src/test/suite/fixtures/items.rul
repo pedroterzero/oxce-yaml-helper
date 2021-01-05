@@ -104,4 +104,6 @@ items:
     costMelee:
       time: 1
 
+  - type: STR_DUMMY_LAUNCHER
+
   - delete: STR_AVALANCHE_MISSILES
