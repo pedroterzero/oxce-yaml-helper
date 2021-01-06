@@ -185,14 +185,24 @@ export class RulesetRecursiveKeyRetriever {
     private loopEntry(entry: YAMLSeq, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, lookupAll: boolean) {
         this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
 
+        let index = -1;
         entry.items.forEach((ruleProperty) => {
+            index++;
+
             if ('items' in ruleProperty) {
+                let newNamesByPath = {} as typeof namesByPath;
+                if (Object.keys(namesByPath).length > 0) {
+
+                    // store the index so we can refer to it later (mostly for logic checks)
+                    newNamesByPath = Object.assign({}, namesByPath);
+                    newNamesByPath[`${path}[]`] = index.toString();
+                }
                 // console.log(`looping ${ruleProperty} path ${path}[]`);
                 if (typedProperties.isKeyReferencePath(path + '[]')) {
                     // this is quite unfortunate, but needed for things like manufacture.randomProducedItems[][]
-                    this.processItems(ruleProperty, path + '[]', matches, logicData, namesByPath, lookupAll);
+                    this.processItems(ruleProperty, path + '[]', matches, logicData, newNamesByPath, lookupAll);
                 } else {
-                    this.loopEntry(ruleProperty, path + '[]', matches, logicData, namesByPath, lookupAll);
+                    this.loopEntry(ruleProperty, path + '[]', matches, logicData, newNamesByPath, lookupAll);
                 }
             } else {
                 this.checkForDefinitionName(path, ruleProperty, namesByPath);

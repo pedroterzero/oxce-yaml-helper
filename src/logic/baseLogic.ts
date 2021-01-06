@@ -52,10 +52,15 @@ export class BaseLogic implements LogicInterface {
         //
     }
 
+    protected reset() {
+        //
+    }
+
     public check(data: LogicEntries, file: Uri, diagnostics: Diagnostic[]) {
         this.diagnostics = diagnostics;
         this.file = file;
         const fields = this.getFields();
+        this.reset();
 
         for (const key in data) {
             if (fields.includes(key)) {
@@ -134,7 +139,7 @@ export class BaseLogic implements LogicInterface {
         return Object.keys(ret).length > 0 ? ret : undefined;
     }
 
-    protected collectGenericData(entries: LogicDataEntry[], fields: string[], data: { [key: string]: { [key: string]: number | string; }; }) {
+    protected collectGenericData(entries: LogicDataEntry[], fields: string[], data: { [key: string]: { [key: string]: number | string | {[key: string]: number | string}[]}; }) {
         for (const field of fields) {
             const fieldData = this.getFieldData<string>(entries, field);
             if (fieldData) {

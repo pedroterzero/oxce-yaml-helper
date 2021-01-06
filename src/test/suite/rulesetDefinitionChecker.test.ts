@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 39;
+const expectedNumberOfDiagnostics = 48;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -247,6 +247,11 @@ describe('rulesetDefinitionChecker', () => {
 
     it('finds a diagnostic for a craftweapon with a launcher that is not an item', () => {
         const diagnostic = findDiagnostic('craftWeapons.rul', `'STR_LAUNCHER_WRONG_TYPE_TEST' launcher 'STR_DUMMY_MANUFACTURE': item does not exist. This will cause a crash on loading OpenXcom!`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for a soldierTransformation without allowedSoldierTypes', () => {
+        const diagnostic = findDiagnostic('soldierTransformation.rul', `'STR_TRANSFORMATION_WITHOUT_SOLDIER_TYPES' does not have allowedSoldierTypes: set. Without it, it can never be used in-game.`);
         assert.notStrictEqual(diagnostic, undefined);
     });
 });

@@ -1,16 +1,18 @@
 import { Diagnostic, Uri } from "vscode";
 import { LogicDataEntry, Match } from "../rulesetTree";
 import { ReferenceFile } from "../workspaceFolderRuleset";
+import { mergeAndConcat } from "merge-anything";
 import { LogicInterface } from "./baseLogic";
 import { MapScriptsLogic } from "./mapScriptsLogic";
 import { RegionsLogic } from "./regionsLogic";
-import { mergeAndConcat } from "merge-anything";
 import { CraftWeaponsLogic } from "./craftWeaponsLogic";
 import { UfopaediaLogic } from "./ufopaediaLogic";
 import { ItemsLogic } from "./itemsLogic";
 import { SoldierTransformationLogic } from "./soldierTransformationLogic";
+import { AlienDeploymentsLogic } from "./alienDeploymentsLogic";
 
 const handlers = [
+    AlienDeploymentsLogic,
     CraftWeaponsLogic,
     ItemsLogic,
     MapScriptsLogic,
