@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 51;
+const expectedNumberOfDiagnostics = 54;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -286,6 +286,21 @@ describe('rulesetDefinitionChecker', () => {
 
     it('finds a diagnostic for a manufactureShortcut without startFrom', () => {
         const diagnostic = findDiagnostic('manufactureShortcut.rul', `'STR_MANUFACTURE_SHORTCUT_WITHOUT_STARTFROM' does not have startFrom: set. This will cause a segmentation fault on loading OpenXcom!`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an alienMission without waves', () => {
+        const diagnostic = findDiagnostic('alienMissions.rul', `'STR_ALIEN_MISSION_WITHOUT_WAVES' does not have waves: set. This will lead to a segmentation fault when this mission triggers.`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an alienMission without waves', () => {
+        const diagnostic = findDiagnostic('alienMissions.rul', `'STR_ALIEN_MISSION_WITHOUT_RACEWEIGHTS' does not have raceWeights: set. This will lead to a crash when this mission triggers.`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an alienMission with a wave without a trajector', () => {
+        const diagnostic = findDiagnostic('alienMissions.rul', `Wave does not have trajectory: set. This will cause a crash on loading OpenXcom!`);
         assert.notStrictEqual(diagnostic, undefined);
     });
 });

@@ -89,6 +89,7 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
     'alienDeployments.winCutscene': ['cutscenes'],
     'alienMissions.interruptResearch': ['research'],
     'alienMissions.operationBaseType': ['alienDeployments'],
+    'alienMissions.waves[].trajectory': ['ufoTrajectories'],
     '/^alienMissions\\.raceWeights\\.\\d+$/': ['alienRaces'],
     '/^alienMissions\\.regionWeights\\.\\d+$/': ['regions'],
     'alienMissions.siteType': ['alienDeployments'],

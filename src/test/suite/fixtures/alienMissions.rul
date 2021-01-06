@@ -1,0 +1,14 @@
+alienMissions:
+  - type: STR_ALIEN_MISSION_WITHOUT_WAVES
+    raceWeights: {}
+  - type: STR_ALIEN_MISSION_WITHOUT_RACEWEIGHTS
+    waves: []
+  - type: STR_ALIEN_MISSION_WITHOUT_WAVE_TRAJECTORY
+    raceWeights: {}
+    waves:
+      - ufo: STR_ABDUCTOR
+        trajectory: P0
+      - ufo: STR_TERROR_SHIP
+  - type: STR_ALIEN_MISSION_OK
+    raceWeights: {}
+    waves: []

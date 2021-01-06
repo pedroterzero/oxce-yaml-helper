@@ -11,9 +11,11 @@ import { ItemsLogic } from "./itemsLogic";
 import { SoldierTransformationLogic } from "./soldierTransformationLogic";
 import { AlienDeploymentsLogic } from "./alienDeploymentsLogic";
 import { ManufactureShortcutLogic } from "./manufactureShortcutLogic";
+import { AlienMissionsLogic } from "./alienMissionsLogic";
 
 const handlers = [
     AlienDeploymentsLogic,
+    AlienMissionsLogic,
     CraftWeaponsLogic,
     ItemsLogic,
     ManufactureShortcutLogic,
