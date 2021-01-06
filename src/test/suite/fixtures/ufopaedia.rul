@@ -6,3 +6,4 @@ ufopaedia:
     image_id: UP001.SPK # should exist
   - id: STR_SEGFAULT_CHECK_NEGATIVE_NOT_REQUIRED
     type_id: 4
+  - id: STR_ARTICLE_WITHOUT_TYPE_ID

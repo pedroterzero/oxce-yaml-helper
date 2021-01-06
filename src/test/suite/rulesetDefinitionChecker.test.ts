@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 49;
+const expectedNumberOfDiagnostics = 53;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -165,6 +165,11 @@ describe('rulesetDefinitionChecker', () => {
     it('does not find a diagnostic for an ufopaedia that does not need an image type', () => {
         const diagnostic = findDiagnostic('ufopaedia.rul', ufopaediaImageErrorMessage, 7, 13);
         assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an ufopaedia without type_id', () => {
+        const diagnostic = findDiagnostic('ufopaedia.rul', `'STR_ARTICLE_WITHOUT_TYPE_ID' does not have a type_id: set. Without it, the article will not appear in-game.`);
+        assert.notStrictEqual(diagnostic, undefined);
     });
 
     it('finds a diagnostic for a craftweapon with an incorrect rearmRate', () => {
