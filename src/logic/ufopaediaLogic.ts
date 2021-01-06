@@ -10,6 +10,7 @@ export class UfopaediaLogic extends BaseLogic {
 
     private additionalFields = [
         'ufopaedia.image_id', // we need to know if there's an image id
+        'ufopaedia.rect_text'
     ].concat(this.additionalNumericFields);
 
     // this is the field we will be checking
@@ -24,7 +25,6 @@ export class UfopaediaLogic extends BaseLogic {
     // and then not handled as regular references but only by this logic
     protected numericFields = this.additionalNumericFields;
 
-    private imageIds: {[key: string]: string} = {};
     private data: {[key: string]: {[key: string]: number}} = {};
 
     public getFields(): string[] {
@@ -32,7 +32,6 @@ export class UfopaediaLogic extends BaseLogic {
     }
 
     protected generic(entries: LogicDataEntry[]) {
-        this.imageIds = this.getFieldData<string>(entries, 'ufopaedia.image_id') || {};
         this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('ufopaedia.')), this.data);
     }
 
@@ -42,6 +41,7 @@ export class UfopaediaLogic extends BaseLogic {
         }
 
         this.checkImageProvided(key);
+        this.checkRectTextProvided(key);
     }
 
     private checkImageProvided (key: string) {
@@ -55,15 +55,29 @@ export class UfopaediaLogic extends BaseLogic {
                 continue;
             }
 
-            if (name in this.imageIds) {
+            if (!this.data[name]?.image_id) {
+                this.addDiagnosticForReference(
+                    ref,
+                    `Ufopaedia articles with type_ids ${this.imageRequiredTypeIds.join(', ')} must have an image_id. Otherwise this will cause a segmentation fault when opening the article!`,
+                    DiagnosticSeverity.Error
+                );
+            }
+        }
+    }
+
+    private checkRectTextProvided (key: string) {
+        for (const ref of this.referencesToCheck[key]) {
+            const name = this.getNameFromMetadata(ref.ref, 'ufopaedia');
+            if (!name) {
                 continue;
             }
 
-            this.addDiagnosticForReference(
-                ref,
-                `Ufopaedia articles with type_ids ${this.imageRequiredTypeIds.join(', ')} must have an image_id. Otherwise this will cause a segmentation fault when opening the article!`,
-                DiagnosticSeverity.Error
-            );
+            if (this.data[name].type_id === 1 && !this.data[name]?.rect_text) {
+                this.addDiagnosticForReference(
+                    ref,
+                    `Ufopaedia articles with type_ids 1 (Craft) should have rect_text:. Otherwise the text will not show up in the article.`
+                );
+            }
         }
     }
 

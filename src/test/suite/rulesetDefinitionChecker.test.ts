@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 50;
+const expectedNumberOfDiagnostics = 51;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -169,6 +169,11 @@ describe('rulesetDefinitionChecker', () => {
 
     it('finds a diagnostic for an ufopaedia without type_id', () => {
         const diagnostic = findDiagnostic('ufopaedia.rul', `'STR_ARTICLE_WITHOUT_TYPE_ID' does not have a type_id: set. Without it, the article will not appear in-game.`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an ufopaedia type_id=1 and no rect_text', () => {
+        const diagnostic = findDiagnostic('ufopaedia.rul', `Ufopaedia articles with type_ids 1 (Craft) should have rect_text:. Otherwise the text will not show up in the article.`);
         assert.notStrictEqual(diagnostic, undefined);
     });
 
