@@ -106,7 +106,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
 
                     this.addDiagnosticForReference(
                         ref,
-                        `data entry '${field}' (${index}) not set. This can lead to crashes in-game.`,
+                        `data entry '${field}' not set. This can lead to crashes in-game.`,
                         DiagnosticSeverity.Error
                     );
                 }

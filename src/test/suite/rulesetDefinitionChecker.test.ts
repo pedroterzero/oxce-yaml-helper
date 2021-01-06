@@ -254,4 +254,35 @@ describe('rulesetDefinitionChecker', () => {
         const diagnostic = findDiagnostic('soldierTransformation.rul', `'STR_TRANSFORMATION_WITHOUT_SOLDIER_TYPES' does not have allowedSoldierTypes: set. Without it, it can never be used in-game.`);
         assert.notStrictEqual(diagnostic, undefined);
     });
+
+    it('finds a diagnostic for alienDeployments without data', () => {
+        const diagnostic = findDiagnostic('alienDeployments.rul', `'STR_TEST_ALIEN_DEPLOYMENT_NO_DATA' does not have data: set. This can lead to crashes in-game.`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds diagnostics for an alienDeployments with missing data', () => {
+        const expected = [
+            {line: 5, char: 19, missing: ['lowQty', 'highQty', 'percentageOutsideUFO']},
+            {line: 11, char: 19, missing: ['lowQty', 'highQty', 'percentageOutsideUFO', 'itemSets']}
+        ];
+
+        for (const entry of expected) {
+            for (const key of entry.missing) {
+                const diagnostic = findDiagnostic('alienDeployments.rul', `data entry '${key}' not set. This can lead to crashes in-game.`, entry.line, entry.char);
+                assert.notStrictEqual(diagnostic, undefined);
+            }
+        }
+    });
+
+
+    // {
+    //     "resource": "/home/peter/rails-yaml/oxc-yaml-thingy/src/test/suite/fixtures/alienDeployments.rul",
+    //     "owner": "_generated_diagnostic_collection_name_#3",
+    //     "severity": 8,
+    //     "message": "data entry 'lowQty' not set. This can lead to crashes in-game.",
+    //     "startLineNumber": 6,
+    //     "startColumn": 20,
+    //     "endLineNumber": 6,
+    //     "endColumn": 21
+    // }
 });
