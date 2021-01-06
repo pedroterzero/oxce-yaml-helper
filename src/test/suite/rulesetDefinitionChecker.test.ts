@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 48;
+const expectedNumberOfDiagnostics = 49;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -274,15 +274,8 @@ describe('rulesetDefinitionChecker', () => {
         }
     });
 
-
-    // {
-    //     "resource": "/home/peter/rails-yaml/oxc-yaml-thingy/src/test/suite/fixtures/alienDeployments.rul",
-    //     "owner": "_generated_diagnostic_collection_name_#3",
-    //     "severity": 8,
-    //     "message": "data entry 'lowQty' not set. This can lead to crashes in-game.",
-    //     "startLineNumber": 6,
-    //     "startColumn": 20,
-    //     "endLineNumber": 6,
-    //     "endColumn": 21
-    // }
+    it('finds a diagnostic for a manufactureShortcut without startFrom', () => {
+        const diagnostic = findDiagnostic('manufactureShortcut.rul', `'STR_MANUFACTURE_SHORTCUT_WITHOUT_STARTFROM' does not have startFrom: set. This will cause a segmentation fault on loading OpenXcom!`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
 });

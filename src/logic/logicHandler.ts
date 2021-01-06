@@ -10,16 +10,17 @@ import { UfopaediaLogic } from "./ufopaediaLogic";
 import { ItemsLogic } from "./itemsLogic";
 import { SoldierTransformationLogic } from "./soldierTransformationLogic";
 import { AlienDeploymentsLogic } from "./alienDeploymentsLogic";
+import { ManufactureShortcutLogic } from "./manufactureShortcutLogic";
 
 const handlers = [
     AlienDeploymentsLogic,
     CraftWeaponsLogic,
     ItemsLogic,
+    ManufactureShortcutLogic,
     MapScriptsLogic,
     RegionsLogic,
     SoldierTransformationLogic,
     UfopaediaLogic
-    // TerrainsLogic
 ];
 
 export type FilesWithDiagnostics = {[key: string]: Diagnostic[]};
