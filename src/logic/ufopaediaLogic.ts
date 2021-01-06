@@ -10,11 +10,11 @@ export class UfopaediaLogic extends BaseLogic {
 
     private additionalFields = [
         'ufopaedia.image_id', // we need to know if there's an image id
-    ];//.concat(this.additionalNumericFields);
+    ].concat(this.additionalNumericFields);
 
     // this is the field we will be checking
     protected relatedFieldLogicMethods = {
-        'ufopaedia.type_id': this.checkImageProvided,
+        'ufopaedia.type_id': this.checkTypeLogic,
         'ufopaedia.id': this.checkTypeProvided,
     }
 
@@ -28,7 +28,7 @@ export class UfopaediaLogic extends BaseLogic {
     private data: {[key: string]: {[key: string]: number}} = {};
 
     public getFields(): string[] {
-        return Object.keys(this.fields).concat(this.additionalFields);
+        return ([] as string[]).concat(this.additionalFields);
     }
 
     protected generic(entries: LogicDataEntry[]) {
@@ -36,11 +36,15 @@ export class UfopaediaLogic extends BaseLogic {
         this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('ufopaedia.')), this.data);
     }
 
-    private checkImageProvided (key: string) {
+    private checkTypeLogic (key: string) {
         if (!(key in this.referencesToCheck)) {
             return;
         }
 
+        this.checkImageProvided(key);
+    }
+
+    private checkImageProvided (key: string) {
         for (const ref of this.referencesToCheck[key]) {
             const name = this.getNameFromMetadata(ref.ref, 'ufopaedia');
             if (!name) {
