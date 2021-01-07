@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 54;
+const expectedNumberOfDiagnostics = 55;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -304,7 +304,7 @@ describe('rulesetDefinitionChecker', () => {
         assert.notStrictEqual(diagnostic, undefined);
     });
 
-    it('finds a diagnostic for an alienMission with a wave without a trajector', () => {
+    it('finds a diagnostic for an alienMission with a wave without a trajectory', () => {
         const diagnostic = findDiagnostic('alienMissions.rul', `Wave does not have trajectory: set. This will cause a crash on loading OpenXcom!`);
         assert.notStrictEqual(diagnostic, undefined);
     });
