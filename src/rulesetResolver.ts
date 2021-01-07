@@ -3,7 +3,6 @@ import { logger } from "./logger";
 import { Definition, LogicDataEntry, Match, rulesetTree, Translation, Variables } from "./rulesetTree";
 import { EventEmitter } from "events";
 import { rulesetParser } from "./rulesetParser";
-import deepmerge = require('deepmerge');
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { rulesetFileCacheManager } from './rulesetFileCacheManager';
 import { existsSync } from 'fs';
@@ -125,10 +124,15 @@ export class RulesetResolver implements Disposable {
     }
 
     private async getYamlFilesForWorkspaceFolder(workspaceFolder: WorkspaceFolder): Promise<Uri[]> {
-        let files = await workspace.findFiles(this.yamlPattern, '');
-        files = deepmerge(files, await workspace.findFiles('**/Language/*.yml'));
-
-        files = files.filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
+        let files: Uri[] = [];
+        await Promise.all([
+            await workspace.findFiles(this.yamlPattern),
+            await workspace.findFiles('**/Language/*.yml')
+        ]).then(values => {
+            files = files
+                .concat(...values)
+                .filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
+        });
 
         await this.getAssetRulesets(files);
 

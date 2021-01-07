@@ -1,12 +1,12 @@
 import { DiagnosticCollection, languages, Uri, WorkspaceFolder } from "vscode";
 import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match, LogicDataEntry } from "./rulesetTree";
-import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 import { rulesetDefinitionChecker } from "./rulesetDefinitionChecker";
 import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
 import { rulesetResolver } from "./extension";
 import { FilesWithDiagnostics } from "./logic/logicHandler";
+import { mergeAndConcat } from "merge-anything";
 
 export type RulesetFile = { file: Uri, definitions: Definition[] }
 export type ReferenceFile = { file: Uri, references: Match[] }
@@ -271,40 +271,28 @@ export class WorkspaceFolderRuleset {
     }
 
     private createDefinitionLookup() {
-        this.definitionsLookup = {};
-
-        this.rulesetFiles.forEach((ruleset) => {
-            this.definitionsLookup = deepmerge(
-                this.definitionsLookup,
-                this.getLookups(ruleset.definitions, ruleset.file)
-            );
-        });
+        this.definitionsLookup = mergeAndConcat(
+            {}, // start empty
+            ...this.rulesetFiles.map(file => this.getLookups(file.definitions, file.file))
+        );
 
         logger.debug('Total number of (unique) definitions: ', Object.keys(this.definitionsLookup).length);
     }
 
     private createVariableLookup () {
-        this.variables = {};
+        this.variables = mergeAndConcat(
+            {}, // start empty
+            ...this.variableFiles.map(file => file.variables)
+        );
 
-        this.variableFiles.forEach((file) => {
-            this.variables = deepmerge(
-                this.variables,
-                file.variables
-            );
-        });
-
-    //    logger.debug('Number of variables', Object.keys(this.variables).length);
+        //    logger.debug('Number of variables', Object.keys(this.variables).length);
     }
 
     private createTranslationLookup () {
-        this.translations = {};
-
-        this.translationFiles.forEach((file) => {
-            this.translations = deepmerge(
-                this.translations,
-                file.translations
-            );
-        });
+        this.translations = mergeAndConcat(
+            {}, // start empty
+            ...this.translationFiles.map(file => file.translations)
+        );
 
         // logger.debug(`Number of translations for ${this.getLocale()}: ${Object.keys(this.translations[locale]).length}`);
     }
