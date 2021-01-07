@@ -1,3 +1,7 @@
+# v0.5.0
+- Add support for linking global variables, see https://github.com/pedroterzero/oxce-yaml-helper/issues/5
+- Under the hood: use async fs functions
+
 # v0.4.0
 Too much to name, but biggest new features are:
 - Reference checking
