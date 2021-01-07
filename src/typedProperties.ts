@@ -82,6 +82,22 @@ export class typedProperties {
         'startingBaseSuperhuman.facilities[]',
     ];
 
+    private static globalVariablePaths = [
+        'ai',
+        'constants',
+        'fixedUserOptions',
+        'gameOver',
+        'health',
+        'lighting',
+        'loyaltyRatings', // FtA
+        'loyaltySettings', // FtA
+        'mana',
+        'missionRatings',
+        'monthlyRatings',
+        'recommendedUserOptions',
+        'reputationLevels', // FtA
+    ];
+
     private static vetoTypeValues: {[key: string]: string[]} = {
         // 'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
     };
@@ -177,8 +193,8 @@ export class typedProperties {
         'extraSprites.Projectiles': ['height', 'subY'],
     }
 
-    private static storeVariables: {[key: string]: Record<string, unknown>} = {
-        'ftaGame': {}
+    private static storeVariables: {[key: string]: boolean} = {
+        'globalVariables.ftaGame': true
     }
 
     private static additionalLogicPaths: string[] = [];
@@ -388,6 +404,10 @@ export class typedProperties {
         return (key in this.storeVariables);
     }
 
+    public static getStoreVariables() {
+        return Object.keys(this.storeVariables);
+    }
+
     /**
      * Checks that a provided type key is supposed to be numeric
      * @param type
@@ -424,7 +444,11 @@ export class typedProperties {
     }
 
     public static isKeyValueReferencePath(path: string) {
-        return this.keyValueReferenceTypes.indexOf(path) !== -1;
+        return this.keyValueReferenceTypes.includes(path);
+    }
+
+    public static isGlobalVariablePath(path: string) {
+        return this.globalVariablePaths.includes(path);
     }
 
     public static isAdditionalLogicPath(path: string) {

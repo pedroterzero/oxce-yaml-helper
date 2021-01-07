@@ -32,6 +32,8 @@ const ftaTypeLinks: TypeLinks = {
     'diplomacyFactions.discoverEvent': ['events'],
     'diplomacyFactions.helpTreatyMissions': ['missionScripts'],
     'diplomacyFactions.helpTreatyEvents': ['eventScripts'],
+    'globalVariables.baseConstructionUnlockResearch': ['research'],
+    'globalVariables.ufopaediaUnlockResearch': ['research'],
     // sellingSet - this is changing ATM by Stoddard dramatically
     'units.altRecoveredUnit': ['units']
 };
@@ -144,6 +146,10 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
     'facilities.destroyedFacility': ['facilities'],
     'facilities.mapName': ['terrains.mapBlocks[]'],
     'facilities.requires': ['research'],
+    'globalVariables.fakeUnderwaterBaseUnlockResearch': ['research'],
+    'globalVariables.mana.unlockResearch': ['research'],
+    'globalVariables.newBaseUnlockResearch': ['research'],
+    'globalVariables.psiUnlockResearch': ['research'],
     'itemCategories.replaceBy': ['itemCategories'],
     'items.categories': ['itemCategories'],
     '/^items\\.ammo\\.[0-3]\\.compatibleAmmo$/': ['items'],

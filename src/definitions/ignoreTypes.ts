@@ -1,3 +1,5 @@
+import { typedProperties } from "../typedProperties";
+
 /**
  * Prevent the following types being checked as references
  */
@@ -29,6 +31,7 @@ export const ignoreTypes = [
     'interfaces.palette', // could type check this, but the validator probably catches these
     'items.scripts.createItem',
     'items.scripts.selectItemSprite',
+    'globe.data', // may want to check that the files exist
     'mapScripts.commands[].type',
     'mapScripts.commands[].direction',
     'mapScripts.commands[].tunnelData.MCDReplacements[].type',
@@ -43,4 +46,4 @@ export const ignoreTypes = [
     'units.race', // optional according to Finnik
     // 'units.civilianRecoveryType', // ruleset validator will catch it
     'units.specialObjectiveType', // FtA, ruleset validator will catch it
-];
+].concat(typedProperties.getStoreVariables());

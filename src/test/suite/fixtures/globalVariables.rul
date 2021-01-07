@@ -1,5 +1,7 @@
 ftaGame: true
 
+newBaseUnlockResearch: STR_DUMMY_NON_EXISTING_RESEARCH
+
 startingBase:
   crafts:
     - type: STR_DUMMY_CRAFT

@@ -307,7 +307,7 @@ export class RulesetResolver implements Disposable {
                 logger.debug(`found ${definitions.length} definitions in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
 
                 // can't use references (yet), variables and extraStrings are not references (yet) (they are keys, not values)
-                const variables = rulesetParser.getVariables(docObject);
+                const variables = rulesetParser.getVariables(references);
                 translations = rulesetParser.getTranslations(docObject);
 
                 parsed = {definitions, references, variables, translations, logicData};
