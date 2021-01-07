@@ -92,6 +92,10 @@ export class UfopaediaLogic extends BaseLogic {
                 continue;
             }
 
+            if (this.hierarchy?.hasDefinition('ufopaedia', name)) {
+                continue;
+            }
+
             if (!this.data[name]?.type_id) {
                 this.addDiagnosticForReference(
                     ref,

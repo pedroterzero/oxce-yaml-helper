@@ -12,6 +12,7 @@ import { SoldierTransformationLogic } from "./soldierTransformationLogic";
 import { AlienDeploymentsLogic } from "./alienDeploymentsLogic";
 import { ManufactureShortcutLogic } from "./manufactureShortcutLogic";
 import { AlienMissionsLogic } from "./alienMissionsLogic";
+import { WorkspaceFolderRulesetHierarchy } from "../workspaceFolderRulesetHierarchy";
 
 const handlers = [
     AlienDeploymentsLogic,
@@ -43,10 +44,10 @@ export class LogicHandler {
         }
     }
 
-    public check(file: Uri, diagnostics: Diagnostic[], data: { [key: string]: LogicDataEntry[]; }) {
+    public check(file: Uri, diagnostics: Diagnostic[], data: { [key: string]: LogicDataEntry[]; }, hierarchy: WorkspaceFolderRulesetHierarchy) {
         for (const handler of Object.values(this.instances)) {
             // this.instances[handler.toString()] = new handler();
-            handler.check(data, file, diagnostics);
+            handler.check(data, file, diagnostics, hierarchy);
         }
     }
 

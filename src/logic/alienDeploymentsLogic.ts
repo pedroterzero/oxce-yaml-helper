@@ -27,7 +27,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
         // '/^alienDeployments\\.data\\[\\]\\.(alienRank|customUnitType|dQty|extraQty|extraRandomItems)$/': this.checkForRequiredDataFields,
     }
 
-    private requiredDataFields = ['lowQty', 'highQty', 'percentageOutsideUFO', 'itemSets'];
+    private requiredDataFields = ['lowQty', 'highQty', 'percentageOutsideUfo', 'itemSets'];
 
     protected numericFields = ([] as string[]).concat(this.additionalNumericFields);
 
@@ -98,7 +98,6 @@ export class AlienDeploymentsLogic extends BaseLogic {
             }
 
             const data = this.data[name].data[parseInt(index)];
-
 
             for (const field of this.requiredDataFields) {
                 if (!(field in data)) {

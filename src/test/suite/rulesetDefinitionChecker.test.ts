@@ -277,8 +277,8 @@ describe('rulesetDefinitionChecker', () => {
 
     it('finds diagnostics for an alienDeployments with missing data', () => {
         const expected = [
-            {line: 5, char: 19, missing: ['lowQty', 'highQty', 'percentageOutsideUFO']},
-            {line: 11, char: 19, missing: ['lowQty', 'highQty', 'percentageOutsideUFO', 'itemSets']}
+            {line: 5, char: 19, missing: ['lowQty', 'highQty', 'percentageOutsideUfo']},
+            {line: 11, char: 19, missing: ['lowQty', 'highQty', 'percentageOutsideUfo', 'itemSets']}
         ];
 
         for (const entry of expected) {

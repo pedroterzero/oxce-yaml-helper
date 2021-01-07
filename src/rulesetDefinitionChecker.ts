@@ -11,6 +11,7 @@ import { FilesWithDiagnostics, LogicHandler } from "./logic/logicHandler";
 import { mergeAndConcat } from "merge-anything";
 import { typeHintMessages } from "./definitions/typeHintMessages";
 import { typedProperties } from "./typedProperties";
+import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -61,7 +62,7 @@ export class RulesetDefinitionChecker {
         this.logicHandler = new LogicHandler;
     }
 
-    public checkFile(file: ReferenceFile, ruleset: WorkspaceFolderRuleset, workspacePath: string): Diagnostic[] {
+    public checkFile(file: ReferenceFile, ruleset: WorkspaceFolderRuleset, workspacePath: string, hierarchy: WorkspaceFolderRulesetHierarchy): Diagnostic[] {
         const diagnostics : Diagnostic[] = [];
 
         this.checkReferences(file, ruleset.definitionsLookup, diagnostics);
@@ -70,7 +71,7 @@ export class RulesetDefinitionChecker {
         let logicData;
         if ((logicData = ruleset.getLogicData(file.file))) {
             // console.log(`checking! ${file.file.path}`);
-            this.logicHandler.check(file.file, diagnostics, logicData);
+            this.logicHandler.check(file.file, diagnostics, logicData, hierarchy);
         }
 
         return diagnostics;

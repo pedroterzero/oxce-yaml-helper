@@ -103,7 +103,7 @@ export class ItemsLogic extends BaseLogic {
 
         for (const ref of this.referencesToCheck[key]) {
             const name = this.getNameFromMetadata(ref.ref, 'items');
-            if (!name || !(name in this.data) && !('confAuto.shots' in this.data[name]) || !('autoShots' in this.data[name])) {
+            if (!name || !(name in this.data) || !('confAuto.shots' in this.data[name] && 'autoShots' in this.data[name])) {
                 continue;
             }
 

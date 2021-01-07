@@ -1,6 +1,7 @@
 import { Diagnostic, DiagnosticSeverity, Range, Uri } from "vscode";
 import { LogicDataEntry, Match } from "../rulesetTree";
 import { ReferenceFile } from "../workspaceFolderRuleset";
+import { WorkspaceFolderRulesetHierarchy } from "../workspaceFolderRulesetHierarchy";
 import { FilesWithDiagnostics } from "./logicHandler";
 
 export type LogicEntries = { [key: string]: LogicDataEntry[]; };
@@ -10,7 +11,7 @@ export interface LogicInterface {
     getDiagnosticsPerFile(): FilesWithDiagnostics;
     getFields(): string[];
     getNumericFields(): string[];
-    check(data: LogicEntries, file: Uri, diagnostics: Diagnostic[]): void;
+    check(data: LogicEntries, file: Uri, diagnostics: Diagnostic[], hierarchy: WorkspaceFolderRulesetHierarchy): void;
     checkRelationLogic(): void;
     storeRelationLogicReference(ref: Match, file: ReferenceFile): void;
 }
@@ -26,6 +27,7 @@ export class BaseLogic implements LogicInterface {
     protected diagnostics?: Diagnostic[];
     protected diagnosticsPerFile: {[key: string]: Diagnostic[]} = {};
     protected file?: Uri;
+    protected hierarchy?: WorkspaceFolderRulesetHierarchy;
 
     protected referencesToCheck: {[key: string]: {ref: Match, file: Uri}[]} = {};
 
@@ -56,9 +58,10 @@ export class BaseLogic implements LogicInterface {
         //
     }
 
-    public check(data: LogicEntries, file: Uri, diagnostics: Diagnostic[]) {
+    public check(data: LogicEntries, file: Uri, diagnostics: Diagnostic[], hierarchy: WorkspaceFolderRulesetHierarchy) {
         this.diagnostics = diagnostics;
         this.file = file;
+        this.hierarchy = hierarchy;
         const fields = this.getFields();
         this.reset();
 

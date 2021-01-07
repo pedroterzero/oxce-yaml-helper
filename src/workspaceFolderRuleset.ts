@@ -238,7 +238,7 @@ export class WorkspaceFolderRuleset {
                 continue;
             }
 
-            const diagnostics = rulesetDefinitionChecker.checkFile(file, this, this.workspaceFolder.uri.path);
+            const diagnostics = rulesetDefinitionChecker.checkFile(file, this, this.workspaceFolder.uri.path, this.hierarchy);
 
             // logger.debug(`diagnostic: ${file.file.path} has ${diagnostics.length} diagnostics from ${file.references.length} references`);
             problems += diagnostics.length;
