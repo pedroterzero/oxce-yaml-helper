@@ -47,8 +47,8 @@ export class RulesetParser {
         return rulesetDefinitionFinder.getDefinitionsFromReferences(references);
     }
 
-    public getVariables(doc: any): Variables {
-        return rulesetVariableFinder.findAllVariablesInYamlDocument(doc);
+    public getVariables(references: Match[] | undefined): Variables {
+        return rulesetVariableFinder.findAllVariablesInYamlDocument(references);
     }
 
     public getTranslations(doc: any): Translation[] {

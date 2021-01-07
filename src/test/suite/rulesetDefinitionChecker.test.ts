@@ -31,9 +31,32 @@ const findDiagnostic = (file: string, expected: string) => {
     return diagnosticsFile.find(item => item.message === expected);
 };
 
+const getNumberOfDiagnostics = () => {
+    const diagnostics = rulesetTree.getDiagnosticCollection(workspaceFolder);
+    if (!diagnostics) {
+        assert.fail('No diagnostics found');
+    }
+
+    let number = 0;
+    diagnostics.forEach((uri) => {
+        number += diagnostics.get(uri)?.length || 0;
+    });
+
+    return number;
+};
+
+const expectedNumberOfDiagnostics = 13;
+
+const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
+const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
+
 describe('rulesetDefinitionChecker', () => {
     before(async () => {
         return waitForExtensionLoad(rulesetResolver);
+    });
+
+    it('finds the expected number of diagnostics', () => {
+        assert.strictEqual(getNumberOfDiagnostics(), expectedNumberOfDiagnostics);
     });
 
     it('finds a diagnostic for non existing item', () => {
@@ -76,16 +99,22 @@ describe('rulesetDefinitionChecker', () => {
         assert.strictEqual(diagnostic, undefined);
     });
 
-    it('does not find a diagnostic for duplicate type if setting is disabled', async () => {
-        const originalSetting = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
+    after(async () => {
+        // fallback in case assert fails
+        await workspace.getConfiguration('oxcYamlHelper').update('findDuplicateDefinitions', originalSettingFindDuplicateDefinitions);
+    });
 
+    it('does not find a diagnostic for duplicate type if setting is disabled', async () => {
         await workspace.getConfiguration('oxcYamlHelper').update('findDuplicateDefinitions', false);
         // await waitForRefresh(rulesetResolver);
 
         const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_CHECK is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\titems.rul line 40");
         assert.strictEqual(diagnostic, undefined);
+        // we should have two less diagnostics now
+        assert.strictEqual(getNumberOfDiagnostics(), expectedNumberOfDiagnostics - 2);
 
-        await workspace.getConfiguration('oxcYamlHelper').update('findDuplicateDefinitions', originalSetting);
+        // should do it here too, so it's correct for next test
+        await workspace.getConfiguration('oxcYamlHelper').update('findDuplicateDefinitions', originalSettingFindDuplicateDefinitions);
     });
 
     it('finds a diagnostic for an invalid category', () => {
@@ -93,14 +122,27 @@ describe('rulesetDefinitionChecker', () => {
         assert.notStrictEqual(diagnostic, undefined);
     });
 
-    it('does not find a diagnostic for an invalid category if setting is disabled', async () => {
-        const originalSetting = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
+    after(async () => {
+        // fallback in case assert fails
+        await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', originalSettingValidateCategories);
+    });
 
+    it('does not find a diagnostic for an invalid category if setting is disabled', async () => {
         await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', 'no');
 
         const diagnostic = findDiagnostic('items.rul', '"STR_DUMMY_CATEGORY" does not exist (items.categories)');
         assert.strictEqual(diagnostic, undefined);
 
-        await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', originalSetting);
+        // we should have one less diagnostic now
+        assert.strictEqual(getNumberOfDiagnostics(), expectedNumberOfDiagnostics - 1);
+        // await waitForValidate(rulesetResolver);
+
+        // should do it here too, so it's correct for next test
+        await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', originalSettingValidateCategories);
+    });
+
+    it('finds a diagnostic for an invalid globalVariables reference', () => {
+        const diagnostic = findDiagnostic('globalVariables.rul', '"STR_DUMMY_NON_EXISTING_RESEARCH" does not exist (globalVariables.newBaseUnlockResearch)');
+        assert.notStrictEqual(diagnostic, undefined);
     });
 });
