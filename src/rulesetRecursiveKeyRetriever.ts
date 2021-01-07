@@ -54,7 +54,7 @@ export class RulesetRecursiveKeyRetriever {
         yamlPairs.forEach((ruleType) => {
             if (ruleType.value.type === 'PLAIN') {
                 // globalVariables does this
-                this.processItems(ruleType, ruleType.key.value, matches, lookupAll);
+                this.processItems(ruleType, 'globalVariables', matches, lookupAll);
             } else {
                 ruleType.value.items.forEach((ruleProperties: YAMLSeq) => {
                     if (['extraSprites', 'extraSounds'].indexOf(ruleType.key.value) !== -1) {
@@ -64,7 +64,12 @@ export class RulesetRecursiveKeyRetriever {
                         this.handleExtraFiles(propertiesFlat, ruleProperties, matches, ruleType);
                     }
 
-                    this.processItems(ruleProperties, ruleType.key.value, matches, lookupAll);
+                    let path = ruleType.key.value;
+                    if (typedProperties.isGlobalVariablePath(path)) {
+                        path = `globalVariables.${path}`;
+                    }
+
+                    this.processItems(ruleProperties, path, matches, lookupAll);
                 });
             }
         });
@@ -90,7 +95,10 @@ export class RulesetRecursiveKeyRetriever {
         } else if (entry.type === 'PAIR') {
             // i.e. startingbase
             // console.log('looping PAIR', path + '.' + entry.key.value);
-            this.processItems(entry.value, path + '.' + entry.key.value, matches, lookupAll);
+            const ret = this.processItems(entry.value, path + '.' + entry.key.value, matches, lookupAll);
+            if (ret) {
+                matches.push(ret);
+            }
         } else if ('items' in entry) {
             if (entry.items.length > 0) {
                 this.loopEntry(entry, path, matches, lookupAll);
@@ -105,7 +113,7 @@ export class RulesetRecursiveKeyRetriever {
                 return;
             }
 
-            if (typeof value === 'boolean' || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
+            if (this.isBoolean(value, path) || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
                 // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
                 return;
             }
@@ -256,6 +264,10 @@ export class RulesetRecursiveKeyRetriever {
 
     private isFloat(value: any) {
         return parseFloat(value) === value && parseInt(value) !== value;
+    }
+
+    private isBoolean(value: any, path: string) {
+        return typeof value === 'boolean' && !typedProperties.isStoreVariable(path);
     }
 
     private isUndefinableNumericProperty(path: string, value: any): boolean {

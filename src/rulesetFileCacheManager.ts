@@ -1,9 +1,13 @@
 import { ExtensionContext, extensions, Uri, workspace } from "vscode";
-import { existsSync, mkdirSync, readFileSync } from "fs";
 import { load } from "flat-cache";
 import { ParsedRuleset } from "./rulesetResolver";
 import { createHash } from "crypto";
 import { rulesetResolver } from "./extension";
+import { promises as fsp } from 'fs';
+// import { mkdir, readFile, stat } from "fs/promises";
+
+// remove in node 14
+const {readFile, stat, mkdir} = fsp;
 
 export class RulesetFileCacheManager {
     private CACHE_DIR = 'oxchelper';
@@ -14,13 +18,20 @@ export class RulesetFileCacheManager {
         this.context = context;
         this.init();
     }
-    private init() {
+    private async init() {
         if (!this.context) {
             return;
         }
 
-        if (!existsSync(this.getCachePath())) {
-            mkdirSync(this.getCachePath(), { recursive: true });
+        // check if cache dir exists, otherwise create it
+        try {
+            await stat(this.getCachePath());
+        } catch (error) {
+            if (error.code === 'NOENT') {
+                await mkdir(this.getCachePath(), { recursive: true });
+            } else {
+                throw error;
+            }
         }
     }
 
@@ -38,7 +49,7 @@ export class RulesetFileCacheManager {
         }
 
         const path = file.fsPath;
-        const fileContents = readFileSync(path);
+        const fileContents = await readFile(path);
         const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
 
         const cache = this.getCache(file);
@@ -61,7 +72,7 @@ export class RulesetFileCacheManager {
         }
 
         const path = file.fsPath;
-        const fileContents = readFileSync(path);
+        const fileContents = await readFile(path);
         const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
 
         const cache = this.getCache(file);

@@ -1,8 +1,14 @@
 ftaGame: true
 
+newBaseUnlockResearch: STR_DUMMY_NON_EXISTING_RESEARCH
+
 startingBase:
   crafts:
     - type: STR_DUMMY_CRAFT
       status: STR_READY
     - type: STR_DUMMY_CRAFT
       status: STR_DUMMY_STATUS
+
+globe:
+  # should not throw an error (yet, ignoreType currently)
+  data: DUMMY_NON_EXISTING
