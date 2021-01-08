@@ -28,7 +28,7 @@ const ftaTypeLinks: {[key: string]: string[]} = {
     'units.altRecoveredUnit': ['units']
 };
 
-export const typeLinks: {[key: string]: string[]} = Object.assign(ftaTypeLinks, {
+export const typeLinks: {[key: string]: string[]} = Object.assign({}, ftaTypeLinks, {
     'alienDeployments.abortCutscene': ['cutscenes'],
     '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': ['alienDeployments'],
     'alienDeployments.briefing.cutscene': ['cutscenes'],
@@ -74,6 +74,8 @@ export const typeLinks: {[key: string]: string[]} = Object.assign(ftaTypeLinks, 
     'armors.units': ['soldiers'],
     'crafts.refuelItem': ['items'],
     'crafts.requires': ['research'],
+    'craftWeapons.launcher': ['items'],
+    // @TODO more craftWeapons
     // 'crafts.weaponStrings': ['craftWeapons.weaponType'], // (is this just a translatable?)
     //enviroEffects
     'enviroEffects.armorTransformations.key': ['armors'], // should only match builtins

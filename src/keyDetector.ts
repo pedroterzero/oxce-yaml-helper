@@ -107,4 +107,37 @@ export class KeyDetector {
 
         return;
     }
+
+    public static findRulePath(position: Position, document: TextDocument): string {
+        const text = document.getText().slice(0, document.offsetAt(position));
+
+        const lines = text.split("\n").reverse();
+        const editLine = lines.shift();
+        const matches = editLine?.match(/^(\s+)([a-zA-Z0-9-]+)(:)?/);
+        const path = [];
+
+        let indent = 2;
+        if (matches) {
+            indent = matches[1].length;
+            if (matches[3] === ':') {
+                path.push(matches[2]);
+            }
+        }
+
+        for (const line of lines) {
+            const parentRegex = new RegExp(`^(\\s{1,${indent - 1}})([a-zA-Z]+):$`);
+
+            let matches;
+            if (line.trimEnd().match(/^[a-zA-Z]+:$/)) {
+                path.push(line.trimEnd().slice(0, -1));
+                break;
+            } else if ((matches = parentRegex.exec(line.trimEnd()))) {
+                indent = matches[1].length;
+                path.push(matches[2]);
+                console.log('foo', matches);
+            }
+        }
+
+        return path.reverse().join('.');
+    }
 }

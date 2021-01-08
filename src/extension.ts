@@ -6,6 +6,7 @@ import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';
 import { RulesetHoverProvider } from './rulesetHoverProvider';
 import { ConfigurationWatcher } from './configurationWatcher';
+import { RulesetCompletionProvider } from './rulesetCompletionProvider';
 
 export const rulesetResolver = new RulesetResolver();
 
@@ -27,6 +28,9 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(languages.registerDefinitionProvider(documentFilters, new RulesetDefinitionProvider()));
     context.subscriptions.push(languages.registerHoverProvider(documentFilters, new RulesetHoverProvider()));
+
+    const triggerCharacters = " abcdefghijklmnopqrstuvwxyz0123456789".split('');
+    context.subscriptions.push(languages.registerCompletionItemProvider(documentFilters, new RulesetCompletionProvider(), ...triggerCharacters));
 
     // load the recommender
     new ExtensionRecommender;

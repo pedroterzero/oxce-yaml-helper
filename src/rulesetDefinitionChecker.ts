@@ -29,6 +29,7 @@ export class RulesetDefinitionChecker {
     ];
 
     private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
+    private ignoreTypesRegexes: RegExp[] = [];
 
     private ignoreTypeValues: {[key: string]: string[]} = {
         'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
@@ -289,7 +290,7 @@ export class RulesetDefinitionChecker {
             // ignore extraStrings for now(?)
             return false;
         }
-        if (ignoreTypes.indexOf(ref.path) !== -1) {
+        if (this.checkForIgnoredType(ref.path)) {
             // ignore these assorted types for now
             return false;
         }
@@ -315,6 +316,20 @@ export class RulesetDefinitionChecker {
         return true;
     }
 
+    private checkForIgnoredType(path: string) {
+        if (ignoreTypes.includes(path)) {
+            return true;
+        }
+
+        for (const re of this.ignoreTypesRegexes) {
+            if (re.exec(path)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private matchesBuiltinTypeRegex(path: string, key: string): boolean {
         for (const item of this.builtinTypeRegexes) {
             return item.regex.exec(path) && item.values.includes(key) || false;
@@ -338,6 +353,14 @@ export class RulesetDefinitionChecker {
                     regex: new RegExp(type.slice(1, -1)),
                     values: builtinTypes[type]
                 });
+            }
+        }
+
+        for (const type of ignoreTypes) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.ignoreTypesRegexes.push(
+                    new RegExp(type.slice(1, -1))
+                );
             }
         }
     }

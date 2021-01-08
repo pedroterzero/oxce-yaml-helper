@@ -34,7 +34,23 @@ type LogicOverride = {
     target: string | undefined;
 }
 
+type KeyReferenceOptions = {
+    recurse?: boolean
+}
+
 export class typedProperties {
+    public static isExtraFilesRule(path: string, key: string | undefined, name: string | undefined): boolean {
+        if (!key || !name) {
+            return false;
+        }
+
+        if (['extraSprites', 'extraSounds'].includes(path) && key !== 'type') {
+           return `${path}.${name}.files` in this.keyDefinitionTypes;
+        }
+
+        return false;
+    }
+
     // properties for which 'name' is the key
     private static typePropertyHints: typePropertyHints = {
         alienRaces: ['id'],
@@ -71,63 +87,76 @@ export class typedProperties {
     };
 
     // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
-    private static keyDefinitionTypes: string[] = [
+    private static keyDefinitionTypes: {[key: string]: KeyReferenceOptions} = {
         // not 100% sure about these yet. Perhaps they should only work for the current file? maybe they're not deifnitions at all?
-        'extended.tags.BattleGame',
-        'extended.tags.BattleItem',
-        'extended.tags.BattleUnit',
-        'extended.tags.GeoscapeSoldier',
-        'extended.tags.RuleArmor',
-        'extended.tags.RuleItem',
-        'extended.tags.RuleSoldier',
-        'extended.tags.RuleSoldierBonus',
-    ];
+        'extended.tags.BattleGame': {},
+        'extended.tags.BattleItem': {},
+        'extended.tags.BattleUnit': {},
+        'extended.tags.GeoscapeSoldier': {},
+        'extended.tags.RuleArmor': {},
+        'extended.tags.RuleItem': {},
+        'extended.tags.RuleSoldier': {},
+        'extended.tags.RuleSoldierBonus': {},
+        'extraSprites.BASEBITS.PCK.files': {recurse: false},
+        'extraSprites.BIGOBS.PCK.files': {recurse: false},
+        'extraSprites.FLOOROB.PCK.files': {recurse: false},
+        'extraSprites.HANDOB.PCK.files': {recurse: false},
+        'extraSprites.INTICON.PCK.files': {recurse: false},
+        'extraSprites.HIT.PCK.files': {recurse: false},
+        'extraSprites.Projectiles.files': {recurse: false},
+        'extraSprites.SMOKE.PCK.files': {recurse: false},
+        'extraSprites.SPICONS.DAT.files': {recurse: false},
+        'extraSprites.X1.PCK.files': {recurse: false},
+        'extraSounds.BATTLE.CAT.files': {recurse: false},
+        'extraSounds.GEO.CAT.files': {recurse: false},
+        // '/^extraSprites\\.[a-zA-Z0-9]+(\\.PCK)?\\.files\\.\\d+$/',
+    };
 
-    private static keyReferenceTypes: string[] = typedProperties.keyDefinitionTypes.concat([
-        'arcScripts.randomArcs',
-        'arcScripts.researchTriggers',
-        'arcScripts.itemTriggers',
-        'arcScripts.facilityTriggers',
-        'alienDeployments.civiliansByType',
-        '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/',
-        '/^alienMissions\\.raceWeights\\.\\d+$/',
-        '/^alienMissions\\.regionWeights\\.\\d+$/',
-        'covertOperations.instantSuccessDeployment', // FtA
-        'covertOperations.instantTrapDeployment', // FtA
-        'covertOperations.failureReputationScore', // FtA
-        'covertOperations.requiredItems', // FtA
-        'covertOperations.successReputationScore', // FtA
-        'diplomacyFactions.helpTreatyEvents', // FtA
-        'diplomacyFactions.helpTreatyMissions', // FtA
-        'enviroEffects.environmentalConditions',
-        'events.everyMultiItemList',
-        'events.weightedItemList',
-        'eventScripts.itemTriggers',
-        'eventScripts.facilityTriggers',
-        'eventScripts.oneTimeRandomEvents',
-        '/^eventScripts\\.eventWeights\\.\\d+$/',
-        'eventScripts.researchTriggers',
-        'facilities.buildCostItems',
-        'items.tags',
-        'manufacture.requiredItems',
-        'manufacture.producedItems',
-        'manufacture.randomProducedItems[][]',
-        '/^missionScripts\\.missionWeights\\.\\d+$/',
-        '/^missionScripts\\.raceWeights\\.\\d+$/',
-        '/^missionScripts\\.regionWeights\\.\\d+$/',
-        // '/^manufacture\\.randomProducedItems[][]\\.[a-zA-Z0-9_]+$/',
-        'missionScripts.researchTriggers',
-        'missionScripts.itemTriggers',
-        'missionScripts.facilityTriggers',
-        'research.getOneFreeProtected',
-        'startingBase.items',
-        'startingBase.randomSoldiers',
-        'startingConditions.defaultArmor',
-        '/^startingConditions\\.defaultArmor\\.[a-zA-Z0-9_]+$/',
-        'startingConditions.requiredItems',
-        'ufos.raceBonus',
-        'terrains.mapBlocks[].items',
-    ]);
+    private static keyReferenceTypes: {[key: string]: KeyReferenceOptions} = Object.assign({}, typedProperties.keyDefinitionTypes, {
+        'arcScripts.randomArcs': {},
+        'arcScripts.researchTriggers': {},
+        'arcScripts.itemTriggers': {},
+        'arcScripts.facilityTriggers': {},
+        'alienDeployments.civiliansByType': {},
+        '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': {},
+        '/^alienMissions\\.raceWeights\\.\\d+$/': {},
+        '/^alienMissions\\.regionWeights\\.\\d+$/': {},
+        'covertOperations.instantSuccessDeployment': {}, // FtA
+        'covertOperations.instantTrapDeployment': {}, // FtA
+        'covertOperations.failureReputationScore': {}, // FtA
+        'covertOperations.requiredItems': {}, // FtA
+        'covertOperations.successReputationScore': {}, // FtA
+        'diplomacyFactions.helpTreatyEvents': {}, // FtA
+        'diplomacyFactions.helpTreatyMissions': {}, // FtA
+        'enviroEffects.environmentalConditions': {},
+        'events.everyMultiItemList': {},
+        'events.weightedItemList': {},
+        'eventScripts.itemTriggers': {},
+        'eventScripts.facilityTriggers': {},
+        'eventScripts.oneTimeRandomEvents': {},
+        '/^eventScripts\\.eventWeights\\.\\d+$/': {},
+        'eventScripts.researchTriggers': {},
+        'facilities.buildCostItems': {},
+        'items.tags': {},
+        'manufacture.requiredItems': {},
+        'manufacture.producedItems': {},
+        'manufacture.randomProducedItems[][]': {},
+        '/^missionScripts\\.missionWeights\\.\\d+$/': {},
+        '/^missionScripts\\.raceWeights\\.\\d+$/': {},
+        '/^missionScripts\\.regionWeights\\.\\d+$/': {},
+        // '/^manufacture\\.randomProducedItems[][]\\.[a-zA-Z0-9_]+$/': {},
+        'missionScripts.researchTriggers': {},
+        'missionScripts.itemTriggers': {},
+        'missionScripts.facilityTriggers': {},
+        'research.getOneFreeProtected': {},
+        'startingBase.items': {},
+        'startingBase.randomSoldiers': {},
+        'startingConditions.defaultArmor': {},
+        '/^startingConditions\\.defaultArmor\\.[a-zA-Z0-9_]+$/': {},
+        'startingConditions.requiredItems': {},
+        'ufos.raceBonus': {},
+        'terrains.mapBlocks[].items': {},
+    });
 
     private static keyValueReferenceTypes: string[] = [
         'enviroEffects.armorTransformations',
@@ -199,8 +228,11 @@ export class typedProperties {
         'ftaGame': {}
     }
 
+    private static keyReferenceTypesRegexes: {regex: RegExp, settings: KeyReferenceOptions}[] = [];
+
     public static init () {
         this.addTypeLinks();
+        this.loadRegexes();
     }
 
     public static isDefinitionPropertyForPath (type: string, key: string, value: string): boolean {
@@ -224,7 +256,21 @@ export class typedProperties {
     }
 
     public static isKeyDefinitionType(type: string) {
-        return this.keyDefinitionTypes.indexOf(type) !== -1;
+        return type in this.keyDefinitionTypes;
+/*        if (this.keyDefinitionTypes.indexOf(type) !== -1) {
+            return true;
+        }
+
+        for (const kdType of this.keyDefinitionTypes) {
+            if (kdType.startsWith('/') && kdType.endsWith('/')) {
+                const regex = new RegExp(kdType.slice(1, -1));
+                if (regex.exec(type)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;*/
     }
 
     public static isArrayDefinitionTypes(type: string) {
@@ -273,6 +319,16 @@ export class typedProperties {
         }
 
         return link[sourceRuleType.key].target === ruleType;
+    }
+
+    public static getDefinitionTypeForReference(path: string): string | undefined {
+        const [root, subPath] = path.split('.', 2);
+
+        if (!this.typeProperties[root] || !this.typeProperties[root][subPath]) {
+            return;
+        }
+
+        return this.typeProperties[root][subPath].target;
     }
 
     public static checkForLogicOverrides(key: string, sourceRuleType: RuleType | undefined): LogicOverride {
@@ -373,23 +429,20 @@ export class typedProperties {
         return (property[key].type || '') === 'numeric';
     }
 
-    public static isKeyReferencePath(path: string): boolean {
-        const match = this.keyReferenceTypes.indexOf(path) !== -1;
+    public static isKeyReferencePath(path: string): KeyReferenceOptions | undefined {
+        const match = path in this.keyReferenceTypes;
         if (match) {
-            return true;
+            return this.keyReferenceTypes[path];
         }
 
         // allow regex
-        for (const type of this.keyReferenceTypes) {
-            if (type.startsWith('/') && type.endsWith('/')) {
-                const regex = new RegExp(type.slice(1, -1));
-                if (regex.exec(path)) {
-                    return true;
-                }
+        for (const type of this.keyReferenceTypesRegexes) {
+            if (type.regex.exec(path)) {
+                return type.settings;
             }
         }
 
-        return false;
+        return;
     }
 
     public static isKeyValueReferencePath(path: string) {
@@ -415,6 +468,21 @@ export class typedProperties {
             this.typeProperties[newLink][key] = {
                 target: typeLinks[link][0]
             };
+        }
+    }
+
+    private static loadRegexes () {
+        if (this.keyReferenceTypesRegexes.length > 0) {
+            return;
+        }
+
+        for (const type in this.keyReferenceTypes) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.keyReferenceTypesRegexes.push({
+                    regex: new RegExp(type.slice(1, -1)),
+                    settings: this.keyReferenceTypes[type]
+                });
+            }
         }
     }
 }

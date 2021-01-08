@@ -1,7 +1,7 @@
 import { logger } from "./logger";
 import { Match, RuleType } from "./rulesetTree";
 import { Scalar, YAMLMap, YAMLSeq } from "yaml/types";
-import { JsonObject, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
+import { YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { typedProperties } from "./typedProperties";
 
 type Entry = YAMLSeq | YAMLDocumentItem | string | Scalar;
@@ -56,13 +56,6 @@ export class RulesetRecursiveKeyRetriever {
                 this.processItems(ruleType, ruleType.key.value, matches, lookupAll);
             } else {
                 ruleType.value.items.forEach((ruleProperties: YAMLSeq) => {
-                    if (['extraSprites', 'extraSounds'].indexOf(ruleType.key.value) !== -1) {
-                        // I hate that I need this but I see no other way
-                        // const propertiesFlat = ruleProperties.toJSON() as {[key: string]: string | Record<string, unknown>};
-                        const propertiesFlat = (ruleProperties as YAMLMap).toJSON() as JsonObject;
-                        this.handleExtraFiles(propertiesFlat, ruleProperties, matches, ruleType);
-                    }
-
                     this.processItems(ruleProperties, ruleType.key.value, matches, lookupAll);
                 });
             }
@@ -72,9 +65,15 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private processItems(entry: Entry, path: string, matches: Match[], lookupAll: boolean): Match | undefined {
-        if (typedProperties.isKeyReferencePath(path)) {
+        let keyReferencePath;
+        if ((keyReferencePath = typedProperties.isKeyReferencePath(path)) !== undefined) {
             // do this separately, because the values for the keys could yield yet more references (see research.getOneFreeProtected)
             this.processKeyReferencePath(entry, path, matches);
+
+            if ('recurse' in keyReferencePath && keyReferencePath.recurse === false) {
+                console.log(`not recursing ${path}`);
+                return;
+            }
         }
 
         if (entry === null) {
@@ -133,11 +132,17 @@ export class RulesetRecursiveKeyRetriever {
         const map = entry as YAMLMap;
 
         for (const item of map.items) {
-            matches.push({
+            const match: Match = {
                 key: item.key.value,
                 path,
                 range: item.key.range,
-            });
+            };
+
+            if (item.value?.type === 'PLAIN') {
+                match.metadata = {_name: item.value.value};
+            }
+
+            matches.push(match);
         }
     }
 
@@ -167,7 +172,7 @@ export class RulesetRecursiveKeyRetriever {
         entry.items.forEach((ruleProperty) => {
             if ('items' in ruleProperty) {
                 // console.log(`looping ${ruleProperty} path ${path}[]`);
-                if (typedProperties.isKeyReferencePath(path + '[]')) {
+                if (typedProperties.isKeyReferencePath(path + '[]') !== undefined) {
                     // this is quite unfortunate, but needed for things like manufacture.randomProducedItems[][]
                     this.processItems(ruleProperty, path + '[]', matches, lookupAll);
                 } else {
@@ -178,6 +183,12 @@ export class RulesetRecursiveKeyRetriever {
                 if (['PLAIN', 'QUOTE_DOUBLE', 'QUOTE_SINGLE'].indexOf(ruleProperty.type) !== -1) {
                     newPath += '[]';
                 } else {
+                    if (typedProperties.isExtraFilesRule(path, ruleProperty?.key?.value, entry.items[0].value.value)) {
+                        // TODO figure out it shouldn't already be working like this? or refactor the rest to work like this?
+                        // logger.debug(`isExtraFilesRule ${path} ${ruleProperty?.key?.value} ${entry.items[0].value.value}`);
+                        newPath += '.' + entry.items[0].value.value;
+                    }
+
                     newPath += '.' + ruleProperty?.key?.value;
                 }
 
@@ -287,32 +298,6 @@ export class RulesetRecursiveKeyRetriever {
 
     private checkForRangeMatch(range1: number[], range2: number[]): boolean {
         return range1[0] === range2[0] && range1[1] === range2[1];
-    }
-
-        /**
-     * Parses extraSprites and extraSounds
-     * @param propertiesFlat
-     * @param ruleProperties
-     * @param definitions
-     * @param ruleType
-     */
-    private handleExtraFiles(propertiesFlat: JsonObject, ruleProperties: YAMLSeq, matches: Match[], ruleType: YAMLDocumentItem) {
-        const typeKey = 'files';
-        if (!(typeKey in propertiesFlat)) {
-            return;
-        }
-
-        for (const ruleProperty of ruleProperties.items) {
-            if (ruleProperty.key.value === typeKey) {
-                for (const entry of ruleProperty.value.items) {
-                    matches.push({
-                        key: entry.key.value,
-                        path: ruleType.key.value + '.' + propertiesFlat.type + '.' + typeKey,
-                        range: entry.key.range,
-                    });
-                }
-            }
-        }
     }
 }
 

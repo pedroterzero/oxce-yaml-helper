@@ -23,6 +23,13 @@ export const ignoreTypes = [
     // 'extended.tags.RuleItem',
     // 'extended.tags.RuleSoldierBonus',
     'extraSprites.fileSingle', // may want to check that the files exist
+    'extraSprites.files.0', // may want to check that the files exist
+    // '/^extraSprites\\.[a-zA-Z0-9_-]+(\\.(DAT|PCK|SCR|SPK))?\\.files.0$/', // may want to check that the files exist
+    // '/^extraSprites\\.BASEBITS\\.CAT\\.files\\.\\d+$/', // may want to check that the files exist
+    // '/^extraSounds\\.[a-zA-Z0-9_-]+\\.CAT\\.files\\.\\d+$/', // may want to check that the files exist
+    // '/^extraSprites\\.[a-zA-Z0-9_-]+(\\.(DAT|PCK|SCR|SPK))?\\.files\\.\\d+$/', // may want to check that the files exist
+    // '/^extraSounds\\.BATTLE\\.CAT\\.files\\.\\d+$/', // may want to check that the files exist
+    // '/^extraSprites\\.(((BASEBITS|BIGOBS|FLOOROB|HANDOB|HIT|INTICON|SMOKE)\\.PCK|SPICONS\\.DAT))\\.files\\.\\d+$/', // may want to check that the files exist
     // 'facilities.mapName', // may want to check that the files exist
     'interfaces.elements[].id', // could type check this, but the validator probably catches these
     'interfaces.palette', // could type check this, but the validator probably catches these
