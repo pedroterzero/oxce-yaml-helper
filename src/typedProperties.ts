@@ -540,7 +540,10 @@ export class typedProperties {
 
         for (const type in this.keyReferenceTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
-                this.keyReferenceTypesRegexes.push(new RegExp(type.slice(1, -1)));
+                this.keyReferenceTypesRegexes.push({
+                    regex: new RegExp(type.slice(1, -1)),
+                    settings: this.keyReferenceTypes[type]
+                });
             }
         }
     }
