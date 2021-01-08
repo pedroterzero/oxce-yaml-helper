@@ -1,4 +1,16 @@
-export const stringTypes = [
+const ftaStringTypes = [
+    'alienDeployments.missionCompleteText',
+    'alienDeployments.missionFailedText',
+    '/^battleScripts\\.commands\\[\\]\\.messages\\.\\d+\\.(answer|content|title)$/',
+    'covertOperations.description',
+    'covertOperations.successDescription',
+    'diplomacyFactions.description',
+    'events.description',
+    '/^globalVariables\\.loyaltyRatings\\.-?\\d+$/',
+    '/^globalVariables\\.reputationLevels\\.-?\\d+$/',
+];
+
+export const stringTypes = ftaStringTypes.concat([
     'alienDeployments.alert',
     'alienDeployments.alertDescription',
     'alienDeployments.briefing.desc',
@@ -6,16 +18,12 @@ export const stringTypes = [
     'alienDeployments.markerName',
     'alienDeployments.objectiveComplete',
     'alienDeployments.objectivePopup',
-    'covertOperations.description', // FtA
-    'covertOperations.successDescription', // FtA
     'commendations.description',
     'crafts.weaponStrings',
     'cutscenes.slideshow.slides[].caption',
-    'diplomacyFactions.description', // FtA
     'enviroEffects.environmentalConditions.STR_FRIENDLY.message',
     'enviroEffects.environmentalConditions.STR_HOSTILE.message',
     'enviroEffects.environmentalConditions.STR_NEUTRAL.message',
-    'events.description', // FtA
     'items.confAimed.name',
     'items.confAuto.name',
     'items.confMelee.name',
@@ -26,6 +34,8 @@ export const stringTypes = [
     'items.primeActionName',
     'items.psiAttackName',
     'items.unprimeActionName',
+    '/^globalVariables\\.missionRatings\\.-?\\d+$/',
+    '/^globalVariables\\.monthlyRatings\\.-?\\d+$/',
     'regions.missionZones[][]',
     'soldiers.rankStrings',
     'ufopaedia.section', // should probably check that the string exists
@@ -35,4 +45,4 @@ export const stringTypes = [
     // not sure
     // 'items.categories',
     // 'manufacture.category',
-];
+]);

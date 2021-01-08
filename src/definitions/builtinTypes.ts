@@ -21,7 +21,7 @@ const builtinArmorSprites = [
     'MAN_0F0', 'MAN_0F1', 'MAN_0F2', 'MAN_0F3', 'MAN_0M0',
     'MAN_0M1', 'MAN_0M2', 'MAN_0M3', 'MAN_1F0', 'MAN_1F1',
     'MAN_1F2', 'MAN_1F3', 'MAN_1M0', 'MAN_1M1', 'MAN_1M2',
-    'MAN_1M3', 'MAN_2', 'MAN_3'
+    'MAN_1M3', 'MAN_1', 'MAN_2', 'MAN_3'
 ];
 
 const builtinPalettes = [
@@ -45,12 +45,14 @@ export const builtinResourceIds: {[key: string]: idRange} = {
     'craftWeapons.sprite': intIconIds,
     'facilities.spriteFacility': basebitsIds,
     'items.bigSprite': bigSpriteIds,
+    'items.bulletSprite': [-1, 9],
     'items.explosionHitSound': soundIds,
     'items.fireSound': soundIds,
     'items.floorSprite': floorSpriteIds,
     'items.handSprite': handSpriteIds,
     'items.hitAnimation': smokeIds,
     'items.hitSound': soundIds,
+    'items.meleeAnimation': [0, 3],
     'items.meleeSound': soundIds,
     'items.meleeHitSound': soundIds,
     'items.specialIconSprite': [-1, 2],
@@ -78,7 +80,7 @@ export const builtinTypes: {[key: string]: string[]} = {
     'enviroEffects.paletteTransformations.value': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
     'enviroEffects.environmentalConditions': factions,
     'events.background': builtinBackgrounds,
-    '/^extended\\.tags\\.(Rule(Armor|Item)|Battle(Item|Unit)).[a-zA-Z0-9_]+$/': ['int'],
+    '/^extended\\.tags\\.(Rule(Armor|Item|Soldier|SoldierBonus)|Battle(Item|Game|Unit))\\.[a-zA-Z0-9_]+$/': ['int'],
     'interfaces.backgroundImage': builtinBackgrounds,
     'manufacture.category': [
         'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
@@ -90,7 +92,7 @@ export const builtinTypes: {[key: string]: string[]} = {
         'STR_LIVE_NAVIGATOR', 'STR_LIVE_SOLDIER', 'STR_LIVE_TERRORIST',
         'STR_CIVILIAN' /* OXCE */
     ],
-    'startingBase.crafts[].status': ['STR_READY', 'STR_REPAIRS'],
+    '/^startingBase(Beginner|Experienced|Veteran|Genius|Superhuman)?\\.crafts\\[\\]\\.status$/': ['STR_READY', 'STR_REPAIRS'],
     'startingConditions.allowedItems': ['STR_NONE'],
     'startingConditions.allowedVehicles': ['STR_NONE'],
     'ufos.size': ['STR_LARGE', 'STR_MEDIUM_UC', 'STR_SMALL', 'STR_VERY_LARGE', 'STR_VERY_SMALL'],

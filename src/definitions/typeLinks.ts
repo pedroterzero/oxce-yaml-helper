@@ -1,6 +1,12 @@
-const ftaTypeLinks: {[key: string]: string[]} = {
-    'alienDeployments.battleScript': ['battleScripts'], // FtA
-    'battleScripts.commands[].unitSet': ['units'], // FtA part
+type TypeLinks = {
+    [key: string]: string[]
+    // [key: string]: (string | [string, number])[];
+};
+
+const ftaTypeLinks: TypeLinks = {
+    'alienDeployments.battleScript': ['battleScripts'],
+    'battleScripts.commands[].unitSet': ['units'],
+    '/^battleScripts\\.commands\\[\\]\\.messages\\.\\d+\\.background$/': ['extraSprites'],
     'covertOperations.successEvent': ['events'],
     'covertOperations.failureEvent': ['events'],
     'covertOperations.progressEvent': ['events'],
@@ -24,11 +30,44 @@ const ftaTypeLinks: {[key: string]: string[]} = {
     'diplomacyFactions.discoverEvent': ['events'],
     'diplomacyFactions.helpTreatyMissions': ['missionScripts'],
     'diplomacyFactions.helpTreatyEvents': ['eventScripts'],
+    'globalVariables.baseConstructionUnlockResearch': ['research'],
+    'globalVariables.ufopaediaUnlockResearch': ['research'],
     // sellingSet - this is changing ATM by Stoddard dramatically
     'units.altRecoveredUnit': ['units']
 };
 
-export const typeLinks: {[key: string]: string[]} = Object.assign({}, ftaTypeLinks, {
+export const spriteTypeLinks: TypeLinks = {
+    'crafts.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
+    'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
+    'facilities.spriteFacility': ['_numeric_', 'extraSprites.BASEBITS.PCK.files'],
+    'items.bigSprite': ['_numeric_', 'extraSprites.BIGOBS.PCK.files'],
+    'items.bulletSprite': ['_numeric_', 'extraSprites.Projectiles.files'],
+    'items.floorSprite': ['_numeric_', 'extraSprites.FLOOROB.PCK.files'],
+    'items.handSprite': ['_numeric_', 'extraSprites.HANDOB.PCK.files'],
+    'items.hitAnimation': ['_numeric_', 'extraSprites.SMOKE.PCK.files'],
+    'items.meleeAnimation': ['_numeric_', 'extraSprites.HIT.PCK.files'],
+    'items.specialIconSprite': ['_numeric_', 'extraSprites.SPICONS.DAT.files'],
+};
+
+const BATTLE_CAT = 'extraSounds.BATTLE.CAT.files';
+export const soundTypeLinks: TypeLinks = {
+    'items.explosionHitSound': ['_numeric_', BATTLE_CAT],
+    'items.fireSound': ['_numeric_', BATTLE_CAT],
+    'items.hitSound': ['_numeric_', BATTLE_CAT],
+    'items.hitMissSound': ['_numeric_', BATTLE_CAT],
+    'items.meleeHitSound': ['_numeric_', BATTLE_CAT],
+    'items.meleeSound': ['_numeric_', BATTLE_CAT],
+    'items.psiSound': ['_numeric_', BATTLE_CAT],
+    'items.psiMissSound': ['_numeric_', BATTLE_CAT],
+    'items.reloadSound': ['_numeric_', BATTLE_CAT],
+    'units.aggroSound': ['_numeric_', BATTLE_CAT],
+    'units.berserkSound': ['_numeric_', BATTLE_CAT],
+    'units.deathSound': ['_numeric_', BATTLE_CAT],
+    'units.moveSound': ['_numeric_', BATTLE_CAT],
+    'units.panicSound': ['_numeric_', BATTLE_CAT],
+};
+
+export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLinks, soundTypeLinks, {
     'alienDeployments.abortCutscene': ['cutscenes'],
     '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': ['alienDeployments'],
     'alienDeployments.briefing.cutscene': ['cutscenes'],
@@ -70,12 +109,13 @@ export const typeLinks: {[key: string]: string[]} = Object.assign({}, ftaTypeLin
     'armors.requires': ['research'],
     'armors.specialWeapon': ['items'],
     'armors.storeItem': ['items'],
+    'armors.spriteInv': ['extraSprites'],
     'armors.tags': ['extended.tags.RuleArmor'],
     'armors.units': ['soldiers'],
     'crafts.refuelItem': ['items'],
     'crafts.requires': ['research'],
+    'craftWeapons.clip': ['items'],
     'craftWeapons.launcher': ['items'],
-    // @TODO more craftWeapons
     // 'crafts.weaponStrings': ['craftWeapons.weaponType'], // (is this just a translatable?)
     //enviroEffects
     'enviroEffects.armorTransformations.key': ['armors'], // should only match builtins
@@ -103,6 +143,10 @@ export const typeLinks: {[key: string]: string[]} = Object.assign({}, ftaTypeLin
     'facilities.destroyedFacility': ['facilities'],
     'facilities.mapName': ['terrains.mapBlocks[]'],
     'facilities.requires': ['research'],
+    'globalVariables.fakeUnderwaterBaseUnlockResearch': ['research'],
+    'globalVariables.mana.unlockResearch': ['research'],
+    'globalVariables.newBaseUnlockResearch': ['research'],
+    'globalVariables.psiUnlockResearch': ['research'],
     'itemCategories.replaceBy': ['itemCategories'],
     'items.categories': ['itemCategories'],
     '/^items\\.ammo\\.[0-3]\\.compatibleAmmo$/': ['items'],
@@ -118,7 +162,7 @@ export const typeLinks: {[key: string]: string[]} = Object.assign({}, ftaTypeLin
     'items.zombieUnitByArmorFemale.value': ['units'],
     'items.zombieUnitByArmorMale.key': ['armors'],
     'items.zombieUnitByArmorMale.value': ['units'],
-    'items.zombieUnitByType.key': ['units'],
+    'items.zombieUnitByType.key': ['_any_', 'soldiers', 'units'], // match any of these
     'items.zombieUnitByType.value': ['units'],
     'manufacture.producedItems': ['items'],
     'manufacture.randomProducedItems[][]': ['items'],
@@ -190,3 +234,24 @@ export const typeLinks: {[key: string]: string[]} = Object.assign({}, ftaTypeLin
     'units.psiWeapon': ['items'],
     'units.spawnUnit': ['units']
 });
+
+export const typeLinksPossibleKeys: {[key: string]: (key: string) => string[]} = {
+    // could improve this even more to make this all for the [MF][0123] variants?
+    'armors.spriteInv': (key) => [
+        '_any_',
+        `${key}`,
+        `${key}.PCK`,
+        `${key}.SPK`,
+        `${key}F0.SPK`,
+        `${key}F1.SPK`,
+        `${key}F2.SPK`,
+        `${key}F3.SPK`,
+        `${key}M0.SPK`,
+        `${key}M1.SPK`,
+        `${key}M2.SPK`,
+        `${key}M2.SPK`,
+    ],
+    'craftWeapons.sprite': (key) => ['_all_', `${parseInt(key) + 5}`, `${parseInt(key) + 48}`],
+    'crafts.sprite': (key) => ['_all_', `${key}`, `${parseInt(key) + 11}`, `${parseInt(key) + 33}`],
+    'items.bulletSprite': (key) => [`${parseInt(key) * 35}`],
+};

@@ -193,7 +193,7 @@
       "default": "-1"
     },
     "requires": {
-      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this facility. If none are specified, this facility is unlocked from the start.",
+      "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to unlock this facility. If none are specified, this facility is unlocked from the start.",
       "default": "-"
     },
     "requiresBaseFunc": {
@@ -215,6 +215,10 @@
     "spriteFacility": {
       "description": "Sprite ID from [BASEBITS.PCK](https://www.ufopaedia.org/index.php/BASEBITS.PCK) used to draw the facility's contents in the Basescape and UFOpaedia. Drawn on top of **spriteShape**. Not required for buildings size 2 or larger.",
       "default": "-1"
+    },
+    "connectorsDisabled": {
+      "description": "Should the game draw facility connectors leading from/to this facility in the base view?",
+      "default": "false"
     },
     "missileAttraction": {
       "description": "A weight (i.e. not a percentage) of how likely will alien missiles/bombardments hit this type of facility.",
@@ -332,12 +336,20 @@
       "description": "Chance (0-100) of the base defense hitting an attacking UFO.",
       "default": "0"
     },
+    "ammoItem": {
+      "description": "Specifies the ammo item needed for this facility during base defense. More info: [https://openxcom.org/forum/index.php/topic,7651.msg133495.html#msg133495](https://openxcom.org/forum/index.php/topic,7651.msg133495.html#msg133495)",
+      "default": "-"
+    },
+    "ammoNeeded": {
+      "description": "Specifies the amount of ammo spent when firing once.",
+      "default": "1"
+    },
     "fireSound": {
-      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org#Extra_Sounds) played when the base defense fires.",
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when the base defense fires.",
       "default": "0"
     },
     "hitSound": {
-      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org#Extra_Sounds) played when the base defense hits a target.",
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when the base defense hits a target.",
       "default": "0"
     },
     "mapName": {
@@ -395,7 +407,7 @@
       "default": "required"
     },
     "requires": {
-      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this craft. If none are specified, this craft is unlocked from the start.",
+      "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to unlock this craft. If none are specified, this craft is unlocked from the start.",
       "default": "-"
     },
     "requiresBuyBaseFunc": {
@@ -405,6 +417,14 @@
     "sprite": {
       "description": "Sprite ID from [BASEBITS.PCK](https://www.ufopaedia.org/index.php/BASEBITS.PCK) used to draw this craft in the Basescape and from [INTICON.PCK](https://www.ufopaedia.org/index.php/INTICON.PCK) used to draw the damage indicator in dogfights.\n\nNote that:\n\n*   the corresponding id for INTICON.PCK for the minimized craft icon is sprite+0\n*   the corresponding id for INTICON.PCK for the dogfight image is sprite+11\n*   the corresponding id for BASEBITS.PCK is sprite+33",
       "default": "-1"
+    },
+    "maxSkinIndex": {
+      "description": "A maximum number of skins supported by this craft. Zero-based. I.e. a craft with 4 possible skins should set this attribute to 3.",
+      "default": "0"
+    },
+    "skinSprites": {
+      "description": "A list of additional **sprite**s used for alternate craft skins.",
+      "default": "-"
     },
     "marker": {
       "description": "Sprite ID from GlobeMarkers spritesheet, used for drawing craft icon on the globe. Usually 3x3 pixels, but can be modded to be bigger.\n\nNote: if not modded, sprite id 1 is used (=vanilla craft marker)",
@@ -475,7 +495,7 @@
       "default": "0"
     },
     "battlescapeTerrainData": {
-      "description": "[Terrain](https://www.ufopaedia.org#Terrains) associated to this craft in Battlescape missions.",
+      "description": "[Terrain](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Terrains) associated to this craft in Battlescape missions.",
       "default": "-"
     },
     "craftInventoryTile": {
@@ -500,6 +520,10 @@
     },
     "notifyWhenRefueled": {
       "description": "Should a pop up window inform the player once this craft is fully refueled?",
+      "default": "false"
+    },
+    "undetectable": {
+      "description": "Can this craft be detected by alien bases and alien hunter-killers? Primarily meant for stationary radar craft or satellites.",
       "default": "false"
     },
     "autoPatrol": {
@@ -597,11 +621,11 @@
       "default": "-1"
     },
     "sound": {
-      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon fires.",
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon fires.",
       "default": "-1"
     },
     "stats": {
-      "description": "Contains the same set of attributes as [Craft Stats](https://www.ufopaedia.org#Craft_Stats). These dynamically increase/decrease the stats of a craft, when equipped.\n\nExamples:\n\n*   you can increase the craft's range by equipping an extra fuel tank\n*   you can increase the craft's hit chance by equipping advanced targeters\n*   you can increase the craft's radar range/chance by equipping an extra radar\n*   and so on...",
+      "description": "Contains the same set of attributes as [Craft Stats](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Craft_Stats). These dynamically increase/decrease the stats of a craft, when equipped.\n\nExamples:\n\n*   you can increase the craft's range by equipping an extra fuel tank\n*   you can increase the craft's hit chance by equipping advanced targeters\n*   you can increase the craft's radar range/chance by equipping an extra radar\n*   and so on...",
       "default": "-"
     },
     "hidePediaInfo": {
@@ -653,11 +677,11 @@
       "default": "0"
     },
     "launcher": {
-      "description": "String ID of the [item](https://www.ufopaedia.org#Items) required to equip this weapon.",
+      "description": "String ID of the [item](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) required to equip this weapon.",
       "default": "required"
     },
     "clip": {
-      "description": "String ID of the [item](https://www.ufopaedia.org#Items) required to rearm this weapon.",
+      "description": "String ID of the [item](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) required to rearm this weapon.",
       "default": "-"
     },
     "underwaterOnly": {
@@ -687,7 +711,7 @@
       "default": "0"
     },
     "requires": {
-      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this item. If none are specified, this item is unlocked from the start. Soldiers can only use unlocked items in the Battlescape.",
+      "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to unlock this item. If none are specified, this item is unlocked from the start. Soldiers can only use unlocked items in the Battlescape.",
       "default": "-"
     },
     "requiresBuy": {
@@ -715,7 +739,7 @@
       "default": "24"
     },
     "categories": {
-      "description": "A list of [categories](https://www.ufopaedia.org#Item_Categories) this item belongs to.",
+      "description": "A list of [categories](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Item_Categories) this item belongs to.",
       "default": "-"
     },
     "monthlyMaintenance": {
@@ -787,43 +811,43 @@
       "default": "15"
     },
     "explosionHitSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when explosion happens. Can be a list with multiple options. If not specified, default explosion sound is used.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when explosion happens. Can be a list with multiple options. If not specified, default explosion sound is used.",
       "default": "-"
     },
     "reloadSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon is reloaded. Can be a list with multiple options. If not specified, default reload sound is used.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon is reloaded. Can be a list with multiple options. If not specified, default reload sound is used.",
       "default": "-"
     },
     "fireSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon fires. In OXCE, can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon fires. In OXCE, can be a list with multiple options.",
       "default": "-1"
     },
     "hitSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon hits a target. In OXCE, can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon hits a target. In OXCE, can be a list with multiple options.",
       "default": "-1"
     },
     "psiSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon performs a psi attack (only Panic/MindControl). Can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon performs a psi attack (only Panic/MindControl). Can be a list with multiple options.",
       "default": "-"
     },
     "hitMissSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon misses a psi attack (Use/Panic/MindControl). Can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon misses a psi attack (Use/Panic/MindControl). Can be a list with multiple options.",
       "default": "-"
     },
     "psiMissSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon misses a psi attack (only Panic/MindControl). Can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon misses a psi attack (only Panic/MindControl). Can be a list with multiple options.",
       "default": "-"
     },
     "meleeSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon attacks a target with melee. In OXCE, can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon attacks a target with melee. In OXCE, can be a list with multiple options.",
       "default": "39"
     },
     "meleeHitSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon hits a target with melee. In OXCE, can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon hits a target with melee. In OXCE, can be a list with multiple options.",
       "default": "-1"
     },
     "meleeMissSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this weapon misses a target with melee. Can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon misses a target with melee. Can be a list with multiple options.",
       "default": "-"
     },
     "hitAnimation": {
@@ -867,7 +891,7 @@
       "default": "-1"
     },
     "damageAlter": {
-      "description": "OpenXcom has 10 damage types and the mechanics of all 10 of them are completely hardcoded. In OXCE, you can use one of these hardcoded damage types as a starting point, but still be able to override all damage aspects for every item. To do this, you always use a pair of attributes for default and override:\n\n*   for normal/primary damage: default is in **damageType** and overrides in **damageAlter**\n*   for secondary melee damage: default is in **meleeType** and overrides in **meleeAlter**\n\nDamage override has many attributes, which are all described in [Item Damage Types](https://www.ufopaedia.org#Item_Damage_Types).\n\nSmall example:\n\n```\n - type: STR_HWP_DISC_PLASMA_CANNON\n   damageType: 5\n   damageAlter:\n     RandomType: 6\n     IgnoreOverKill: false\n     ToArmorPre: 0.05\n     ToStun: 0.75\n     RandomWound: false\n     ToWound: 0.12\n     FireThreshold: 25\n\n```",
+      "description": "OpenXcom has 10 damage types and the mechanics of all 10 of them are completely hardcoded. In OXCE, you can use one of these hardcoded damage types as a starting point, but still be able to override all damage aspects for every item. To do this, you always use a pair of attributes for default and override:\n\n*   for normal/primary damage: default is in **damageType** and overrides in **damageAlter**\n*   for secondary melee damage: default is in **meleeType** and overrides in **meleeAlter**\n\nDamage override has many attributes, which are all described in [Item Damage Types](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Item_Damage_Types).\n\nSmall example:\n\n```\n - type: STR_HWP_DISC_PLASMA_CANNON\n   damageType: 5\n   damageAlter:\n     RandomType: 6\n     IgnoreOverKill: false\n     ToArmorPre: 0.05\n     ToStun: 0.75\n     RandomWound: false\n     ToWound: 0.12\n     FireThreshold: 25\n\n```",
       "default": "-"
     },
     "meleePower": {
@@ -879,7 +903,7 @@
       "default": "-"
     },
     "meleeAlter": {
-      "description": "Damage type details for **meleeType**.\n\nDamage override has many attributes, which are all described in [Item Damage Types](https://www.ufopaedia.org#Item_Damage_Types).",
+      "description": "Damage type details for **meleeType**.\n\nDamage override has many attributes, which are all described in [Item Damage Types](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Item_Damage_Types).",
       "default": "-"
     },
     "strengthApplied": {
@@ -1681,7 +1705,7 @@
       "default": "1"
     },
     "battlescapeTerrainData": {
-      "description": "[Terrain](https://www.ufopaedia.org#Terrains) associated to this UFO in Battlescape missions.",
+      "description": "[Terrain](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Terrains) associated to this UFO in Battlescape missions.",
       "default": "required"
     },
     "hunterKillerPercentage": {
@@ -1729,7 +1753,7 @@
       "default": "-1"
     },
     "raceBonus": {
-      "description": "Modifies or overrides the UFO Stats per alien race.\n\nYou can use this to make the same type of UFO have different [stats](https://www.ufopaedia.org#UFO_Stats) depending on the alien race.\n\n```\n - type: STR_TERROR_SHIP\n   raceBonus:\n     STR_MUTON:\n       hitBonus: 20\n       craftCustomDeploy: STR_MORE_SCARY_WEAPONS\n       missionCustomDeploy: STR_TERROR_SITE_MUTONS\n     STR_ETHEREAL:\n       missionCustomDeploy: STR_END_OF_THE_WORLD\n\n```",
+      "description": "Modifies or overrides the UFO Stats per alien race.\n\nYou can use this to make the same type of UFO have different [stats](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#UFO_Stats) depending on the alien race.\n\n```\n - type: STR_TERROR_SHIP\n   raceBonus:\n     STR_MUTON:\n       hitBonus: 20\n       craftCustomDeploy: STR_MORE_SCARY_WEAPONS\n       missionCustomDeploy: STR_TERROR_SITE_MUTONS\n     STR_ETHEREAL:\n       missionCustomDeploy: STR_END_OF_THE_WORLD\n\n```",
       "default": "-"
     },
     "damageMax": {
@@ -1785,11 +1809,11 @@
       "default": "0"
     },
     "craftCustomDeploy": {
-      "description": "Overrides the [deployment data](https://www.ufopaedia.org#Deployment_Data) used during the Battlescape generation, when the UFO crashes or lands.",
+      "description": "Overrides the [deployment data](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Deployment_Data) used during the Battlescape generation, when the UFO crashes or lands.",
       "default": "-"
     },
     "missionCustomDeploy": {
-      "description": "Overrides the [deployment data](https://www.ufopaedia.org#Deployment_Data) used during the Battlescape generation, when the UFO spawns a mission site.",
+      "description": "Overrides the [deployment data](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Deployment_Data) used during the Battlescape generation, when the UFO spawns a mission site.",
       "default": "-"
     }
   },
@@ -1845,7 +1869,7 @@
       "default": "[0, 0]"
     },
     "ambience": {
-      "description": "The ambient sound effect. Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
+      "description": "The ambient sound effect. Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds).",
       "default": "-1"
     },
     "ambientVolume": {
@@ -1926,6 +1950,10 @@
       "description": "Size of map blocks that can be placed/checked/removed within **rects**. Only width (sizeX) and length (sizeY) are relevant. Can be specified as a single value, which is then used as both width and length; or as group of up to three values \\[x, y, z\\].\n\nAlso used for resize command type, which can use also the height value (sizeZ).",
       "default": "[1, 1, 0]"
     },
+    "markAsReinforcementsBlock": {
+      "description": "Marks blocks placed during this command as relevant for in-battle alien/civilian **reinforcements**.",
+      "default": "false"
+    },
     "groups": {
       "description": "Defines what types of map blocks can be used within this command. Can be defined as a list or as a single value.",
       "default": "0"
@@ -2000,6 +2028,10 @@
       "description": "String ID of the armor name.",
       "default": "required"
     },
+    "ufopediaType": {
+      "description": "String ID of alternate ufopedia article for this armor (when accessed via middle-button click).\n\nMore info: [https://openxcom.org/forum/index.php/topic,8707.msg133338.html#msg133338](https://openxcom.org/forum/index.php/topic,8707.msg133338.html#msg133338)",
+      "default": "-"
+    },
     "requires": {
       "description": "The research required to equip this armor.\n\nModding hint: it is possible to equip one \"store item\" as several different armors, e.g. as armor with or without a helmet. This option allows you to limit some of those options by a research topic. You could use this also for example to define different armor variants for each game difficulty level, e.g. make armor stronger for beginners and weaker for veterans.",
       "default": "-"
@@ -2025,15 +2057,15 @@
       "default": "-"
     },
     "corpseBattle": {
-      "description": "List of string IDs of the corpse [items](https://www.ufopaedia.org#Items) generated when a unit wearing this armor is killed/stunned (1 for 1x1 unit, 4 for 2x2 unit) on the Battlescape.",
+      "description": "List of string IDs of the corpse [items](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) generated when a unit wearing this armor is killed/stunned (1 for 1x1 unit, 4 for 2x2 unit) on the Battlescape.",
       "default": "-"
     },
     "corpseGeo": {
-      "description": "String ID of the corpse [item](https://www.ufopaedia.org#Items) recovered in Debriefing. Defaults to **corpseBattle** if omitted.\n\nTip for modders: useful for example when you want to recover a \"damaged\" version of a soldier's armor.",
+      "description": "String ID of the corpse [item](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) recovered in Debriefing. Defaults to **corpseBattle** if omitted.\n\nTip for modders: useful for example when you want to recover a \"damaged\" version of a soldier's armor.",
       "default": "-"
     },
     "storeItem": {
-      "description": "String ID of the [item](https://www.ufopaedia.org#Items) that represents this armor in [Base Stores](https://www.ufopaedia.org/index.php/Base_Stores) for equipping. Set to _STR\\_NONE_ to not require an item (eg. [coveralls](https://www.ufopaedia.org/index.php/Coveralls)).",
+      "description": "String ID of the [item](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) that represents this armor in [Base Stores](https://www.ufopaedia.org/index.php/Base_Stores) for equipping. Set to _STR\\_NONE_ to not require an item (eg. [coveralls](https://www.ufopaedia.org/index.php/Coveralls)).",
       "default": "-"
     },
     "specialWeapon": {
@@ -2085,27 +2117,27 @@
       "default": "1"
     },
     "moveSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor moves (overrides unit's moveSound).",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a unit wearing this armor moves (overrides unit's moveSound).",
       "default": "-1"
     },
     "deathMale/deathFemale": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor dies. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a unit wearing this armor dies. A list of sound IDs can be used too.",
       "default": "-"
     },
     "selectUnitMale/selectUnitFemale": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor is manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a unit wearing this armor is manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "startMovingMale/startMovingFemale": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor starts moving. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a unit wearing this armor starts moving. A list of sound IDs can be used too.",
       "default": "-"
     },
     "selectWeaponMale/selectWeaponFemale": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a weapon of a unit wearing this armor is selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a weapon of a unit wearing this armor is selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "annoyedMale/annoyedFemale": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when a unit wearing this armor is repeatedly manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a unit wearing this armor is repeatedly manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "size": {
@@ -2161,7 +2193,7 @@
       "default": "-"
     },
     "damageModifier": {
-      "description": "List of decimal damage modifiers (1.0 = 100%) this armor applies to each damage type (see [Items section](https://www.ufopaedia.org#Items)) received. Modifiers must be specified for all damage types, in this order:\n\n*   None\n*   Armor Piercing\n*   Incendiary\n*   High Explosive\n*   Laser\n*   Plasma\n*   Stun\n*   Melee\n*   Acid\n*   Smoke\n\nIn OXCE, there are 10 additional (nameless) damage types, which you can name and use for any purpose you like (e.g. create Electric damage, Freeze damage, EMP damage or whatever). You are also not forced to specify all 20 values if you are using less. If you for example only use 2 additional damage types, it is enough to specify only 12 (10 vanilla + 2 additional).",
+      "description": "List of decimal damage modifiers (1.0 = 100%) this armor applies to each damage type (see [Items section](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items)) received. Modifiers must be specified for all damage types, in this order:\n\n*   None\n*   Armor Piercing\n*   Incendiary\n*   High Explosive\n*   Laser\n*   Plasma\n*   Stun\n*   Melee\n*   Acid\n*   Smoke\n\nIn OXCE, there are 10 additional (nameless) damage types, which you can name and use for any purpose you like (e.g. create Electric damage, Freeze damage, EMP damage or whatever). You are also not forced to specify all 20 values if you are using less. If you for example only use 2 additional damage types, it is enough to specify only 12 (10 vanilla + 2 additional).",
       "default": "- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0"
     },
     "loftempsSet": {
@@ -2331,7 +2363,7 @@
       "default": "required"
     },
     "requires": {
-      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this soldier type. If none are specified, this soldier type is unlocked from the start.",
+      "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to unlock this soldier type. If none are specified, this soldier type is unlocked from the start.",
       "default": "-"
     },
     "requiresBuyBaseFunc": {
@@ -2359,7 +2391,7 @@
       "default": "-"
     },
     "armor": {
-      "description": "String ID of the [armor](https://www.ufopaedia.org#Armor) this soldier uses by default.",
+      "description": "String ID of the [armor](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Armor) this soldier uses by default.",
       "default": "-"
     },
     "armorForAvatar": {
@@ -2443,43 +2475,43 @@
       "default": "100"
     },
     "deathMale": {
-      "description": "Death sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
+      "description": "Death sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds).",
       "default": "-"
     },
     "deathFemale": {
-      "description": "Death sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
+      "description": "Death sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds).",
       "default": "-"
     },
     "selectUnitMale/selectUnitFemale": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this soldier is manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this soldier is manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "startMovingMale/startMovingFemale": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this soldier starts moving. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this soldier starts moving. A list of sound IDs can be used too.",
       "default": "-"
     },
     "selectWeaponMale/selectWeaponFemale": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this soldier's weapon is selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this soldier's weapon is selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "annoyedMale/annoyedFemale": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this soldier is repeatedly manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this soldier is repeatedly manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "panicMale": {
-      "description": "Panic sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
+      "description": "Panic sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds).",
       "default": "-"
     },
     "panicFemale": {
-      "description": "Panic sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
+      "description": "Panic sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds).",
       "default": "-"
     },
     "berserkMale": {
-      "description": "Berserk sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
+      "description": "Berserk sound(s) for male soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds).",
       "default": "-"
     },
     "berserkFemale": {
-      "description": "Berserk sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds).",
+      "description": "Berserk sound(s) for female soldiers. Either a single sound ID or a list of sound IDs from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds).",
       "default": "-"
     },
     "soldierNames": {
@@ -2767,7 +2799,7 @@
       "default": "-"
     },
     "armor": {
-      "description": "String ID of the [armor](https://www.ufopaedia.org#Armor) this unit uses by default.",
+      "description": "String ID of the [armor](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Armor) this unit uses by default.",
       "default": "-"
     },
     "standHeight": {
@@ -2786,8 +2818,20 @@
       "description": "[Score](https://www.ufopaedia.org/index.php/Score) this unit is worth.",
       "default": "0"
     },
+    "vip": {
+      "description": "Is this unit a VIP? Used for \"Escort the VIP\" and \"Protect the VIP\" mission types.",
+      "default": "false"
+    },
     "civilianRecoveryType": {
-      "description": "Gets the type of staff (soldier/engineer/scientists) or type of item to be recovered when a civilian is saved.",
+      "description": "Gets the type of staff (soldier/engineer/scientists) or type of item to be recovered when a civilian (or a player-controlled summoned unit) is saved.",
+      "default": "-"
+    },
+    "spawnedPersonName": {
+      "description": "When \"recovering\" a soldier, you can (optionally) specify also his/her name. The name is translatable.",
+      "default": "-"
+    },
+    "spawnedSoldier": {
+      "description": "When \"recovering\" a soldier, you can (optionally) specify overrides for any of the soldier's attributes. Uses the same syntax as the saved games. Cannot override soldier's ID.",
       "default": "-"
     },
     "intelligence": {
@@ -2855,39 +2899,39 @@
       "default": "100"
     },
     "deathSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit dies. No value means no sound upon death. A list of sound IDs can be used too, the game then chooses one randomly each time.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit dies. No value means no sound upon death. A list of sound IDs can be used too, the game then chooses one randomly each time.",
       "default": "-"
     },
     "selectUnitSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit is manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit is manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "startMovingSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit starts moving. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit starts moving. A list of sound IDs can be used too.",
       "default": "-"
     },
     "selectWeaponSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit's weapon is selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit's weapon is selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "annoyedSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit is repeatedly manually selected. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit is repeatedly manually selected. A list of sound IDs can be used too.",
       "default": "-"
     },
     "panicSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit panics. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit panics. A list of sound IDs can be used too.",
       "default": "-"
     },
     "berserkSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit berserks. A list of sound IDs can be used too.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit berserks. A list of sound IDs can be used too.",
       "default": "-"
     },
     "aggroSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit aggros.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit aggros.",
       "default": "-1"
     },
     "moveSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org#Extra_Sounds) played when this unit moves.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit moves.",
       "default": "-1"
     },
     "showFullNameInAlienInventory": {
@@ -2925,13 +2969,13 @@
       "default": "-"
     },
     "baseCustomDeploy": {
-      "description": "A lighter version of **baseCustomMission**, which only overrides the [deployment data](https://www.ufopaedia.org#Deployment_Data) used during the Battlescape generation.\n\nNote: if both **baseCustomMission** and **baseCustomDeploy** are specified, [deployment data](https://www.ufopaedia.org#Deployment_Data) is taken from **baseCustomDeploy** and everything else is taken from **baseCustomMission**.",
+      "description": "A lighter version of **baseCustomMission**, which only overrides the [deployment data](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Deployment_Data) used during the Battlescape generation.\n\nNote: if both **baseCustomMission** and **baseCustomDeploy** are specified, [deployment data](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Deployment_Data) is taken from **baseCustomDeploy** and everything else is taken from **baseCustomMission**.",
       "default": "-"
     }
   },
   "alienDeployments": {
     "type": {
-      "description": "String ID of the deployment name.",
+      "description": "Name of a script item (reinforcements wave). Doesn't really do anything, it's used to organize your scripts and help debugging.",
       "default": "required"
     },
     "isHidden": {
@@ -2943,15 +2987,19 @@
       "default": "-"
     },
     "startingCondition": {
-      "description": "String ID of a [starting condition](https://www.ufopaedia.org#Battle_Starting_Conditions) for missions using this deployment.\n\nNote: overrides any globe texture starting condition.",
+      "description": "String ID of a [starting condition](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Battle_Starting_Conditions) for missions using this deployment.\n\nNote: overrides any globe texture starting condition.",
       "default": "-"
     },
     "enviroEffects": {
-      "description": "String ID of [enviro effects](https://www.ufopaedia.org#Battle_Enviro_Effects) for missions using this deployment.\n\nNote: overrides any mission terrain enviro effects.",
+      "description": "String ID of [enviro effects](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Battle_Enviro_Effects) for missions using this deployment.\n\nNote: overrides any mission terrain enviro effects.",
       "default": "-"
     },
     "data": {
-      "description": "List of deployment data for each alien rank on this mission (see below).",
+      "description": "List of deployment data for each alien rank in this reinforcements wave (see above).",
+      "default": "-"
+    },
+    "reinforcements": {
+      "description": "List of scripted reinforcement waves (see below).",
       "default": "-"
     },
     "width": {
@@ -2979,7 +3027,7 @@
       "default": "-"
     },
     "terrains": {
-      "description": "List of string IDs of the [terrains](https://www.ufopaedia.org#Terrains) to choose from when generating the map. Not used for UFO land/crash sites, terrain comes from the Geoscape globe texture.",
+      "description": "List of string IDs of the [terrains](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Terrains) to choose from when generating the map. Not used for UFO land/crash sites, terrain comes from the Geoscape globe texture.",
       "default": "-"
     },
     "shade": {
@@ -3043,7 +3091,7 @@
       "default": "-1"
     },
     "briefing": {
-      "description": "Data for the mission briefing (see below).",
+      "description": "Data for the reinforcements briefing (see above).",
       "default": "-"
     },
     "markerName": {
@@ -3150,6 +3198,14 @@
       "description": "The string and score adjustment to be shown on the mission debriefing.",
       "default": "[-, 0]"
     },
+    "missionCompleteText": {
+      "description": "Custom mission successful debriefing title.",
+      "default": "-"
+    },
+    "missionFailedText": {
+      "description": "Custom mission failed debriefing title.",
+      "default": "-"
+    },
     "despawnPenalty": {
       "description": "How many points the aliens will receive when this site despawns due to XCom negligence.",
       "default": "0"
@@ -3174,6 +3230,14 @@
       "description": "Which type of tiles can be used for escape. Possible values:\n\n*   0 = None\n*   1 = Exit tiles\n*   2 = Entry tiles\n*   3 = Either",
       "default": "0"
     },
+    "vipSurvivalPercentage": {
+      "description": "How many VIPs need to survive for the mission to be counted as successful.",
+      "default": "0"
+    },
+    "markCiviliansAsVIP": {
+      "description": "Should all civilians be marked as VIPs?\n\nBesides this, you can use also the **vip** attribute on the unit level to have finer control over VIPs (and a possibility to mark also player-controlled summoned units as VIPs).",
+      "default": "false"
+    },
     "keepCraftAfterFailedMission": {
       "description": "Defines whether the craft should be lost after a failed mission or not. Useful for example for timed missions where the craft doesn't wait for you (e.g. escape/extraction missions).",
       "default": "false"
@@ -3181,6 +3245,10 @@
     "alienRank": {
       "description": "[Rank](https://www.ufopaedia.org/index.php/Alien_Rank) associated with this deployment data, as defined by the order of the race in question (see above)",
       "default": "required"
+    },
+    "customUnitType": {
+      "description": "Allows to hardcode a unit to spawn, instead of taking the corresponding alien race member based on **alienRank**.",
+      "default": "-"
     },
     "lowQty": {
       "description": "Minimum quantity of aliens to spawn on beginner/experienced.",
@@ -3199,11 +3267,11 @@
       "default": "0"
     },
     "percentageOutsideUfo": {
-      "description": "Percentage (0-100%) of aliens to spawn outside of the UFO (in UFO land/crash sites).",
+      "description": "Percentage (0-100%) of aliens to spawn outside of the UFO (in UFO land/crash sites).\n\nFor **reinforcements**, this attribute is reused/misused to specify whether to spawn enemies (use value 0) or civilians (use any other value than 0).",
       "default": "required"
     },
     "itemSets": {
-      "description": "Three lists (one for each alien technology level) of [items](https://www.ufopaedia.org#Items) (string IDs) for the aliens to equip.",
+      "description": "Three lists (one for each alien technology level) of [items](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) (string IDs) for the aliens to equip.",
       "default": "required"
     },
     "extraRandomItems": {
@@ -3240,6 +3308,78 @@
     },
     "showTarget": {
       "description": "Whether to display the mission target name.",
+      "default": "true"
+    },
+    "minDifficulty": {
+      "description": "Minimum difficulty on which this reinforcements wave will apply.",
+      "default": "0"
+    },
+    "maxDifficulty": {
+      "description": "Maximum difficulty on which this reinforcements wave will apply.",
+      "default": "4"
+    },
+    "objectiveDestroyed": {
+      "description": "Should this reinforcements wave only apply after mission objectives are destroyed?",
+      "default": "false"
+    },
+    "turns": {
+      "description": "A list of turns on which this reinforcements wave should apply. Ignored if **objectiveDestroyed** is true.",
+      "default": "-"
+    },
+    "minTurn": {
+      "description": "Minimum turn on which this reinforcements wave should apply. Ignored if **objectiveDestroyed** is true or **turns** is not empty.",
+      "default": "0"
+    },
+    "maxTurn": {
+      "description": "Maximum turn on which this reinforcements wave should apply. Ignored if **objectiveDestroyed** is true or **turns** is not empty.",
+      "default": "-1"
+    },
+    "executionOdds": {
+      "description": "Execution odds (in percent) for this reinforcements wave.",
+      "default": "100"
+    },
+    "maxRuns": {
+      "description": "How many times is this reinforcements wave allowed to be repeated.",
+      "default": "-1"
+    },
+    "useSpawnNodes": {
+      "description": "Can map nodes be used to spawn reinforcements? Recommended value is true.",
+      "default": "true"
+    },
+    "mapBlockFilterType": {
+      "description": "Which map blocks can be used to spawn reinforcements. Possible values:\n\n*   0 = all blocks\n*   1 = blocks marked in the map script\n*   2 = blocks specified by **spawnBlocks**\n*   3 = both union (blocks marked in the map script or specified by **spawnBlocks**)\n*   4 = both intersection (blocks marked in the map script AND specified by **spawnBlocks** at the same time)",
+      "default": "3"
+    },
+    "spawnBlocks": {
+      "description": "A list of codes specifying which blocks can be used for spawning. Empty = all. Possible values:\n\n*   EDGES = all map edges\n*   NORTH = north map edge\n*   WEST = west map edge\n*   SOUTH = south map edge\n*   EAST = east map edge\n*   NW = north-west map corner\n*   NE = north-east map corner\n*   SW = south-west map corner\n*   SE = south-east map corner",
+      "default": "-"
+    },
+    "spawnBlockGroups": {
+      "description": "A list of block groups specifying which blocks can be used for spawning. Empty = all.",
+      "default": "-"
+    },
+    "spawnNodeRanks": {
+      "description": "A list of node ranks specifying which map nodes can be used for spawning. Empty = all.",
+      "default": "-"
+    },
+    "spawnZLevels": {
+      "description": "A list of Z-levels where units are allowed to spawn. Empty = all.",
+      "default": "-"
+    },
+    "randomizeZLevels": {
+      "description": "Should the game try to spawn units on Z-levels in order specified by **spawnZLevels**, or in random order? Doesn't apply to spawning on map nodes.",
+      "default": "true"
+    },
+    "minDistanceFromXcomUnits": {
+      "description": "Used to spawn reinforcements away from any xcom units. Use with caution!",
+      "default": "0"
+    },
+    "maxDistanceFromBorders": {
+      "description": "Used to spawn reinforcements near the map borders. Allowed values are from 1 to 9 (tiles).",
+      "default": "0"
+    },
+    "forceSpawnNearFriend": {
+      "description": "If everything else fails, should the game spawn reinforcements next to a random existing unit of the same faction?",
       "default": "true"
     }
   },
@@ -3295,7 +3435,7 @@
       "default": "-"
     },
     "environmentalConditions": {
-      "description": "A set of [environmental conditions](https://www.ufopaedia.org#Environmental_Conditions) (one for each faction: STR\\_FRIENDLY, STR\\_HOSTILE or STR\\_NEUTRAL), see below. Environmental conditions define a special effect applied to each unit of a given faction at the beginning of their turn. This can be for example damage in toxic environment, stun in harsh environment, morale decrease in tough battles, etc.\n\nNote: the player is informed about the effects applied on the \\[Next Turn\\] screen.",
+      "description": "A set of [environmental conditions](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Environmental_Conditions) (one for each faction: STR\\_FRIENDLY, STR\\_HOSTILE or STR\\_NEUTRAL), see below. Environmental conditions define a special effect applied to each unit of a given faction at the beginning of their turn. This can be for example damage in toxic environment, stun in harsh environment, morale decrease in tough battles, etc.\n\nNote: the player is informed about the effects applied on the \\[Next Turn\\] screen.",
       "default": "-"
     },
     "armorTransformations": {
@@ -3431,7 +3571,7 @@
       "default": "-"
     },
     "needItem": {
-      "description": "Does this project require an [item](https://www.ufopaedia.org#Items) of the same name?",
+      "description": "Does this project require an [item](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) of the same name?",
       "default": "false"
     },
     "destroyItem": {
@@ -3453,7 +3593,7 @@
       "default": "-"
     },
     "requires": {
-      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this project. If none are specified, this project is unlocked from the start.",
+      "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to unlock this project. If none are specified, this project is unlocked from the start.",
       "default": "-"
     },
     "requiresBaseFunc": {
@@ -3477,11 +3617,11 @@
       "default": "false"
     },
     "requiredItems": {
-      "description": "List of [items](https://www.ufopaedia.org#Items) required and consumed per production.",
+      "description": "List of [items](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) required and consumed per production.",
       "default": "-"
     },
     "producedItems": {
-      "description": "List of [items](https://www.ufopaedia.org#Items) manufactured per production. If not specified, defaults to 1 item with the same string ID as the manufacture project.",
+      "description": "List of [items](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) manufactured per production. If not specified, defaults to 1 item with the same string ID as the manufacture project.",
       "default": "name: 1"
     },
     "randomProducedItems": {
@@ -3489,7 +3629,7 @@
       "default": "-"
     },
     "spawnedPersonType": {
-      "description": "Allows to \"manufacture\" soldiers, scientists and engineers. More info here: [https://openxcom.org/forum/index.php/topic,4187.msg78212.html#msg78212](https://openxcom.org/forum/index.php/topic,4187.msg78212.html#msg78212)\n\nNote: you can't use existing soldiers as \"input\" here, only items or prisoners. For transformation of existing soldiers (e.g. from normal humans to MECs), please use the [Soldier Transformation](https://www.ufopaedia.org#Soldier_Transformation) functionality and ruleset.",
+      "description": "Allows to \"manufacture\" soldiers, scientists and engineers. More info here: [https://openxcom.org/forum/index.php/topic,4187.msg78212.html#msg78212](https://openxcom.org/forum/index.php/topic,4187.msg78212.html#msg78212)\n\nNote: you can't use existing soldiers as \"input\" here, only items or prisoners. For transformation of existing soldiers (e.g. from normal humans to MECs), please use the [Soldier Transformation](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Soldier_Transformation) functionality and ruleset.",
       "default": "-"
     },
     "spawnedPersonName": {
@@ -3539,7 +3679,7 @@
       "default": "false"
     },
     "requires": {
-      "description": "List of [topics](https://www.ufopaedia.org#Research) (string IDs) that must be researched to unlock this article. If none are specified, this article is unlocked from the start.\n\nIf using lootable weapons ('alien' weapons that can be used without research) needing a research to fully unlock, make sure to define it on both the weapon and ammo. Otherwise the damage reading is visible on the inventory screen using \\[ALT\\] on a clip.",
+      "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to unlock this article. If none are specified, this article is unlocked from the start.\n\nIf using lootable weapons ('alien' weapons that can be used without research) needing a research to fully unlock, make sure to define it on both the weapon and ammo. Otherwise the damage reading is visible on the inventory screen using \\[ALT\\] on a clip.",
       "default": "-"
     },
     "image_id": {
@@ -3659,7 +3799,7 @@
       "default": "-"
     },
     "ufo": {
-      "description": "String ID of the [UFO](https://www.ufopaedia.org#UFOs) to spawn.",
+      "description": "String ID of the [UFO](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#UFOs) to spawn.",
       "default": "required"
     },
     "count": {
@@ -3667,7 +3807,7 @@
       "default": "0"
     },
     "trajectory": {
-      "description": "String ID of the [trajectory](https://www.ufopaedia.org#UFO_Trajectories) for this UFO to use when entering Earth's atmosphere.",
+      "description": "String ID of the [trajectory](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#UFO_Trajectories) for this UFO to use when entering Earth's atmosphere.",
       "default": "required"
     },
     "timer": {
@@ -4555,6 +4695,10 @@
     "closeQuartersEnergyCostGlobal": {
       "description": "Amount of energy the target unit (victim) needs to have to be able to perform CQC. If CQC is triggered, energy will be also spent. If CQC is not triggered, energy will **not** be spent.",
       "default": "8"
+    },
+    "closeQuartersSneakUpGlobal": {
+      "description": "Percentage chance of avoiding CQC when sneaking up on an enemy.\n\nAlien attacker can avoid CQC when xcom victim doesn't see the alien attacker. Xcom attacker can avoid CQC when all aliens (as a collective) were not aware of the xcom attacker during the previous and the current turn.",
+      "default": "0"
     },
     "tooMuchSmokeThreshold": {
       "description": "A technical parameter, which you may want to change if you want to be able to (always) extinguish fire from map tiles using smoke.\n\nMore info: [https://openxcom.org/forum/index.php/topic,4057.msg59352.html#msg59352](https://openxcom.org/forum/index.php/topic,4057.msg59352.html#msg59352)",

@@ -47,8 +47,8 @@ export class RulesetParser {
         return rulesetDefinitionFinder.getDefinitionsFromReferences(references);
     }
 
-    public getVariables(doc: any): Variables {
-        return rulesetVariableFinder.findAllVariablesInYamlDocument(doc);
+    public getVariables(references: Match[] | undefined): Variables {
+        return rulesetVariableFinder.findAllVariablesInYamlDocument(references);
     }
 
     public getTranslations(doc: any): Translation[] {
@@ -80,7 +80,7 @@ export class RulesetParser {
         return rule;
     }
 
-    public async findRefNodeInDocument(file: Uri, key: string): Promise<Location | undefined> {
+    public findRefNodeInDocument(file: Uri, key: string): Location | undefined {
         return rulesetRefnodeFinder.findRefNodeInDocument(file, key);
     }
 

@@ -1,8 +1,9 @@
 import { logger } from "./logger";
 import { Match, RuleType } from "./rulesetTree";
 import { Scalar, YAMLMap, YAMLSeq } from "yaml/types";
-import { YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
+import { JsonObject, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { typedProperties } from "./typedProperties";
+import * as dotProp from 'dot-prop';
 
 type Entry = YAMLSeq | YAMLDocumentItem | string | Scalar;
 
@@ -36,7 +37,7 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): Match[] {
-        logger.debug('findKeyInformationInYamlDocument');
+        // logger.debug('findKeyInformationInYamlDocument');
 
         const yamlPairs = yamlDocument.contents.items;
         if (!yamlPairs) {
@@ -53,10 +54,23 @@ export class RulesetRecursiveKeyRetriever {
         yamlPairs.forEach((ruleType) => {
             if (ruleType.value.type === 'PLAIN') {
                 // globalVariables does this
-                this.processItems(ruleType, ruleType.key.value, matches, lookupAll);
+                this.processItems(ruleType, 'globalVariables', matches, lookupAll);
             } else {
                 ruleType.value.items.forEach((ruleProperties: YAMLSeq) => {
-                    this.processItems(ruleProperties, ruleType.key.value, matches, lookupAll);
+                    // @TODO can go, I believe
+                    if (['extraSprites', 'extraSounds'].indexOf(ruleType.key.value) !== -1) {
+                        // I hate that I need this but I see no other way
+                        // const propertiesFlat = ruleProperties.toJSON() as {[key: string]: string | Record<string, unknown>};
+                        const propertiesFlat = (ruleProperties as YAMLMap).toJSON() as JsonObject;
+                        this.handleExtraFiles(propertiesFlat, ruleProperties, matches, ruleType);
+                    }
+
+                    let path = ruleType.key.value;
+                    if (typedProperties.isGlobalVariablePath(path)) {
+                        path = `globalVariables.${path}`;
+                    }
+
+                    this.processItems(ruleProperties, path, matches, lookupAll);
                 });
             }
         });
@@ -88,7 +102,10 @@ export class RulesetRecursiveKeyRetriever {
         } else if (entry.type === 'PAIR') {
             // i.e. startingbase
             // console.log('looping PAIR', path + '.' + entry.key.value);
-            this.processItems(entry.value, path + '.' + entry.key.value, matches, lookupAll);
+            const ret = this.processItems(entry.value, path + '.' + entry.key.value, matches, lookupAll);
+            if (ret) {
+                matches.push(ret);
+            }
         } else if ('items' in entry) {
             if (entry.items.length > 0) {
                 this.loopEntry(entry, path, matches, lookupAll);
@@ -103,7 +120,7 @@ export class RulesetRecursiveKeyRetriever {
                 return;
             }
 
-            if (typeof value === 'boolean' || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
+            if (this.isBoolean(value, path) || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
                 // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
                 return;
             }
@@ -132,6 +149,7 @@ export class RulesetRecursiveKeyRetriever {
         const map = entry as YAMLMap;
 
         for (const item of map.items) {
+            // @TODO check if we can just use _names and revert
             const match: Match = {
                 key: item.key.value,
                 path,
@@ -268,6 +286,10 @@ export class RulesetRecursiveKeyRetriever {
         return parseFloat(value) === value && parseInt(value) !== value;
     }
 
+    private isBoolean(value: any, path: string) {
+        return typeof value === 'boolean' && !typedProperties.isStoreVariable(path);
+    }
+
     private isUndefinableNumericProperty(path: string, value: any): boolean {
         if (parseInt(value) !== value) {
             // not an integer
@@ -279,6 +301,7 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     private addMetadata(path: string, entry: YAMLSeq): Record<string, unknown> | undefined {
+        // TODO we seem to come here too many times, check with one item (properties.type === 'STR_12GAUGE_NON_LETHAL_X8')
         const fields = typedProperties.getMetadataFieldsForType(path, entry.toJSON());
         if (!fields) {
             return;
@@ -288,8 +311,8 @@ export class RulesetRecursiveKeyRetriever {
         const metadata: Record<string, unknown> = {};
         for (const fieldKey in fields) {
             const fieldName = fields[fieldKey];
-            if (properties && fieldName in properties) {
-                metadata[fieldKey] = properties[fieldName];
+            if (properties && dotProp.has(properties, fieldName)) {
+                metadata[fieldKey] = dotProp.get(properties, fieldName);
             }
         }
 
@@ -298,6 +321,39 @@ export class RulesetRecursiveKeyRetriever {
 
     private checkForRangeMatch(range1: number[], range2: number[]): boolean {
         return range1[0] === range2[0] && range1[1] === range2[1];
+    }
+
+        /**
+     * Parses extraSprites and extraSounds
+     * @param propertiesFlat
+     * @param ruleProperties
+     * @param definitions
+     * @param ruleType
+     */
+    private handleExtraFiles(propertiesFlat: JsonObject, ruleProperties: YAMLSeq, matches: Match[], ruleType: YAMLDocumentItem) {
+        const typeKey = 'files';
+        if (!(typeKey in propertiesFlat)) {
+            return;
+        }
+
+        for (const ruleProperty of ruleProperties.items) {
+            if (ruleProperty.key.value === typeKey) {
+                for (const entry of ruleProperty.value.items) {
+                    const metadata = this.addMetadata(ruleType.key.value + '.' + propertiesFlat.type, ruleProperties);
+                    const match: Match = {
+                        key: entry.key.value,
+                        path: ruleType.key.value + '.' + propertiesFlat.type + '.' + typeKey,
+                        range: entry.key.range,
+                    };
+
+                    if (metadata) {
+                        match.metadata = metadata;
+                    }
+
+                    matches.push(match);
+                }
+            }
+        }
     }
 }
 

@@ -1,11 +1,14 @@
+import { typedProperties } from "../typedProperties";
+
 /**
  * Prevent the following types being checked as references
  */
 export const ignoreTypes = [
     'armors.layersDefaultPrefix',
     'armors.scripts.damageUnit',
+    'armors.scripts.hitUnit',
+    'armors.scripts.recolorUnitSprite',
     'armors.scripts.selectUnitSprite',
-    'armors.spriteInv', // TODO: FIX THIS%
     'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
     'battleScripts.commands[].spawnBlocks', // FtA
     'battleScripts.commands[].type', // FtA
@@ -23,17 +26,14 @@ export const ignoreTypes = [
     // 'extended.tags.RuleItem',
     // 'extended.tags.RuleSoldierBonus',
     'extraSprites.fileSingle', // may want to check that the files exist
+    // TODO CHECK THIS
     'extraSprites.files.0', // may want to check that the files exist
-    // '/^extraSprites\\.[a-zA-Z0-9_-]+(\\.(DAT|PCK|SCR|SPK))?\\.files.0$/', // may want to check that the files exist
-    // '/^extraSprites\\.BASEBITS\\.CAT\\.files\\.\\d+$/', // may want to check that the files exist
-    // '/^extraSounds\\.[a-zA-Z0-9_-]+\\.CAT\\.files\\.\\d+$/', // may want to check that the files exist
-    // '/^extraSprites\\.[a-zA-Z0-9_-]+(\\.(DAT|PCK|SCR|SPK))?\\.files\\.\\d+$/', // may want to check that the files exist
-    // '/^extraSounds\\.BATTLE\\.CAT\\.files\\.\\d+$/', // may want to check that the files exist
-    // '/^extraSprites\\.(((BASEBITS|BIGOBS|FLOOROB|HANDOB|HIT|INTICON|SMOKE)\\.PCK|SPICONS\\.DAT))\\.files\\.\\d+$/', // may want to check that the files exist
     // 'facilities.mapName', // may want to check that the files exist
     'interfaces.elements[].id', // could type check this, but the validator probably catches these
     'interfaces.palette', // could type check this, but the validator probably catches these
     'items.scripts.createItem',
+    'items.scripts.selectItemSprite',
+    'globe.data', // may want to check that the files exist
     'mapScripts.commands[].type',
     'mapScripts.commands[].direction',
     'mapScripts.commands[].tunnelData.MCDReplacements[].type',
@@ -48,4 +48,4 @@ export const ignoreTypes = [
     'units.race', // optional according to Finnik
     // 'units.civilianRecoveryType', // ruleset validator will catch it
     'units.specialObjectiveType', // FtA, ruleset validator will catch it
-];
+].concat(typedProperties.getStoreVariables());

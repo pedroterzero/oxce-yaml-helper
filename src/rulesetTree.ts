@@ -1,6 +1,6 @@
 import { logger } from "./logger";
 import { Uri, WorkspaceFolder } from "vscode";
-import { DefinitionCompletions, WorkspaceFolderRuleset as WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
+import { DefinitionCompletions, WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 
 export type Ruleset = { [key: string]: Ruleset }
 export type LookupMap = { [key: string]: string }
@@ -74,8 +74,16 @@ export class RulesetTree {
         this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.mergeTranslationsIntoTree(translations, sourceFile);
     }
 
+    public deleteFileFromTree(workspaceFolder: WorkspaceFolder, file: Uri) {
+        this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.deleteFileFromTree(file);
+    }
+
     public getWorkspaceFolders(): WorkspaceFolder[] {
         return this.workspaceFolderRulesets.map((workspaceFolderRuleset) => workspaceFolderRuleset.workspaceFolder);
+    }
+
+    public getReferences(workspaceFolder: WorkspaceFolder): Match[] | undefined {
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getReferences();
     }
 
     public getVariables(workspaceFolder: WorkspaceFolder): Variables | undefined {
@@ -119,8 +127,12 @@ export class RulesetTree {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getTranslation(key);
     }
 
-    refresh(workspaceFolder: WorkspaceFolder) {
+    public refresh(workspaceFolder: WorkspaceFolder) {
         return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.refresh();
+    }
+
+    public getDiagnosticCollection(workspaceFolder: WorkspaceFolder) {
+        return this.getOrCreateWorkspaceFolderRuleset(workspaceFolder)?.getDiagnosticCollection();
     }
 
     public checkDefinitions(workspaceFolder: WorkspaceFolder, assetUri: Uri): any {

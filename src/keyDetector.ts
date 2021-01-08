@@ -40,11 +40,7 @@ export class KeyDetector {
      * Checks whether this is a valid translation key
      * @param value
      */
-    public static isValidTranslationKey(value: KeyMatch | undefined): KeyMatch | undefined {
-        if (!value) {
-            return;
-        }
-
+    public static isValidTranslationKey(value: KeyMatch): KeyMatch | undefined {
         if (value.key.match(/^STR_[A-Z0-9_]+$/g)) {
             return value;
         }
@@ -56,11 +52,7 @@ export class KeyDetector {
      * Checks whether this is a valid property
      * @param value
      */
-    public static isValidPropertyKey(value: KeyMatch | undefined): KeyMatch | undefined {
-        if (!value) {
-            return;
-        }
-
+    public static isValidPropertyKey(value: KeyMatch): KeyMatch | undefined {
         if (value.key.match(/:$/g)) {
             return value;
         }

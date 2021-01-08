@@ -16,11 +16,20 @@ export type ParsedRuleset = {
 };
 
 export class RulesetResolver implements Disposable {
+    private loaded = false;
     private context?: ExtensionContext;
     private fileSystemWatcher?: FileSystemWatcher;
     private yamlPattern = '**/*.rul';
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
+    private readonly onDidRefreshEmitter: EventEmitter = new EventEmitter();
     private rulesetHierarchy: {[key: string]: Uri} = {};
+    private processingFiles: {[key: string]: boolean} = {};
+    private deletingFiles: {[key: string]: boolean} = {};
+    private savedFiles: {[key: string]: boolean} = {};
+
+    public isLoaded() {
+        return this.loaded;
+    }
 
     public setExtensionContent(context: ExtensionContext): void {
         this.context = context;
@@ -44,15 +53,25 @@ export class RulesetResolver implements Disposable {
         this.refreshWorkspaceFolderRulesets();
 
         this.registerFileWatcher();
+
+        this.loaded = true;
         this.onDidLoadEmitter.emit('didLoad');
     }
 
-    public onDidLoad(listener: () => any) {
+    public onDidLoad(listener: () => void) {
         this.onDidLoadEmitter.addListener('didLoad', listener);
     }
 
     public onDidLoadRulesheet(listener: (file: string, files: number, totalFiles: number) => void) {
         this.onDidLoadEmitter.addListener('didLoadRulesheet', listener);
+    }
+
+    public onDidRefresh(listener: () => void) {
+        this.onDidRefreshEmitter.addListener('didRefresh', listener);
+    }
+
+    public removeOnDidRefresh(listener: () => void) {
+        this.onDidRefreshEmitter.removeListener('didRefresh', listener);
     }
 
     private init(): void {
@@ -78,7 +97,15 @@ export class RulesetResolver implements Disposable {
     }
 
     private ruleSheetReloaded (): void {
-        this.refreshWorkspaceFolderRulesets();
+        // wait until we are not processing files anymore
+        if (Object.keys(this.processingFiles).length > 0 || Object.keys(this.deletingFiles).length > 0) {
+            // logger.debug(`still processing ${Object.keys(this.processingFiles).length} files (deleted: ${Object.keys(this.deletingFiles).length}), open: ${workspace.textDocuments.length}`);
+            return;
+        }
+
+       logger.info(`refreshing workspace folder rulesets`);
+       this.refreshWorkspaceFolderRulesets();
+       this.onDidRefreshEmitter.emit('didRefresh');
     }
 
     private async loadYamlFiles(): Promise<undefined | void[][]> {
@@ -90,7 +117,7 @@ export class RulesetResolver implements Disposable {
             logger.debug('loading yaml files for workspace dir:', workspaceFolder.name);
             const files = await this.getYamlFilesForWorkspaceFolder(workspaceFolder);
             return Promise.all(files.map(file => {
-                logger.debug('loading ruleset file:', file.path.slice(workspaceFolder.uri.path.length + 1));
+                logger.debug(`loading ruleset file: ${this.getCleanFile(file, workspaceFolder.uri)}`);
                 return this.loadYamlIntoTree(file, workspaceFolder, files.length);
             }));
         }));
@@ -145,11 +172,69 @@ export class RulesetResolver implements Disposable {
             this.fileSystemWatcher.dispose();
         }
         this.fileSystemWatcher = workspace.createFileSystemWatcher('**/' + this.yamlPattern);
-        this.fileSystemWatcher.onDidChange((e: Uri) => {
-            // TODO fix this so it works well for changing outside VSCode. Right now, document.getText() will be outdated.
-            logger.debug('reloading ruleset file:', e.path);
+        this.fileSystemWatcher.onDidDelete((e: Uri) => {
+            logger.debug(`file deleted ${e.path}`);
+            this.deletingFiles[e.path] = true;
+            this.deleteFileFromTree(e);
+        });
+        this.fileSystemWatcher.onDidCreate(async (e: Uri) => {
             this.loadYamlIntoTree(e);
         });
+
+        this.handleFileChanges(this.fileSystemWatcher);
+    }
+
+    private handleFileChanges(watcher: FileSystemWatcher) {
+        watcher.onDidChange((e: Uri) => {
+            const isSavedFile = e.path in this.savedFiles;
+            if (isSavedFile) {
+                // saved files don't get a `onDidChangeTextDocument`, so handle it differently
+                delete this.savedFiles[e.path];
+            } else {
+                this.processingFiles[e.path] = true;
+            }
+
+            // const folder = workspace.getWorkspaceFolder(Uri.file(e.path));
+            // if (folder) {
+            //     rulesetTree.getDiagnosticCollection(folder)?.clear();
+            // }
+
+            logger.debug(`reloading ruleset file: ${e.path} (processing: ${Object.keys(this.processingFiles).length}) (deleted: ${Object.keys(this.deletingFiles).length})`);
+            if (isSavedFile || !workspace.textDocuments.find(wsFile => wsFile.fileName === e.fsPath)) {
+                // logger.debug(`textdocument not open for file ${e.path}, loading`);
+                this.loadYamlIntoTree(e);
+            }
+        });
+
+        workspace.onDidSaveTextDocument((e) => {
+            // logger.debug(`textdoc saved: ${e.uri.path}`);
+            this.savedFiles[e.uri.path] = true;
+        });
+
+        workspace.onDidChangeTextDocument((e) => {
+            // wait for the textdocument to change, before parsing again
+            if (!(e.document.uri.path in this.processingFiles)) {
+                // logger.debug(`NOT! in list ${e.document.uri.path}`);
+                return;
+            }
+
+            logger.debug(`textdoc changed: ${e.document.uri.path}`);
+            this.loadYamlIntoTree(e.document.uri);
+        });
+    }
+
+    private deleteFileFromTree(file: Uri) {
+        const workspaceFolder = workspace.getWorkspaceFolder(file);
+        if (!workspaceFolder) {
+            throw new Error('workspace folder could not be found');
+        }
+
+        rulesetTree.deleteFileFromTree(workspaceFolder, file);
+
+        // trigger a reload (should maybe have its own event)?
+//        logger.debug(`deleted ${path}`);
+        delete this.deletingFiles[file.path];
+        this.onDidLoadEmitter.emit('didLoadRulesheet');
     }
 
     private async loadYamlIntoTree(file: Uri, workspaceFolder?: WorkspaceFolder, numberOfFiles?: number): Promise<void> {
@@ -167,6 +252,8 @@ export class RulesetResolver implements Disposable {
             parsed = await this.parseDocument(file, workspaceFolder);
         }
         if (!parsed) {
+            logger.error(`Could not parse/retrieve from cache ${file.path}`);
+            delete this.processingFiles[file.path];
             return;
         }
 
@@ -182,16 +269,23 @@ export class RulesetResolver implements Disposable {
 
         rulesetTree.mergeTranslationsIntoTree(parsed.translations, workspaceFolder, file);
 
+        delete this.processingFiles[file.path];
         this.onDidLoadEmitter.emit('didLoadRulesheet', file.path.slice(workspaceFolder.uri.path.length + 1), rulesetTree.getNumberOfParsedDefinitionFiles(workspaceFolder), numberOfFiles);
     }
 
     private async parseDocument(file: Uri, workspaceFolder: WorkspaceFolder): Promise<ParsedRuleset | undefined> {
-        const document = await workspace.openTextDocument(file.path);
+        const document = await this.getTextDocument(file);
+        if (document.getText().trim().length === 0) {
+            // new files could be empty
+            return {
+                translations: []
+            };
+        }
+
         try {
             const doc = rulesetParser.parseDocument(document.getText());
             const docObject = doc.regular.toJSON();
 
-            const workspaceFile = file.path.slice(workspaceFolder.uri.path.length + 1);
             const isLanguageFile = file.path.indexOf('Language/') !== -1 && file.path.slice(file.path.lastIndexOf('.')) === '.yml';
 
             let translations: Translation[] = [];
@@ -202,18 +296,19 @@ export class RulesetResolver implements Disposable {
             } else {
                 const references = rulesetParser.getReferencesRecursively(doc.parsed);
                 rulesetParser.addRangePositions(references, document);
-                logger.debug(`found ${references?.length} references in file ${workspaceFile}`);
+                logger.debug(`found ${references?.length} references in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
                 const definitions = rulesetParser.getDefinitionsFromReferences(references);
-                logger.debug(`found ${definitions.length} definitions in file ${workspaceFile}`);
+                logger.debug(`found ${definitions.length} definitions in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
 
                 // can't use references (yet), variables and extraStrings are not references (yet) (they are keys, not values)
-                const variables = rulesetParser.getVariables(docObject);
+                const variables = rulesetParser.getVariables(references);
                 translations = rulesetParser.getTranslations(docObject);
 
                 parsed = {definitions, references, variables, translations};
             }
 
-            rulesetFileCacheManager.put(file, parsed);
+            // don't need to wait for cache to be written
+            /*await */rulesetFileCacheManager.put(file, parsed);
 
             return parsed;
         } catch (error) {
@@ -221,6 +316,16 @@ export class RulesetResolver implements Disposable {
         }
 
         return;
+    }
+
+    private async getTextDocument(file: Uri) {
+        let doc;
+        if ((doc = workspace.textDocuments.find(wsFile => wsFile.fileName === file.path))) {
+            // quicker way of getting the text document than opening it
+            return doc;
+        }
+
+        return await workspace.openTextDocument(file);
     }
 
     public getTranslationForKey(key: string, sourceUri?: Uri): string | undefined {
@@ -236,7 +341,12 @@ export class RulesetResolver implements Disposable {
             return;
         }
 
-        return rulesetTree.getTranslation(key, folder);
+        const translation = rulesetTree.getTranslation(key, folder);
+        if (!translation) {
+            return `No translation found for locale '${this.getLocale()}' '${key}'!`;
+        }
+
+        return translation;
     }
 
     public refreshWorkspaceFolderRulesets () {
@@ -248,7 +358,9 @@ export class RulesetResolver implements Disposable {
             rulesetTree.refresh(workspaceFolder);
         });
 
+        const start = new Date();
         this.validateReferences();
+        logger.debug(`rulesets validated, took ${((new Date()).getTime() - start.getTime()) / 1000}s`);
     }
 
     private validateReferences() {
@@ -314,6 +426,22 @@ export class RulesetResolver implements Disposable {
 
     public getRulesetHierarchy () {
         return this.rulesetHierarchy;
+    }
+
+    public getCleanFile (file: Uri, workspaceFolder: Uri) {
+        const assetPath = this.getAssetUri();
+        let fileClean = '';
+        if (file.path.startsWith(assetPath.path)) {
+            fileClean = `<ASSETS>/${file.path.slice(assetPath.path.length + 1)}`;
+        } else {
+            fileClean = file.path.slice(workspaceFolder.path.length + 1);
+        }
+
+        return fileClean;
+    }
+
+    public getLocale(): string {
+        return workspace.getConfiguration('oxcYamlHelper').get<string>('translationLocale') ?? 'en-US';
     }
 
     public dispose() {

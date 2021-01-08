@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  oxcyamlhelper:
+    image: oxcyamlhelper:0.0.1
+    user: "1000:1000"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    working_dir: /usr/src/app
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - .:/usr/src/app
+    environment:
+      - "DISPLAY=$DISPLAY"
+
+# docker-compose run --rm oxcyamlhelper npm run test

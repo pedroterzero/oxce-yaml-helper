@@ -1,8 +1,13 @@
 import { ExtensionContext, extensions, Uri, workspace } from "vscode";
-import { existsSync, mkdirSync, readFileSync } from "fs";
 import { load } from "flat-cache";
 import { ParsedRuleset } from "./rulesetResolver";
 import { createHash } from "crypto";
+import { rulesetResolver } from "./extension";
+import { promises as fsp } from 'fs';
+// import { mkdir, readFile, stat } from "fs/promises";
+
+// remove in node 14
+const {readFile, stat, mkdir} = fsp;
 
 export class RulesetFileCacheManager {
     private CACHE_DIR = 'oxchelper';
@@ -13,13 +18,20 @@ export class RulesetFileCacheManager {
         this.context = context;
         this.init();
     }
-    private init() {
+    private async init() {
         if (!this.context) {
             return;
         }
 
-        if (!existsSync(this.getCachePath())) {
-            mkdirSync(this.getCachePath(), { recursive: true });
+        // check if cache dir exists, otherwise create it
+        try {
+            await stat(this.getCachePath());
+        } catch (error) {
+            if (error.code === 'NOENT') {
+                await mkdir(this.getCachePath(), { recursive: true });
+            } else {
+                throw error;
+            }
         }
     }
 
@@ -31,13 +43,14 @@ export class RulesetFileCacheManager {
         return Uri.joinPath(this.context.globalStorageUri, '/', this.CACHE_DIR).fsPath;
     }
 
-    public put(file: Uri, data: ParsedRuleset) {
+    public async put(file: Uri, data: ParsedRuleset) {
         if (!this.context) {
             return;
         }
 
         const path = file.fsPath;
-        const hash = createHash('md5').update(readFileSync(path).toString() + this.version).digest('hex');
+        const fileContents = await readFile(path);
+        const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
 
         const cache = this.getCache(file);
         cache.setKey('metadata', {hash});
@@ -45,17 +58,22 @@ export class RulesetFileCacheManager {
         cache.save();
     }
 
+    public remove(file: Uri) {
+        this.getCache(file).removeCacheFile();
+    }
+
     private getCache(file: Uri) {
         return load(file.path.replace(/\//g, '_'), this.getCachePath());
     }
 
     public async retrieve(file: Uri) {
-        if (workspace.getConfiguration('oxcYamlHelper').get<boolean>('disableCache')) {
+        if (!this.useCache(file)) {
             return;
         }
 
         const path = file.fsPath;
-        const hash = createHash('md5').update(readFileSync(path).toString() + this.version).digest('hex');
+        const fileContents = await readFile(path);
+        const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
 
         const cache = this.getCache(file);
         const result = cache.all();
@@ -82,6 +100,33 @@ export class RulesetFileCacheManager {
         }
 
         return;
+    }
+
+    private useCache(file: Uri): boolean {
+        const cacheStrategy = workspace.getConfiguration('oxcYamlHelper').get<string>('cacheStrategy');
+        if (!cacheStrategy) {
+            return true;
+        }
+
+        if (cacheStrategy === 'nothing') {
+            return false;
+        }
+
+        const cacheAssets = ['all', 'only cache languages, assets', 'only cache assets'].includes(cacheStrategy);
+        const cacheLanguages = ['all', 'only cache languages', 'only cache languages, assets'].includes(cacheStrategy);
+
+        const isAssetFile = file.path.startsWith(rulesetResolver.getRulesetHierarchy().vanilla.path + '/');
+        const isLanguageFile = file.path.match(/\/Language\/[^/]+\.yml$/i);
+
+        if (!cacheAssets && isAssetFile) {
+            return false;
+        } else if (!cacheLanguages && isLanguageFile) {
+            return false;
+        } else if (!isAssetFile && !isLanguageFile && cacheStrategy !== 'all') {
+            return false;
+        }
+
+        return true;
     }
 }
 

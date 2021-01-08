@@ -1,10 +1,11 @@
-import { languages, Uri, workspace, WorkspaceFolder } from "vscode";
+import { DiagnosticCollection, languages, Uri, WorkspaceFolder } from "vscode";
 import { RuleType, Definition, DefinitionLookup, Variables, Translation, Translations, Match } from "./rulesetTree";
 import * as deepmerge from 'deepmerge';
 import { logger } from "./logger";
 import { typedProperties } from "./typedProperties";
 import { rulesetDefinitionChecker } from "./rulesetDefinitionChecker";
 import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
+import { rulesetResolver } from "./extension";
 
 export type RulesetFile = { file: Uri, definitions: Definition[] }
 export type ReferenceFile = { file: Uri, references: Match[] }
@@ -40,20 +41,27 @@ export class WorkspaceFolderRuleset {
     }
 
     public mergeIntoRulesetTree(definitions: Definition[], sourceFile: Uri) {
-        this.addRulesetFile(definitions, sourceFile || null);
+        this.addRulesetFile(definitions, sourceFile);
     }
 
     public mergeReferencesIntoRulesetTree(references: Match[], sourceFile: Uri) {
-        this.addRulesetReferenceFile(references, sourceFile || null);
+        this.addRulesetReferenceFile(references, sourceFile);
     }
 
     public mergeVariablesIntoRulesetTree(variables: Variables, sourceFile: Uri) {
-        this.addRulesetVariableFile(variables, sourceFile || null);
+        this.addRulesetVariableFile(variables, sourceFile);
     }
 
     public mergeTranslationsIntoTree(translations: Translation[], sourceFile: Uri) {
         const lookups = this.getTranslationLookups(translations);
-        this.addRulesetTranslationFile(lookups, sourceFile || null);
+        this.addRulesetTranslationFile(lookups, sourceFile);
+    }
+
+    public deleteFileFromTree(file: Uri) {
+        this.rulesetFiles = this.rulesetFiles.filter(collection => collection.file.path !== file.path);
+        this.variableFiles = this.variableFiles.filter(collection => collection.file.path !== file.path);
+        this.referenceFiles = this.referenceFiles.filter(collection => collection.file.path !== file.path);
+        this.translationFiles = this.translationFiles.filter(collection => collection.file.path !== file.path);
     }
 
     private getTranslationLookups(translations: Translation[]): Translations {
@@ -106,22 +114,28 @@ export class WorkspaceFolderRuleset {
      * @param sourceRuleType
      */
     public getDefinitionsByName(key: string, sourceRuleType: RuleType | undefined): DefinitionLookup[] {
-        const override = typedProperties.checkForLogicOverrides(key, sourceRuleType);
-        const finalKey = override.key;
+        const overrides = typedProperties.checkForLogicOverrides(key, sourceRuleType);
 
-        if (finalKey in this.definitionsLookup) {
-            const lookups = this.definitionsLookup[finalKey].filter(lookup => {
-                if (override.target) {
-                    return override.target === lookup.type;
-                } else {
-                    return typedProperties.isTargetForSourceRule(sourceRuleType, lookup.type);
+        let matchingLookups: DefinitionLookup[] = [];
+        for (const override of overrides) {
+            const finalKey = override.key;
+
+            if (finalKey in this.definitionsLookup) {
+                const lookups = this.definitionsLookup[finalKey].filter(lookup => {
+                    if (override.target) {
+                        return override.target === lookup.type;
+                    } else {
+                        return typedProperties.isTargetForSourceRule(sourceRuleType, lookup.type);
+                    }
+                });
+
+                if (lookups.length > 0) {
+                    matchingLookups = matchingLookups.concat(lookups);
                 }
-            });
-
-            return lookups;
+            }
         }
 
-        return [];
+        return matchingLookups;
     }
 
     private addRulesetFile(definitions: Definition[], sourceFile: Uri) {
@@ -160,6 +174,10 @@ export class WorkspaceFolderRuleset {
         return this.variables;
     }
 
+    public getReferences(): Match[] {
+        return this.referenceFiles.flatMap(file => file.references);
+    }
+
     public getKeysContaining(key: string | undefined, target: string): DefinitionCompletions {
         const targetDefinitions: DefinitionCompletions = {};
 
@@ -189,11 +207,11 @@ export class WorkspaceFolderRuleset {
         return this.rulesetFiles.length;
     }
 
-    public getTranslation(key: string): string {
-        const locale = this.getLocale();
+    public getTranslation(key: string): string | undefined {
+        const locale = rulesetResolver.getLocale();
 
         if (!(locale in this.translations) || !(key in this.translations[locale])) {
-            return `No translation found for locale '${locale}' '${key}'!`;
+            return;
         }
 
         return this.translations[locale][key];
@@ -204,12 +222,17 @@ export class WorkspaceFolderRuleset {
         this.createLookups();
     }
 
+    public getDiagnosticCollection(): DiagnosticCollection {
+        return this.diagnosticCollection;
+    }
+
     public checkDefinitions(assetUri: Uri) {
         this.diagnosticCollection.clear();
         rulesetDefinitionChecker.clear();
         rulesetDefinitionChecker.init(this.definitionsLookup);
 
 //        logger.debug(`[${(new Date()).toISOString()}] Number of textDocuments in workspace: ${workspace.textDocuments.length}`);
+        let problems = 0;
         for (const file of this.referenceFiles) {
             if (file.file.path.startsWith(Uri.joinPath(assetUri, '/').path)) {
                 // do not check assets obviously
@@ -219,8 +242,11 @@ export class WorkspaceFolderRuleset {
             const diagnostics = rulesetDefinitionChecker.checkFile(file, this.definitionsLookup, this.workspaceFolder.uri.path);
 
             // logger.debug(`diagnostic: ${file.file.path} has ${diagnostics.length} diagnostics from ${file.references.length} references`);
+            problems += diagnostics.length;
             this.diagnosticCollection.set(Uri.file(file.file.path), diagnostics);
         }
+
+        logger.info(`Total problems found: ${problems}`);
 
         return true;
     }
@@ -268,9 +294,5 @@ export class WorkspaceFolderRuleset {
         });
 
         // logger.debug(`Number of translations for ${this.getLocale()}: ${Object.keys(this.translations[locale]).length}`);
-    }
-
-    private getLocale (): string {
-        return workspace.getConfiguration('oxcYamlHelper').get<string>('translationLocale') ?? 'en-US';
     }
 }

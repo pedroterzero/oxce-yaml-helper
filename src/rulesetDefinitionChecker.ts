@@ -1,12 +1,14 @@
 import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from "vscode";
 import { DefinitionLookup, Match } from "./rulesetTree";
 import { ReferenceFile, TypeLookup } from "./workspaceFolderRuleset";
-import { typeLinks } from "./definitions/typeLinks";
+import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
 import { ignoreTypes } from "./definitions/ignoreTypes";
 import { stringTypes } from "./definitions/stringTypes";
 import { rulesetResolver } from "./extension";
 import { logger } from "./logger";
+import { typeHintMessages } from "./definitions/typeHintMessages";
+import { typedProperties } from "./typedProperties";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -17,6 +19,13 @@ type DuplicateMatches = {
     definition: DefinitionLookup,
     duplicates: DefinitionLookup[]
 };
+
+type TypeMatchResult = {
+    match: boolean,
+    expected: string[],
+    found: string[]
+};
+
 export class RulesetDefinitionChecker {
     private problemsByPath: {[key: string]: number} = {};
     private duplicatesPerFile: {[key: string]: DuplicateMatches[]} = {};
@@ -29,6 +38,8 @@ export class RulesetDefinitionChecker {
     ];
 
     private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
+    private typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
+    private stringTypeRegexes: RegExp[] = [];
     private ignoreTypesRegexes: RegExp[] = [];
 
     private ignoreTypeValues: {[key: string]: string[]} = {
@@ -36,9 +47,14 @@ export class RulesetDefinitionChecker {
         'extraSounds': ['BATTLE.CAT'],
     };
 
+    private noWarnAboutIncorrectType = Object.keys(spriteTypeLinks).concat(Object.keys(soundTypeLinks));
+
+    public constructor() {
+        this.loadRegexes();
+    }
+
     public init(lookup: TypeLookup) {
         this.checkDefinitions(lookup);
-        this.loadRegexes();
     }
 
     public checkFile(file: ReferenceFile, lookup: TypeLookup, workspacePath: string): Diagnostic[] {
@@ -83,12 +99,13 @@ export class RulesetDefinitionChecker {
 
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
-                this.addReferenceDiagnostic(ref, diagnostics);
+                // can never match because the key simply does not exist for any type
+                this.addReferenceDiagnostic(ref, diagnostics, this.nonexistantDefinitionMessage);
             } else {
-                const add = this.checkForCorrectTarget(ref, possibleKeys, lookup);
+                const result = this.checkForCorrectTarget(ref, possibleKeys, lookup);
 
-                if (add) {
-                    this.addReferenceDiagnostic(ref, diagnostics);
+                if (result && !result.match) {
+                    this.addReferenceDiagnostic(ref, diagnostics, this.incorrectTypeMessage, result);
                 }
             }
         }
@@ -204,13 +221,11 @@ export class RulesetDefinitionChecker {
     }
 
     private getPossibleKeys(ref: Match) {
-        const possibleKeys = [ref.key];
-
-        if (ref.path === 'armors.spriteInv') {
-            possibleKeys.push(ref.key + '.SPK');
+        if (ref.path in typeLinksPossibleKeys) {
+            return typeLinksPossibleKeys[ref.path](ref.key);
         }
 
-        return possibleKeys;
+        return [ref.key];
     }
 
     /**
@@ -220,39 +235,102 @@ export class RulesetDefinitionChecker {
      * @param lookup
      */
     private checkForCorrectTarget(ref: Match, possibleKeys: string[], lookup: TypeLookup) {
-        let add = false;
+        // TODO check if we still need this with the new logic checker?
+        const override = this.checkForLogicOverrides(ref, lookup);
+        if (typeof override !== 'undefined') {
+            return override;
+        }
+
+        let retval;
         if (ref.path in typeLinks) {
-            add = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
+            retval = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
         } else {
             // regex match
-            for (const type in typeLinks) {
-                if (type.startsWith('/') && type.endsWith('/')) {
-                    const regex = new RegExp(type.slice(1, -1));
-                    if (regex.exec(ref.path)) {
-                        add = this.checkForTypeLinkMatch(typeLinks[type], possibleKeys, lookup);
+            for (const type in this.typeLinkRegexes) {
+                const regex = this.typeLinkRegexes[type].regex;
+                if (regex.exec(ref.path)) {
+                    retval = this.checkForTypeLinkMatch(this.typeLinkRegexes[type].values, possibleKeys, lookup);
+                }
+            }
+        }
+
+        return retval;
+    }
+
+    private checkForLogicOverrides (ref: Match, lookup: TypeLookup) {
+        const overrides = typedProperties.checkForMetadataLogicOverrides(ref);
+        if (overrides) {
+            for (const override of overrides) {
+                if (override.target) {
+                    return this.checkForTypeLinkMatch([override.target], [override.key], lookup);
+                }
+
+                // TODO handle key overrides?
+            }
+
+            return false;
+        }
+
+        return;
+    }
+
+    private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup): TypeMatchResult {
+        const {matchType, typeValues: typeLinks} = this.processTypeLinks(rawTypeLinks, possibleKeys);
+
+        const matches: {[key: string]: boolean} = {};
+        // store what we expect
+        const expected: {[key: string]: boolean} = {};
+        // store what we found
+        const found: {[key: string]: boolean} = {};
+        for (const target in typeLinks) {
+            expected[target] = true;
+            for (const key of typeLinks[target]) {
+                if (key in lookup) {
+                    for (const result of lookup[key]) {
+                        if (target === result.type) {
+                            matches[target] = true;
+                        } else {
+                            found[result.type] = true;
+                        }
                     }
                 }
             }
         }
 
-        return add;
+        if (matchType === 'any') {
+            // if we have found any match, it's OK
+            return {match: Object.values(matches).length > 0, expected: Object.keys(expected), found: Object.keys(found)};
+        } else {
+            // if we have found the number of matches we expect (1 per target typeLink), it's OK
+            return {match: Object.values(matches).length === Object.values(typeLinks).length, expected: Object.keys(expected), found: Object.keys(found)};
+        }
     }
 
-    private checkForTypeLinkMatch(typeLinks: string[], possibleKeys: string[], lookup: TypeLookup) {
-        let add = true;
-        for (const key of possibleKeys) {
-            if (key in lookup) {
-                for (const result of lookup[key]) {
-                    if (typeLinks.indexOf(result.type) !== -1) {
-                        add = false;
-                    }
-                }
+    private processTypeLinks(rawTypeLinks: string[], rawPossibleKeys: string[]) {
+        const keyMatchType = rawPossibleKeys.includes('_all_') ? 'all' : 'any';
+        const possibleKeys = rawPossibleKeys.filter(key => !['_any_', '_all_'].includes(key));
+
+        const matchType = rawTypeLinks.includes('_any_') ? 'any' : 'all';
+        const typeLinks = rawTypeLinks.filter(key => !['_any_', '_all_'].includes(key));
+
+        if (keyMatchType === 'all' && typeLinks.length !== possibleKeys.length) {
+            logger.error(`Number of typeLinks fields (${JSON.stringify(typeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
+            // throw new Error(`Number of typeLinks fields (${JSON.stringify(rawTypeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
+        }
+
+        const typeValues: {[key: string]: string[]} = {};
+        for (const index in typeLinks) {
+            if (keyMatchType === 'all') {
+                typeValues[typeLinks[index]] = [possibleKeys[index]];
+            } else {
+                typeValues[typeLinks[index]] = possibleKeys;
             }
         }
-        return add;
+
+        return {matchType, typeValues};
     }
 
-    private addReferenceDiagnostic(ref: Match, diagnostics: Diagnostic[]) {
+    private addReferenceDiagnostic(ref: Match, diagnostics: Diagnostic[], messageFunction: (ref: Match, target?: TypeMatchResult) => string, target?: TypeMatchResult) {
         if (!ref.rangePosition) {
             throw new Error('rangePosition missing');
         }
@@ -273,12 +351,41 @@ export class RulesetDefinitionChecker {
             }
         }
 
+        let message = messageFunction.bind(this)(ref, target);
+        if (ref.path in typeHintMessages) {
+            message += `\nHint: ${typeHintMessages[ref.path](ref.key).trim()}`;
+        }
+
+        diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
+    }
+
+    private nonexistantDefinitionMessage(ref: Match) {
         let message = `"${ref.key}" does not exist (${ref.path})`;
         if (ref.metadata && ref.metadata.type) {
             message += ` for ${ref.metadata.type}`;
         }
 
-        diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
+        return message;
+    }
+
+    private incorrectTypeMessage(ref: Match, target?: TypeMatchResult) {
+        if (this.noWarnAboutIncorrectType.includes(ref.path)) {
+            return this.nonexistantDefinitionMessage(ref);
+        }
+
+        let message = `"${ref.key}" is an incorrect type for ${ref.path}.`;
+        if (target) {
+            // const expected = Object.keys(expected).length
+            message += ` Expected`;
+            if (target.expected.length === 1) {
+                message += ` "${target.expected[0]}"`;
+            } else {
+                message += ` one of "${target.expected.join('", "')}"`;
+            }
+            message += `, found: "${target.found.join('", "')}"`;
+        }
+
+        return message;
     }
 
     private typeExists(ref: Match): boolean {
@@ -294,7 +401,7 @@ export class RulesetDefinitionChecker {
             // ignore these assorted types for now
             return false;
         }
-        if (stringTypes.indexOf(ref.path) !== -1) {
+        if (this.isExtraStringType(ref.path)) {
             // ignore extraStrings for now
             return false;
         }
@@ -316,6 +423,20 @@ export class RulesetDefinitionChecker {
         return true;
     }
 
+    private isExtraStringType(path: string) {
+        if (stringTypes.includes(path)) {
+            return true;
+        }
+
+        for (const regex of this.stringTypeRegexes) {
+            if (regex.exec(path)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private checkForIgnoredType(path: string) {
         if (ignoreTypes.includes(path)) {
             return true;
@@ -332,7 +453,9 @@ export class RulesetDefinitionChecker {
 
     private matchesBuiltinTypeRegex(path: string, key: string): boolean {
         for (const item of this.builtinTypeRegexes) {
-            return item.regex.exec(path) && item.values.includes(key) || false;
+            if (item.regex.exec(path) && item.values.includes(key)) {
+                return true;
+            }
         }
 
         return false;
@@ -353,6 +476,27 @@ export class RulesetDefinitionChecker {
                     regex: new RegExp(type.slice(1, -1)),
                     values: builtinTypes[type]
                 });
+
+                delete builtinResourceIds[type];
+            }
+        }
+
+        for (const type in typeLinks) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.typeLinkRegexes.push({
+                    regex: new RegExp(type.slice(1, -1)),
+                    values: typeLinks[type]
+                });
+
+                delete typeLinks[type];
+            }
+        }
+
+        for (const type of stringTypes) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.stringTypeRegexes.push(new RegExp(type.slice(1, -1)));
+
+                // stringTypes = stringTypes.filter(fType => fType !== type);
             }
         }
 

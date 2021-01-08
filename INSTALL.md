@@ -19,7 +19,7 @@
 
   ![open-marketplace](docs/install/open-marketplace.png)
 
-* Search the marketplace for `ext:rul` and install both `OpenXCOM Ruleset Tools` and `OpenXCOM (Extended) YAML Helper` by clicking the green  install button
+* Search the marketplace for `ext:rul` and install both `OpenXCOM Ruleset Tools` and `OpenXCOM Ruleset Linker` by clicking the green install button
 
   ![search-marketplace](docs/install/search-marketplace.png)
 
