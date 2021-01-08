@@ -1,4 +1,4 @@
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemProvider, CompletionList, Position, ProviderResult, TextDocument, CompletionItemKind, workspace, WorkspaceFolder } from 'vscode';
+import { CancellationToken, CompletionContext, CompletionItem, CompletionItemProvider, CompletionList, Position, ProviderResult, TextDocument, CompletionItemKind, workspace, WorkspaceFolder, MarkdownString } from 'vscode';
 import { KeyDetector } from './keyDetector';
 // import { i18nResolver } from './extension';
 import { logger } from './logger';
@@ -86,10 +86,9 @@ export class RulesetCompletionProvider implements CompletionItemProvider {
         // provide the translation as additional info
         // completionItem.detail = i18nTree.lookupKey(filteredKey, workspaceFolder);
         if ('detail' in data) {
-            completionItem.detail = data.detail;
-        } else {
-            completionItem.detail = 'helper';
+            completionItem.documentation = new MarkdownString(data.detail);
         }
+
         return completionItem;
     }
 }

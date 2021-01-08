@@ -191,8 +191,15 @@ export class WorkspaceFolderRuleset {
                 if (def.type === target) {
                     targetDefinitions[definitionKey] = {};
 
+                    const detail = [];
                     if (def.metadata?._name && typeof def.metadata._name === 'string') {
-                        targetDefinitions[definitionKey].detail = def.metadata._name;
+                        detail.push(def.metadata._name);
+                    }
+
+                    detail.push(`Source: ${def.file.path.split('/').slice(-1)}`);
+
+                    if (detail.length > 0) {
+                        targetDefinitions[definitionKey].detail = detail.join("\n");
                     }
 
                     break;
