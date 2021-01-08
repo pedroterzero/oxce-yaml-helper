@@ -149,6 +149,7 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
     'globalVariables.psiUnlockResearch': ['research'],
     'itemCategories.replaceBy': ['itemCategories'],
     'items.categories': ['itemCategories'],
+    'items.compatibleAmmo': ['items'],
     '/^items\\.ammo\\.[0-3]\\.compatibleAmmo$/': ['items'],
     'items.defaultInventorySlot': ['invs'],
     'items.requires': ['research'],

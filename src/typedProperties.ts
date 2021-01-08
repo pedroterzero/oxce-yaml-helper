@@ -254,20 +254,6 @@ export class typedProperties {
 
     public static isKeyDefinitionType(type: string) {
         return type in this.keyDefinitionTypes;
-/*        if (this.keyDefinitionTypes.indexOf(type) !== -1) {
-            return true;
-        }
-
-        for (const kdType of this.keyDefinitionTypes) {
-            if (kdType.startsWith('/') && kdType.endsWith('/')) {
-                const regex = new RegExp(kdType.slice(1, -1));
-                if (regex.exec(type)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;*/
     }
 
     public static isArrayDefinitionTypes(type: string) {
@@ -319,7 +305,9 @@ export class typedProperties {
     }
 
     public static getDefinitionTypeForReference(path: string): string | undefined {
-        const [root, subPath] = path.split('.', 2);
+        // const [root, subPath] = path.split('.', );
+        const root = path.split('.').slice(0, -1).join('.');
+        const subPath = path.split('.').slice(-1)[0];
 
         if (!this.typeProperties[root] || !this.typeProperties[root][subPath]) {
             return;

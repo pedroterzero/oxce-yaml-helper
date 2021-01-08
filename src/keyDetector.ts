@@ -116,8 +116,9 @@ export class KeyDetector {
             }
         }
 
+        let prevLine = '';
         for (const line of lines) {
-            const parentRegex = new RegExp(`^(\\s{1,${indent - 1}})([a-zA-Z]+):$`);
+            const parentRegex = new RegExp(`^(\\s{1,${indent - 1}})([a-zA-Z]+):(\\s*&[a-zA-Z0-9]+|\\s*\\[)?$`); // could be a trailing & reference
 
             let matches;
             if (line.trimEnd().match(/^[a-zA-Z]+:$/)) {
@@ -125,11 +126,25 @@ export class KeyDetector {
                 break;
             } else if ((matches = parentRegex.exec(line.trimEnd()))) {
                 indent = matches[1].length;
-                path.push(matches[2]);
-                console.log('foo', matches);
+
+                // is this parent followed by an array or was previous line an array?
+                let isArray = matches[3]?.trim() === '[';
+                let prevLineMatches;
+                if (!isArray && (prevLineMatches = new RegExp(`^\\s{${indent + 1},}-([^:]+:[^:]+)?$`).exec(prevLine))) {
+                    // if the previous line started with - and it had a : after that, it's an (unnamed) array
+                    isArray = true;
+                }
+
+                path.push(matches[2] + (isArray ? '[]' : ''));
             }
+
+            prevLine = line;
         }
 
-        return path.reverse().join('.');
+        const foundPath = path.reverse().join('.');
+
+        logger.debug(`Found path: ${foundPath}`);
+
+        return foundPath;
     }
 }
