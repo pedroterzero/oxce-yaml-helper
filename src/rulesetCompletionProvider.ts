@@ -1,4 +1,4 @@
-import { CancellationToken, CompletionContext, CompletionItem, CompletionItemProvider, CompletionList, Position, ProviderResult, TextDocument, CompletionItemKind, workspace, WorkspaceFolder, MarkdownString } from 'vscode';
+import { CompletionItem, CompletionItemProvider, Position, ProviderResult, TextDocument, CompletionItemKind, workspace, WorkspaceFolder, MarkdownString } from 'vscode';
 import { KeyDetector } from './keyDetector';
 // import { i18nResolver } from './extension';
 import { logger } from './logger';
@@ -8,7 +8,7 @@ import { DefinitionCompletion, DefinitionCompletions } from './workspaceFolderRu
 // import { i18nTree } from './i18nTree';
 
 export class RulesetCompletionProvider implements CompletionItemProvider {
-    public provideCompletionItems(document: TextDocument, position: Position, _token: CancellationToken, _context: CompletionContext): ProviderResult<CompletionItem[] | CompletionList> {
+    public provideCompletionItems(document: TextDocument, position: Position/*, _token: CancellationToken, _context: CompletionContext*/): ProviderResult<CompletionItem[]> {
         const folder = workspace.getWorkspaceFolder(document.uri);
         if (!folder) {
             throw new Error(`Could not get workspace folder for ${document.uri}`);

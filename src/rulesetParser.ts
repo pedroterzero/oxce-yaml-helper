@@ -35,10 +35,6 @@ export type JsonObject = {
 };
 
 export class RulesetParser {
-    public constructor() {
-        typedProperties.init();
-    }
-
     public getReferencesRecursively(doc: YAMLDocument): Match[] {
         return rulesetRecursiveKeyRetriever.findAllReferencesInYamlDocument(doc);
     }

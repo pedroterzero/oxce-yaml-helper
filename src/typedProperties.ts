@@ -226,6 +226,7 @@ export class typedProperties {
     }
 
     private static keyReferenceTypesRegexes: {regex: RegExp, settings: KeyReferenceOptions}[] = [];
+    private static typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
 
     public static init () {
         this.addTypeLinks();
@@ -310,6 +311,14 @@ export class typedProperties {
         const subPath = path.split('.').slice(-1)[0];
 
         if (!this.typeProperties[root] || !this.typeProperties[root][subPath]) {
+            const targets = this.isRegexTypeLink(path);
+            if (targets) {
+                if (targets.length > 1) {
+                    logger.warn('More than one target found, only returning first!');
+                }
+                return targets[0];
+            }
+
             return;
         }
 
@@ -520,9 +529,21 @@ export class typedProperties {
         }
     }
 
+    public static isRegexTypeLink(path: string) {
+        for (const type in this.typeLinkRegexes) {
+            const regex = this.typeLinkRegexes[type].regex;
+            if (regex.exec(path)) {
+                return this.typeLinkRegexes[type].values;
+            }
+        }
+
+        return;
+    }
+
     private static loadRegexes () {
         // @TODO is this called more than once?
         if (this.keyReferenceTypesRegexes.length > 0) {
+            logger.error('Should not happen!');
             return;
         }
 
@@ -534,5 +555,18 @@ export class typedProperties {
                 });
             }
         }
+
+        for (const type in typeLinks) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.typeLinkRegexes.push({
+                    regex: new RegExp(type.slice(1, -1)),
+                    values: typeLinks[type]
+                });
+
+                delete typeLinks[type];
+            }
+        }
     }
 }
+
+typedProperties.init();

@@ -105,7 +105,7 @@ export class KeyDetector {
 
         const lines = text.split("\n").reverse();
         const editLine = lines.shift();
-        const matches = editLine?.match(/^(\s+)([a-zA-Z0-9-]+)(:)?/);
+        const matches = editLine?.match(/^(\s+)([a-zA-Z0-9-]+)(:(?:\s*\[\s*\[)?)?/);
         const path = [];
 
         let indent = 2;
@@ -113,12 +113,14 @@ export class KeyDetector {
             indent = matches[1].length;
             if (matches[3] === ':') {
                 path.push(matches[2]);
+            } else if (matches[3]?.match(/:\s*\[\s*\[/)) {
+                path.push(matches[2] + '[]');
             }
         }
 
         let prevLine = '';
         for (const line of lines) {
-            const parentRegex = new RegExp(`^(\\s{1,${indent - 1}})([a-zA-Z]+):(\\s*&[a-zA-Z0-9]+|\\s*\\[)?$`); // could be a trailing & reference
+            const parentRegex = new RegExp(`^(\\s{1,${indent - 1}})([a-zA-Z]+|[0-9]+):(\\s*&[a-zA-Z0-9]+|\\s*\\[)?$`); // could be a trailing & reference
 
             let matches;
             if (line.trimEnd().match(/^[a-zA-Z]+:$/)) {

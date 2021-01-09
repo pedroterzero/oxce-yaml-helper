@@ -38,7 +38,6 @@ export class RulesetDefinitionChecker {
     ];
 
     private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
-    private typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
     private stringTypeRegexes: RegExp[] = [];
     private ignoreTypesRegexes: RegExp[] = [];
 
@@ -242,16 +241,11 @@ export class RulesetDefinitionChecker {
         }
 
         let retval;
+        let values;
         if (ref.path in typeLinks) {
             retval = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
-        } else {
-            // regex match
-            for (const type in this.typeLinkRegexes) {
-                const regex = this.typeLinkRegexes[type].regex;
-                if (regex.exec(ref.path)) {
-                    retval = this.checkForTypeLinkMatch(this.typeLinkRegexes[type].values, possibleKeys, lookup);
-                }
-            }
+        } else if ((values = typedProperties.isRegexTypeLink(ref.path))) {
+            retval = this.checkForTypeLinkMatch(values, possibleKeys, lookup);
         }
 
         return retval;
@@ -478,17 +472,6 @@ export class RulesetDefinitionChecker {
                 });
 
                 delete builtinResourceIds[type];
-            }
-        }
-
-        for (const type in typeLinks) {
-            if (type.startsWith('/') && type.endsWith('/')) {
-                this.typeLinkRegexes.push({
-                    regex: new RegExp(type.slice(1, -1)),
-                    values: typeLinks[type]
-                });
-
-                delete typeLinks[type];
             }
         }
 
