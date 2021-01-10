@@ -1,0 +1,172 @@
+{
+  "scopeName": "source.y-script",
+  "patterns": [
+    {
+      "include": "#statements"
+    }
+  ],
+  "repository": {
+    "statements": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#literal"
+        },
+        {
+          "include": "#declaration"
+        },
+        {
+          "include": "#control-statement"
+        },
+        {
+          "include": "#expression"
+        },
+        {
+          "include": "#punctuation-semicolon"
+        }
+      ]
+    },
+    "var-expr": {
+      "name": "meta.var.expr.ys",
+      "begin": "^\\s*(var)\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.modifier.ts"
+        }
+      },
+      "end": ";?$",
+      "patterns": [
+        {
+          "include": "#var-type"
+        },
+        {
+          "include": "#var-var"
+        }
+      ]
+    },
+    "expression": {
+      "name": "meta.expression.ts",
+      "patterns": [
+        {
+          "include": "#expression-operators"
+        },
+        {
+          "include": "#identifiers"
+        }
+      ]
+    },
+    "control-statement": {
+      "patterns": [
+        {
+          "name": "keyword.control.flow.ts",
+          "match": "(?<!\\.|\\$)\\b(return)\\b(?!\\$)"
+        },
+        {
+          "name": "keyword.control.conditional.ts",
+          "match": "(?<!\\.|\\$)\\b(else|if|end)\\b(?!\\$)"
+        }
+      ]
+    },
+    "declaration": {
+      "name": "meta.declaration.ys",
+      "patterns": [
+        {
+          "include": "#var-expr"
+        }
+      ]
+    },
+    "var-type": {
+      "name": "meta.var.type.expr.ys",
+      "patterns": [
+        {
+          "name": "support.type.primitive.ys",
+          "match": "\\b(int|ptr)\\b"
+        }
+      ]
+    },
+    "var-var": {
+      "name": "meta.var.var.expr.ys",
+      "patterns": [
+        {
+          "name": "variable.other.readwrite.ts",
+          "match": "\\b[a-zA-Z][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+				{
+					"match": "(?:([_$[:alpha:]][_$[:alnum:]]*))(?=\\s*\\.\\s*[_$[:alpha:]][_$[:alnum:]]*)",
+					"captures": {
+						"1": {
+							"name": "variable.other.object.ts"
+						}
+					}
+				},
+        {
+          "name": "variable.other.readwrite.ts",
+          "match": "[_$[:alpha:]][_$[:alnum:]]*"
+        }
+      ]
+    },
+    "expression-operators": {
+      "patterns": [
+				{
+					"name": "keyword.operator.logical.ts",
+          "match": "(?<=if )\\s*(and|or)\\b"
+				},
+        {
+          "name": "keyword.operator.comparison.ts",
+          "match": "\\s+(eq|neq|gt|ge|le)\\b"
+        },
+				{
+					"name": "keyword.operator.arithmetic.ts",
+					"match": "\\b(add|mul|div)\\b"
+				}
+      ]
+    },
+    "punctuation-semicolon": {
+      "name": "punctuation.terminator.statement.ts",
+      "match": ";"
+    },
+    "literal": {
+      "name": "literal.ts",
+      "patterns": [
+        {
+          "include": "#numeric-literal"
+        }
+      ]
+    },
+		"numeric-literal": {
+			"patterns": [
+				{
+					"match": "\\b[0-9]+\\b",
+          "name": "constant.numeric.decimal.ts"
+				}
+			]
+		},
+    "comment": {
+      "begin": "(?:(^[ \\t]*)|[ \\t]+)(?=#\\p{Print}*$)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.whitespace.comment.leading.ys"
+        }
+      },
+      "end": "(?!\\G)",
+      "patterns": [
+        {
+          "begin": "#",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.ys"
+            }
+          },
+          "end": "\\n",
+          "name": "comment.line.number-sign.ys"
+        }
+      ]
+    }
+  }
+}

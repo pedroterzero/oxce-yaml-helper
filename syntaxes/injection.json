@@ -1,0 +1,44 @@
+{
+  "scopeName": "y-scripts.injection",
+  "injectionSelector": "L:source.yaml",
+  "patterns": [
+    {
+      "include": "#code"
+    },
+    {
+      "include": "#code-inline"
+    }
+  ],
+  "repository": {
+    "code": {
+      "begin": "(?<=        )(code)(:)\\s+(\\|)",
+      "beginCaptures": {
+        "1": { "name": "entity.name.tag.yaml" },
+        "2": { "name": "punctuation.separator.key-value.mapping.yaml" },
+        "3": { "name": "keyword.control.flow.block-scalar.literal.yaml" }
+      },
+      "end": "^\\s{0,7}(?=[a-zA-Z0-9-])",
+      "contentName": "meta.embedded.inline.y-script",
+      "patterns": [
+        {
+          "include": "source.y-script"
+        }
+      ]
+    },
+    "code-inline": {
+      "begin": "(?<=      )(recolorUnitSprite|selectUnitSprite|selectMoveSoundUnit|reactionUnitAction|reactionUnitReaction|tryPsiAttackUnit|tryMeleeAttackUnit|hitUnit|damageUnit|healUnit|createUnit|newTurnUnit|returnFromMissionUnit|awardExperience|visibilityUnit|recolorItemSprite|selectItemSprite|reactionWeaponAction|tryPsiAttackItem|tryMeleeAttackItem|createItem|newTurnItem|psiDefenceBonusStats|meleeDodgeBonusStats|timeRecoveryBonusStats|energyRecoveryBonusStats|moraleRecoveryBonusStats|healthRecoveryBonusStats|manaRecoveryBonusStats|stunRecoveryBonusStats|timeSoldierRecoveryBonusStats|energySoldierRecoveryBonusStats|moraleSoldierRecoveryBonusStats|healthSoldierRecoveryBonusStats|manaSoldierRecoveryBonusStats|stunSoldierRecoveryBonusStats|damageBonusBonusStats|meleeBonusBonusStats|accuracyMultiplierBonusStats|meleeMultiplierBonusStats|throwMultiplierBonusStats|closeQuartersMultiplierBonusStats|skillUseUnit|detectUfoFromBase|detectUfoFromCraft|applySoldierBonuses)(:)\\s+(\\|)",
+      "beginCaptures": {
+        "1": { "name": "entity.name.tag.yaml" },
+        "2": { "name": "punctuation.separator.key-value.mapping.yaml" },
+        "3": { "name": "keyword.control.flow.block-scalar.literal.yaml" }
+      },
+      "end": "^\\s{0,5}(?=[a-zA-Z0-9-])",
+      "contentName": "meta.embedded.inline.y-script",
+      "patterns": [
+        {
+          "include": "source.y-script"
+        }
+      ]
+    }
+  }
+}
