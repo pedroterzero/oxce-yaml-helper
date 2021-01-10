@@ -126,11 +126,16 @@
           "name": "variable.other.object.ts"
         },
         {
-          "__match": "(?<=Tag)(\\.)([a-zA-Z0-9_]+)\\b",
-          "comment": "__ignored__ tag properties (should do this generically, but I can't tell the difference between functions and properties)",
+          "match": "\\bTag(?=\\.)",
+          "comment": "Tag",
+          "name": "variable.other.object.ts variable.other.tag.ts"
+        },
+        {
+          "match": "(?<=Tag)(\\.)([a-zA-Z0-9_]+)\\b",
+          "comment": "tag properties (should do this generically, but I can't tell the difference between functions and properties)",
           "captures": {
 						"1": {"name": "punctuation.accessor.ts"},
-						"2": {"name": "variable.other.property.ts"}
+						"2": {"name": "entity.name.tag.ys"}
 					}
         },
         {
