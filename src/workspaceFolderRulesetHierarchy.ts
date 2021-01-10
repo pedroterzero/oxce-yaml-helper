@@ -3,6 +3,8 @@ import { rulesetResolver } from "./extension";
 import { WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 
 export class WorkspaceFolderRulesetHierarchy {
+    private definitions: {[key: string]: {[key: string]: true}} = {};
+
     public constructor(private ruleset: WorkspaceFolderRuleset) {
 
     }
@@ -18,30 +20,30 @@ export class WorkspaceFolderRulesetHierarchy {
                 continue;
             }
 
-            // console.log(`definitions before deleting: ${Object.keys(file.definitions).length} (${file.file.path})`);
+            // console.log(`definitions before deleting: ${Object.keys(file.definitions).length} (${file.file.path}) (to delete: ${deletes.length})`);
 
-            for (const del of deletes) {
-                for (const defIndex in file.definitions) {
-                    const def = file.definitions[defIndex];
-                    if (del.key === def.name && del.path === def.type) {
-                        delete file.definitions[defIndex];
-                    }
-                }
-            }
+            this.ruleset.rulesetFiles[idx].definitions = file.definitions.filter(def =>
+                !deletes.find(del => del.key === def.name && del.path === def.type)
+            );
 
-            this.ruleset.rulesetFiles[idx].definitions = Object.values(file.definitions);
             // console.log(`definitions after deleting: ${Object.keys(file.definitions).length} (${file.file.path})`);
         }
     }
 
     private getDeletes(hierarchy: { [key: string]: Uri; }) {
         const modFiles =  this.ruleset.referenceFiles.filter(file => file.file.path.startsWith(Uri.joinPath(hierarchy.mod, '/').path));
-        const parsed = [];
+        const parsed: {path: string, key: string}[] = [];
         for (const file of modFiles) {
             const refs = file.references.filter(ref => ref.path.match(/^[a-zA-Z]+\.delete$/));
 
             for (const ref of refs) {
                 const section = ref.path.slice(0, ref.path.indexOf('.'));
+
+                if (parsed.find(item => item.path === section && item.key === ref.key)) {
+                    // prevent duplicates
+                    // console.log(`duplicate ${section} ${ref.key}`);
+                    continue;
+                }
 
                 parsed.push({
                     path: section,
