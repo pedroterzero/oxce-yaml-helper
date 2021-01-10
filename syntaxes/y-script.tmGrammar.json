@@ -46,6 +46,9 @@
         },
         {
           "include": "#var-var"
+        },
+        {
+          "include": "#string"
         }
       ]
     },
@@ -85,7 +88,7 @@
       "patterns": [
         {
           "name": "support.type.primitive.ys",
-          "match": "\\b(int|ptr)\\b"
+          "match": "\\b(int|ptr|ptre|text)\\b"
         }
       ]
     },
@@ -101,11 +104,12 @@
     "identifiers": {
       "patterns": [
         {
-          "match": "\\b(action_target|action_unit|actor|add_burn_shade|already_tracked|ammo|anim_frame|arc_to_action_unit|arc_to_attacker|attacker|attack_strength|BA_AIMEDSHOT|BA_AUTOSHOT|BA_HIT|BA_LAUNCH|BA_MINDCONTROL|BA_NONE|BA_PANIC|BA_PRIME|base_fly_sound_index|base_tile_sound_index|base_tile_sound_offset|BA_SNAPSHOT|BA_THROW|battle_action|battle_action_aimshoot|battle_action_autoshoot|battle_action_cqb|battle_action_hit|battle_action_mindcontrol|battle_action_panic|battle_action_snapshot|battle_action_throw|battle_action_use|battle_action_walk|battle_game|BA_UNPRIME|BA_USE|blit_collapse|blit_item_big|blit_item_floor|blit_item_lefthand|blit_item_righthand|blit_large_propulsion_0|blit_large_propulsion_1|blit_large_propulsion_2|blit_large_propulsion_3|blit_large_torso_0|blit_large_torso_1|blit_large_torso_2|blit_large_torso_3|blit_large_turret|blit_leftarm|blit_legs|blit_part|blit_rightarm|blit_torso|body_part|BODYPART_HEAD|BODYPART_LEFTARM|BODYPART_LEFTLEG|BODYPART_RIGHTARM|BODYPART_RIGHTLEG|BODYPART_TORSO|bonus|BT_AMMO|BT_CORPSE|BT_FIREARM|BT_FLARE|BT_GRENADE|BT_MEDIKIT|BT_MELEE|BT_MINDPROBE|BT_NONE|BT_PROXIMITYGRENADE|BT_PSIAMP|BT_SCANNER|burn|COLOR_X1_BLUE0|COLOR_X1_BLUE1|COLOR_X1_BLUE2|COLOR_X1_BROWN0|COLOR_X1_BROWN1|COLOR_X1_BROWN2|COLOR_X1_FACE|COLOR_X1_GRAY|COLOR_X1_GREEN0|COLOR_X1_GREEN1|COLOR_X1_HAIR|COLOR_X1_NULL|COLOR_X1_PURPLE0|COLOR_X1_PURPLE1|COLOR_X1_RED|COLOR_X1_SILVER|COLOR_X1_SPECIAL|COLOR_X1_YELLOW|continue_action|current_visibility|currPower|damaging_item|damaging_type|default_visibility|defense_strength|defense_strength_penalty|detection_chance|DETECTION_HYPERWAVE|DETECTION_NONE|DETECTION_RADAR|detection_type|DIFF_BEGINNER|DIFF_EXPERIENCED|DIFF_GENIUS|DIFF_SUPERHUMAN|DIFF_VETERAN|distance|distance_max|distance_strength_reduction|energy_recovery|experience_multipler|experience_type|external_bonuses|FACTION_HOSTILE|FACTION_NEUTRAL|FACTION_PLAYER|final_health_loss|final_mana_loss|fire_density|GENDER_FEMALE|GENDER_MALE|have_tu|health_loss|health_recovery|hyperwave_max_distance|hyperwave_total_strength|INV_GROUND|INV_HAND|INV_SLOT|item|LOOK_AFRICAN|LOOK_BLONDE|LOOK_BROWNHAIR|LOOK_ORIENTAL|mana_loss|mana_recovery|medikit_action_heal|medikit_action_painkiller|medikit_action_stimulant|medikit_action_type|melee_attack_success|morale_recovery|move|move_normal|move_run|move_strafe|new_pixel|null|observer_unit|old_pixel|orig_power|painkiller_recovery|part|power|psi_attack_success|radar_max_distance|radar_total_strength|random|reaction_battle_action|reaction_chance|reaction_unit|reaction_weapon|recovery_time|rules|save_game|shade|side|SIDE_FRONT|SIDE_LEFT|SIDE_REAR|SIDE_RIGHT|SIDE_UNDER|skill|smoke_density|soldier|soldier_bonus|sound_index|spend_tu|sprite_index|sprite_offset|statChange|statPrevious|stun_recovery|target|target_unit|tile_sound_index|to_armor|to_energy|to_health|to_mana|to_morale|to_stun|to_time|to_transform|to_wound|turn|ufo|UFO_CRASHED|UFO_DESTROYED|UFO_FLYING|UFO_LANDED|unit|UNIT_RANK_CAPTAIN|UNIT_RANK_COLONEL|UNIT_RANK_COMMANDER|UNIT_RANK_ROOKIE|UNIT_RANK_SERGEANT|UNIT_RANK_SQUADDIE|unit_sound_index|victim|visibility_mode|walking_phase|weapon|weapon_item|wound_recovery)\\b",
+          "match": "\\b(add_burn_shade|already_tracked|anim_frame|arc_to_action_unit|arc_to_attacker|attack_strength|BA_AIMEDSHOT|BA_AUTOSHOT|BA_HIT|BA_LAUNCH|BA_MINDCONTROL|BA_NONE|BA_PANIC|BA_PRIME|base_fly_sound_index|base_tile_sound_index|base_tile_sound_offset|BA_SNAPSHOT|BA_THROW|battle_action|battle_action_aimshoot|battle_action_autoshoot|battle_action_cqb|battle_action_hit|battle_action_mindcontrol|battle_action_panic|battle_action_snapshot|battle_action_throw|battle_action_use|battle_action_walk|BA_UNPRIME|BA_USE|blit_collapse|blit_item_big|blit_item_floor|blit_item_lefthand|blit_item_righthand|blit_large_propulsion_0|blit_large_propulsion_1|blit_large_propulsion_2|blit_large_propulsion_3|blit_large_torso_0|blit_large_torso_1|blit_large_torso_2|blit_large_torso_3|blit_large_turret|blit_leftarm|blit_legs|blit_part|blit_rightarm|blit_torso|body_part|BODYPART_HEAD|BODYPART_LEFTARM|BODYPART_LEFTLEG|BODYPART_RIGHTARM|BODYPART_RIGHTLEG|BODYPART_TORSO|bonus|BT_AMMO|BT_CORPSE|BT_FIREARM|BT_FLARE|BT_GRENADE|BT_MEDIKIT|BT_MELEE|BT_MINDPROBE|BT_NONE|BT_PROXIMITYGRENADE|BT_PSIAMP|BT_SCANNER|burn|COLOR_X1_BLUE0|COLOR_X1_BLUE1|COLOR_X1_BLUE2|COLOR_X1_BROWN0|COLOR_X1_BROWN1|COLOR_X1_BROWN2|COLOR_X1_FACE|COLOR_X1_GRAY|COLOR_X1_GREEN0|COLOR_X1_GREEN1|COLOR_X1_HAIR|COLOR_X1_NULL|COLOR_X1_PURPLE0|COLOR_X1_PURPLE1|COLOR_X1_RED|COLOR_X1_SILVER|COLOR_X1_SPECIAL|COLOR_X1_YELLOW|continue_action|current_visibility|currPower|damaging_type|default_visibility|defense_strength|defense_strength_penalty|detection_chance|DETECTION_HYPERWAVE|DETECTION_NONE|DETECTION_RADAR|detection_type|DIFF_BEGINNER|DIFF_EXPERIENCED|DIFF_GENIUS|DIFF_SUPERHUMAN|DIFF_VETERAN|distance|distance_max|distance_strength_reduction|energy_recovery|experience_multipler|experience_type|external_bonuses|FACTION_HOSTILE|FACTION_NEUTRAL|FACTION_PLAYER|final_health_loss|final_mana_loss|fire_density|GENDER_FEMALE|GENDER_MALE|have_tu|health_loss|health_recovery|hyperwave_max_distance|hyperwave_total_strength|INV_GROUND|INV_HAND|INV_SLOT|LOOK_AFRICAN|LOOK_BLONDE|LOOK_BROWNHAIR|LOOK_ORIENTAL|mana_loss|mana_recovery|medikit_action_heal|medikit_action_painkiller|medikit_action_stimulant|medikit_action_type|melee_attack_success|morale_recovery|move|move_normal|move_run|move_strafe|new_pixel|null|old_pixel|orig_power|painkiller_recovery|part|power|psi_attack_success|radar_max_distance|radar_total_strength|reaction_battle_action|reaction_chance|recovery_time|shade|side|SIDE_FRONT|SIDE_LEFT|SIDE_REAR|SIDE_RIGHT|SIDE_UNDER|smoke_density|sound_index|spend_tu|sprite_index|sprite_offset|stun_recovery|tile_sound_index|to_armor|to_energy|to_health|to_mana|to_morale|to_stun|to_time|to_transform|to_wound|turn|UFO_CRASHED|UFO_DESTROYED|UFO_FLYING|UFO_LANDED|UNIT_RANK_CAPTAIN|UNIT_RANK_COLONEL|UNIT_RANK_COMMANDER|UNIT_RANK_ROOKIE|UNIT_RANK_SERGEANT|UNIT_RANK_SQUADDIE|unit_sound_index|visibility_mode|walking_phase|wound_recovery)\\b",
+          "comment": "should maybe go in another place (in example it's support-objects)",
           "name": "support.function.ts"
         },
         {
-          "match": "\\b(debug_log|add|sub|aggregrate|offset|offsetmod|div|mod|muldiv|eq|neq|gt|ge|le)\\b",
+          "match": "\\b(debug_log|eq|neq|gt|ge|leabs|add|add_shade|aggregate|bit_and|bit_count|bit_not|bit_or|bit_xor|clear|div|get_color|get_shade|limit|limit_lower|limit_upper|mod|mul|muldiv|offset|offsetmod|pow|set|set_color|set_shade|shl|shr|sub|swap|wavegen_rect|wavegen_saw|wavegen_tri)\\b",
           "comment": "could also be support.function.ts",
           "name": "entity.name.function.ts"
         },
@@ -135,24 +139,29 @@
       "name": "punctuation.terminator.statement.ts",
       "match": ";"
     },
-		"qstring-double": {
-			"name": "string.quoted.double.ts",
-			"begin": "\"",
-			"beginCaptures": {
-				"0": {
-					"name": "punctuation.definition.string.begin.ts"
+    "qstring-double": {
+      "name": "string.quoted.double.ts",
+      "begin": "\"",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.ts"
+        }
+      },
+      "end": "(\")|((?:[^\\\\\\n])$)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.string.end.ts"
+        },
+        "2": {
+          "name": "invalid.illegal.newline.ts"
+        }
+      },
+			"patterns": [
+				{
+					"include": "#string-character-escape"
 				}
-			},
-			"end": "(\")|((?:[^\\\\\\n])$)",
-			"endCaptures": {
-				"1": {
-					"name": "punctuation.definition.string.end.ts"
-				},
-				"2": {
-					"name": "invalid.illegal.newline.ts"
-				}
-			}
-		},
+			]
+    },
     "string": {
       "patterns": [
         {
@@ -160,6 +169,10 @@
         }
       ]
     },
+		"string-character-escape": {
+			"name": "constant.character.escape.ts",
+			"match": "\\\\(x\\h{2}|[0-2][0-7]{0,2}|3[0-6][0-7]?|37[0-7]?|[4-7][0-7]?|.|$)"
+		},
     "literal": {
       "name": "literal.ts",
       "patterns": [
