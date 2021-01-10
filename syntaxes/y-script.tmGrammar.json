@@ -9,6 +9,9 @@
     "statements": {
       "patterns": [
         {
+          "include": "#string"
+        },
+        {
           "include": "#comment"
         },
         {
@@ -97,14 +100,18 @@
     },
     "identifiers": {
       "patterns": [
-				{
-					"match": "(?:([_$[:alpha:]][_$[:alnum:]]*))(?=\\s*\\.\\s*[_$[:alpha:]][_$[:alnum:]]*)",
-					"captures": {
-						"1": {
-							"name": "variable.other.object.ts"
-						}
-					}
-				},
+        {
+          "match": "\\b(debug_log|add|sub|aggregrate|offset|offsetmod|div|mod|muldiv)\\b",
+          "name": "entity.name.function.ts"
+        },
+        {
+          "match": "(?:([_$[:alpha:]][_$[:alnum:]]*))(?=\\s*\\.\\s*[_$[:alpha:]][_$[:alnum:]]*)",
+          "captures": {
+            "1": {
+              "name": "variable.other.object.ts"
+            }
+          }
+        },
         {
           "name": "variable.other.readwrite.ts",
           "match": "[_$[:alpha:]][_$[:alnum:]]*"
@@ -113,23 +120,44 @@
     },
     "expression-operators": {
       "patterns": [
-				{
-					"name": "keyword.operator.logical.ts",
+        {
+          "name": "keyword.operator.logical.ts",
           "match": "(?<=if )\\s*(and|or)\\b"
-				},
+        },
         {
           "name": "keyword.operator.comparison.ts",
           "match": "\\s+(eq|neq|gt|ge|le)\\b"
-        },
-				{
-					"name": "keyword.operator.arithmetic.ts",
-					"match": "\\b(add|mul|div)\\b"
-				}
+        }
       ]
     },
     "punctuation-semicolon": {
       "name": "punctuation.terminator.statement.ts",
       "match": ";"
+    },
+		"qstring-double": {
+			"name": "string.quoted.double.ts",
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.ts"
+				}
+			},
+			"end": "(\")|((?:[^\\\\\\n])$)",
+			"endCaptures": {
+				"1": {
+					"name": "punctuation.definition.string.end.ts"
+				},
+				"2": {
+					"name": "invalid.illegal.newline.ts"
+				}
+			}
+		},
+    "string": {
+      "patterns": [
+        {
+          "include": "#qstring-double"
+        }
+      ]
     },
     "literal": {
       "name": "literal.ts",
@@ -139,14 +167,14 @@
         }
       ]
     },
-		"numeric-literal": {
-			"patterns": [
-				{
-					"match": "\\b[0-9]+\\b",
+    "numeric-literal": {
+      "patterns": [
+        {
+          "match": "\\b[0-9]+\\b",
           "name": "constant.numeric.decimal.ts"
-				}
-			]
-		},
+        }
+      ]
+    },
     "comment": {
       "begin": "(?:(^[ \\t]*)|[ \\t]+)(?=#\\p{Print}*$)",
       "beginCaptures": {
