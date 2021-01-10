@@ -3,8 +3,6 @@ import { rulesetResolver } from "./extension";
 import { WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 
 export class WorkspaceFolderRulesetHierarchy {
-    private definitions: {[key: string]: {[key: string]: true}} = {};
-
     public constructor(private ruleset: WorkspaceFolderRuleset) {
 
     }
