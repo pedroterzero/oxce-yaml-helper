@@ -49,6 +49,9 @@
         },
         {
           "include": "#string"
+        },
+        {
+          "include": "#comment"
         }
       ]
     },
