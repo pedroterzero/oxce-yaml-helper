@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 55;
+const expectedNumberOfDiagnostics = 53;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -277,8 +277,8 @@ describe('rulesetDefinitionChecker', () => {
 
     it('finds diagnostics for an alienDeployments with missing data', () => {
         const expected = [
-            {line: 5, char: 19, missing: ['lowQty', 'highQty', 'percentageOutsideUfo']},
-            {line: 11, char: 19, missing: ['lowQty', 'highQty', 'percentageOutsideUfo', 'itemSets']}
+            {line: 5, char: 19, missing: ['lowQty', 'highQty'/*, 'percentageOutsideUfo'*/]},
+            {line: 11, char: 19, missing: ['lowQty', 'highQty'/*, 'percentageOutsideUfo'*/, 'itemSets']}
         ];
 
         for (const entry of expected) {
