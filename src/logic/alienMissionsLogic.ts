@@ -6,7 +6,9 @@ export class AlienMissionsLogic extends BaseLogic {
     private additionalFields = [
         'alienMissions.raceWeights',
         'alienMissions.waves',
-        'alienMissions.waves[].trajectory'
+        'alienMissions.waves[].trajectory',
+        'missionScripts.missionWeights',
+        'missionScripts.raceWeights',
     ];
 
     // this is the field we will be checking
@@ -16,7 +18,7 @@ export class AlienMissionsLogic extends BaseLogic {
     }
 
     private data: {[key: string]: {[key: string]: number | string | {[key: string]: number | string}[], waves: {[key: string]: number | string}[]}} = {};
-    // private itemData: {[key: string]: {[key: string]: number}} = {};
+    private missionData: {[key: string]: {[key: string]: {[key: string]: number | string}[]}} = {};
 
     public getFields(): string[] {
         return ([] as string[]).concat(this.additionalFields).concat(Object.keys(this.relatedFieldLogicMethods));
@@ -24,7 +26,7 @@ export class AlienMissionsLogic extends BaseLogic {
 
     protected generic(entries: LogicDataEntry[]) {
         this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('alienMissions.')), this.data);
-        // this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('soldiers.')), this.itemData);
+        this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('missionScripts.')), this.missionData);
     }
 
     private checkForRequiredFields (key: string) {
@@ -46,13 +48,31 @@ export class AlienMissionsLogic extends BaseLogic {
                 );
             }
             if (!this.data[name]?.raceWeights) {
-                this.addDiagnosticForReference(
-                    ref,
-                    `'${name}' does not have raceWeights: set. This will lead to a crash when this mission triggers.`,
-                    DiagnosticSeverity.Error
-                );
+                if (!this.inMissionScripts(name)) {
+                    this.addDiagnosticForReference(
+                        ref,
+                        `'${name}' does not have raceWeights: set here or in missionScripts. This will lead to a crash when this mission triggers.`,
+                        DiagnosticSeverity.Error
+                    );
+                }
             }
         }
+    }
+
+    /**
+     * Check if this mission is in mission scripts, and whether a raceWeight is set there
+     * @param name
+     */
+    private inMissionScripts(name: string) {
+        return Object.values(this.missionData).find(mission => {
+            if (Object.values(mission.missionWeights || {}).find(weights => name in weights)) {
+                if (mission.raceWeights && Object.values(mission.raceWeights).length > 0) {
+                    return true;
+                }
+            }
+
+            return false;
+        }) !== undefined;
     }
 
     private checkForRequiredWaveFields (key: string) {

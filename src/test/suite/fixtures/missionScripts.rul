@@ -1,0 +1,13 @@
+missionScripts:
+  - type: testAlienMissionRaceWeights1
+    missionWeights:
+      0:
+        STR_ALIEN_MISSION_IN_MISSIONSCRIPT_NO_RACEWEIGHTS: 100
+
+  - type: testAlienMissionRaceWeights2
+    missionWeights:
+      0:
+        STR_ALIEN_MISSION_IN_MISSIONSCRIPT: 100
+    raceWeights:
+      0:
+        STR_SECTOID: 100

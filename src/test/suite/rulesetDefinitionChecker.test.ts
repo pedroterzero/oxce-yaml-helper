@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 53;
+const expectedNumberOfDiagnostics = 55;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -299,13 +299,23 @@ describe('rulesetDefinitionChecker', () => {
         assert.notStrictEqual(diagnostic, undefined);
     });
 
-    it('finds a diagnostic for an alienMission without waves', () => {
-        const diagnostic = findDiagnostic('alienMissions.rul', `'STR_ALIEN_MISSION_WITHOUT_RACEWEIGHTS' does not have raceWeights: set. This will lead to a crash when this mission triggers.`);
+    it('finds a diagnostic for an alienMission without raceWeights', () => {
+        const diagnostic = findDiagnostic('alienMissions.rul', `'STR_ALIEN_MISSION_WITHOUT_RACEWEIGHTS' does not have raceWeights: set here or in missionScripts. This will lead to a crash when this mission triggers.`, 3, 10);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an alienMission without raceWeights in missionScripts', () => {
+        const diagnostic = findDiagnostic('alienMissions.rul', `'STR_ALIEN_MISSION_IN_MISSIONSCRIPT_NO_RACEWEIGHTS' does not have raceWeights: set here or in missionScripts. This will lead to a crash when this mission triggers.`, 14, 10);
         assert.notStrictEqual(diagnostic, undefined);
     });
 
     it('finds a diagnostic for an alienMission with a wave without a trajectory', () => {
         const diagnostic = findDiagnostic('alienMissions.rul', `Wave does not have trajectory: set. This will cause a crash on loading OpenXcom!`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an alienMission.raceWeights with invalid race', () => {
+        const diagnostic = findDiagnostic('alienMissions.rul', `"STR_DUMMY_RACE" does not exist (alienMissions.raceWeights.0)`);
         assert.notStrictEqual(diagnostic, undefined);
     });
 });

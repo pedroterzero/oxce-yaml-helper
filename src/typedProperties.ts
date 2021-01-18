@@ -144,6 +144,7 @@ export class typedProperties {
         'manufacture.requiredItems',
         'manufacture.producedItems',
         'manufacture.randomProducedItems[][]',
+//        missionScripts.missionWeights.0.STR_RESISTANCE_HEAVEN_QQDEFENCE
         '/^missionScripts\\.missionWeights\\.\\d+$/',
         '/^missionScripts\\.raceWeights\\.\\d+$/',
         '/^missionScripts\\.regionWeights\\.\\d+$/',
@@ -494,7 +495,7 @@ export class typedProperties {
     }
 
     private static loadRegexes () {
-        for (const type in this.keyReferenceTypes) {
+        for (const type of this.keyReferenceTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.keyReferenceTypesRegexes.push(new RegExp(type.slice(1, -1)));
             }
