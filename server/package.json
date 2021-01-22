@@ -1,0 +1,17 @@
+{
+	"name": "yscript-language-server",
+	"description": "Y-script language server",
+	"version": "0.0.1",
+	"author": "pedroterzero",
+	"engines": {
+		"node": "*"
+	},
+	"dependencies": {
+		"vscode-css-languageservice": "^4.1.1",
+		"vscode-html-languageservice": "^3.0.3",
+		"vscode-languageserver": "^6.1.1",
+		"vscode-languageserver-textdocument": "^1.0.1",
+		"yaml": "^2.0.0-1"
+	},
+	"scripts": {}
+}

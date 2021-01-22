@@ -17,7 +17,7 @@
         "resolveJsonModule": true,
     },
     "include": [
-        "src/**/*",
+        "src"
     ],
     "exclude": [
         ".attic",
@@ -26,5 +26,9 @@
         "coverage",
         "node_modules",
         ".vscode-test"
-    ]
+    ],
+	"references": [
+		// { "path": "./client" },
+		{ "path": "./server" }
+	]
 }
