@@ -12,9 +12,8 @@ import {
 	Range,
 	TextDocument
 } from 'vscode-html-languageservice';
-import { getCSSMode } from './modes/cssMode';
-import { getDocumentRegions, HTMLDocumentRegions } from './embeddedSupport';
-import { getHTMLMode } from './modes/htmlMode';
+import { getYScriptMode } from './modes/yscriptMode';
+import { getDocumentRegions, YAMLDocumentRegions } from './embeddedSupport';
 import { getLanguageModelCache, LanguageModelCache } from './languageModelCache';
 
 export * from 'vscode-html-languageservice';
@@ -46,7 +45,7 @@ export function getLanguageModes(): LanguageModes {
 	const htmlLanguageService = getHTMLLanguageService();
 	const cssLanguageService = getCSSLanguageService();
 
-	const documentRegions = getLanguageModelCache<HTMLDocumentRegions>(10, 60, document =>
+	const documentRegions = getLanguageModelCache<YAMLDocumentRegions>(10, 60, document =>
 		getDocumentRegions(htmlLanguageService, document)
 	);
 
@@ -54,8 +53,7 @@ export function getLanguageModes(): LanguageModes {
 	modelCaches.push(documentRegions);
 
 	let modes = Object.create(null);
-	modes['html'] = getHTMLMode(htmlLanguageService);
-	modes['css'] = getCSSMode(cssLanguageService, documentRegions);
+	modes['y-script'] = getYScriptMode(documentRegions);
 
 	return {
 		getModeAtPosition(

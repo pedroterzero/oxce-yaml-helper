@@ -68,14 +68,6 @@ async function validateTextDocument(textDocument: TextDocument) {
 			const modes = languageModes.getAllModesInDocument(textDocument);
 			const latestTextDocument = documents.get(textDocument.uri);
 			if (latestTextDocument && latestTextDocument.version === version) {
-				console.log(modes);
-			}
-		}
-
-		if (textDocument.languageId === 'html1') {
-			const modes = languageModes.getAllModesInDocument(textDocument);
-			const latestTextDocument = documents.get(textDocument.uri);
-			if (latestTextDocument && latestTextDocument.version === version) {
 				// check no new version has come in after in after the async op
 				modes.forEach(mode => {
 					if (mode.doValidation) {
