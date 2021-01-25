@@ -128,6 +128,14 @@
       "description": "String ID of the country name.",
       "default": "required"
     },
+    "signedPactEvent": {
+      "description": "String ID of the event triggered when the country leaves Xcom project.",
+      "default": "-"
+    },
+    "rejoinedXcomEvent": {
+      "description": "String ID of the event triggered when the country rejoins Xcom project.",
+      "default": "-"
+    },
     "fundingBase": {
       "description": "Country's base funding, in thousands. The starting funding can be anywhere between 1x and 2x the base funding.",
       "default": "0"
@@ -854,24 +862,48 @@
       "description": "Sprite ID from [SMOKE.PCK](https://www.ufopaedia.org/index.php/SMOKE.PCK) used to draw the weapon's \"hit explosion\". In OXCE, it applies also to Use action of psi weapons.\n\n**NOTE**: Do not define this value for melee/psi weapons, they use [HIT.PCK](https://www.ufopaedia.org/index.php/HIT.PCK) and therefore meleeAnimation instead.\n\n**NOTE**: Explosive style weapons (Damage type: smoke, incendiary, stun, & High Explosive) use [X1.PCK](https://www.ufopaedia.org/index.php/X1.PCK) and should always be set to the first _above water_ sprite (spriteID for UFO, spriteID + 8 for TFTD). TFTD spritesheet should start with 8 underwater images, followed by 8 above water images.",
       "default": "-1"
     },
+    "hitAnimFrames": {
+      "description": "Allows overriding number of frames for **hitAnimation**.\n\nDefaults are:\n\n*   bullet impact animations = 10 frames\n*   melee/psi animations = 4 frames\n*   explosion animations = 8 frames",
+      "default": "-1"
+    },
     "hitMissAnimation": {
       "description": "Sprite ID from [SMOKE.PCK](https://www.ufopaedia.org/index.php/SMOKE.PCK) used to draw the weapon's \"miss explosion\". Applies only to Use action of psi weapons.",
+      "default": "-1"
+    },
+    "hitMissAnimFrames": {
+      "description": "Allows overriding number of frames for **hitMissAnimation**.",
       "default": "-1"
     },
     "meleeAnimation": {
       "description": "Sprite ID from HIT.PCK played when this weapon hits a target with melee.",
       "default": "0"
     },
+    "meleeAnimFrames": {
+      "description": "Allows overriding number of frames for **meleeAnimation**.",
+      "default": "-1"
+    },
     "meleeMissAnimation": {
       "description": "Sprite ID from HIT.PCK played when this weapon misses a target with melee.",
+      "default": "-1"
+    },
+    "meleeMissAnimFrames": {
+      "description": "Allows overriding number of frames for **meleeMissAnimation**.",
       "default": "-1"
     },
     "psiAnimation": {
       "description": "Sprite ID from HIT.PCK played when this weapon hits a target with psi attack (only Panic/MindControl). For Use action on psi weapons, define hitAnimation.",
       "default": "-1"
     },
+    "psiAnimFrames": {
+      "description": "Allows overriding number of frames for **psiAnimation**.",
+      "default": "-1"
+    },
     "psiMissAnimation": {
       "description": "Sprite ID from HIT.PCK played when this weapon misses a target with psi attack (only Panic/MindControl). For Use action on psi weapons, define hitMissAnimation.",
+      "default": "-1"
+    },
+    "psiMissAnimFrames": {
+      "description": "Allows overriding number of frames for **psiMissAnimation**.",
       "default": "-1"
     },
     "power": {
@@ -2773,6 +2805,236 @@
       "default": "-"
     }
   },
+  "commendations": {
+    "type": {
+      "description": "This is a string containing the name of the commendation.",
+      "default": "-"
+    },
+    "description": {
+      "description": "This is a string containing the description of the commendation.",
+      "default": "-"
+    },
+    "sprite": {
+      "description": "This is an int corresponding to the sprite of the commendation. If the integer does not correspond to a sprite, the game will crash.",
+      "default": "-"
+    },
+    "criteria": {
+      "description": "Commendation criteria are controlled by SoldierDiary.cpp, and function by iterating over the game's record of every takedown a soldier has performed. There are three kinds of crieria: Scalar Criteria, Noun Criteria, and Kill Criteria. If the criteria is a Kill Criteria, there needs to be more details added via killCriteria.\n\nThe vector of integers cannot exceed 10 in length, unless more decoration sprites are added. The list may be shorter, if the commendation does not have as many decorations. The integers can also repeat, in order to skip decorations.\n\nFirst intger corresponds to an award, with no decoration. Second correponds to 1 bronze star. Third correponds to 2 bronze stars. Fourth correponds to 3 bronze stars. Fifth correponds to 1 silver star. Sixth correponds to 2 silver stars. Seventh correponds to 3 silver stars. Eigth correponds to 1 gold star. Ninth correponds to 2 gold stars. Tenth correponds to 3 gold stars.\n\nExample: This criteria has 3 decoration levels: 1 bronze star, 2 silver stars, 3 gold stars.\n\n```\n   criteria:\n       totalAllAliensKilled: [1, 1, 2, 2, 2, 2, 3, 3, 3, 3]\n\n```",
+      "default": "-"
+    },
+    "killCriteria": {
+      "description": "This is the extra detail required by killsWithCriteriaCareer, killsWithCriteriaMission, or killsWithCriteriaTurn. The valid details are listed in the table under _Kill Criteria_.\n\nExample: This killCriteria can be awarded for two reasons: if the soldier kills one sectopod terrorist with a grenade OR if the soldier kills one cyberdisc terrorist with a grenade.\n\n```\n   killCriteria:\n       -\n           1: [\"STR_SECTOPOD_TERRORIST\", \"STR_LIVE_TERRORIST\", \"STATUS_DEAD\", \"BT_GRENADE\"]\n       - \n           1: [\"STR_CYBERDISC_TERRORIST\", \"STR_LIVE_TERRORIST\", \"STATUS_DEAD\", \"BT_GRENADE\"]\n\n```\n\nExample: This killCriteria is awarded for one reason: if the soldier has killed one hostile cyberdisc terrorist AND if the soldier has killed one hostile reaper terrorist.\n\n```\n   killCriteria:\n       -\n           1: [\"STR_CYBERDISC\", \"STR_LIVE_TERRORIST\", \"FACTION_HOSTILE\", \"STATUS_DEAD\"]\n           1: [\"STR_REAPER\", \"STR_LIVE_TERRORIST\", \"FACTION_HOSTILE\", \"STATUS_DEAD\"]\n\n```",
+      "default": "-"
+    },
+    "totalKills": {
+      "description": "Total number of kills earned by the soldier.",
+      "default": "-"
+    },
+    "totalMissions": {
+      "description": "Total number of missions in which the soldier participated.",
+      "default": "-"
+    },
+    "totalWins": {
+      "description": "Total number of missions in which the soldier victorious.",
+      "default": "-"
+    },
+    "totalScore": {
+      "description": "Total score earned by the soldier.",
+      "default": "-"
+    },
+    "totalStuns": {
+      "description": "Total number of hostile enemies stunned by the soldier.",
+      "default": "-"
+    },
+    "totalBaseDefenseMissions": {
+      "description": "Total number of base defense missions in which the soldier was victorious.",
+      "default": "-"
+    },
+    "totalTerrorMissions": {
+      "description": "Total number of terror missions in which the soldier was victorious.",
+      "default": "-"
+    },
+    "totalNightMissions": {
+      "description": "Total number of night missions in which the soldier was victorious. (Excludes base defense missions and alien base missions.)",
+      "default": "-"
+    },
+    "totalNightTerrorMissions": {
+      "description": "Total number of night terror missions in which the soldier was victorious.",
+      "default": "-"
+    },
+    "totalMonthlyService": {
+      "description": "Total number of months served by the soldier.",
+      "default": "-"
+    },
+    "totalFellUnconcious": {
+      "description": "Total number of missions in which the soldier has fallen unconcious.",
+      "default": "-"
+    },
+    "totalShotAt10Times": {
+      "description": "Total number of times a soldier was shot at in a mission, counted 10 at a time.\n\nExample: On mission 1, the soldier was shot at 23 times; this increments the total twice. On mission 2, the soldier was shot at 18 times; this increments the total once. The total is three, not four, despite being shot at 41 times.",
+      "default": "-"
+    },
+    "totalHit5Times": {
+      "description": "Total number of times a soldier was hit in a mission, counted 10 at a time.\n\nExample: On mission 1, the soldier was shot 8 times; this increments the total once. On mission 2, the soldier was shot 4 times; this does not increment the total. The total is one, not two, despite being shot 12 times.",
+      "default": "-"
+    },
+    "totalFriendlyFired": {
+      "description": "Total number of times this soldier was shot by a friendly soldier. Does not count if the soldier is KIA or MIA.",
+      "default": "-"
+    },
+    "total_lone_survivor": {
+      "description": "Total number of missions in which a soldier was the only survivor.\n\nOnly awarded if this soldier was deployed with other soldiers, and that this soldier did not kill any friendly soldiers.",
+      "default": "-"
+    },
+    "totalIronMan": {
+      "description": "Total number of missions this soldier has done alone.",
+      "default": "-"
+    },
+    "totalImportantMissions": {
+      "description": "Total number of non-UFO crash recovery missions in which the soldier was victorious.",
+      "default": "-"
+    },
+    "totalLongDistanceHits": {
+      "description": "Total number of shots by the soldier that hit a target that was more than 30 tiles away.",
+      "default": "-"
+    },
+    "totalLowAccuracyHits": {
+      "description": "Total number of shots by the soldier that hit a target who was futher away than the weapon's firing accuracy.",
+      "default": "-"
+    },
+    "totalReactionFire": {
+      "description": "Total number of kills earned by the soldier that occured on the hostile turn, where the weapon was not a grenade or a proximity grenade.",
+      "default": "-"
+    },
+    "totalTimesWounded": {
+      "description": "Total number of missions in which the soldier was wounded.",
+      "default": "-"
+    },
+    "totalDaysWounded": {
+      "description": "Total number of days the soldier spent wounded.",
+      "default": "-"
+    },
+    "totalValientCrux": {
+      "description": "Total number of missions in which the soldier was victorious, saved at least one civilian, and lost no civilians.",
+      "default": "-"
+    },
+    "isDead": {
+      "description": "Total number of missions in which the soldier died.",
+      "default": "-"
+    },
+    "totalTrapKills": {
+      "description": "Total number of kills earned by the soldier that occured on the hostile turn, where the weapon was a grenade, a proximity grenade, or a weapon with no BattleType.",
+      "default": "-"
+    },
+    "totalAlienBaseAssaults": {
+      "description": "Total number of alien base missions in which the soldier was victorious.",
+      "default": "-"
+    },
+    "totalAllAliensKilled": {
+      "description": "Total number of missions in which the soldier was victorious and the soldier killed every alien that died (at least one), and stunned every alien that was stunned.",
+      "default": "-"
+    },
+    "totalAllAliensStunned": {
+      "description": "Total number of missions in which the soldier was victorious and the soldier stunned every alien that was stunned (at least one), and no aliens were killed.",
+      "default": "-"
+    },
+    "totalWoundsHealed": {
+      "description": "Total number of times the soldier applied healing in the medikit.",
+      "default": "-"
+    },
+    "totalAllUFOs": {
+      "description": "Value is 1 if the soldier participated in a mission against a UFO of each type.",
+      "default": "-"
+    },
+    "totalAllMissionTypes": {
+      "description": "Value is 1 if the soldier participated in a mission of each type.",
+      "default": "-"
+    },
+    "totalStatGain": {
+      "description": "Sum of all stat gains for the soldier. Bravery stat gains are divided by 10.",
+      "default": "-"
+    },
+    "totalRevives": {
+      "description": "Total number of times this soldier revived another unit. The unit can hostile, friendly or neutral.",
+      "default": "-"
+    },
+    "totalSoldierRevives": {
+      "description": "Total number of times this soldier revived another unit that started as friendly.",
+      "default": "-"
+    },
+    "totalHostileRevives": {
+      "description": "Total number of times this soldier revived another unit that started as hostile.",
+      "default": "-"
+    },
+    "totalNeutralRevives": {
+      "description": "Total number of times this soldier revived another unit that started as neutral.",
+      "default": "-"
+    },
+    "totalWholeMedikit": {
+      "description": "Total number of times this soldier used one of each medikit functions.\n\nExample: If in a single mission the soldier healed wounds 3 times, applied stimulant 2 times, and applied painkillers 4 times, then the total would increment by 2.",
+      "default": "-"
+    },
+    "totalBraveryGain": {
+      "description": "Sum of all bravery stat gains for the soldier. The stat is not divded by 10 here.",
+      "default": "-"
+    },
+    "bestOfRank": {
+      "description": "If, upon death, this soldier had the highest score of any dead soldier of the same rank, the value of bestOfRank is equal to the score of the dead soldier. Otherwise it is 0.",
+      "default": "-"
+    },
+    "bestSoldier": {
+      "description": "If, upon death, this soldier had the highest score of any dead soldier, the value of bestSoldier is True. Otherwise it is False.",
+      "default": "-"
+    },
+    "isMIA": {
+      "description": "Total number of missions in which the soldier was left behind.",
+      "default": "-"
+    },
+    "totalMartyrKills": {
+      "description": "Total number of kills earned by the soldier that occured on the same turn that the soldier killed him or herself, to a maximum of 10 per mission.",
+      "default": "-"
+    },
+    "totalPostMortemKills": {
+      "description": "Total number of kills earned by the soldier that occured after the soldier died.",
+      "default": "-"
+    },
+    "globeTrotter": {
+      "description": "Value is True is the soldier has participated in a mission that occured in each country.",
+      "default": "-"
+    },
+    "totalSlaveKills": {
+      "description": "Total number of kills earned by the soldier via mind-control of another unit.",
+      "default": "-"
+    },
+    "totalKillsWithAWeapon": {
+      "description": "Total number of kills with a specific weapon earned by the soldier.",
+      "default": "-"
+    },
+    "totalMissionsInARegion": {
+      "description": "Total number of missions in a specific region in which the soldier participated.",
+      "default": "-"
+    },
+    "totalKillsByRace": {
+      "description": "Total number of kills of a specific race earned by the soldier.",
+      "default": "-"
+    },
+    "totalKillsByRank": {
+      "description": "Total number of kills of a specific rank earned by the soldier.",
+      "default": "-"
+    },
+    "killsWithCriteriaCareer": {
+      "description": "Total number of kills across a soldier's career that meet the specified criteria.",
+      "default": "-"
+    },
+    "killsWithCriteriaMission": {
+      "description": "Total number of kills across a single mission of a soldier that meet the specified criteria.",
+      "default": "-"
+    },
+    "killsWithCriteriaTurn": {
+      "description": "Total number of kills across a single turn of a soldier that meet the specified criteria.",
+      "default": "-"
+    }
+  },
   "units": {
     "type": {
       "description": "String ID of the unit name.",
@@ -2855,7 +3117,7 @@
       "default": "0"
     },
     "isLeeroyJenkins": {
-      "description": "Unit marked as \"leeroy\" must have a melee weapon (and be able to use it). It will completely ignore vanilla AI \"decision making\" and run around (using vanilla patrol routine) until it spots someone and then charge at the nearest target (if multiple spotted).\n\nCharge is mostly vanilla/OXCE, with the following differences:\n\n*   ignore remaining TUs (charge even if not enough TUs to attack now)\n*   ignore dangerous tiles (grenades? pfff!)\n*   ignore OXCE melee dodge (leeroy is not intelligent enough to attack from behind)",
+      "description": "Unit marked as \"leeroy\" must have a melee weapon (and be able to use it). It will completely ignore vanilla AI \"decision making\" and run around (using vanilla patrol routine) until it spots someone and then charge at the nearest target (if multiple spotted).\n\nCharge is mostly vanilla/OXCE, with the following differences:\n\n*   ignore remaining TUs (charge even if not enough TUs to attack now); since OXCE v6.9 charging can happen also over multiple turns\n*   ignore dangerous tiles (grenades? pfff!)\n*   ignore OXCE melee dodge (leeroy is not intelligent enough to attack from behind)",
       "default": "false"
     },
     "energyRecovery": {
@@ -3215,7 +3477,7 @@
       "default": "0"
     },
     "cheatTurn": {
-      "description": "When the aliens became aware of all your units (in vanilla it was after turn 20)",
+      "description": "When the aliens became aware of all your units (in vanilla it was after turn 20)\n\nMore info: [https://openxcom.org/forum/index.php/topic,9051.0.html](https://openxcom.org/forum/index.php/topic,9051.0.html)",
       "default": "20"
     },
     "turnLimit": {
@@ -3547,7 +3809,11 @@
       "default": "-"
     },
     "disables": {
-      "description": "A list of research projects disabled by completing this project.\n\nNotes:\n\n*   this is one of the ways how to branch your \"story\", e.g. create alternative endings\n*   it can also be used to hide obsolete stuff in the market, workshop, pedia, etc.\n*   disabled topics cannot be re-enabled again, ever",
+      "description": "A list of research projects disabled by completing this project.\n\nNotes:\n\n*   this is one of the ways how to branch your \"story\", e.g. create alternative endings\n*   it can also be used to hide obsolete stuff in the market, workshop, pedia, etc.\n*   disabled topics can be re-enabled using **reenables**",
+      "default": "-"
+    },
+    "reenables": {
+      "description": "A list of research projects re-enabled by completing this project.",
       "default": "-"
     },
     "getOneFree": {
@@ -4244,6 +4510,10 @@
     },
     "backgroundImage": {
       "description": "Background image for the corresponding screen.",
+      "default": "-"
+    },
+    "altBackgroundImage": {
+      "description": "Alternative background image for the corresponding screen (in battlescape theme). Used for UIs that can be displayed both in geoscape and battlescape mode.",
       "default": "-"
     },
     "elements": {

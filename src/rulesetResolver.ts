@@ -1,9 +1,8 @@
 import { workspace, Uri, Disposable, FileSystemWatcher, WorkspaceFolder, Progress, window, ExtensionContext, FileType, ConfigurationTarget } from 'vscode';
 import { logger } from "./logger";
-import { Definition, Match, rulesetTree, Translation, Variables } from "./rulesetTree";
+import { Definition, LogicDataEntry, Match, rulesetTree, Translation, Variables } from "./rulesetTree";
 import { EventEmitter } from "events";
 import { rulesetParser } from "./rulesetParser";
-import deepmerge = require('deepmerge');
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { rulesetFileCacheManager } from './rulesetFileCacheManager';
 import { existsSync } from 'fs';
@@ -13,6 +12,7 @@ export type ParsedRuleset = {
     references?: Match[];
     variables?: Variables;
     translations: Translation[];
+    logicData?: LogicDataEntry[];
 };
 
 export class RulesetResolver implements Disposable {
@@ -54,7 +54,7 @@ export class RulesetResolver implements Disposable {
 
         this.registerFileWatcher();
 
-        this.loaded = true;
+        // this.loaded = true;
         this.onDidLoadEmitter.emit('didLoad');
     }
 
@@ -124,10 +124,15 @@ export class RulesetResolver implements Disposable {
     }
 
     private async getYamlFilesForWorkspaceFolder(workspaceFolder: WorkspaceFolder): Promise<Uri[]> {
-        let files = await workspace.findFiles(this.yamlPattern, '');
-        files = deepmerge(files, await workspace.findFiles('**/Language/*.yml'));
-
-        files = files.filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
+        let files: Uri[] = [];
+        await Promise.all([
+            await workspace.findFiles(this.yamlPattern),
+            await workspace.findFiles('**/Language/*.yml')
+        ]).then(values => {
+            files = files
+                .concat(...values)
+                .filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
+        });
 
         await this.getAssetRulesets(files);
 
@@ -266,6 +271,9 @@ export class RulesetResolver implements Disposable {
         if (parsed.variables) {
             rulesetTree.mergeVariablesIntoTree(parsed.variables, workspaceFolder, file);
         }
+        if (parsed.logicData) {
+            rulesetTree.mergeLogicDataIntoTree(parsed.logicData, workspaceFolder, file);
+        }
 
         rulesetTree.mergeTranslationsIntoTree(parsed.translations, workspaceFolder, file);
 
@@ -294,9 +302,11 @@ export class RulesetResolver implements Disposable {
                 translations = rulesetParser.getTranslationsFromLanguageFile(docObject);
                 parsed = {translations};
             } else {
-                const references = rulesetParser.getReferencesRecursively(doc.parsed);
+                const [references, logicData] = rulesetParser.getReferencesRecursively(doc.parsed);
                 rulesetParser.addRangePositions(references, document);
+                rulesetParser.addRangePositions(logicData, document);
                 logger.debug(`found ${references?.length} references in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
+                logger.debug(`found ${logicData?.length} logic data entries in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
                 const definitions = rulesetParser.getDefinitionsFromReferences(references);
                 logger.debug(`found ${definitions.length} definitions in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
 
@@ -304,7 +314,7 @@ export class RulesetResolver implements Disposable {
                 const variables = rulesetParser.getVariables(references);
                 translations = rulesetParser.getTranslations(docObject);
 
-                parsed = {definitions, references, variables, translations};
+                parsed = {definitions, references, variables, translations, logicData};
             }
 
             // don't need to wait for cache to be written
@@ -373,6 +383,8 @@ export class RulesetResolver implements Disposable {
         });
 
         this.checkForCommonProblems();
+
+        this.loaded = true;
     }
 
     private checkForCommonProblems() {
