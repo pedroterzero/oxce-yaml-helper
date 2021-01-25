@@ -144,7 +144,6 @@ export class typedProperties {
         'manufacture.requiredItems',
         'manufacture.producedItems',
         'manufacture.randomProducedItems[][]',
-//        missionScripts.missionWeights.0.STR_RESISTANCE_HEAVEN_QQDEFENCE
         '/^missionScripts\\.missionWeights\\.\\d+$/',
         '/^missionScripts\\.raceWeights\\.\\d+$/',
         '/^missionScripts\\.regionWeights\\.\\d+$/',
