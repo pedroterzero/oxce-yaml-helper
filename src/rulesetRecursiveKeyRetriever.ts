@@ -1,15 +1,18 @@
 import { logger } from "./logger";
-import { Match, RuleType } from "./rulesetTree";
+import { LogicDataEntry, Match, RuleType } from "./rulesetTree";
 import { Scalar, YAMLMap, YAMLSeq } from "yaml/types";
 import { JsonObject, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { typedProperties } from "./typedProperties";
+import { LogicHandler } from "./logic/logicHandler";
 import * as dotProp from 'dot-prop';
 
 type Entry = YAMLSeq | YAMLDocumentItem | string | Scalar;
 
 export class RulesetRecursiveKeyRetriever {
+    private logicHandler = new LogicHandler();
+
     public getKeyInformationFromYAML(doc: YAMLDocument, key: string, range: number[]): RuleType | undefined {
-        const references = this.findAllReferencesInYamlDocument(doc, true);
+        const [references] = this.findAllReferencesInYamlDocument(doc, true);
 
         for (const ref of references) {
             // if (ref.key === key) {
@@ -32,29 +35,30 @@ export class RulesetRecursiveKeyRetriever {
         return;
     }
 
-    public findAllReferencesInYamlDocument(doc: YAMLDocument, lookupAll = false): Match[] {
+    public findAllReferencesInYamlDocument(doc: YAMLDocument, lookupAll = false): [Match[], LogicDataEntry[]] {
         return this.findKeyInformationInYamlDocument(doc, lookupAll);
     }
 
-    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): Match[] {
+    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): [Match[], LogicDataEntry[]] {
         // logger.debug('findKeyInformationInYamlDocument');
 
         const yamlPairs = yamlDocument.contents.items;
         if (!yamlPairs) {
             logger.warn('yamlDocument does not have any items');
-            return [];
+            return [[], []];
         }
 
         // loop through each entry in this document
         return this.findRecursiveMatch(yamlPairs, lookupAll) || undefined;
     }
 
-    private findRecursiveMatch(yamlPairs: YAMLDocumentItem[], lookupAll: boolean): Match[] {
-        const matches: any = [];
+    private findRecursiveMatch(yamlPairs: YAMLDocumentItem[], lookupAll: boolean): [Match[], LogicDataEntry[]] {
+        const matches: Match[] = [];
+        const logicData: LogicDataEntry[] = [];
         yamlPairs.forEach((ruleType) => {
             if (ruleType.value.type === 'PLAIN') {
                 // globalVariables does this
-                this.processItems(ruleType, 'globalVariables', matches, lookupAll);
+                this.processItems(ruleType, 'globalVariables', matches, logicData, {}, lookupAll);
             } else {
                 ruleType.value.items.forEach((ruleProperties: YAMLSeq) => {
                     if (['extraSprites', 'extraSounds'].indexOf(ruleType.key.value) !== -1) {
@@ -69,15 +73,17 @@ export class RulesetRecursiveKeyRetriever {
                         path = `globalVariables.${path}`;
                     }
 
-                    this.processItems(ruleProperties, path, matches, lookupAll);
+                    this.processItems(ruleProperties, path, matches, logicData, {}, lookupAll);
                 });
             }
         });
 
-        return matches;
+        return [matches, logicData];
     }
 
-    private processItems(entry: Entry, path: string, matches: Match[], lookupAll: boolean): Match | undefined {
+    private processItems(entry: Entry, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, lookupAll: boolean): Match | undefined {
+        this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
+
         if (typedProperties.isKeyReferencePath(path)) {
             // do this separately, because the values for the keys could yield yet more references (see research.getOneFreeProtected)
             this.processKeyReferencePath(entry, path, matches);
@@ -95,13 +101,13 @@ export class RulesetRecursiveKeyRetriever {
         } else if (entry.type === 'PAIR') {
             // i.e. startingbase
             // console.log('looping PAIR', path + '.' + entry.key.value);
-            const ret = this.processItems(entry.value, path + '.' + entry.key.value, matches, lookupAll);
+            const ret = this.processItems(entry.value, path + '.' + entry.key.value, matches, logicData, namesByPath, lookupAll);
             if (ret) {
                 matches.push(ret);
             }
         } else if ('items' in entry) {
             if (entry.items.length > 0) {
-                this.loopEntry(entry, path, matches, lookupAll);
+                this.loopEntry(entry, path, matches, logicData, namesByPath, lookupAll);
             }
         } else {
             entry = entry as Scalar;
@@ -128,10 +134,22 @@ export class RulesetRecursiveKeyRetriever {
                 ret.metadata = {_comment: entry.comment.trim()};
             }
 
+            this.addNamesForRelatedLogicChecks(ret, namesByPath);
+
             return ret;
         }
 
         return;
+    }
+
+    private addNamesForRelatedLogicChecks(match: Match, namesByPath: { [key: string]: string; }) {
+        if (this.logicHandler.isRelatedLogicField(match.path)) {
+            if (!('metadata' in match) || typeof match.metadata !== 'object') {
+                match.metadata = {};
+            }
+
+            match.metadata._names = namesByPath;
+        }
     }
 
     private processKeyReferencePath(entry: Entry, path: string, matches: Match[]) {
@@ -172,17 +190,31 @@ export class RulesetRecursiveKeyRetriever {
         }
     }
 
-    private loopEntry(entry: YAMLSeq, path: string, matches: Match[], lookupAll: boolean) {
+    private loopEntry(entry: YAMLSeq, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, lookupAll: boolean) {
+        this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
+
+        let index = -1;
         entry.items.forEach((ruleProperty) => {
+            index++;
+
             if ('items' in ruleProperty) {
+                let newNamesByPath = {} as typeof namesByPath;
+                if (Object.keys(namesByPath).length > 0) {
+
+                    // store the index so we can refer to it later (mostly for logic checks)
+                    newNamesByPath = Object.assign({}, namesByPath);
+                    newNamesByPath[`${path}[]`] = index.toString();
+                }
                 // console.log(`looping ${ruleProperty} path ${path}[]`);
                 if (typedProperties.isKeyReferencePath(path + '[]')) {
                     // this is quite unfortunate, but needed for things like manufacture.randomProducedItems[][]
-                    this.processItems(ruleProperty, path + '[]', matches, lookupAll);
+                    this.processItems(ruleProperty, path + '[]', matches, logicData, newNamesByPath, lookupAll);
                 } else {
-                    this.loopEntry(ruleProperty, path + '[]', matches, lookupAll);
+                    this.loopEntry(ruleProperty, path + '[]', matches, logicData, newNamesByPath, lookupAll);
                 }
             } else {
+                this.checkForDefinitionName(path, ruleProperty, namesByPath);
+
                 let newPath = path;
                 if (['PLAIN', 'QUOTE_DOUBLE', 'QUOTE_SINGLE'].indexOf(ruleProperty.type) !== -1) {
                     newPath += '[]';
@@ -190,7 +222,7 @@ export class RulesetRecursiveKeyRetriever {
                     newPath += '.' + ruleProperty?.key?.value;
                 }
 
-                const result = this.processItems(ruleProperty.value, newPath, matches, lookupAll);
+                const result = this.processItems(ruleProperty.value, newPath, matches, logicData, namesByPath, lookupAll);
                 if (result) {
                     const metadata = this.addMetadata(path, entry);
                     if (metadata) {
@@ -218,11 +250,42 @@ export class RulesetRecursiveKeyRetriever {
                         match.metadata = metadata;
                     }
 
+                    this.addNamesForRelatedLogicChecks(match, namesByPath);
+
                     // console.log(`range1 ${range[0]}:${range[1]}`);
                     matches.push(match);
                 }
             }
         });
+    }
+
+    private checkForAdditionalLogicPath(path: string, logicData: LogicDataEntry[], entry: Entry, namesByPath: {[key: string]: string}) {
+        if (typedProperties.isAdditionalLogicPath(path)) {
+            if (typeof entry !== 'object' || !('toJSON' in entry) || !('range' in entry)) {
+                return;
+            }
+
+            logicData.push({
+                path,
+                data: entry.toJSON(),
+                range: entry.range || [0, 0],
+                names: namesByPath
+            });
+        }
+    }
+
+    /**
+     * Check if this path contains a definition and stores it
+     * @param path
+     * @param ruleProperty
+     * @param namesByPath
+     */
+    private checkForDefinitionName(path: string, ruleProperty: any, namesByPath: { [key: string]: string; }) {
+        for (const key of typedProperties.getPossibleTypeKeys(path)) {
+            if (ruleProperty.key?.value === key) {
+                namesByPath[path] = ruleProperty.value.value;
+            }
+        }
     }
 
     private getRulePropertyType(ruleProperty: any, path: string, lookupAll: boolean) {
@@ -276,7 +339,8 @@ export class RulesetRecursiveKeyRetriever {
             return false;
         }
 
-        const [type, key] = path.split('.', 2);
+        const type = path.split('.', 1)[0];
+        const key = path.split('.').slice(1).join('.');
         return !typedProperties.isNumericProperty(type, key);
     }
 

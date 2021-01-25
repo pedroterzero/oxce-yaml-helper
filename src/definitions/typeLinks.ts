@@ -1,3 +1,5 @@
+import { LogicHandler } from "../logic/logicHandler";
+
 type TypeLinks = {
     [key: string]: string[]
     // [key: string]: (string | [string, number])[];
@@ -89,6 +91,7 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
     'alienDeployments.winCutscene': ['cutscenes'],
     'alienMissions.interruptResearch': ['research'],
     'alienMissions.operationBaseType': ['alienDeployments'],
+    'alienMissions.waves[].trajectory': ['ufoTrajectories'],
     '/^alienMissions\\.raceWeights\\.\\d+$/': ['alienRaces'],
     '/^alienMissions\\.regionWeights\\.\\d+$/': ['regions'],
     'alienMissions.siteType': ['alienDeployments'],
@@ -234,6 +237,16 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
     'units.psiWeapon': ['items'],
     'units.spawnUnit': ['units']
 });
+
+// add numeric fields from logic handler
+const handler = new LogicHandler;
+for (const field of handler.getNumericFields()) {
+    typeLinks[field] = ['_numeric_', '_dummy_'];
+}
+// add non numeric fields too
+for (const field of handler.getRelatedLogicFields().filter(field => !handler.getNumericFields().includes(field))) {
+    typeLinks[field] = ['_dummy_'];
+}
 
 export const typeLinksPossibleKeys: {[key: string]: (key: string) => string[]} = {
     // could improve this even more to make this all for the [MF][0123] variants?

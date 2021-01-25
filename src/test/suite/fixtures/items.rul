@@ -82,4 +82,28 @@ items:
   - type: STR_CATEGORY_TEST
     categories: [STR_DUMMY_CATEGORY]
 
+  - type: STR_REARM_RATE_TEST_AMMO
+    clipSize: 25
+
+  - type: STR_DUPLICATE_AUTOSHOTS
+    confAuto:
+      shots: 3
+    autoShots: 2
+
+  - type: STR_DUPLICATE_TU_COST
+    tuAimed: 1
+    tuSnap: 1
+    tuAuto: 1
+    tuMelee: 1
+    costAimed:
+      time: 1
+    costSnap:
+      time: 1
+    costAuto:
+      time: 1
+    costMelee:
+      time: 1
+
+  - type: STR_DUMMY_LAUNCHER
+
   - delete: STR_AVALANCHE_MISSILES

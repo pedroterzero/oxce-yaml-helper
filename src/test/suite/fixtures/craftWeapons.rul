@@ -1,3 +1,19 @@
 craftWeapons:
   - type: STR_DUMMY_CRAFT_WEAPON
     sprite: 200
+    launcher: STR_DUMMY_LAUNCHER
+
+  - type: STR_REARM_RATE_BAD_TEST
+    clip: STR_REARM_RATE_TEST_AMMO
+    rearmRate: 10
+    launcher: STR_DUMMY_LAUNCHER
+
+  - type: STR_REARM_RATE_GOOD_TEST
+    clip: STR_REARM_RATE_TEST_AMMO
+    rearmRate: 50
+    launcher: STR_DUMMY_LAUNCHER
+
+  - type: STR_NO_LAUNCHER_TEST
+
+  - type: STR_LAUNCHER_WRONG_TYPE_TEST
+    launcher: STR_DUMMY_MANUFACTURE
