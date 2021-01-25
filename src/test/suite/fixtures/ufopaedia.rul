@@ -1,0 +1,20 @@
+ufopaedia:
+  - id: STR_SEGFAULT_CHECK
+    type_id: 2
+  - id: STR_SEGFAULT_CHECK_NEGATIVE
+    type_id: 2
+    image_id: UP001.SPK # should exist
+  - id: STR_SEGFAULT_CHECK_NEGATIVE_NOT_REQUIRED
+    type_id: 4
+  - id: STR_ARTICLE_WITHOUT_TYPE_ID
+  - id: STR_CRAFT_ARTICLE_WITH_RECT_TEXT
+    type_id: 1
+    image_id: UP001.SPK # should exist
+    rect_text:
+      x: 110
+      y: 18
+      width: 205
+      height: 80
+  - id: STR_CRAFT_ARTICLE_WITHOUT_RECT_TEXT
+    type_id: 1
+    image_id: UP001.SPK # should exist!

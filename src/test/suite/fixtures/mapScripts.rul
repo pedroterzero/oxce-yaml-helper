@@ -1,0 +1,16 @@
+mapScripts:
+  - type: TEST_BAD_MAPSCRIPT
+    commands:
+    - type: addLine
+      direction: vertical
+      verticalGroup: 10
+      crossingGroup: 10
+      groups: [10]
+
+  - type: TEST_GOOD_MAPSCRIPT
+    commands:
+    - type: addLine
+      direction: vertical
+      verticalGroup: 2
+      crossingGroup: 2
+      groups: [2]
