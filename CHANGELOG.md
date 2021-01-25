@@ -1,3 +1,9 @@
+# v0.6.0
+- New logic checks: detect common and uncommon segmentation faults and other problems
+
+# v0.5.1
+- Fix missing inventories
+
 # v0.5.0
 - Add support for linking global variables, see https://github.com/pedroterzero/oxce-yaml-helper/issues/5
 - Under the hood: use async fs functions

@@ -1,14 +1,17 @@
 import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from "vscode";
 import { DefinitionLookup, Match } from "./rulesetTree";
-import { ReferenceFile, TypeLookup } from "./workspaceFolderRuleset";
+import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
 import { ignoreTypes } from "./definitions/ignoreTypes";
 import { stringTypes } from "./definitions/stringTypes";
 import { rulesetResolver } from "./extension";
 import { logger } from "./logger";
+import { FilesWithDiagnostics, LogicHandler } from "./logic/logicHandler";
+import { mergeAndConcat } from "merge-anything";
 import { typeHintMessages } from "./definitions/typeHintMessages";
 import { typedProperties } from "./typedProperties";
+import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -48,21 +51,36 @@ export class RulesetDefinitionChecker {
 
     private noWarnAboutIncorrectType = Object.keys(spriteTypeLinks).concat(Object.keys(soundTypeLinks));
 
+    private logicHandler = new LogicHandler;
+
     public constructor() {
         this.loadRegexes();
     }
 
     public init(lookup: TypeLookup) {
         this.checkDefinitions(lookup);
+        this.logicHandler = new LogicHandler;
     }
 
-    public checkFile(file: ReferenceFile, lookup: TypeLookup, workspacePath: string): Diagnostic[] {
+    public checkFile(file: ReferenceFile, ruleset: WorkspaceFolderRuleset, workspacePath: string, hierarchy: WorkspaceFolderRulesetHierarchy): Diagnostic[] {
         const diagnostics : Diagnostic[] = [];
 
-        this.checkReferences(file, lookup, diagnostics);
+        this.checkReferences(file, ruleset.definitionsLookup, diagnostics);
         this.addDuplicateDefinitions(file, diagnostics, workspacePath);
 
+        let logicData;
+        if ((logicData = ruleset.getLogicData(file.file))) {
+            // console.log(`checking! ${file.file.path}`);
+            this.logicHandler.check(file.file, diagnostics, logicData, hierarchy);
+        }
+
         return diagnostics;
+    }
+
+    public checkRelationLogic(diagnosticsPerFile: FilesWithDiagnostics): FilesWithDiagnostics {
+        const additionalFilesWithDiagnostics = this.logicHandler.checkRelationLogic();
+
+        return mergeAndConcat(diagnosticsPerFile, additionalFilesWithDiagnostics) as FilesWithDiagnostics;
     }
 
     private addDuplicateDefinitions(file: ReferenceFile, diagnostics: Diagnostic[], workspacePath: string) {
@@ -93,6 +111,12 @@ export class RulesetDefinitionChecker {
     private checkReferences(file: ReferenceFile, lookup: TypeLookup, diagnostics: Diagnostic[]) {
         for (const ref of file.references) {
             if (!this.typeExists(ref)) {
+                continue;
+            }
+
+            if (ref.path in typeLinks && typeLinks[ref.path].includes('_dummy_')) {
+                // dummy field indicates custom logic, so don't process the rest of this function
+                this.logicHandler.storeRelationLogicReference(ref, file);
                 continue;
             }
 
@@ -269,6 +293,11 @@ export class RulesetDefinitionChecker {
     }
 
     private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup): TypeMatchResult {
+        if (rawTypeLinks.includes('_dummy_')) {
+            // shortcut for dummy (custom logic)
+            return {match: false, expected: [], found: []};
+        }
+
         const {matchType, typeValues: typeLinks} = this.processTypeLinks(rawTypeLinks, possibleKeys);
 
         const matches: {[key: string]: boolean} = {};

@@ -1,0 +1,4 @@
+soldierTransformation:
+  - name: STR_TRANSFORMATION_WITHOUT_SOLDIER_TYPES
+    # allowedSoldierTypes:
+    #   - STR_FOOBAR

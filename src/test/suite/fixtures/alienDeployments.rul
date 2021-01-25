@@ -1,0 +1,12 @@
+alienDeployments:
+  - type: STR_TEST_ALIEN_DEPLOYMENT_NO_DATA
+
+  - type: STR_TEST_ALIEN_DEPLOYMENT_MISSING_DATA
+    data:
+      - alienRank: 1
+        dQty: 1
+        # lowQty: 1
+        # highQty: 2
+        # percentageOutsideUfo: 50
+        # itemSets: [[]]
+      - alienRank: 2

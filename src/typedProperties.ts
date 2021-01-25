@@ -1,5 +1,6 @@
 import { typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { logger } from "./logger";
+import { LogicHandler } from "./logic/logicHandler";
 import { Match, RuleType } from "./rulesetTree";
 
 type typePropertyHints = {
@@ -225,11 +226,13 @@ export class typedProperties {
         'globalVariables.ftaGame': true
     }
 
+    private static additionalLogicPaths: string[] = [];
     private static keyReferenceTypesRegexes: {regex: RegExp, settings: KeyReferenceOptions}[] = [];
     private static typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
 
     public static init () {
         this.addTypeLinks();
+        this.getAdditionalLogicPaths();
         this.loadRegexes();
     }
 
@@ -281,6 +284,10 @@ export class typedProperties {
         }
 
         return typeKey;
+    }
+
+    public static getPossibleTypeKeys(ruleType: string): string[] {
+        return this.typePropertyHints[ruleType] || ['type'];
     }
 
     /**
@@ -494,15 +501,18 @@ export class typedProperties {
         return this.globalVariablePaths.includes(path);
     }
 
+    public static isAdditionalLogicPath(path: string) {
+        return this.additionalLogicPaths.includes(path);
+    }
+
     private static addTypeLinks() {
         for (const link in typeLinks) {
             if (link.startsWith('/') && link.endsWith('/')) {
                 continue;
             }
 
-            // const target = ;
-            const newLink = link.split('.').slice(0, -1).join('.');
-            const key = link.split('.').slice(-1).join('.');
+            const newLink = link.split('.').slice(0, 1).join('.');
+            const key = link.split('.').slice(1).join('.');
 
             // console.log(`new link ${newLink} new key ${key}`);
             if (!(newLink in this.typeProperties)) {
@@ -527,6 +537,10 @@ export class typedProperties {
                 this.typeProperties[newLink][key].type = 'numeric';
             }
         }
+    }
+
+    private static getAdditionalLogicPaths () {
+        this.additionalLogicPaths = (new LogicHandler).getPaths();
     }
 
     public static isRegexTypeLink(path: string) {
