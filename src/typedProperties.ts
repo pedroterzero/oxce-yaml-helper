@@ -314,8 +314,8 @@ export class typedProperties {
 
     public static getDefinitionTypeForReference(path: string): string | undefined {
         // const [root, subPath] = path.split('.', );
-        const root = path.split('.').slice(0, -1).join('.');
-        const subPath = path.split('.').slice(-1)[0];
+        const root = path.split('.').slice(0, 1).join('.');
+        const subPath = path.split('.').slice(1).join('.');
 
         if (!this.typeProperties[root] || !this.typeProperties[root][subPath]) {
             const targets = this.isRegexTypeLink(path);

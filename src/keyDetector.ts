@@ -131,8 +131,8 @@ export class KeyDetector {
 
                 // is this parent followed by an array or was previous line an array?
                 let isArray = matches[3]?.trim() === '[';
-                let prevLineMatches;
-                if (!isArray && (prevLineMatches = new RegExp(`^\\s{${indent + 1},}-([^:]+:[^:]+)?$`).exec(prevLine))) {
+                // let prevLineMatches;
+                if (!isArray && (/*prevLineMatches = */new RegExp(`^\\s{${indent + 1},}-([^:]+:[^:]+)?$`).exec(prevLine))) {
                     // if the previous line started with - and it had a : after that, it's an (unnamed) array
                     isArray = true;
                 }

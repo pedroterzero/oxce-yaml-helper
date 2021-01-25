@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { resolve } from 'path';
-import { MarkdownString, Position, TextDocument, workspace } from 'vscode';
+import { Position, TextDocument, workspace } from 'vscode';
 import { RulesetCompletionProvider } from '../../rulesetCompletionProvider';
 
 const fixturePath = resolve(__dirname, '../../../src/test/suite/fixtures');
