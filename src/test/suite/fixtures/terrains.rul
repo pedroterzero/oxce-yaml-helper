@@ -1,0 +1,16 @@
+terrains:
+  - name: TEST_BAD_MAPSCRIPT
+    script: TEST_BAD_MAPSCRIPT
+    mapBlocks:
+      - name: BLOCK1
+        width: 10
+        length: 10
+        groups: 1
+
+  - name: TEST_GOOD_MAPSCRIPT
+    script: TEST_GOOD_MAPSCRIPT
+    mapBlocks:
+      - name: BLOCK1
+        width: 10
+        length: 10
+        groups: [1, 2]

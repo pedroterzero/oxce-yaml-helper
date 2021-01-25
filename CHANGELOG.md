@@ -1,3 +1,6 @@
+# v0.6.0
+- New logic checks: detect common and uncommon segmentation faults and other problems
+
 # v0.5.1
 - Fix missing inventories
 

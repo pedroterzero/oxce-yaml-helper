@@ -3,6 +3,8 @@ import { rulesetResolver } from "./extension";
 import { WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 
 export class WorkspaceFolderRulesetHierarchy {
+    private definitions: {[key: string]: {[key: string]: true}} = {};
+
     public constructor(private ruleset: WorkspaceFolderRuleset) {
 
     }
@@ -51,5 +53,35 @@ export class WorkspaceFolderRulesetHierarchy {
         }
 
         return parsed;
+    }
+
+    private getDefinitions() {
+        if (Object.keys(this.definitions).length > 0) {
+            return;
+        }
+
+        const hierarchy = rulesetResolver.getRulesetHierarchy();
+
+        const modFiles = this.ruleset.rulesetFiles.filter(file => file.file.path.startsWith(Uri.joinPath(hierarchy.vanilla, '/').path));
+
+        for (const file of modFiles) {
+            for (const def of file.definitions) {
+                if (def.type.match(/^extra(Sprites|Sounds)\./)) {
+                    continue;
+                }
+
+                if (!(def.type in this.definitions)) {
+                    this.definitions[def.type] = {};
+                }
+
+                this.definitions[def.type][def.name] = true;
+            }
+        }
+    }
+
+    public hasDefinition(type: string, key: string) {
+        this.getDefinitions();
+
+        return type in this.definitions && key in this.definitions[type];
     }
 }

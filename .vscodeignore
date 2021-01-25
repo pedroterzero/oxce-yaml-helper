@@ -12,6 +12,7 @@ docs/install
 node_modules/**/*.jpg
 node_modules/**/*.md
 node_modules/**/*.ts
+node_modules/**/.github
 node_modules/yaml/browser
 .attic
 .history
@@ -19,3 +20,7 @@ node_modules/yaml/browser
 coverage
 .nyc_output
 *.orig
+Dockerfile
+.dockerignore
+docker-compose.yml
+*.sh
