@@ -1,3 +1,6 @@
+# FIXME
+- Added vanilla `alienMissions.rul` (it was causing false positives)
+
 # v0.6.0
 - New logic checks: detect common and uncommon segmentation faults and other problems
 
