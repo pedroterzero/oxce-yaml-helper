@@ -1,4 +1,5 @@
-# FIXME
+# v0.7.0
+- Added Y-script syntax highlighting
 - Added vanilla `alienMissions.rul` (it was causing false positives)
 
 # v0.6.0
