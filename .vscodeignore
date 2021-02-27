@@ -8,6 +8,7 @@ tsconfig.json
 vsc-extension-quickstart.md
 tslint.json
 docs/*.gif
+docs/*.png
 docs/install
 node_modules/**/*.jpg
 node_modules/**/*.md
@@ -24,3 +25,4 @@ Dockerfile
 .dockerignore
 docker-compose.yml
 *.sh
+tsconfig.tsbuildinfo
