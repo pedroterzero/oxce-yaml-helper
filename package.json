@@ -97,6 +97,29 @@
                     ".rul",
                     ".nam"
                 ]
+            },
+            {
+                "id": "y-script",
+                "extensions": [
+                    ".ys"
+                ]
+            }
+        ],
+        "grammars": [
+            {
+                "path": "./syntaxes/injection.json",
+                "scopeName": "y-scripts.injection",
+                "injectTo": [
+                    "source.yaml"
+                ],
+                "embeddedLanguages": {
+                    "meta.embedded.inline.y-script": "y-script"
+                }
+            },
+            {
+                "language": "y-script",
+                "scopeName": "source.y-script",
+                "path": "./syntaxes/y-script.tmGrammar.json"
             }
         ]
     },
