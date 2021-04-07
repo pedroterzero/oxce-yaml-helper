@@ -233,6 +233,7 @@ export class typedProperties {
     public static init () {
         this.addTypeLinks();
         this.getAdditionalLogicPaths();
+        this.getAdditionalMetadataFields();
         this.loadRegexes();
     }
 
@@ -541,6 +542,20 @@ export class typedProperties {
 
     private static getAdditionalLogicPaths () {
         this.additionalLogicPaths = (new LogicHandler).getPaths();
+    }
+
+    private static getAdditionalMetadataFields () {
+        const fields = (new LogicHandler).getAdditionalMetadataFields();
+        for (const field of fields) {
+            const key = field.split('.').slice(0, -1).join('.');
+            const val = field.split('.').slice(-1).join('.');
+
+            if (!(key in this.metadataFields)) {
+                this.metadataFields[key] = [];
+            }
+
+            this.metadataFields[key].push(val);
+        }
     }
 
     public static isRegexTypeLink(path: string) {
