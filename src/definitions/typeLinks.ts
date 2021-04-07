@@ -1,4 +1,5 @@
 import { LogicHandler } from "../logic/logicHandler";
+import { getAdditionalLinks } from "../utilities";
 
 type TypeLinks = {
     [key: string]: string[]
@@ -236,7 +237,7 @@ export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLi
     'units.builtInWeaponSets[]': ['items'],
     'units.psiWeapon': ['items'],
     'units.spawnUnit': ['units']
-});
+}, getAdditionalLinks());
 
 // add numeric fields from logic handler
 const handler = new LogicHandler;

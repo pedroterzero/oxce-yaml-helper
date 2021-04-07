@@ -6,11 +6,6 @@ import { rulesetParser } from "./rulesetParser";
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { rulesetFileCacheManager } from './rulesetFileCacheManager';
 import { existsSync } from 'fs';
-import { parse } from 'yaml';
-// remove in node 14
-import { promises as fsp } from 'fs';
-const { readFile } = fsp;
-
 
 export type ParsedRuleset = {
     definitions?: Definition[];
@@ -18,13 +13,6 @@ export type ParsedRuleset = {
     variables?: Variables;
     translations: Translation[];
     logicData?: LogicDataEntry[];
-};
-
-type LinkerConfig = {
-    builtinTypes?: {
-        [key: string]: string[];
-    };
-    stringTypes?: string[];
 };
 
 export class RulesetResolver implements Disposable {
@@ -35,7 +23,6 @@ export class RulesetResolver implements Disposable {
     private readonly onDidLoadEmitter: EventEmitter = new EventEmitter();
     private readonly onDidRefreshEmitter: EventEmitter = new EventEmitter();
     private rulesetHierarchy: {[key: string]: Uri} = {};
-    private linkerConfig: LinkerConfig = {};
     private processingFiles: {[key: string]: boolean} = {};
     private deletingFiles: {[key: string]: boolean} = {};
     private savedFiles: {[key: string]: boolean} = {};
@@ -142,19 +129,11 @@ export class RulesetResolver implements Disposable {
         await Promise.all([
             await workspace.findFiles(this.yamlPattern),
             await workspace.findFiles('**/Language/*.yml'),
-            await workspace.findFiles('linker.yml')
         ]).then(values => {
             files = files
                 .concat(...values)
                 .filter(file => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
         });
-
-
-        const linkerExtensionConfig = files.filter(i => i.path === `${workspaceFolder.uri.fsPath}/linker.yml`);
-        if (linkerExtensionConfig.length) {
-            files = files.filter(i => i.path !== `${workspaceFolder.uri.fsPath}/linker.yml`);
-            this.loadExtensionConfig(linkerExtensionConfig[0].fsPath);
-        }
 
         await this.getAssetRulesets(files);
 
@@ -175,20 +154,6 @@ export class RulesetResolver implements Disposable {
         }
 
         return files;
-    }
-
-    private async loadExtensionConfig(path: string) {
-        const config = await readFile(path);
-
-        const parsed = parse(config.toString());
-
-        if ('config' in parsed) {
-            this.linkerConfig = parsed.config;
-        }
-    }
-
-    public getExtensionConfig() {
-        return this.linkerConfig;
     }
 
     private async getAssetRulesets(files: Uri[]) {
