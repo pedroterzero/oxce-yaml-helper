@@ -104,6 +104,17 @@ export class LogicHandler {
         return Object.keys(fields).sort();
     }
 
+    public getAdditionalMetadataFields(): string[] {
+        const fields: {[key: string]: boolean} = {};
+        for (const handler of handlers) {
+            const handlerObject = new handler();
+            for (const field of handlerObject.getAdditionalMetadataFields()) {
+                fields[field] = true;
+            }
+        }
+
+        return Object.keys(fields).sort();
+    }
 }
 
 // export const logicHandler = new LogicHandler();

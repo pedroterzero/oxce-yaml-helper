@@ -23,6 +23,7 @@ export class BaseLogic implements LogicInterface {
      * then also that they get properly handled (not treated as a regular reference)
      */
     protected numericFields: string[] = [];
+    protected additionalMetadataFields: string[] = [];
     protected relatedFieldLogicMethods: {[key: string]: (key: string) => void} = {};
     protected diagnostics?: Diagnostic[];
     protected diagnosticsPerFile: {[key: string]: Diagnostic[]} = {};
@@ -38,8 +39,12 @@ export class BaseLogic implements LogicInterface {
         return Object.keys(this.fields);
     }
 
-    public getNumericFields(): string[] {
+    public getNumericFields() {
         return this.numericFields;
+    }
+
+    public getAdditionalMetadataFields() {
+        return this.additionalMetadataFields;
     }
 
     public getRelatedLogicFields(): string[] {
