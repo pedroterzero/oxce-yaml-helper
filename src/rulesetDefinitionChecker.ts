@@ -40,6 +40,9 @@ export class RulesetDefinitionChecker {
         /^terrains\.mapBlocks\[\]$/,
     ];
 
+    private builtinTypes = builtinTypes;
+    private stringTypes = stringTypes;
+
     private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
     private typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
     private stringTypeRegexes: RegExp[] = [];
@@ -58,6 +61,7 @@ export class RulesetDefinitionChecker {
     }
 
     public init(lookup: TypeLookup) {
+        this.loadExtensionConfig();
         this.checkDefinitions(lookup);
         this.logicHandler = new LogicHandler;
     }
@@ -433,7 +437,7 @@ export class RulesetDefinitionChecker {
             // ignore extraStrings for now
             return false;
         }
-        if (ref.path in builtinTypes && builtinTypes[ref.path].indexOf(ref.key) !== -1) {
+        if (ref.path in this.builtinTypes && this.builtinTypes[ref.path].indexOf(ref.key) !== -1) {
             return false;
         } else if (this.matchesBuiltinTypeRegex(ref.path, ref.key)) {
             return false;
@@ -452,7 +456,7 @@ export class RulesetDefinitionChecker {
     }
 
     private isExtraStringType(path: string) {
-        if (stringTypes.includes(path)) {
+        if (this.stringTypes.includes(path)) {
             return true;
         }
 
@@ -483,12 +487,32 @@ export class RulesetDefinitionChecker {
         this.problemsByPath = {};
     }
 
+    private loadExtensionConfig() {
+        const config = rulesetResolver.getExtensionConfig();
+
+        if (config.builtinTypes) {
+            this.builtinTypes = {...builtinTypes, ...config.builtinTypes};
+
+            // reload regexes
+            this.builtinTypeRegexes = [];
+            this.loadRegexes();
+        }
+
+        if (config.stringTypes) {
+            this.stringTypes = stringTypes.concat(config.stringTypes);
+
+            // reload regexes
+            this.stringTypeRegexes = [];
+            this.loadRegexes();
+        }
+    }
+
     private loadRegexes () {
-        for (const type in builtinTypes) {
+        for (const type in this.builtinTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.builtinTypeRegexes.push({
                     regex: new RegExp(type.slice(1, -1)),
-                    values: builtinTypes[type]
+                    values: this.builtinTypes[type]
                 });
 
                 delete builtinResourceIds[type];
@@ -506,7 +530,7 @@ export class RulesetDefinitionChecker {
             }
         }
 
-        for (const type of stringTypes) {
+        for (const type of this.stringTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.stringTypeRegexes.push(new RegExp(type.slice(1, -1)));
 
