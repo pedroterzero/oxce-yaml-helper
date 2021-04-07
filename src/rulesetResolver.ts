@@ -125,10 +125,9 @@ export class RulesetResolver implements Disposable {
 
     private async getYamlFilesForWorkspaceFolder(workspaceFolder: WorkspaceFolder): Promise<Uri[]> {
         let files: Uri[] = [];
-
         await Promise.all([
             await workspace.findFiles(this.yamlPattern),
-            await workspace.findFiles('**/Language/*.yml'),
+            await workspace.findFiles('**/Language/*.yml')
         ]).then(values => {
             files = files
                 .concat(...values)
