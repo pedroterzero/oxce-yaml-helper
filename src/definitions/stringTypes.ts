@@ -1,3 +1,5 @@
+import { getAdditionalStringTypes } from "../utilities";
+
 const ftaStringTypes = [
     'alienDeployments.missionCompleteText',
     'alienDeployments.missionFailedText',
@@ -45,4 +47,4 @@ export const stringTypes = ftaStringTypes.concat([
     // not sure
     // 'items.categories',
     // 'manufacture.category',
-]);
+], getAdditionalStringTypes());
