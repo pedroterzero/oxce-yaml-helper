@@ -6,39 +6,6 @@ type TypeLinks = {
     // [key: string]: (string | [string, number])[];
 };
 
-const ftaTypeLinks: TypeLinks = {
-    'alienDeployments.battleScript': ['battleScripts'],
-    'battleScripts.commands[].unitSet': ['units'],
-    '/^battleScripts\\.commands\\[\\]\\.messages\\.\\d+\\.background$/': ['extraSprites'],
-    'covertOperations.successEvent': ['events'],
-    'covertOperations.failureEvent': ['events'],
-    'covertOperations.progressEvent': ['events'],
-    'covertOperations.successWeightedItemList': ['items'], // untested
-    'covertOperations.failureWeightedItemList': ['items'], // untested
-    'covertOperations.successResearchList': ['research'],
-    'covertOperations.failureResearchList': ['research'],
-    'covertOperations.successMissions': ['alienMissions'], // untested
-    'covertOperations.failureMissions': ['alienMissions'], // untested
-    'covertOperations.instantTrapDeployment': ['alienDeployments'],
-    'covertOperations.instantSuccessDeployment': ['alienDeployments'],
-    'covertOperations.successReputationScore ': ['diplomacyFactions'],
-    'covertOperations.failureReputationScore ': ['diplomacyFactions'],
-    'covertOperations.requires': ['research'],
-    'covertOperations.requiresBaseFunc': ['facilities.provideBaseFunc'],
-    'covertOperations.requiredItems': ['items'],
-    'covertOperations.allowedArmor': ['armors'],
-    'covertOperations.soldierTypeEffectiveness': ['soldiers'], // untested
-    '/^events\\.customAnswers\\.[0-3]\\.title$/': ['events'], // untested
-    'diplomacyFactions.discoverResearch': ['research'],
-    'diplomacyFactions.discoverEvent': ['events'],
-    'diplomacyFactions.helpTreatyMissions': ['missionScripts'],
-    'diplomacyFactions.helpTreatyEvents': ['eventScripts'],
-    'globalVariables.baseConstructionUnlockResearch': ['research'],
-    'globalVariables.ufopaediaUnlockResearch': ['research'],
-    // sellingSet - this is changing ATM by Stoddard dramatically
-    'units.altRecoveredUnit': ['units']
-};
-
 export const spriteTypeLinks: TypeLinks = {
     'crafts.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
     'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
@@ -70,7 +37,7 @@ export const soundTypeLinks: TypeLinks = {
     'units.panicSound': ['_numeric_', BATTLE_CAT],
 };
 
-export const typeLinks: TypeLinks = Object.assign({}, ftaTypeLinks, spriteTypeLinks, soundTypeLinks, {
+export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundTypeLinks, {
     'alienDeployments.abortCutscene': ['cutscenes'],
     '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': ['alienDeployments'],
     'alienDeployments.briefing.cutscene': ['cutscenes'],

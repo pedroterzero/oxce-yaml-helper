@@ -6,6 +6,7 @@ type LinkerConfig = {
     builtinTypes?: {
         [key: string]: string[];
     };
+    ignoreTypes?: string[];
     stringTypes?: string[];
     typeLinks?: {
         [key: string]: string[];
@@ -63,4 +64,8 @@ export const getAdditionalBuiltinTypes = () => {
 
 export const getAdditionalStringTypes = () => {
     return getLinkerConfig()?.stringTypes ?? [];
+};
+
+export const getAdditionalIgnoreTypes = () => {
+    return getLinkerConfig()?.ignoreTypes ?? [];
 };

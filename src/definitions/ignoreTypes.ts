@@ -1,4 +1,5 @@
 import { typedProperties } from "../typedProperties";
+import { getAdditionalIgnoreTypes } from "../utilities";
 
 /**
  * Prevent the following types being checked as references
@@ -10,9 +11,6 @@ export const ignoreTypes = [
     'armors.scripts.recolorUnitSprite',
     'armors.scripts.selectUnitSprite',
     'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
-    'battleScripts.commands[].spawnBlocks', // FtA
-    'battleScripts.commands[].type', // FtA
-    'covertOperations.specialRule', // FtA
     'crafts.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
     'crafts.battlescapeTerrainData.mapDataSets', // may want to check that the files exist
     'crafts.battlescapeTerrainData.name', // may want to check that the files exist
@@ -47,5 +45,4 @@ export const ignoreTypes = [
     'ufos.battlescapeTerrainData.name', // may want to check that the files exist
     'units.race', // optional according to Finnik
     // 'units.civilianRecoveryType', // ruleset validator will catch it
-    'units.specialObjectiveType', // FtA, ruleset validator will catch it
-].concat(typedProperties.getStoreVariables());
+].concat(typedProperties.getStoreVariables(), getAdditionalIgnoreTypes());

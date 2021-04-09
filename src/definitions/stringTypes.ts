@@ -1,18 +1,6 @@
 import { getAdditionalStringTypes } from "../utilities";
 
-const ftaStringTypes = [
-    'alienDeployments.missionCompleteText',
-    'alienDeployments.missionFailedText',
-    '/^battleScripts\\.commands\\[\\]\\.messages\\.\\d+\\.(answer|content|title)$/',
-    'covertOperations.description',
-    'covertOperations.successDescription',
-    'diplomacyFactions.description',
-    'events.description',
-    '/^globalVariables\\.loyaltyRatings\\.-?\\d+$/',
-    '/^globalVariables\\.reputationLevels\\.-?\\d+$/',
-];
-
-export const stringTypes = ftaStringTypes.concat([
+export const stringTypes = ([] as string[]).concat([
     'alienDeployments.alert',
     'alienDeployments.alertDescription',
     'alienDeployments.briefing.desc',
