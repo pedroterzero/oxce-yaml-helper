@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "fs";
-import { Uri, workspace } from "vscode";
+import { env, Uri, window, workspace } from "vscode";
 import { parse } from "yaml";
 
 type LinkerConfig = {
@@ -12,8 +12,8 @@ type LinkerConfig = {
     };
 };
 
-
 let config: LinkerConfig;
+let errorShown = false;
 
 const getLinkerConfig = () => {
     if (config) {
@@ -29,10 +29,20 @@ const getLinkerConfig = () => {
             try {
                 parsed = parse(configFile.toString());
             } catch (error) {
-                //
+                console.error('error parsing linker.yml, ignoring it'/*, error*/);
+                if (!errorShown) {
+                    window.showErrorMessage('Error: could not parse linker.yml, syntax error?', {
+                       modal: true
+                    }, 'Show documentation').then(result => {
+                        if (result === 'Show documentation') {
+                            env.openExternal(Uri.parse('https://github.com/pedroterzero/oxce-yaml-helper/wiki/linker.yml'));
+                        }
+                    });
+                    errorShown = true;
+                }
             }
 
-            if ('config' in parsed && parsed.config) {
+            if (parsed && typeof parsed === 'object' && 'config' in parsed && parsed.config) {
                 config = parsed.config;
 
                 return config;
@@ -42,8 +52,6 @@ const getLinkerConfig = () => {
 
     return {};
 };
-
-// const readLinkerConfig
 
 export const getAdditionalLinks = () => {
     return getLinkerConfig()?.typeLinks ?? {};
