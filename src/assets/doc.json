@@ -450,6 +450,10 @@
       "description": "A list describing the craft's weapon slots (up to 4 slots).",
       "default": "[STR_WEAPON_ONE, STR_WEAPON_TWO]"
     },
+    "fixedWeapons": {
+      "description": "A list with fixed built-in craft weapons (up to 4 slots). More info: [https://openxcom.org/forum/index.php/topic,9047.0.html](https://openxcom.org/forum/index.php/topic,9047.0.html)",
+      "default": "-"
+    },
     "soldiers": {
       "description": "Amount of soldiers this craft can carry.",
       "default": "0"
@@ -1119,23 +1123,23 @@
       "default": "false"
     },
     "confAimed": {
-      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```",
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```",
       "default": "-"
     },
     "confSnap": {
-      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```",
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```",
       "default": "-"
     },
     "confAuto": {
-      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```",
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```",
       "default": "-"
     },
     "confMelee": {
-      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```",
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```",
       "default": "-"
     },
     "psiAttackName": {
-      "description": "Besides panic attack and mind control, weapons of psi-amp type can have also a third type of attack, bound to \"use\" attributes (for example **costUse**). This attribute defines what should be the name of such attack in the action menu (e.g. Seduce, VooDoo spell, etc.).",
+      "description": "Besides panic attack and mind control, weapons of psi-amp type can have also a third type of attack, bound to \"use\" attributes (for example **costUse**). This attribute defines what should be the name of such attack in the action menu (e.g. Seduce, VooDoo spell, etc.).\n\nNote: also allows to rename motion scanner and mind probe use actions.",
       "default": "-"
     },
     "primeActionName": {
@@ -1271,7 +1275,7 @@
       "default": "-"
     },
     "experienceTrainingMode": {
-      "description": "Defines which skill(s) should improve when the soldiers gain experience by hitting enemy units (or healing fatal wounds of any units).\n\nMore info: [https://openxcom.org/forum/index.php/topic,4230.0.html](https://openxcom.org/forum/index.php/topic,4230.0.html)",
+      "description": "Defines which skill(s) should improve when the soldiers gain experience by hitting enemy units (or healing fatal wounds of any units; or performing psi attacks).\n\nMore info: [https://openxcom.org/forum/index.php/topic,4230.0.html](https://openxcom.org/forum/index.php/topic,4230.0.html)",
       "default": "0"
     },
     "manaExperience": {
@@ -1317,10 +1321,6 @@
     "medikitType": {
       "description": "Defines, which functions can this medikit perform. Possible options:\n\n*   0 = All functions\n*   1 = Heal only\n*   2 = Stimulant only\n*   3 = Painkiller only",
       "default": "0"
-    },
-    "allowSelfHeal": {
-      "description": "Deprecated. Use **medikitTargetSelf** instead.",
-      "default": "false"
     },
     "medikitTargetSelf": {
       "description": "Is it possible to use the medikit on oneself (true)? Or only on other units (false)? Ignores other settings.",
@@ -1729,7 +1729,7 @@
       "default": "0"
     },
     "breakOffTime": {
-      "description": "Minimum amount of time for the UFO to be able to break off of a dogfight.",
+      "description": "Minimum amount of time for the UFO to be able to break off of a dogfight. The equation is X + (0->X) - (30 \\* difficultyCoefficient). For example, if you set the breakOffTime to 100, then on Beginner (difficultyCoefficient: 0) you will get anywhere from 100 to 200 gs before retreat (which is a pretty small amount). But for the same value on Superhuman (difficultyCoefficient: 4), you will get 120 gs shorter time, which is anywhere from negative 20 to positive 80 gs, meaning there will be a 20% chance for the interception window to close immediately as soon as you engage the UFO. This is assuming vanilla difficultyCoefficient.",
       "default": "0"
     },
     "missionScore": {
@@ -1954,6 +1954,74 @@
     },
     "randomizedItems": {
       "description": "A list of additional items to add to this mapblock, using a more randomized approach. Does not support pre-priming of items.\n\nExample:\n\n```\n randomizedItems:\n   - position: [12, 15, 2]\n     amount: 3\n     mixed: true\n     itemList: [STR_ITEM_1, STR_ITEM_2, STR_ITEM_3, STR_ITEM_3]\n\n```\n\nIn this example:\n\n*   3 items will be placed on the tile at coordinates \\[x,y,z\\] = \\[12, 15, 2\\]\n*   all 3 items can be different (_mixed: true_); if you wanted 3 items of the same type use _mixed: false_\n*   items are selected from the _itemList_ randomly; to increase odds for a certain item type, you can add it to the list multiple times\n    *   in our example STR\\_ITEM\\_1 has 25% chance, STR\\_ITEM\\_2 also 25% chance and STR\\_ITEM\\_3 a 50% chance",
+      "default": "-"
+    },
+    "type": {
+      "description": "Filename of the MCD file.",
+      "default": "required"
+    },
+    "bigWall": {
+      "description": "Type of BigWall, byte #33. 1 = solid block, 2 = diagonal (--), 3 = diagonal (l), 4 = west wall, 5 = north wall, 6 = east wall, 7 = south wall, 8 = south and east wall, 9 = north and west wall",
+      "default": "-"
+    },
+    "TUWalk": {
+      "description": "TU cost to walk on this tile, byte #39. Walking is ground movement by any unit with movementType 0 or 1. If tile is an object or wall, TU cost is added to the TU cost of the floor tile under it.",
+      "default": "-"
+    },
+    "TUFly": {
+      "description": "TU cost to fly on this tile, byte #41. Flying is movement not tied to the ground. Some flying units (movementType 1) still walk whenever there is a floor tile underneath them. If tile is an object or wall, TU cost is added to the TU cost of the floor tile under it.",
+      "default": "-"
+    },
+    "TUSlide": {
+      "description": "TU cost to slide on this tile, byte #40. Siding is ground movement by any unit with movementType 2. (Example: Snakeman.) If tile is an object or wall, TU cost is added to the TU cost of the floor tile under it.",
+      "default": "-"
+    },
+    "deathTile": {
+      "description": "The tile to replace once this tile is destroyed, byte #44. DeathTile must be within the same MCD and cannot use 0 or 1. If You set DeathTile to 0 or 1, they become either air (nothing) (0) or scorched earth (1) from BLANKS.MCD. While a map file cannot initially contain anything beyond its 256 max tile list (0-253 plus BLANKS), OpenXcom is able to render tiles outside of this range during battlescape gameplay. So the final MCD tileset in the terrain's list of tiles may contain some tiles within the 256 limit which are placed initially, and which can then die to become tiles which are outside the limit.",
+      "default": "-"
+    },
+    "terrainHeight": {
+      "description": "Height of terrain, byte #48. Used for object tiles. One tile \"cube\" is 24 voxels in height, and you use negative values to raise the \"floor height\" of the tile. So a value of -12 would be halfway to the top. Positive values can be used to make its floor sink below the tile.",
+      "default": "-"
+    },
+    "specialType": {
+      "description": "Type of tile, used primarily in after-mission item recovery, byte #59. 0 = nothing special; 1 = X-Com entry (used to spawn X-Com units); 2 = UFO Power Source (which has a 75% chance of exploding when the battlescape loads if it is a crash site); 3 = UFO Navigation; 4 = UFO Construction; 5 = Alien Food (UFO), Alien Cryogenics (TFTD); 6 = Alien Reproduction (UFO), Alien Cloning (TFTD); 7 = Alien Entertainment (UFO), Alien Learning Arrays (TFTD); 8 = Alien Surgery (UFO), Genetic Implanter (TFTD); 9 = Examination Room; 10 = Alien Alloys (UFO), Aqua Plastics (TFTD) - by default 10 of these tiles recovers for one unit from a UFO/USO, while 150 tiles recover for one unit from alien base/colony - see recoveryDividers to change this; 11 = Alien Habitat (UFO), Re-animation Zone (TFTD); 12 = damaged UFO tile; 13 = exit point (used to move to next map for the same mission); 14 = alien brain (UFO), T'Leth supports (TFTD) (boss tiles: destroy any of these to win the game). You can define higher numbers for recovery in OpenXcom as long as you put a corresponding specialType of the same value on the ruleset items entry which shall be recovered. But beware, MCDs with specialType greater than 14 may crash your map editor.",
+      "default": "-"
+    },
+    "explosive": {
+      "description": "Explosion Strength, byte #55. Changing this value also seems to change the tile's HE\\_Type:54 value to 0 (high explosive). Most vanilla explosive tiles are type 1 (smoke). There is currently no way to edit the explosive type via mcdPatches.",
+      "default": "-"
+    },
+    "flammability": {
+      "description": "Threshold to turn this tile on fire, byte #45. Similar to the tile's armor value, if this value is exceeded with an explosive blast (high explosive type), it will ignite.",
+      "default": "-"
+    },
+    "fuel": {
+      "description": "The amount of turns this tile will burn for, byte #57. Seems to be based on fire from tile igniting due to flammability value, and doesn't affect fire caused by an incendiary blast.",
+      "default": "-"
+    },
+    "footstepSound": {
+      "description": "Index of the footstep sound, byte #52. 1 = metal, 2 = normal, 3 = furniture? or mountain grass, 4 = water, 5 = sand, 6 = Martian sand (original DOS version), snow (Collector's Edition and most modern editions), 7 = snow (DOS version)",
+      "default": "-"
+    },
+    "HEBlock": {
+      "description": "[HE Blockage](https://www.ufopaedia.org/index.php/Explosions#HE_Block) Byte #43.",
+      "default": "-"
+    },
+    "noFloor": {
+      "description": "Byte #32. 1 = non-flying units will fall through; 0 = units can stand on it.",
+      "default": "-"
+    },
+    "LOFTS": {
+      "description": "[LOFTEMPS.DAT](https://www.ufopaedia.org/index.php/LOFTEMPS.DAT) Line Of Fire Template (LOFT) for the tile described as a vector, bytes #8 - #19. Each value corresponds to an index on the LOFT spritesheet and determines the voxel shape of the tile's hitbox.",
+      "default": "-"
+    },
+    "stopLOS": {
+      "description": "Byte #31. 1 = tile blocks vision like a bigwall 1; 0 = tile only blocks vision based on its LOFTs. In some cases setting this to 1 may improve performance.",
+      "default": "-"
+    },
+    "objectType": {
+      "description": "Tile type, byte #53. 0 = floor; 1 = west wall; 2 = north wall; 3 = object. Determines how the tile functions when it appears dynamically as a death tile. Does not control how tiles are placed in the map files, however your map editor can reference this and color-code tiles to advise you on its intended placement. May affect tunnels.",
       "default": "-"
     }
   },
@@ -2307,6 +2375,10 @@
     "allowsMoving": {
       "description": "Does this armor allow moving?",
       "default": "true"
+    },
+    "isPilotArmor": {
+      "description": "Can this armor provide stat bonuses for pilots during dogfights?",
+      "default": "false"
     },
     "allowTwoMainWeapons": {
       "description": "During autoequip (e.g. when equipping built-in armor weapons), allow 2 main weapons. Only applies to XCOM, aliens and civilians have it allowed by default.",
@@ -3104,6 +3176,18 @@
       "description": "Should the unit get \"stuck\" trying to fire from outside of weapon range? OXC bug, that may serve as \"feature\" in rare cases.\n\nNote: the default value is to fix the OXC bug.",
       "default": "false"
     },
+    "canPanic": {
+      "description": "Can this unit be targeted with a psi panic attack?",
+      "default": "true"
+    },
+    "canBeMindControlled": {
+      "description": "Can this unit be targeted with a psi mind control attack?",
+      "default": "true"
+    },
+    "berserkChance": {
+      "description": "Chance that a panicked unit berserks. The complement corresponds to fleeing/freezing chance.",
+      "default": "33"
+    },
     "canSurrender": {
       "description": "Can this unit surrender?",
       "default": "false"
@@ -3220,6 +3304,10 @@
     },
     "retaliationMission": {
       "description": "String ID of an alien mission, that can be generated after a dogfight against this race. If empty, a random retaliation mission will be used instead.",
+      "default": "-"
+    },
+    "retaliationMissionWeights": {
+      "description": "A weighted list of alien missions that can be generated after a dogfight against this race, listed by \"number of months passed\". If used, **retaliationMission** is ignored.\n\nMore info: [https://openxcom.org/forum/index.php/topic,9496.0.html](https://openxcom.org/forum/index.php/topic,9496.0.html)",
       "default": "-"
     },
     "retaliationAggression": {
@@ -3707,6 +3795,10 @@
     "mapBackgroundColor": {
       "description": "Possibility to change the color of the background outside of the map boundaries. Used for example to visually indicate the type of environment.",
       "default": "15"
+    },
+    "ignoreAutoNightVisionUserSetting": {
+      "description": "Allows the modder to turn off the automatic night vision user option for this particular environment.",
+      "default": "false"
     },
     "inventoryShockIndicator": {
       "description": "String ID of the shock indicator sprite (in the inventory). Used to override the global one, for example in normal environment it can indicate body shock, in underwater environment drowning and in space suffocating.",
@@ -4763,7 +4855,7 @@
       "default": "false"
     },
     "chanceToStopRetaliation": {
-      "description": "If an XCOM base is found and a battleship sent to attack it is shot down by base defense facilities, aliens will keep sending new battleships _forever_. This setting defines a chance that they reconsider their decision and stop sending more battleships.",
+      "description": "If an XCOM base is found and a battleship sent to attack it is shot down by base defense facilities, aliens will keep sending new battleships potentially for a long time. This setting defines a chance that they reconsider their decision (after each failed attack) and stop sending more battleships.",
       "default": "0"
     },
     "lessAliensDuringBaseDefense": {
@@ -4786,6 +4878,10 @@
       "description": "Cost of hiring a single engineer. If not specified (0), it costs twice as much as the monthly salary.",
       "default": "0"
     },
+    "hireEngineersUnlockResearch": {
+      "description": "Research topic required to be able to hire engineers.",
+      "default": "-"
+    },
     "costScientist": {
       "description": "Monthly salary of a single scientist (in dollars). Please note that hiring cost is twice as much.",
       "default": "0"
@@ -4793,6 +4889,10 @@
     "costHireScientist": {
       "description": "Cost of hiring a single scientist. If not specified (0), it costs twice as much as the monthly salary.",
       "default": "0"
+    },
+    "hireScientistsUnlockResearch": {
+      "description": "Research topic required to be able to hire scientists.",
+      "default": "-"
     },
     "soldiersPerSergeant": {
       "description": "How many soldiers (of any rank) are required to unlock a new sergeant promotion.",
@@ -5110,6 +5210,10 @@
       "description": "Difficulty coefficients (per 5 game difficulty levels) affecting various game mechanics, for example:\n\n*   Monthly rating threshold for losing the game (together with **defeatScore**) | (defeatScore) +100 points \\* difficultyCoefficient\n*   UFO firing rate during dogfight | -2 gs \\* difficultyCoefficient\n*   UFO escape countdown during dogfight | (100-200%) -30 gs \\* difficultyCoefficient\n*   Retaliation odds after shooting down UFO | (4%) +4% \\* difficultyCoefficient\n*   Odds of shootdown-triggered retaliation targeting xcom base region or not | (50%) +6% \\* difficultyCoefficient (needs confirmation)\n*   Chance of aliens facing in the direction of the xcom craft at a start of a mission | 25% \\* difficultyCoefficient\n*   Various AI decisions (in Battlescape)\n*   Together with **statGrowthMultipliers** affects how alien stats change with difficulty level | + (statGrowthMultipliers/100) \\* difficultyCoefficient\n*   Does not affect aimAndArmorMultipliers.",
       "default": "[0, 1, 2, 3, 4]"
     },
+    "difficultyBasedRetaliationDelay": {
+      "description": "Defines a delay (in months, per difficulty level) for spawning retaliation missions after dogfights. If the campaign is still in the \"protected period\", retaliation missions won't spawn. This can be used to prevent unlucky base defense missions in early game for beginners.\n\nNote: does not affect regularly spawned retaliation missions (via monthly mission script), nor alien base gen/hunt missions.",
+      "default": "[0, 0, 0, 0, 0]"
+    },
     "aimAndArmorMultipliers": {
       "description": "Affects armor values and firing accuracy of aliens for different difficulty levels.",
       "default": "[0.5, 1.0, 1.0, 1.0, 1.0]"
@@ -5125,6 +5229,10 @@
     "defeatFunds": {
       "description": "Debt threshold (at a start of a month) for losing the game, on all difficulty levels.",
       "default": "0"
+    },
+    "sellPriceCoefficient": {
+      "description": "Affects global sell prices. Defined in percent per difficulty level. Example:```\n sellPriceCoefficient: [150, 100, 80, 60, 40]\n\n```",
+      "default": "-"
     },
     "damageRange": {
       "description": "Defines the damage range for projectile weapons. 100 means 0-200% range, 50 means 50-150% range, 25 means 75-125% range, etc.",
