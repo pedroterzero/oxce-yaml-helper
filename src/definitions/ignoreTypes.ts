@@ -3,6 +3,8 @@ import { getAdditionalIgnoreTypes } from "../utilities";
 
 /**
  * Prevent the following types being checked as references
+ *
+ * ATTENTION: a lot of these are in here not because they have unknowable values, but because the json schema validator is already catching them
  */
 export const ignoreTypes = [
     'armors.layersDefaultPrefix',

@@ -46,11 +46,19 @@ export class RulesetCompletionProvider implements CompletionItemProvider {
         // return items;
     }
 
+    /**
+     * Should autocomplete be triggered? Rules (currently) are:
+     * - should not be end of file (why?)
+     * - next char should be ",", "<space>" or "]"
+     * @param position
+     * @param document
+     * @returns
+     */
     private shouldComplete(position: Position, document: TextDocument) {
         let rest = document.getText().slice(document.offsetAt(position)).replace(/\r\n/g, "\n") + "\n";
         rest = rest.slice(0, rest.indexOf("\n"));
 
-        return rest.length === 0 || [',', ' '].includes(rest.slice(0, 1));
+        return rest.length === 0 || [',', ' ', ']'].includes(rest.slice(0, 1));
     }
 
     private buildCompletionItemList(target: string, key: string | undefined, workspaceFolder: WorkspaceFolder): CompletionItem[] | undefined {
