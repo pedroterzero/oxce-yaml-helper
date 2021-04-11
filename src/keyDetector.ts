@@ -103,7 +103,8 @@ export class KeyDetector {
     public static findRulePath(position: Position, document: TextDocument): string {
         const text = document.getText().slice(0, document.offsetAt(position));
 
-        const lines = text.split("\n").reverse();
+        // handle CRLF also
+        const lines = text.split(/\r?\n/).reverse();
         const editLine = lines.shift();
         const matches = editLine?.match(/^(\s+)([a-zA-Z0-9-]+)(:(?:\s*\[\s*\[)?)?/);
         const path = [];
