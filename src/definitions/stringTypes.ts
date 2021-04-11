@@ -14,6 +14,7 @@ export const stringTypes = ([] as string[]).concat([
     'enviroEffects.environmentalConditions.STR_FRIENDLY.message',
     'enviroEffects.environmentalConditions.STR_HOSTILE.message',
     'enviroEffects.environmentalConditions.STR_NEUTRAL.message',
+    'events.description',
     'items.confAimed.name',
     'items.confAuto.name',
     'items.confMelee.name',
