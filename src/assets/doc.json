@@ -4094,11 +4094,53 @@
     },
     "waves": {
       "description": "List of UFO waves to spawn as this mission progresses, as described below.",
-      "default": "required"
+      "default": "required",
+      "subDescriptions": {
+        "ufo": {
+          "description": "String ID of the [UFO](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#UFOs) to spawn.",
+          "default": "required"
+        },
+        "count": {
+          "description": "Number of UFOs to spawn.",
+          "default": "0"
+        },
+        "trajectory": {
+          "description": "String ID of the [trajectory](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#UFO_Trajectories) for this UFO to use when entering Earth's atmosphere.",
+          "default": "required"
+        },
+        "timer": {
+          "description": "How long after the previous wave should this wave arrive? (in minutes)\n\nNotes:\n\n*   The timer can vary between 50-150% of the stated value, so a UFO with a 9000 value will be spawned between 4500-13500 minutes (each day has 1440 minutes)\n*   If the UFO is crashed/destroyed the timer of the next UFO on the wave will be delayed by (30 \\* (RNG::generate(0, 400) + 48)) minutes, or between 1.0 and 9.3 days",
+          "default": "0"
+        },
+        "objective": {
+          "description": "_true_ Marks this wave as the one that carries out the mission objective. Only for mission site / supply missions.",
+          "default": "-"
+        },
+        "hunterKillerPercentage": {
+          "description": "The chance (0-100%) to become a hunter-killer UFO upon spawning.\n\nPossible options:\n\n*   \\-1 = take the info from RuleUfo\n*   0 = not a hunter-killer\n*   1-99 = percentage chance to be flagged as hunter-killer upon spawn\n*   100 = always a hunter-killer",
+          "default": "-1"
+        },
+        "huntMode": {
+          "description": "Algorithm to use when prioritizing xcom targets.\n\nPossible options:\n\n*   \\-1 = take the info from RuleUfo\n*   0 = prefer hunting xcom interceptors\n*   1 = prefer hunting xcom transports\n*   2 = random preference (0 or 1) determined at spawn",
+          "default": "-1"
+        },
+        "huntBehavior": {
+          "description": "Algorithm to use when considering retreating from the dogfight.\n\nPossible options:\n\n*   \\-1 = take the info from RuleUfo\n*   0 = flee if you're losing\n*   1 = never flee, never crash (is destroyed instead of crashing)\n*   2 = random preference (0 or 1) determined at spawn",
+          "default": "-1"
+        },
+        "escort": {
+          "description": "Does this wave escort/protect the previous wave(s)?",
+          "default": "false"
+        },
+        "interruptPercentage": {
+          "description": "The chance (0-100%) to interrupt the alien mission when successfully shooting down a UFO from this wave.\n\nPossible options:\n\n*   0 = cannot interrupt\n*   1-99 = percentage chance to be interrupted\n*   100 = always interrupted",
+          "default": "0"
+        }
+      }
     },
     "objective": {
-      "description": "_true_ Marks this wave as the one that carries out the mission objective. Only for mission site / supply missions.",
-      "default": "-"
+      "description": "Missions are split by objective:\n\n*   0 = score (default if omitted)\n*   1 = infiltration\n*   2 = alien base\n*   3 = mission site (terror etc)\n*   4 = retaliation\n*   5 = supply",
+      "default": "0"
     },
     "spawnUfo": {
       "description": "UFO to spawn for retaliation.",
@@ -4155,42 +4197,6 @@
     "regionWeights": {
       "description": "The region distribution over game time. Works only for **genMission** spawned by an alien base.",
       "default": "-"
-    },
-    "ufo": {
-      "description": "String ID of the [UFO](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#UFOs) to spawn.",
-      "default": "required"
-    },
-    "count": {
-      "description": "Number of UFOs to spawn.",
-      "default": "0"
-    },
-    "trajectory": {
-      "description": "String ID of the [trajectory](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#UFO_Trajectories) for this UFO to use when entering Earth's atmosphere.",
-      "default": "required"
-    },
-    "timer": {
-      "description": "How long after the previous wave should this wave arrive? (in minutes)\n\nNotes:\n\n*   The timer can vary between 50-150% of the stated value, so a UFO with a 9000 value will be spawned between 4500-13500 minutes (each day has 1440 minutes)\n*   If the UFO is crashed/destroyed the timer of the next UFO on the wave will be delayed by (30 \\* (RNG::generate(0, 400) + 48)) minutes, or between 1.0 and 9.3 days",
-      "default": "0"
-    },
-    "hunterKillerPercentage": {
-      "description": "The chance (0-100%) to become a hunter-killer UFO upon spawning.\n\nPossible options:\n\n*   \\-1 = take the info from RuleUfo\n*   0 = not a hunter-killer\n*   1-99 = percentage chance to be flagged as hunter-killer upon spawn\n*   100 = always a hunter-killer",
-      "default": "-1"
-    },
-    "huntMode": {
-      "description": "Algorithm to use when prioritizing xcom targets.\n\nPossible options:\n\n*   \\-1 = take the info from RuleUfo\n*   0 = prefer hunting xcom interceptors\n*   1 = prefer hunting xcom transports\n*   2 = random preference (0 or 1) determined at spawn",
-      "default": "-1"
-    },
-    "huntBehavior": {
-      "description": "Algorithm to use when considering retreating from the dogfight.\n\nPossible options:\n\n*   \\-1 = take the info from RuleUfo\n*   0 = flee if you're losing\n*   1 = never flee, never crash (is destroyed instead of crashing)\n*   2 = random preference (0 or 1) determined at spawn",
-      "default": "-1"
-    },
-    "escort": {
-      "description": "Does this wave escort/protect the previous wave(s)?",
-      "default": "false"
-    },
-    "interruptPercentage": {
-      "description": "The chance (0-100%) to interrupt the alien mission when successfully shooting down a UFO from this wave.\n\nPossible options:\n\n*   0 = cannot interrupt\n*   1-99 = percentage chance to be interrupted\n*   100 = always interrupted",
-      "default": "0"
     }
   },
   "missionScripts": {
