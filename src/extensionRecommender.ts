@@ -26,6 +26,12 @@ export class ExtensionRecommender {
             'noRecommendImagePreview',
             'Install the Image Preview extension to improve QoL even more! This enables image previews for extraSprites et cetera.'
         );
+
+        this.recommend(
+            'janisdd.vscode-edit-csv',
+            'noRecommendCsvEditor',
+            'Install the Edit Csv extension to improve QoL even more! This enables editing rulesets as a spreadsheet.'
+        );
     }
 
     private onRulesetsLoaded() {
