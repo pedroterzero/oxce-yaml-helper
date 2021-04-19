@@ -1,4 +1,6 @@
-import { existsSync, readFile, writeFile } from "fs-extra";
+import { existsSync, promises as fsp } from 'fs';
+// remove in node 14
+const { readFile, writeFile } = fsp;
 import { unparse } from "papaparse";
 import { parse } from "yaml";
 import * as dot from 'dot-object';

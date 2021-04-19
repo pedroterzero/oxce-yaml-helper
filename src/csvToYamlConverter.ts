@@ -1,4 +1,6 @@
-import { existsSync, readFile, writeFile } from "fs-extra";
+import { existsSync, promises as fsp } from 'fs';
+// remove in node 14
+const { readFile, writeFile } = fsp;
 import { parse as csvParse } from "papaparse";
 import { Document,parseDocument } from "yaml";
 import * as dot from 'dot-object';
@@ -134,7 +136,7 @@ export class CsvToYamlConverter {
                     }
 
                     for (const value of newValue) {
-                        entry.addIn([key], value + 'bar');
+                        entry.addIn([key], value);
                     }
                 } else {
                     // regular set, also adds in stuff that did not have a key before

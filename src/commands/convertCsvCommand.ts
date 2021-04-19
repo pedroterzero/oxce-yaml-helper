@@ -1,4 +1,6 @@
-import { existsSync, readFile, } from "fs-extra";
+import { existsSync, promises as fsp } from 'fs';
+// remove in node 14
+const { readFile } = fsp;
 import { basename } from "path";
 import { commands, ConfigurationTarget, Uri, window, workspace } from "vscode";
 import { parse } from "yaml";

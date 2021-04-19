@@ -1,4 +1,4 @@
-import { existsSync } from "fs-extra";
+import { existsSync } from "fs";
 import { basename, dirname } from "path";
 import { Uri, window } from "vscode";
 import { CsvToYamlConverter } from "../csvToYamlConverter";
