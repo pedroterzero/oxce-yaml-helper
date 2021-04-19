@@ -42,7 +42,7 @@ export class typedProperties {
         diplomacyFactions: ['name'],              // FtA
         events: ['name'],                         // FtA
         extraSprites: ['type', 'typeSingle'],
-        facilities: ['type', 'provideBaseFunc'],
+        facilities: ['provideBaseFunc', 'type'],  // type behind, so it takes precedence
         invs: ['id'],
         manufacture: ['name'],
         manufactureShortcut: ['name'],
