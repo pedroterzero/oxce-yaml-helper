@@ -2,7 +2,7 @@ import { existsSync, promises as fsp } from 'fs';
 // remove in node 14
 const { readFile, writeFile } = fsp;
 import { parse as csvParse } from "papaparse";
-import { Document,parseDocument } from "yaml";
+import { Document, parseDocument } from "yaml";
 import * as dot from 'dot-object';
 import { window } from "vscode";
 import { typedProperties } from "./typedProperties";
@@ -78,8 +78,18 @@ export class CsvToYamlConverter {
         const entry = this.findEntry(row);
 
         if (!entry) {
+            if (!this.doc) {
+                throw Error('No YAML document');
+                return;
+            }
+
             // whole new entry
-            this.doc?.addIn([this.type], row);
+            this.doc.addIn([this.type], row);
+
+            // re-read doc so the node we just added is not just a 'POJO'
+            // in case of performance problems we could also handle adds at the end (before deletes)
+            // because that's why we had to do this
+            this.doc = parseDocument(this.doc.toString());
             return;
         }
 
@@ -157,7 +167,7 @@ export class CsvToYamlConverter {
         const foundMatches = (this.matches[id] || 0) + 1;
 
         let currentMatch = 0;
-        for (const entry of this.doc.get(this.type)[this.type]) {
+        for (const entry of this.doc.get(this.type).items) {
             const entryObject = entry.toJSON();
 
             if (typeKey in entryObject && entryObject[typeKey] === id) {
@@ -180,12 +190,12 @@ export class CsvToYamlConverter {
         }
 
         let i = 0;
-        for (const entry of this.doc.get(this.type)[this.type]) {
-            const yamlObject = entry.toJSON();
-            const typeKey = typedProperties.getTypeKey(yamlObject, this.type);
+        for (const entry of this.doc.get(this.type).items) {
+            const entryObject = entry.toJSON();
+            const typeKey = typedProperties.getTypeKey(entryObject, this.type);
 
-            if (typeKey && !(yamlObject[typeKey] in this.ids)) {
-                console.log('iii', yamlObject[typeKey], i, yamlObject);
+            if (typeKey && !(entryObject[typeKey] in this.ids)) {
+                // console.log('iii', entryObject[typeKey], i, entryObject);
                 this.doc.deleteIn([this.type, i]);
             }
 
