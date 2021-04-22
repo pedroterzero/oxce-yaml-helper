@@ -50,7 +50,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
     }
 
     protected generic(entries: LogicDataEntry[]) {
-        this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('alienDeployments.')), this.data);
+        this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('alienDeployments.')), this.data, true);
         // this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('soldiers.')), this.itemData);
     }
 
