@@ -502,7 +502,8 @@ export class RulesetDefinitionChecker {
                     values: typeLinks[type]
                 });
 
-                delete typeLinks[type];
+                // need them in typedProperties too
+                // delete typeLinks[type];
             }
         }
 
