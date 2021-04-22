@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 56;
+const expectedNumberOfDiagnostics = 57;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -327,6 +327,17 @@ describe('rulesetDefinitionChecker', () => {
 
     it('finds a diagnostic for an alienMission.raceWeights with invalid race', () => {
         const diagnostic = findDiagnostic('alienMissions.rul', `"STR_DUMMY_RACE" does not exist (alienMissions.raceWeights.0)`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    // linker.yml
+    it('does not find a diagnostic for existing builtin-type from linker.yml (string)', () => {
+        const diagnostic = findDiagnostic('items.rul', '"STR_BUILTIN_TEST" does not exist (items.builtInTest) for STR_LINKER_YML_BUILTIN_TEST_GOOD');
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for non existing builtin-type (linker.yml)', () => {
+        const diagnostic = findDiagnostic('items.rul', '"STR_BUILTIN_TEST_BAD" does not exist (items.builtInTest) for STR_LINKER_YML_BUILTIN_TEST');
         assert.notStrictEqual(diagnostic, undefined);
     });
 });
