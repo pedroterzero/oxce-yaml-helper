@@ -199,6 +199,7 @@ export class typedProperties {
 
     private static additionalLogicPaths: string[] = [];
     private static keyReferenceTypesRegexes: RegExp[] = [];
+    private static typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
 
     public static init () {
         this.addTypeLinks();
@@ -268,6 +269,15 @@ export class typedProperties {
     public static isTargetForSourceRule(sourceRuleType: RuleType | undefined, ruleType: string): boolean {
         if (!sourceRuleType) {
             return true;
+        }
+
+        // check regexes
+        for (const type in this.typeLinkRegexes) {
+            const regex = this.typeLinkRegexes[type].regex;
+            if (regex.exec(`${sourceRuleType.type}.${sourceRuleType.key}`)) {
+                // see if this is a regex type link
+                return this.typeLinkRegexes[type].values.includes(ruleType);
+            }
         }
 
         if (!(sourceRuleType.type in this.typeProperties)) {
@@ -458,6 +468,11 @@ export class typedProperties {
     private static addTypeLinks() {
         for (const link in typeLinks) {
             if (link.startsWith('/') && link.endsWith('/')) {
+                this.typeLinkRegexes.push({
+                    regex: new RegExp(link.slice(1, -1)),
+                    values: typeLinks[link]
+                });
+
                 continue;
             }
 
