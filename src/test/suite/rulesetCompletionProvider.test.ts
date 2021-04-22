@@ -13,9 +13,10 @@ const dummyItems = ['STR_DUMMY_ITEM', 'STR_DUMMY_ITEM2', 'STR_DUMMY_ITEM3'];
 const expectedCompletions = [
     {position: new Position(3, 23), completions: dummyItems},
     {position: new Position(6, 40), completions: dummyItems},
-    {position: new Position(16, 28), completions: dummyItems},
-    {position: new Position(20, 35), completions: dummyItems},
-    {position: new Position(26, 26), completions: dummyItems},
+    {position: new Position(8, 39), completions: dummyItems},
+    {position: new Position(18, 28), completions: dummyItems},
+    {position: new Position(22, 35), completions: dummyItems},
+    {position: new Position(28, 26), completions: dummyItems},
 ];
 
 const completionProvider = new RulesetCompletionProvider;

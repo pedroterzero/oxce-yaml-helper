@@ -5,6 +5,8 @@ items:
     ammo:
       0:
         compatibleAmmo: [ STR_DUMMY_ITEM ]
+      1:
+        compatibleAmmo: [STR_DUMMY_ITEM]
 
 alienDeployments:
   - type: STR_AD_COMPLETION_TEST_2
