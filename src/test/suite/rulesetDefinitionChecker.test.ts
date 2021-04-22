@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 55;
+const expectedNumberOfDiagnostics = 56;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -207,6 +207,17 @@ describe('rulesetDefinitionChecker', () => {
         diagnostic = findDiagnostic('mapScripts.rul', `'Group '2' does not exist in terrain for TEST_GOOD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`, 14, 21);
         assert.strictEqual(diagnostic, undefined);
         diagnostic = findDiagnostic('mapScripts.rul', `'Group '2' does not exist in terrain for TEST_GOOD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`, 15, 15);
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    // BY TERRAIN
+    it('finds a diagnostic for a mapscript command (by terrain:) with incorrect groups', () => {
+        const diagnostic = findDiagnostic('mapScripts.rul', `'Group '666' does not exist in terrain for TEST_GOOD_MAPSCRIPT_BY_TERRAIN. This will cause a segmentation fault when loading the map!`, 21, 21);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for a mapscript command (by terrain:) with correct groups', () => {
+        const diagnostic = findDiagnostic('mapScripts.rul', `'Group '9' does not exist in terrain for TEST_GOOD_MAPSCRIPT_BY_TERRAIN. This will cause a segmentation fault when loading the map!`, 28, 21);
         assert.strictEqual(diagnostic, undefined);
     });
 

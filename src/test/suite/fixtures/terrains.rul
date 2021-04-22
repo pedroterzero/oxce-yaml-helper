@@ -14,3 +14,10 @@ terrains:
         width: 10
         length: 10
         groups: [1, 2]
+
+  - name: TEST_GOOD_MAPSCRIPT_BY_TERRAIN
+    mapBlocks:
+      - name: BLOCK1
+        width: 10
+        length: 10
+        groups: [1, 2]
