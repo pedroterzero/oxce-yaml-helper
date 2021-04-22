@@ -9,6 +9,7 @@ import { typedProperties } from "./typedProperties";
 import { logger } from "./logger";
 import { Collection } from "yaml/types";
 import { Type } from "yaml/util";
+import { cleanObject } from 'tiny-clean-object';
 
 export class CsvToYamlConverter {
     private doc: Document.Parsed | undefined;
@@ -50,7 +51,13 @@ export class CsvToYamlConverter {
                 if (typeof row[key] === 'string') {
                     const parts = row[key].split(',');
                     for (let i = 0; i < parts.length; i++) {
-                        out[`${key.slice(0, -2)}[${i}]`] = parts[i];
+                        // keep ints as ints
+                        let val = parts[i];
+                        if (parseInt(val).toString() === val) {
+                            val = parseInt(val);
+                        }
+
+                        out[`${key.slice(0, -2)}[${i}]`] = val;
                     }
                 } else {
                     out[`${key.slice(0, -2)}`] = [];
@@ -98,8 +105,13 @@ export class CsvToYamlConverter {
 
     private mergeSub (entry: Collection, row: any) {
         for (const key of Object.keys(row)) {
-            const currentValue = entry.get(key);
-            const newValue = row[key];
+            let keyToUse: string | number = key;
+            if (parseInt(key).toString() === key) {
+                keyToUse = parseInt(key);
+            }
+
+            const currentValue = entry.get(keyToUse);
+            const newValue = row[keyToUse];
 
             // if (currentValue && typeof currentValue === 'object' && 'items' in currentValue) {
             if (currentValue && typeof currentValue === 'object') {
@@ -109,7 +121,7 @@ export class CsvToYamlConverter {
 
                     if (currentValue.items.length === 0) {
                         // nothing remaining? delete it
-                        entry.delete(key);
+                        entry.delete(keyToUse);
                     }
 
                     continue;
@@ -118,39 +130,42 @@ export class CsvToYamlConverter {
 
             if (!currentValue && newValue && typeof newValue === 'object' && !Array.isArray(newValue)) {
                 // if an object is added in, that does not exist yet, check that it does not have only empty values - if it does, ignore it
-                const objectWithoutNulls = Object.fromEntries(Object.entries(newValue).filter(([_, v]) => v !== null));
+                const objectWithoutNulls = Object.fromEntries(Object.entries(newValue).filter(([_, v]) => v !== null && !(Array.isArray(v) && v.length === 0)));
                 if (Object.keys(objectWithoutNulls).length === 0) {
                     continue;
                 }
             }
 
-            if (newValue === null || Array.isArray(newValue) && newValue.length === 0) {
+            if (newValue === null || (Array.isArray(newValue) && newValue.length === 0)) {
                 // no value was provided, so remove it, if it exists
-                entry.delete(key);
+                entry.delete(keyToUse);
                 continue;
             }
 
             if (['string', 'number', 'boolean'].includes(typeof currentValue)) {
                 // for strings, use this way of setting, so we respect comments
                 for (const item of entry.items) {
-                    if (item.key.value === key) {
+                    if (item.key.value === keyToUse) {
                         // console.log(`setting1 ${entry.toJSON().type} ${key}`);
-                        item.value.value = row[key];
+                        item.value.value = row[keyToUse];
                     }
                 }
             } else {
                 // keep [] array syntax
                  if (currentValue?.type === Type.FLOW_SEQ) {
-                    while (entry.get(key).items.length > 0) {
-                        entry.deleteIn([key, 0]);
+                    while (entry.get(keyToUse).items.length > 0) {
+                        entry.deleteIn([keyToUse, 0]);
                     }
 
                     for (const value of newValue) {
-                        entry.addIn([key], value);
+                        entry.addIn([keyToUse], value);
                     }
                 } else {
                     // regular set, also adds in stuff that did not have a key before
-                    entry.set(key, row[key]);
+                    const cleaned = cleanObject(cleanObject(row[keyToUse], {deep: true, emptyArrays: true}), {deep: true, emptyArrays: true, emptyObjects: true});
+                    if (Object.keys(cleaned).length > 0) {
+                        entry.set(keyToUse, cleaned);
+                    }
                 }
             }
         }

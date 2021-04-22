@@ -15,8 +15,37 @@ export class YamlToCsvConverter {
         const source = (parsed[this.type] as any[]).filter(row => !row.delete);
         const sourceDot = source.map((row: any) => this.makeDotted(row));
 
-        const csv = unparse(sourceDot as any);
+        // get ALL columns, not just the ones in the first entry
+        const columns = this.getColumns(sourceDot);
+
+        const csv = unparse(sourceDot as any, {columns});
         writeFile(this.outFile, csv);
+    }
+
+    private getColumns(sourceDot: any[]) {
+        const columns = Object.keys(sourceDot.reduce(function(result, obj) {
+            return Object.assign(result, obj);
+        }, {})).filter(column => column !== 'refNode' && !column.startsWith('refNode.'));
+
+        // sort them logically
+        const deepSort: {[key: string]: string[]} = {};
+
+        for (const column of columns) {
+            const columnNoDot = column.split('.')[0];
+
+            if (!(columnNoDot in deepSort)) {
+                deepSort[columnNoDot] = [];
+            }
+
+            deepSort[columnNoDot].push(column);
+        }
+
+        let sorted: string[]  = [];
+        for (const subColumns of Object.values(deepSort)) {
+            sorted = sorted.concat(subColumns.sort());
+        }
+
+        return sorted;
     }
 
     private async parseRuleset() {

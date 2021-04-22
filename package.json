@@ -190,6 +190,7 @@
         "flat-cache": "^3.0.4",
         "merge-anything": "^4.0.0",
         "papaparse": "^5.3.0",
+        "tiny-clean-object": "^1.0.1",
         "yaml": "^1.10.0"
     }
 }
