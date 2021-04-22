@@ -18,6 +18,14 @@ export type TypeLookup = {
     [key: string]: DefinitionLookup[];
 };
 
+export type DefinitionCompletion = {
+    detail?: string;
+};
+
+export type DefinitionCompletions = {
+    [key: string]: DefinitionCompletion;
+};
+
 export class WorkspaceFolderRuleset {
     public definitionsLookup: TypeLookup = {};
     public rulesetFiles: RulesetFile[] = [];
@@ -112,7 +120,8 @@ export class WorkspaceFolderRuleset {
             type: definition.type,
             range: definition.range,
             file: sourceFile,
-            rangePosition: definition.rangePosition
+            rangePosition: definition.rangePosition,
+            name: definition.name // for autocomplete
         };
 
         if ('metadata' in definition) {
@@ -198,6 +207,38 @@ export class WorkspaceFolderRuleset {
 
     public getReferences(): Match[] {
         return this.referenceFiles.flatMap(file => file.references);
+    }
+
+    public getKeysContaining(key: string | undefined, target: string): DefinitionCompletions {
+        const targetDefinitions: DefinitionCompletions = {};
+
+        for (const definitionKey in this.definitionsLookup) {
+            if (key && !definitionKey.includes(key)) {
+                continue;
+            }
+
+            const occurrences = this.definitionsLookup[definitionKey];
+            for (const def of occurrences) {
+                if (def.type === target) {
+                    targetDefinitions[definitionKey] = {};
+
+                    const detail = [];
+                    if (def.metadata?._name && typeof def.metadata._name === 'string') {
+                        detail.push(`File: ${def.metadata._name}`);
+                    }
+
+                    detail.push(`Source: ${def.file.path.split('/').slice(-1)}`);
+
+                    if (detail.length > 0) {
+                        targetDefinitions[definitionKey].detail = detail.join("  \n");
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return targetDefinitions;
     }
 
     public getNumberOfParsedDefinitionFiles(): number {

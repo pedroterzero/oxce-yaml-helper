@@ -14,6 +14,7 @@ type DescriptionEntries = {
 type Description = {
     description: string;
     default: string;
+    subDescriptions?: DescriptionEntries;
 }
 
 const map: {[key: string]: {to: string, prefix: boolean}} = {
@@ -31,9 +32,29 @@ class DocumentationProvider {
     public getDocumentationForProperty(baseProperty: string, baseType: string | undefined): string | undefined {
         const { type, property } = this.getOverride(baseType, baseProperty);
 
-        // find match by type
-        if (type && type in doc && property in doc[type]) {
-            return this.getMatchText(doc[type][property]);
+        if (type?.includes('.')) {
+            let ref;
+            const parts = type.split('.');
+            const myType = parts.shift();
+            if (myType && myType in doc) {
+                ref = doc[myType];
+            }
+
+            while (parts.length > 0) {
+                const part = parts.shift();
+                if (ref && part && part in ref) {
+                    ref = ref[part].subDescriptions;
+                }
+            }
+
+            if (ref && property in ref) {
+                return this.getMatchText(ref[property]);
+            }
+        } else {
+            // find match by type
+            if (type && type in doc && property in doc[type]) {
+                return this.getMatchText(doc[type][property]);
+            }
         }
 
         // otherwise by unique key
