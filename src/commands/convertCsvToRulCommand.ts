@@ -28,7 +28,7 @@ export class ConvertCsvToRulCommand {
         }
 
         const converter = new CsvToYamlConverter(targetFile, outFile.fsPath, matches[2]);
-        converter.convert();
+        await converter.convert();
 
         logger.info('Done converting');
     }

@@ -1,6 +1,6 @@
 'use strict';
 
-import { ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
+import { commands, ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';
