@@ -111,7 +111,13 @@ export class RulesetRecursiveKeyRetriever {
         } else {
             entry = entry as Scalar;
             const value = entry.value;
-            const range = (value && typeof value === 'object' && 'range' in value) ? value.range : entry.range;
+
+            if (value === null && entry.type === 'PLAIN') {
+                // @TODO remove this, seems like a bug in the yaml library
+                return;
+            }
+
+            const range = (typeof value === 'object' && 'range' in value) ? value.range : entry.range;
 
             if ('type' in entry && ['QUOTE_DOUBLE', 'QUOTE_SINGLE', 'ALIAS'].indexOf(entry.type as string) !== -1) {
                 // ignore regular strings, also ALIAS for now?
@@ -235,7 +241,7 @@ export class RulesetRecursiveKeyRetriever {
                 if (['PLAIN', 'QUOTE_DOUBLE', 'QUOTE_SINGLE'].indexOf(ruleProperty.type) !== -1) {
                     newPath += '[]';
                 } else {
-                    if (typedProperties.isExtraFilesRule(path, ruleProperty?.key?.value, entry.items[0].value.value)) {
+                    if (typedProperties.isExtraFilesRule(path, ruleProperty?.key?.value, entry.items[0].value?.value)) {
                         // TODO figure out it shouldn't already be working like this? or refactor the rest to work like this?
                         // logger.debug(`isExtraFilesRule ${path} ${ruleProperty?.key?.value} ${entry.items[0].value.value}`);
                         newPath += '.' + entry.items[0].value.value;
