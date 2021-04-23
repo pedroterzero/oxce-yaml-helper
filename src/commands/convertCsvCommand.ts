@@ -41,9 +41,10 @@ export class ConvertCsvCommand {
 
         if (doConvert) {
             const converter = new YamlToCsvConverter(targetFile, outFile, type);
-            converter.convert();
+            await converter.convert();
         }
 
+        console.log(`opening ${outFile}`);
         const document = await workspace.openTextDocument(outFile);
         await window.showTextDocument(document);
 
