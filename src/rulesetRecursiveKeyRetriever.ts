@@ -111,7 +111,7 @@ export class RulesetRecursiveKeyRetriever {
         } else {
             entry = entry as Scalar;
             const value = entry.value;
-            const range = (typeof value === 'object' && 'range' in value) ? value.range : entry.range;
+            const range = (value && typeof value === 'object' && 'range' in value) ? value.range : entry.range;
 
             if ('type' in entry && ['QUOTE_DOUBLE', 'QUOTE_SINGLE', 'ALIAS'].indexOf(entry.type as string) !== -1) {
                 // ignore regular strings, also ALIAS for now?
