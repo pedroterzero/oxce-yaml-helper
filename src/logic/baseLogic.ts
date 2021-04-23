@@ -1,4 +1,4 @@
-import { merge, mergeAndCompare } from "merge-anything";
+import { merge } from "merge-anything";
 import { Diagnostic, DiagnosticSeverity, Range, Uri } from "vscode";
 import { LogicDataEntry, Match } from "../rulesetTree";
 import { ReferenceFile } from "../workspaceFolderRuleset";
