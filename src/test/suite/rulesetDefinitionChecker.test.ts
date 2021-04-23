@@ -49,7 +49,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 55;
+const expectedNumberOfDiagnostics = 57;
 
 const originalSettingFindDuplicateDefinitions = workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
 const originalSettingValidateCategories = workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories');
@@ -210,6 +210,17 @@ describe('rulesetDefinitionChecker', () => {
         assert.strictEqual(diagnostic, undefined);
     });
 
+    // BY TERRAIN
+    it('finds a diagnostic for a mapscript command (by terrain:) with incorrect groups', () => {
+        const diagnostic = findDiagnostic('mapScripts.rul', `'Group '666' does not exist in terrain for TEST_GOOD_MAPSCRIPT_BY_TERRAIN. This will cause a segmentation fault when loading the map!`, 21, 21);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for a mapscript command (by terrain:) with correct groups', () => {
+        const diagnostic = findDiagnostic('mapScripts.rul', `'Group '9' does not exist in terrain for TEST_GOOD_MAPSCRIPT_BY_TERRAIN. This will cause a segmentation fault when loading the map!`, 28, 21);
+        assert.strictEqual(diagnostic, undefined);
+    });
+
     it('finds a diagnostic for an item with confAuto.shots and autoShots', () => {
         const diagnostic = findDiagnostic('items.rul', 'autoShots and confAuto.shots should not both be set!', 90, 15);
         assert.notStrictEqual(diagnostic, undefined);
@@ -316,6 +327,17 @@ describe('rulesetDefinitionChecker', () => {
 
     it('finds a diagnostic for an alienMission.raceWeights with invalid race', () => {
         const diagnostic = findDiagnostic('alienMissions.rul', `"STR_DUMMY_RACE" does not exist (alienMissions.raceWeights.0)`);
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    // linker.yml
+    it('does not find a diagnostic for existing builtin-type from linker.yml (string)', () => {
+        const diagnostic = findDiagnostic('items.rul', '"STR_BUILTIN_TEST" does not exist (items.builtInTest) for STR_LINKER_YML_BUILTIN_TEST_GOOD');
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for non existing builtin-type (linker.yml)', () => {
+        const diagnostic = findDiagnostic('items.rul', '"STR_BUILTIN_TEST_BAD" does not exist (items.builtInTest) for STR_LINKER_YML_BUILTIN_TEST');
         assert.notStrictEqual(diagnostic, undefined);
     });
 });

@@ -19,6 +19,14 @@ export class RulesetHoverProvider implements HoverProvider {
 
         const property = KeyDetector.isValidPropertyKey(value);
         if (property !== undefined) {
+            // try the nested rule path
+            property.type = KeyDetector.findRulePath(position, document).replace(/[[\]]/g, '');
+            const hover = this.providePropertyHover(property);
+            if (hover) {
+                return hover;
+            }
+
+            // otherwise fall back to the old style
             property.type = KeyDetector.findRuleType(position, document);
 
             return this.providePropertyHover(property);

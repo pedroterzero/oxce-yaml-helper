@@ -1,7 +1,7 @@
-import { commands, extensions, Uri, window, workspace } from "vscode";
+import { existsSync } from "fs";
+import { commands, env, extensions, Uri, window, workspace } from "vscode";
 import { rulesetResolver } from "./extension";
 import { rulesetTree } from "./rulesetTree";
-
 export class ExtensionRecommender {
     private choices = {
         showIt: 'Tell me more',
@@ -55,6 +55,17 @@ export class ExtensionRecommender {
                 'noRecommendOpenXcomFtaRulesetTools',
                 'Install the OpenXCOM FtA Ruleset Tools extension to improve QoL even more! This provides syntax validation on the rule files.'
             );
+
+            // also recommend linker.yml
+            if (!existsSync(Uri.joinPath(folder.uri, 'linker.yml').fsPath)) {
+                window.showInformationMessage(
+                    'To mod FtA, you will also need to download linker.yml and place it in the mod root (same folder as metadata.yml). Do you want to open the URL for it?', 'Yes', 'No'
+                ).then((result) => {
+                    if (result === 'Yes') {
+                        env.openExternal(Uri.parse('https://raw.githubusercontent.com/723Studio/X-Com-From-the-Ashes/master/linker.yml'));
+                    }
+                });
+            }
         } else {
             this.recommend(
                 'openxcom.ruleset-tools',

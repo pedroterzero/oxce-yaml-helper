@@ -1,0 +1,4 @@
+config:
+  builtinTypes:
+    items.builtInTest:
+    - STR_BUILTIN_TEST

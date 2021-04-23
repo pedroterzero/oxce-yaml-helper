@@ -1,0 +1,9 @@
+
+alienMissions:
+  - type: STR_ALIEN_MISSION_DUMMY
+    objective: 3
+    raceWeights:
+      0:
+          STR_MUTON: 100
+    waves:
+      - objective: true

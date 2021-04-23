@@ -14,3 +14,17 @@ mapScripts:
       verticalGroup: 2
       crossingGroup: 2
       groups: [2]
+
+  - type: TEST_BAD_MAPSCRIPT_BY_TERRAIN
+    commands:
+    - type: addLine
+      terrain: TEST_GOOD_MAPSCRIPT_BY_TERRAIN
+      verticalGroup: 666
+      direction: vertical
+
+  - type: TEST_GOOD_MAPSCRIPT_BY_TERRAIN_NOMATCH
+    commands:
+    - type: addLine
+      terrain: TEST_GOOD_MAPSCRIPT_BY_TERRAIN
+      verticalGroup: 1
+      direction: vertical

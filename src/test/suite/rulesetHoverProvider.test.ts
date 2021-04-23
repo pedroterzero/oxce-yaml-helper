@@ -5,6 +5,7 @@ import { RulesetHoverProvider } from '../../rulesetHoverProvider';
 
 const fixturePath = resolve(__dirname, '../../../src/test/suite/fixtures');
 const itemsPath = resolve(fixturePath, 'items.rul');
+const documentationTestPath = resolve(fixturePath, 'documentationTest.rul');
 
 const locale = 'en-US';
 const expectedTranslations = [
@@ -18,23 +19,37 @@ const expectedTranslations = [
     },
 ];
 
-const expectedDocumentation = [
-    {
-        // flatRate
-        position: new Position(8, 8),
-        value: "If true, then TU costs for this weapon are a flat rate (instead of a percentage of unit TUs).\n\n**Default: false**"
-    },
-    {
-        // should not return object for undocumented property
-        position: new Position(9, 8),
-        value: "",
-        none: true
-    }
-];
+const expectedDocumentation = {
+    items: [
+        {
+            // flatRate
+            position: new Position(8, 8),
+            value: "If true, then TU costs for this weapon are a flat rate (instead of a percentage of unit TUs).\n\n**Default: false**"
+        },
+        {
+            // should not return object for undocumented property
+            position: new Position(9, 8),
+            value: "",
+            none: true
+        }
+    ],
+    documentationTest: [
+        {
+            // alienMissions.objective
+            position: new Position(3, 8),
+            value: "Missions are split by objective:\n\n*   0 = score (default if omitted)\n*   1 = infiltration\n*   2 = alien base\n*   3 = mission site (terror etc)\n*   4 = retaliation\n*   5 = supply\n\n**Default: 0**"
+        },
+        {
+            // alienMissions.waves.objective
+            position: new Position(8, 12),
+            value: "_true_ Marks this wave as the one that carries out the mission objective. Only for mission site / supply missions.\n\n**Default: -**"
+        }
+    ]
+};
 
 const hoverProvider = new RulesetHoverProvider;
 
-const testHover = (document: TextDocument | undefined, entries: typeof expectedTranslations & typeof expectedDocumentation) => {
+const testHover = (document: TextDocument | undefined, entries: typeof expectedTranslations & typeof expectedDocumentation.items) => {
     if (!document) {
         throw new Error('no document');
     }
@@ -57,8 +72,10 @@ const testHover = (document: TextDocument | undefined, entries: typeof expectedT
 describe('hoverProvider', () => {
     describe('provideHover', () => {
         let document: TextDocument | undefined;
+        let documentationTestDocument: TextDocument | undefined;
         before(async () => {
             document = await workspace.openTextDocument(itemsPath);
+            documentationTestDocument = await workspace.openTextDocument(documentationTestPath);
          });
 
         it('returns the correct translation', () => {
@@ -66,7 +83,11 @@ describe('hoverProvider', () => {
         });
 
         it('returns the correct documentation', () => {
-            testHover(document, expectedDocumentation);
+            testHover(document, expectedDocumentation.items);
+        });
+
+        it('returns the correct documentation for a nested doc with the same key', () => {
+            testHover(documentationTestDocument, expectedDocumentation.documentationTest);
         });
     });
 });

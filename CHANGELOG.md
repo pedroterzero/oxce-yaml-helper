@@ -1,3 +1,10 @@
+# v0.8.0
+- Added context aware autocomplete
+- Removed FtA logic and made rules extendable through linker.yml
+- Fixed subcategories in documentation hovering
+- mapScripts check terrain: now
+- Some other minor fixes
+
 # v0.7.0
 - Added Y-script syntax highlighting
 - Added vanilla `alienMissions.rul` (it was causing false positives)

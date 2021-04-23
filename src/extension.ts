@@ -1,11 +1,12 @@
 'use strict';
 
-import { commands, ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
+import { ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';
 import { RulesetHoverProvider } from './rulesetHoverProvider';
 import { ConfigurationWatcher } from './configurationWatcher';
+import { RulesetCompletionProvider } from './rulesetCompletionProvider';
 import { ConvertCsvCommand } from './commands/convertCsvCommand';
 import { ConvertCsvToRulCommand } from './commands/convertCsvToRulCommand';
 
@@ -29,6 +30,9 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(languages.registerDefinitionProvider(documentFilters, new RulesetDefinitionProvider()));
     context.subscriptions.push(languages.registerHoverProvider(documentFilters, new RulesetHoverProvider()));
+
+    const triggerCharacters = " abcdefghijklmnopqrstuvwxyz0123456789".split('');
+    context.subscriptions.push(languages.registerCompletionItemProvider(documentFilters, new RulesetCompletionProvider(), ...triggerCharacters));
 
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.convertCsv', ConvertCsvCommand.handler));
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.convertCsvToRul', ConvertCsvToRulCommand.handler));
