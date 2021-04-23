@@ -1,7 +1,7 @@
 import { logger } from "./logger";
 import { LogicDataEntry, Match, RuleType } from "./rulesetTree";
 import { Scalar, YAMLMap, YAMLSeq } from "yaml/types";
-import { JsonObject, YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
+import { YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { typedProperties } from "./typedProperties";
 import { LogicHandler } from "./logic/logicHandler";
 import * as dotProp from 'dot-prop';
@@ -61,13 +61,6 @@ export class RulesetRecursiveKeyRetriever {
                 this.processItems(ruleType, 'globalVariables', matches, logicData, {}, lookupAll);
             } else {
                 ruleType.value.items.forEach((ruleProperties: YAMLSeq) => {
-                    if (['extraSprites', 'extraSounds'].indexOf(ruleType.key.value) !== -1) {
-                        // I hate that I need this but I see no other way
-                        // const propertiesFlat = ruleProperties.toJSON() as {[key: string]: string | Record<string, unknown>};
-                        const propertiesFlat = (ruleProperties as YAMLMap).toJSON() as JsonObject;
-                        this.handleExtraFiles(propertiesFlat, ruleProperties, matches, ruleType);
-                    }
-
                     let path = ruleType.key.value;
                     if (typedProperties.isGlobalVariablePath(path)) {
                         path = `globalVariables.${path}`;
@@ -81,12 +74,18 @@ export class RulesetRecursiveKeyRetriever {
         return [matches, logicData];
     }
 
-    private processItems(entry: Entry, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, lookupAll: boolean): Match | undefined {
+    private processItems(entry: Entry, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, lookupAll: boolean, parent?: YAMLSeq): Match | undefined {
         this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
 
-        if (typedProperties.isKeyReferencePath(path)) {
+        let keyReferencePath;
+        if ((keyReferencePath = typedProperties.isKeyReferencePath(path)) !== undefined) {
             // do this separately, because the values for the keys could yield yet more references (see research.getOneFreeProtected)
-            this.processKeyReferencePath(entry, path, matches);
+            this.processKeyReferencePath(entry, path, matches, parent);
+
+            if ('recurse' in keyReferencePath && keyReferencePath.recurse === false) {
+                // console.log(`not recursing ${path}`);
+                return;
+            }
         }
 
         if (entry === null) {
@@ -152,7 +151,7 @@ export class RulesetRecursiveKeyRetriever {
         }
     }
 
-    private processKeyReferencePath(entry: Entry, path: string, matches: Match[]) {
+    private processKeyReferencePath(entry: Entry, path: string, matches: Match[], parent: YAMLSeq | undefined) {
         if (typeof entry !== 'object' || !('items' in entry)) {
             return;
         }
@@ -160,11 +159,28 @@ export class RulesetRecursiveKeyRetriever {
         const map = entry as YAMLMap;
 
         for (const item of map.items) {
-            matches.push({
+            // @TODO check if we can just use _names and revert
+            const match: Match = {
                 key: item.key.value,
                 path,
                 range: item.key.range,
-            });
+            };
+
+            let metadata: typeof match.metadata = {};
+            if (parent) {
+                // get any metadata from parent
+                metadata = this.addMetadata(path.split('.').slice(0, -1).join('.'), parent) || {};
+            }
+
+            if (item.value?.type === 'PLAIN') {
+                metadata._name = item.value.value;
+            }
+
+            if (Object.keys(metadata).length > 0) {
+                match.metadata = metadata;
+            }
+
+            matches.push(match);
         }
     }
 
@@ -206,7 +222,7 @@ export class RulesetRecursiveKeyRetriever {
                     newNamesByPath[`${path}[]`] = index.toString();
                 }
                 // console.log(`looping ${ruleProperty} path ${path}[]`);
-                if (typedProperties.isKeyReferencePath(path + '[]')) {
+                if (typedProperties.isKeyReferencePath(path + '[]') !== undefined) {
                     // this is quite unfortunate, but needed for things like manufacture.randomProducedItems[][]
                     this.processItems(ruleProperty, path + '[]', matches, logicData, newNamesByPath, lookupAll);
                 } else {
@@ -219,10 +235,16 @@ export class RulesetRecursiveKeyRetriever {
                 if (['PLAIN', 'QUOTE_DOUBLE', 'QUOTE_SINGLE'].indexOf(ruleProperty.type) !== -1) {
                     newPath += '[]';
                 } else {
+                    if (typedProperties.isExtraFilesRule(path, ruleProperty?.key?.value, entry.items[0].value.value)) {
+                        // TODO figure out it shouldn't already be working like this? or refactor the rest to work like this?
+                        // logger.debug(`isExtraFilesRule ${path} ${ruleProperty?.key?.value} ${entry.items[0].value.value}`);
+                        newPath += '.' + entry.items[0].value.value;
+                    }
+
                     newPath += '.' + ruleProperty?.key?.value;
                 }
 
-                const result = this.processItems(ruleProperty.value, newPath, matches, logicData, namesByPath, lookupAll);
+                const result = this.processItems(ruleProperty.value, newPath, matches, logicData, namesByPath, lookupAll, entry);
                 if (result) {
                     const metadata = this.addMetadata(path, entry);
                     if (metadata) {
@@ -371,39 +393,6 @@ export class RulesetRecursiveKeyRetriever {
 
     private checkForRangeMatch(range1: number[], range2: number[]): boolean {
         return range1[0] === range2[0] && range1[1] === range2[1];
-    }
-
-        /**
-     * Parses extraSprites and extraSounds
-     * @param propertiesFlat
-     * @param ruleProperties
-     * @param definitions
-     * @param ruleType
-     */
-    private handleExtraFiles(propertiesFlat: JsonObject, ruleProperties: YAMLSeq, matches: Match[], ruleType: YAMLDocumentItem) {
-        const typeKey = 'files';
-        if (!(typeKey in propertiesFlat)) {
-            return;
-        }
-
-        for (const ruleProperty of ruleProperties.items) {
-            if (ruleProperty.key.value === typeKey) {
-                for (const entry of ruleProperty.value.items) {
-                    const metadata = this.addMetadata(ruleType.key.value + '.' + propertiesFlat.type, ruleProperties);
-                    const match: Match = {
-                        key: entry.key.value,
-                        path: ruleType.key.value + '.' + propertiesFlat.type + '.' + typeKey,
-                        range: entry.key.range,
-                    };
-
-                    if (metadata) {
-                        match.metadata = metadata;
-                    }
-
-                    matches.push(match);
-                }
-            }
-        }
     }
 }
 

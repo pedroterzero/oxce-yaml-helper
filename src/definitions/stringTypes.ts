@@ -1,16 +1,6 @@
-const ftaStringTypes = [
-    'alienDeployments.missionCompleteText',
-    'alienDeployments.missionFailedText',
-    '/^battleScripts\\.commands\\[\\]\\.messages\\.\\d+\\.(answer|content|title)$/',
-    'covertOperations.description',
-    'covertOperations.successDescription',
-    'diplomacyFactions.description',
-    'events.description',
-    '/^globalVariables\\.loyaltyRatings\\.-?\\d+$/',
-    '/^globalVariables\\.reputationLevels\\.-?\\d+$/',
-];
+import { getAdditionalStringTypes } from "../utilities";
 
-export const stringTypes = ftaStringTypes.concat([
+export const stringTypes = ([] as string[]).concat([
     'alienDeployments.alert',
     'alienDeployments.alertDescription',
     'alienDeployments.briefing.desc',
@@ -24,6 +14,7 @@ export const stringTypes = ftaStringTypes.concat([
     'enviroEffects.environmentalConditions.STR_FRIENDLY.message',
     'enviroEffects.environmentalConditions.STR_HOSTILE.message',
     'enviroEffects.environmentalConditions.STR_NEUTRAL.message',
+    'events.description',
     'items.confAimed.name',
     'items.confAuto.name',
     'items.confMelee.name',
@@ -45,4 +36,4 @@ export const stringTypes = ftaStringTypes.concat([
     // not sure
     // 'items.categories',
     // 'manufacture.category',
-]);
+], getAdditionalStringTypes());

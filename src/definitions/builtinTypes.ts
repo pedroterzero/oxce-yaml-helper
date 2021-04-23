@@ -1,3 +1,5 @@
+import { getAdditionalBuiltinTypes } from "../utilities";
+
 const builtinBackgrounds = [
     'BACK01.SCR', 'BACK02.SCR', 'BACK03.SCR', 'BACK04.SCR', 'BACK05.SCR',
     'BACK06.SCR', 'BACK07.SCR', 'BACK08.SCR', 'BACK09.SCR', 'BACK10.SCR',
@@ -64,7 +66,6 @@ export const builtinResourceIds: {[key: string]: idRange} = {
 export const builtinTypes: {[key: string]: string[]} = {
     'alienDeployments.alertBackground': builtinBackgrounds,
     'alienDeployments.briefing.background': builtinBackgrounds,
-    'alienDeployments.extendedObjectiveType': ['STR_EVACUATION', 'STR_FRIENDLY_VIP', 'STR_ITEM_EXTRACTION'], // FtA
     'alienMissions.waves[].ufo': ['dummy'],
     'armors.spriteInv': builtinArmorSprites,
     'armors.spriteSheet': [
@@ -98,4 +99,5 @@ export const builtinTypes: {[key: string]: string[]} = {
     'ufos.size': ['STR_LARGE', 'STR_MEDIUM_UC', 'STR_SMALL', 'STR_VERY_LARGE', 'STR_VERY_SMALL'],
     'units.civilianRecoveryType': ['STR_ENGINEER', 'STR_SCIENTIST'],
     'ufopaedia.image_id': builtinUfopaediaImages,
+    ...getAdditionalBuiltinTypes()
 };

@@ -1,3 +1,4 @@
+import { merge } from "merge-anything";
 import { Diagnostic, DiagnosticSeverity, Range, Uri } from "vscode";
 import { LogicDataEntry, Match } from "../rulesetTree";
 import { ReferenceFile } from "../workspaceFolderRuleset";
@@ -23,6 +24,7 @@ export class BaseLogic implements LogicInterface {
      * then also that they get properly handled (not treated as a regular reference)
      */
     protected numericFields: string[] = [];
+    protected additionalMetadataFields: string[] = [];
     protected relatedFieldLogicMethods: {[key: string]: (key: string) => void} = {};
     protected diagnostics?: Diagnostic[];
     protected diagnosticsPerFile: {[key: string]: Diagnostic[]} = {};
@@ -38,8 +40,12 @@ export class BaseLogic implements LogicInterface {
         return Object.keys(this.fields);
     }
 
-    public getNumericFields(): string[] {
+    public getNumericFields() {
         return this.numericFields;
+    }
+
+    public getAdditionalMetadataFields() {
+        return this.additionalMetadataFields;
     }
 
     public getRelatedLogicFields(): string[] {
@@ -142,9 +148,9 @@ export class BaseLogic implements LogicInterface {
         return Object.keys(ret).length > 0 ? ret : undefined;
     }
 
-    protected collectGenericData(entries: LogicDataEntry[], fields: string[], data: { [key: string]: { [key: string]: number | string | {[key: string]: number | string}[]}; }) {
+    protected collectGenericData(entries: LogicDataEntry[], fields: string[], data: { [key: string]: { [key: string]: number | string | {[key: string]: number | string}[]}; }, mergeDuplicates = false) {
         for (const field of fields) {
-            const fieldData = this.getFieldData<string>(entries, field);
+            const fieldData = this.getFieldData(entries, field);
             if (fieldData) {
                 const subFieldName = field.split('.').slice(1).join('.');
 
@@ -153,10 +159,39 @@ export class BaseLogic implements LogicInterface {
                         data[key] = {};
                     }
 
-                    data[key][subFieldName] = fieldData[key];
+                    if (mergeDuplicates && subFieldName in data[key]) {
+                        // if data already exists, merge it (exact same rule in multiple files, for example)
+                        this.mergeDuplicates(data, key, subFieldName, fieldData);
+                    } else {
+                        data[key][subFieldName] = fieldData[key];
+                    }
                 }
             }
         }
+    }
+
+    private mergeDuplicates(data: { [key: string]: { [key: string]: string | number | { [key: string]: string | number; }[]; }; }, key: string, subFieldName: string, fieldData: { [key: string]: string | number; }) {
+        let merged;
+
+        if (Array.isArray(data[key][subFieldName]) && Array.isArray(fieldData[key])) {
+            let small = data[key][subFieldName] as any;
+            let large = fieldData[key] as any;
+            if (small.length > large.length) {
+                const tmp = large;
+                large = small;
+                small = tmp;
+            }
+
+
+            for (const index in small) {
+                large[index] = merge(large[index], small[index]);
+            }
+
+            merged = large;
+        } else {
+            merged = merge(data[key][subFieldName] as any, fieldData[key] as any);
+        }
+        data[key][subFieldName] = merged;
     }
 
     protected getNameFromMetadata (ref: Match, type: string) {
