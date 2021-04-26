@@ -232,7 +232,7 @@ export const Yscript: P.Language = P.createLanguage<YscriptSpec>({
         //    itemRuleset.hasCategory catCheck "STR_SNIPER_RIFLES";
         P.seqObj<Assignment>(
           // ['assigneeIdentifiers', P.alt(r.Number, r.Identifier).sepBy1(r.s1)],
-          ['assigneeIdentifiers', P.alt(r.Number, r.QuotedString, r.Identifier.skip(P.seq(r.s1, r.Tag).many())).sepBy1(r.s1)], // any number or identifier, until we hit Tag.
+          ['assigneeIdentifiers', P.alt(r.SignedNumber, r.QuotedString, r.Identifier.skip(P.seq(r.s1, r.Tag).many())).sepBy1(r.s1)], // any number or identifier, until we hit Tag.
           r.Tag.atMost(1),
           // P.seq(r.s1, r.Tag).atMost(1),
         ),
