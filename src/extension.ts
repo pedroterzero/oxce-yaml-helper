@@ -37,8 +37,6 @@ const loadLanguageServer = (context: ExtensionContext) => {
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
 		// Register the server for plain text documents
-		// documentSelector: [{ scheme: 'file', language: 'html1' }]
-		// documentSelector: [{ scheme: 'file', language: 'yaml' }],
 		documentSelector: [{ scheme: 'file', language: 'yaml', pattern: '**/*.rul' }],
 		synchronize: {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
@@ -81,7 +79,6 @@ export function activate(context: ExtensionContext) {
 
     const triggerCharacters = " abcdefghijklmnopqrstuvwxyz0123456789".split('');
     context.subscriptions.push(languages.registerCompletionItemProvider(documentFilters, new RulesetCompletionProvider(), ...triggerCharacters));
-
 
     loadLanguageServer(context);
 
