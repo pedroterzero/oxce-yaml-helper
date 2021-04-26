@@ -26,3 +26,6 @@ Dockerfile
 docker-compose.yml
 *.sh
 tsconfig.tsbuildinfo
+server/src
+server/tsconfig.json
+server/tsconfig.tsbuildinfo
