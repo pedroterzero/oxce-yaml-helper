@@ -41,8 +41,8 @@ export class RulesetDefinitionChecker {
     ];
 
     private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
-    private typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
     private stringTypeRegexes: RegExp[] = [];
+    private ignoreTypesRegexes: RegExp[] = [];
 
     private ignoreTypeValues: {[key: string]: string[]} = {
         'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
@@ -265,16 +265,11 @@ export class RulesetDefinitionChecker {
         }
 
         let retval;
+        let values;
         if (ref.path in typeLinks) {
             retval = this.checkForTypeLinkMatch(typeLinks[ref.path], possibleKeys, lookup);
-        } else {
-            // regex match
-            for (const type in this.typeLinkRegexes) {
-                const regex = this.typeLinkRegexes[type].regex;
-                if (regex.exec(ref.path)) {
-                    retval = this.checkForTypeLinkMatch(this.typeLinkRegexes[type].values, possibleKeys, lookup);
-                }
-            }
+        } else if ((values = typedProperties.isRegexTypeLink(ref.path))) {
+            retval = this.checkForTypeLinkMatch(values, possibleKeys, lookup);
         }
 
         return retval;
@@ -425,7 +420,7 @@ export class RulesetDefinitionChecker {
             // ignore extraStrings for now(?)
             return false;
         }
-        if (ignoreTypes.indexOf(ref.path) !== -1) {
+        if (this.checkForIgnoredType(ref.path)) {
             // ignore these assorted types for now
             return false;
         }
@@ -465,6 +460,20 @@ export class RulesetDefinitionChecker {
         return false;
     }
 
+    private checkForIgnoredType(path: string) {
+        if (ignoreTypes.includes(path)) {
+            return true;
+        }
+
+        for (const re of this.ignoreTypesRegexes) {
+            if (re.exec(path)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private matchesBuiltinTypeRegex(path: string, key: string): boolean {
         for (const item of this.builtinTypeRegexes) {
             if (item.regex.exec(path) && item.values.includes(key)) {
@@ -495,22 +504,19 @@ export class RulesetDefinitionChecker {
             }
         }
 
-        for (const type in typeLinks) {
-            if (type.startsWith('/') && type.endsWith('/')) {
-                this.typeLinkRegexes.push({
-                    regex: new RegExp(type.slice(1, -1)),
-                    values: typeLinks[type]
-                });
-
-                delete typeLinks[type];
-            }
-        }
-
         for (const type of stringTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.stringTypeRegexes.push(new RegExp(type.slice(1, -1)));
 
                 // stringTypes = stringTypes.filter(fType => fType !== type);
+            }
+        }
+
+        for (const type of ignoreTypes) {
+            if (type.startsWith('/') && type.endsWith('/')) {
+                this.ignoreTypesRegexes.push(
+                    new RegExp(type.slice(1, -1))
+                );
             }
         }
     }

@@ -3,6 +3,8 @@ Welcome to the OpenXcom (Extended) Ruleset Linker. This extension aims to turn V
 
 ## Features ([see below for video](#how-to-use-it))
 * **[Go to definition](#definitions)** for most things in OXC(E) rulesets (and FtA). This allows you to jump directly to the definition of most string ids.
+* **[Y-script syntax highlighting](#y-script-syntax-highlighting)**. Pretty self-explanatory, nice colours for y-script!
+* **[Context aware autocomplete](#context-aware-autocomplete)**. Adds additional autocomplete features; only suggests appropriate things, and works across files!
 * **[Translation Hover](#translation-hover)**. This means hovering over a string, for example `STR_FOOBAR`, will show the related translation for it, if existing
 * **[Reference checking](#reference-checking)** for most things in OXC(E) rulesets. This means the extension will tell you if you've mistyped a string ID or sprite ID, or referred to one that does not exist. This saves a lot of time to test a mod only to have it crash because something is wrong.
 * **[Documentation Hover](#documentation-hover)** (currently for most but not all properties). This means hovering over a property, for example `requiresBuy`, will show the documentation for it. This saves some trips to the wiki! Disableable in settings.
@@ -18,6 +20,16 @@ Please see [this walkthrough guide](https://github.com/pedroterzero/oxce-yaml-he
 Go to any (supported) type, for example `STR_FOOBAR`. If it is defined anywhere else, you should be able to jump directly to its definition by CTRL+clicking on it. Or by right-clicking it and clicking 'Go to definition', or by clicking it and pressing F12.
 
 ![Go To Definition Example](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/go-to-definition.gif)
+
+### Y-script syntax highlighting
+Any `.rul` file that has y-script in them, should have them automatically highlighted. You should not have to do anything to get this to work.
+
+![Syntax highlighting](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/syntax-highlighting.png)
+
+### Context aware autocomplete
+Go to where you would like to insert a reference to another rule, then type `CTRL+space`. This will you show you approppriate suggestions; for example when adding an item to `requiresBuy` in `items`, it will only show research rules. It will also work across files, making life easier.
+
+![Context aware autocomplete](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/context-aware-autocomplete.gif)
 
 ### Reference checking
 To use this, open the '**Problems**' view. You can open this from the 'View' menu, then clicking 'Problems'. Any problems that the extension detects will be automatically be shown here. Everytime you save a file, the view will be updated.
