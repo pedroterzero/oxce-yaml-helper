@@ -33,7 +33,8 @@
     },
     "var-expr": {
       "name": "meta.var.expr.ys",
-      "begin": "^\\s*(var)\\b",
+      "comment": "Used to have a ^, but no longer seems true because of loop",
+      "begin": "\\s*(var)\\b",
       "beginCaptures": {
         "1": {
           "name": "storage.modifier.ys"
@@ -71,6 +72,10 @@
         {
           "name": "keyword.control.flow.ys",
           "match": "(?<!\\.|\\$)\\b(return)\\b(?!\\$)"
+        },
+        {
+          "name": "keyword.control.loop.ys",
+          "match": "(?<!\\.|\\$)\\b(loop)\\b(?!\\$)"
         },
         {
           "name": "keyword.control.conditional.ys",
