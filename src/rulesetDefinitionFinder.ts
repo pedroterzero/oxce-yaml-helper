@@ -19,7 +19,10 @@ export class RulesetDefinitionFinder {
 
             // TODO: figure out a proper generic way to do this
             if (ref.path === 'extraSprites.Projectiles.files') {
-                this.addBulletSprites(ref, references);
+                this.addSpritesheetIndexes(ref, references, 'Projectiles', 35);
+            }
+            if (ref.path === 'extraSprites.INTICON.PCK.files') {
+                this.addSpritesheetIndexes(ref, references, 'INTICON.PCK');
             }
 
             // console.log(`definition ${ref.path} ${ref.key}`);
@@ -51,25 +54,45 @@ export class RulesetDefinitionFinder {
         return definitions;
     }
 
-    private addBulletSprites(ref: Match, references: Match[]) {
-        if (!('metadata' in ref) || !ref.metadata || !('height' in ref.metadata) || !('subY' in ref.metadata)) {
+    private addSpritesheetIndexes(ref: Match, references: Match[], description: string, multiplier = 1) {
+        if (!('metadata' in ref) || !ref.metadata) {
             return;
         }
 
-        const height = parseInt(ref.metadata.height as string);
-        const subY = parseInt(ref.metadata.subY as string);
-
-
-        if (height < subY || height % subY !== 0) {
+        if (!((ref.metadata.height && ref.metadata.subY) || (ref.metadata.width && ref.metadata.subX))) {
             return;
         }
 
-        for (let i = 1; i < height / subY; i++) {
+        let xLoops = 1;
+        let yLoops = 1;
+        if (ref.metadata.height && ref.metadata.subY) {
+            const height = parseInt(ref.metadata.height as string);
+            const subY = parseInt(ref.metadata.subY as string);
+
+            if (height < subY || height % subY !== 0) {
+                return;
+            }
+
+            yLoops = height / subY;
+        }
+        if (ref.metadata.width && ref.metadata.subX) {
+            const width = parseInt(ref.metadata.width as string);
+            const subX = parseInt(ref.metadata.subX as string);
+
+            if (width < subX || width % subX !== 0) {
+                return;
+            }
+
+            xLoops = width / subX;
+        }
+
+        for (let i = 1; i < (xLoops * yLoops); i++) {
             const newRef = Object.assign({}, ref, {
-                key: ref.key + (i * 35)
+                key: ref.key + (i * multiplier)
             });
+
             delete newRef.metadata; // prevent infinite lolz
-            logger.debug(`adding Projectiles ref key ${newRef.key}`);
+            logger.debug(`adding ${description} ref key ${newRef.key}`);
 
             references.push(newRef);
         }

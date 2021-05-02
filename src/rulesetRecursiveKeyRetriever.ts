@@ -229,6 +229,11 @@ export class RulesetRecursiveKeyRetriever {
                     this.loopEntry(ruleProperty, path + '[]', matches, logicData, newNamesByPath, lookupAll);
                 }
             } else {
+                if (['ALIAS'].includes(ruleProperty.type)) {
+                    // ignore ALIAS (refNode)
+                    return;
+                }
+
                 this.checkForDefinitionName(path, ruleProperty, namesByPath);
 
                 let newPath = path;

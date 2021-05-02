@@ -68,13 +68,24 @@ export class RulesetDefinitionChecker {
         this.checkReferences(file, ruleset.definitionsLookup, diagnostics);
         this.addDuplicateDefinitions(file, diagnostics, workspacePath);
 
+        this.checkLogicData(ruleset, file, diagnostics, hierarchy);
+
+        return diagnostics;
+    }
+
+    /**
+     * Separate call to check logic data to allow data to be collected from vanilla assets
+     * @param ruleset
+     * @param file
+     * @param diagnostics
+     * @param hierarchy
+     */
+    public checkLogicData(ruleset: WorkspaceFolderRuleset, file: ReferenceFile, diagnostics: Diagnostic[], hierarchy: WorkspaceFolderRulesetHierarchy) {
         let logicData;
         if ((logicData = ruleset.getLogicData(file.file))) {
             // console.log(`checking! ${file.file.path}`);
             this.logicHandler.check(file.file, diagnostics, logicData, hierarchy);
         }
-
-        return diagnostics;
     }
 
     public checkRelationLogic(diagnosticsPerFile: FilesWithDiagnostics): FilesWithDiagnostics {

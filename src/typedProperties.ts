@@ -220,6 +220,7 @@ export class typedProperties {
     private static metadataFields: metadataFields = {
         'items': ['damageType', 'blastRadius', 'damageAlter.FixRadius'],
         'extraSprites.Projectiles': ['height', 'subY'],
+        'extraSprites.INTICON.PCK': ['height', 'width', 'subX', 'subY'],
     }
 
     private static storeVariables: {[key: string]: boolean} = {
