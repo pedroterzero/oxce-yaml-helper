@@ -3,7 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { LanguageService as CSSLanguageService } from 'vscode-css-languageservice';
 import { Diagnostic } from 'vscode-languageclient';
 import { YAMLDocumentRegions } from '../embeddedSupport';
 import { LanguageModelCache } from '../languageModelCache';

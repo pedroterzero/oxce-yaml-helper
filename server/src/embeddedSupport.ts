@@ -54,6 +54,11 @@ export function getDocumentRegions(
   for (const hookType of scripts) {
     // const hookName = hookType.key.value;
 
+    if (!hookType.value) {
+      // incompletely typed hook, for example
+      continue;
+    }
+
     for (const script of hookType.value.items) {
       let codeNode;
       if ((codeNode = script.get("code", true))) {

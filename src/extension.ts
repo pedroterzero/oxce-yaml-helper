@@ -32,7 +32,7 @@ const loadLanguageServer = (context: ExtensionContext) => {
 		pathJoin('server', 'out', 'server.js')
 	);
 
-    const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
+    const debugOptions = { execArgv: ['--nolazy', '--inspect=6010'] };
 
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {

@@ -46,8 +46,7 @@ connection.onInitialize((_params: InitializeParams) => {
 	};
 });
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-connection.onInitialized(() => {});
+connection.onInitialized(() => { /* */ });
 
 connection.onDidChangeConfiguration(_change => {
 	// Revalidate all open text documents
