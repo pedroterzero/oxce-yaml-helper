@@ -12,6 +12,7 @@ import { Type } from "yaml/util";
 import { cleanObject } from 'tiny-clean-object';
 
 export class CsvToYamlConverter {
+    private originalFile = '';
     private doc: Document.Parsed | undefined;
     private ids: {[key: string]: boolean} = {};
     private matches: {[key: string]: number} = {};
@@ -21,16 +22,12 @@ export class CsvToYamlConverter {
 
     public async convert() {
         await this.parseRuleset();
-        if (!this.doc) {
-            return;
-        }
 
         const input = csvParse((await readFile(this.inFile)).toString(), {header: true, dynamicTyping: true});
         if (input.errors.length > 0) {
             window.showErrorMessage(`Could not parse CSV file`);
             return;
         }
-
 
         for (const row of input.data) {
             const parsed = this.undot(row);
@@ -40,13 +37,61 @@ export class CsvToYamlConverter {
 
         this.handleDeletes();
 
-        writeFile(this.outFile, this.doc.toString());
+        this.fixCommentIndents();
+
+        writeFile(this.outFile, this.fixCommentIndents());
+    }
+
+    private fixCommentIndents () {
+        if (!this.doc) {
+            return '';
+        }
+
+        const output = this.doc.toString();
+
+        let currentLineOfNewOutput = 0;
+        const outputFixed = output.split("\n");
+        for (const line of this.originalFile.split("\n")) {
+            const cleaned = line.trimEnd();
+
+            let matches;
+            if ((matches = cleaned.match(/^#(.+)$/))) {
+                console.log('old file', matches[1]);
+
+                // find in the new output
+                let lineNumber = -1;
+                for (const line of outputFixed) {
+                    lineNumber++;
+
+                    if (lineNumber < currentLineOfNewOutput) {
+                        continue;
+                    }
+
+                    const cleaned = line.trimEnd();
+                    const regex = new RegExp(`^\\s+#${matches[1]}\\s*$`);
+                    if (regex.exec(cleaned)) {
+                        outputFixed[lineNumber] = `#${matches[1]}`;
+                        console.log('match', matches[1]);
+                        break;
+                    }
+
+                    currentLineOfNewOutput = lineNumber;
+                }
+            }
+        }
+
+        return outputFixed.join("\n");
     }
 
     private undot(row: any) {
         const out: typeof row = {};
 
         for (const key in row) {
+            if (row[key] === null) {
+                // skip null rows
+                continue;
+            }
+
             if (key.slice(-2) === '[]') {
                 if (typeof row[key] === 'string') {
                     const parts = row[key].split(',');
@@ -55,6 +100,8 @@ export class CsvToYamlConverter {
                         let val = parts[i];
                         if (parseInt(val).toString() === val) {
                             val = parseInt(val);
+                        } else if (parseFloat(val).toString() === val) {
+                            val = parseFloat(val);
                         }
 
                         out[`${key.slice(0, -2)}[${i}]`] = val;
@@ -77,8 +124,8 @@ export class CsvToYamlConverter {
             throw new Error(`${this.outFile} not found`);
         }
 
-        const doc = await readFile(this.outFile);
-        this.doc = parseDocument(doc.toString());
+        this.originalFile = (await readFile(this.outFile)).toString();
+        this.doc = parseDocument(this.originalFile.toString());
     }
 
     private merge(row: any) {
@@ -116,11 +163,12 @@ export class CsvToYamlConverter {
             // if (currentValue && typeof currentValue === 'object' && 'items' in currentValue) {
             if (currentValue && typeof currentValue === 'object') {
                 // add stuff recursively, or if nothing remains, delete the key
-                if ([Type.FLOW_MAP, Type.MAP].includes(currentValue.type)) {
+                if ([Type.FLOW_MAP, Type.MAP, Type.SEQ].includes(currentValue.type)) {
                     this.mergeSub(currentValue, newValue);
 
                     if (currentValue.items.length === 0) {
                         // nothing remaining? delete it
+                        logger.debug(`Removing ${keyToUse}`);
                         entry.delete(keyToUse);
                     }
 
@@ -128,7 +176,7 @@ export class CsvToYamlConverter {
                 }
             }
 
-            if (!currentValue && newValue && typeof newValue === 'object' && !Array.isArray(newValue)) {
+/*          if (!currentValue && newValue && typeof newValue === 'object' && !Array.isArray(newValue)) {
                 // if an object is added in, that does not exist yet, check that it does not have only empty values - if it does, ignore it
                 const objectWithoutNulls = Object.fromEntries(Object.entries(newValue).filter(([_, v]) => v !== null && !(Array.isArray(v) && v.length === 0)));
                 if (Object.keys(objectWithoutNulls).length === 0) {
@@ -140,14 +188,21 @@ export class CsvToYamlConverter {
                 // no value was provided, so remove it, if it exists
                 entry.delete(keyToUse);
                 continue;
-            }
+            }*/
 
             if (['string', 'number', 'boolean'].includes(typeof currentValue)) {
                 // for strings, use this way of setting, so we respect comments
-                for (const item of entry.items) {
-                    if (item.key.value === keyToUse) {
-                        // console.log(`setting1 ${entry.toJSON().type} ${key}`);
-                        item.value.value = row[keyToUse];
+                if (entry.type === Type.SEQ) {
+                    for (const index in entry.items) {
+                        if (index === key) { // use key for strict match, not keyToUse
+                            entry.items[index].value = row[keyToUse];
+                        }
+                    }
+                } else {
+                    for (const item of entry.items) {
+                        if (item.key.value === keyToUse) {
+                            item.value.value = row[keyToUse];
+                        }
                     }
                 }
             } else {
