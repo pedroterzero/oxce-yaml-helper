@@ -1,3 +1,6 @@
+# v0.8.1
+- Added syntax highlighting for y-script loop statements
+
 # v0.8.0
 - Added context aware autocomplete
 - Removed FtA logic and made rules extendable through linker.yml
