@@ -128,7 +128,7 @@
           "name": "variable.parameter.ys"
         },
         {
-          "match": "\\b(debug_log|eq|neq|gt|ge|leabs|add|add_shade|aggregate|bit_and|bit_count|bit_not|bit_or|bit_xor|clear|div|get_color|get_shade|limit|limit_lower|limit_upper|mod|mul|muldiv|offset|offsetmod|pow|set|set_color|set_shade|shl|shr|sub|swap|wavegen_rect|wavegen_saw|wavegen_tri)\\b",
+          "match": "\\b(debug_log|eq|neq|gt|ge|leabs|lt|le|add|add_shade|aggregate|bit_and|bit_count|bit_not|bit_or|bit_xor|clear|div|get_color|get_shade|limit|limit_lower|limit_upper|mod|mul|muldiv|offset|offsetmod|pow|set|set_color|set_shade|shl|shr|sub|swap|wavegen_rect|wavegen_saw|wavegen_tri)\\b",
           "comment": "could also be support.function.ys",
           "name": "entity.name.function.ys"
         },
