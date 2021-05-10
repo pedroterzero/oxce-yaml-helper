@@ -106,7 +106,7 @@ export class KeyDetector {
         // handle CRLF also
         const lines = text.split(/\r?\n/).reverse();
         const editLine = lines.shift();
-        const matches = editLine?.match(/^(\s+)([a-zA-Z0-9-]+)(:(?:\s*\[\s*\[)?)?/);
+        const matches = editLine?.match(/^(\s+)(?:-\s)?([a-zA-Z0-9-]+)(:(?:\s*\[\s*\[)?)?/);
         const path = [];
 
         let indent = 2;
@@ -119,7 +119,8 @@ export class KeyDetector {
             }
         }
 
-        let prevLine = '';
+        // get the first line too, in case that started an array entry
+        let prevLine = editLine || '';
         for (const line of lines) {
             const parentRegex = new RegExp(`^(\\s{1,${indent - 1}})([a-zA-Z]+|[0-9]+):(\\s*&[a-zA-Z0-9]+|\\s*\\[)?$`); // could be a trailing & reference
 
