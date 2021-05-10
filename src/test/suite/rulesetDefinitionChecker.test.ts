@@ -94,7 +94,8 @@ describe('rulesetDefinitionChecker', () => {
     });
 
     it('finds a diagnostic for duplicate type', () => {
-        const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_CHECK is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\titems.rul line 40");
+        // const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_CHECK is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\titems.rul line 40");
+        const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_CHECK is duplicate (add # ignoreDuplicate after this to ignore this entry)");
         assert.notStrictEqual(diagnostic, undefined);
     });
 
