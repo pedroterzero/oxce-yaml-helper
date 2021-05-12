@@ -34,6 +34,7 @@ export const stringTypes = ([] as string[]).concat([
     'ufopaedia.text',
     'ufopaedia.pages[].text',
     'ufopaedia.pages[].title',
+    'ufopaedia.weapon',
     // not sure
     // 'items.categories',
     // 'manufacture.category',
