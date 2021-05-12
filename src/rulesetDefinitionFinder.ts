@@ -21,8 +21,12 @@ export class RulesetDefinitionFinder {
             if (ref.path === 'extraSprites.Projectiles.files') {
                 this.addSpritesheetIndexes(ref, references, 'Projectiles', 35);
             }
-            if (ref.path === 'extraSprites.INTICON.PCK.files') {
-                this.addSpritesheetIndexes(ref, references, 'INTICON.PCK');
+
+            const fixIndexes = ['INTICON.PCK'/*, 'BIGOBS.PCK'*/];
+            for (const index of fixIndexes) {
+                if (ref.path === `extraSprites.${index}.files`) {
+                    this.addSpritesheetIndexes(ref, references, index);
+                }
             }
 
             // console.log(`definition ${ref.path} ${ref.key}`);

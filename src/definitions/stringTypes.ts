@@ -7,6 +7,7 @@ export const stringTypes = ([] as string[]).concat([
     'alienDeployments.briefing.title',
     'alienDeployments.markerName',
     'alienDeployments.objectiveComplete',
+    'alienDeployments.objectiveFailed',
     'alienDeployments.objectivePopup',
     'commendations.description',
     'crafts.weaponStrings',
