@@ -1,4 +1,4 @@
-import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from "vscode";
+import { Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, Range, Uri, workspace } from "vscode";
 import { DefinitionLookup, Match } from "./rulesetTree";
 import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
@@ -62,11 +62,11 @@ export class RulesetDefinitionChecker {
         this.logicHandler = new LogicHandler;
     }
 
-    public checkFile(file: ReferenceFile, ruleset: WorkspaceFolderRuleset, workspacePath: string, hierarchy: WorkspaceFolderRulesetHierarchy): Diagnostic[] {
+    public checkFile(file: ReferenceFile, ruleset: WorkspaceFolderRuleset, _workspacePath: string, hierarchy: WorkspaceFolderRulesetHierarchy): Diagnostic[] {
         const diagnostics : Diagnostic[] = [];
 
         this.checkReferences(file, ruleset.definitionsLookup, diagnostics);
-        this.addDuplicateDefinitions(file, diagnostics, workspacePath);
+        this.addDuplicateDefinitions(file, diagnostics);
 
         this.checkLogicData(ruleset, file, diagnostics, hierarchy);
 
@@ -94,26 +94,29 @@ export class RulesetDefinitionChecker {
         return mergeAndConcat(diagnosticsPerFile, additionalFilesWithDiagnostics) as FilesWithDiagnostics;
     }
 
-    private addDuplicateDefinitions(file: ReferenceFile, diagnostics: Diagnostic[], workspacePath: string) {
+    private addDuplicateDefinitions(file: ReferenceFile, diagnostics: Diagnostic[]) {
         if (!(file.file.path in this.duplicatesPerFile)) {
             return;
         }
 
         const duplicates = this.duplicatesPerFile[file.file.path];
-        // const messages = [];
         for (const duplicate of duplicates) {
-            const parts = [];
+            const relatedInformation = [];
             for (const dupdef of duplicate.duplicates) {
-                parts.push(`${dupdef.file.path.slice(workspacePath.length + 1)} line ${dupdef.rangePosition[0][0]}`);
+                relatedInformation.push(
+                    new DiagnosticRelatedInformation(new Location(dupdef.file, new Range(...dupdef.rangePosition[0], ...dupdef.rangePosition[1])), 'also defined here')
+                );
             }
 
-            const message = `${duplicate.definition.type} ${duplicate.key} is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\t${parts.join("\n\t")}`;
+            const message = `${duplicate.definition.type} ${duplicate.key} is duplicate (add # ignoreDuplicate after this to ignore this entry)`;
 
             const range = new Range(...duplicate.definition.rangePosition[0], ...duplicate.definition.rangePosition[1]);
-
-            diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
-            // messages.push(message);
-
+            diagnostics.push({
+                range,
+                message,
+                severity: DiagnosticSeverity.Warning,
+                relatedInformation
+            });
         }
 
         // appendFile(workspacePath + '/messages.txt', doc.fileName.slice(workspacePath.length + 1) + "\n==========\n" + messages.join("\n") + "\n\n", () => { return; });
