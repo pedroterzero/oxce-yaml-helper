@@ -207,7 +207,7 @@ export class CsvToYamlConverter {
                 }
             } else {
                 // keep [] array syntax
-                 if (currentValue?.type === Type.FLOW_SEQ) {
+                if (currentValue?.type === Type.FLOW_SEQ) {
                     while (entry.get(keyToUse).items.length > 0) {
                         entry.deleteIn([keyToUse, 0]);
                     }
@@ -215,12 +215,15 @@ export class CsvToYamlConverter {
                     for (const value of newValue) {
                         entry.addIn([keyToUse], value);
                     }
-                } else {
+                } else if (['object'].includes(typeof newValue)) {
                     // regular set, also adds in stuff that did not have a key before
                     const cleaned = cleanObject(cleanObject(row[keyToUse], {deep: true, emptyArrays: true}), {deep: true, emptyArrays: true, emptyObjects: true});
                     if (Object.keys(cleaned).length > 0) {
                         entry.set(keyToUse, cleaned);
                     }
+                } else {
+                    // regular set, also adds in stuff that did not have a key before
+                    entry.set(keyToUse, newValue);
                 }
             }
         }
