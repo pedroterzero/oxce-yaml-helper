@@ -53,6 +53,7 @@ export const builtinResourceIds: {[key: string]: idRange} = {
     'items.floorSprite': floorSpriteIds,
     'items.handSprite': handSpriteIds,
     'items.hitAnimation': smokeIds,
+    'items.hitMissSound': soundIds,
     'items.hitSound': soundIds,
     'items.meleeAnimation': [0, 3],
     'items.meleeSound': soundIds,

@@ -22,7 +22,7 @@ export class RulesetDefinitionFinder {
                 this.addSpritesheetIndexes(ref, references, 'Projectiles', 35);
             }
 
-            const fixIndexes = ['INTICON.PCK'/*, 'BIGOBS.PCK'*/];
+            const fixIndexes = ['BIGOBS.PCK', 'FLOOROB.PCK', 'INTICON.PCK'];
             for (const index of fixIndexes) {
                 if (ref.path === `extraSprites.${index}.files`) {
                     this.addSpritesheetIndexes(ref, references, index);
@@ -95,7 +95,13 @@ export class RulesetDefinitionFinder {
                 key: ref.key + (i * multiplier)
             });
 
-            delete newRef.metadata; // prevent infinite lolz
+            // prevent infinite loop, remove subX/subY from copied metadata
+            if (newRef.metadata) {
+                delete newRef.metadata.width;
+                delete newRef.metadata.height;
+                delete newRef.metadata.subX;
+                delete newRef.metadata.subY;
+            }
             logger.debug(`adding ${description} ref key ${newRef.key}`);
 
             references.push(newRef);

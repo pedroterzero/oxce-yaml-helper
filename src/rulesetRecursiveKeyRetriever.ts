@@ -176,6 +176,10 @@ export class RulesetRecursiveKeyRetriever {
                 metadata._name = item.value.value;
             }
 
+            if (item.value?.comment) {
+                metadata._comment = item.value.comment.trim();
+            }
+
             if (Object.keys(metadata).length > 0) {
                 match.metadata = metadata;
             }
