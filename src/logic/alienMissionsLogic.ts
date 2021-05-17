@@ -2,9 +2,19 @@ import { DiagnosticSeverity } from "vscode";
 import { LogicDataEntry } from "../rulesetTree";
 import { BaseLogic } from "./baseLogic";
 
+type Entry = {
+    [key: string]: number | string;
+}[];
+
+type AlienMission = {
+    waves: Entry;
+    raceWeights: Entry;
+}
+
 export class AlienMissionsLogic extends BaseLogic {
     private additionalFields = [
         'alienMissions.raceWeights',
+        'alienMissions.refNode',
         'alienMissions.waves',
         'alienMissions.waves[].trajectory',
         'missionScripts.missionWeights',
@@ -17,7 +27,7 @@ export class AlienMissionsLogic extends BaseLogic {
         'alienMissions.waves[].ufo': this.checkForRequiredWaveFields,
     }
 
-    private data: {[key: string]: {[key: string]: number | string | {[key: string]: number | string}[], waves: {[key: string]: number | string}[]}} = {};
+    private data: {[key: string]: {[key: string]: number | string | Entry | AlienMission, waves: Entry, refNode: AlienMission}} = {};
     private missionData: {[key: string]: {[key: string]: {[key: string]: number | string}[]}} = {};
 
     public getFields(): string[] {
@@ -40,14 +50,14 @@ export class AlienMissionsLogic extends BaseLogic {
                 continue;
             }
 
-            if (!this.data[name]?.waves) {
+            if (!this.data[name]?.waves && !this.data[name]?.refNode?.waves) {
                 this.addDiagnosticForReference(
                     ref,
                     `'${name}' does not have waves: set. This will lead to a segmentation fault when this mission triggers.`,
                     DiagnosticSeverity.Error
                 );
             }
-            if (!this.data[name]?.raceWeights) {
+            if (!this.data[name]?.raceWeights && !this.data[name]?.refNode?.raceWeights) {
                 if (!this.inMissionScripts(name)) {
                     this.addDiagnosticForReference(
                         ref,
