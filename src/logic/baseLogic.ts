@@ -28,7 +28,7 @@ type Entry = number | string | EntryValue[] | {
 type EntryData = {
     [key: string]: {
         [key: string]: Entry | (EntryData | undefined);
-        refNode?: Entry | undefined;
+        refNode?: Entry;
     };
 };
 
