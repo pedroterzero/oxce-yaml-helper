@@ -1,5 +1,5 @@
-import { DiagnosticSeverity } from "vscode";
-import { LogicDataEntry } from "../rulesetTree";
+import { DiagnosticSeverity, Uri } from "vscode";
+import { LogicDataEntry, Match } from "../rulesetTree";
 import { BaseLogic } from "./baseLogic";
 
 export class MapScriptsLogic extends BaseLogic {
@@ -59,11 +59,7 @@ export class MapScriptsLogic extends BaseLogic {
                 }
 
                 if (!this.mapBlockGroupsByTerrain[name].includes(parseInt(ref.ref.key))) {
-                    this.addDiagnosticForReference(
-                        ref,
-                        `'Group '${ref.ref.key}' does not exist in terrain for ${name}. This will cause a segmentation fault when loading the map!`,
-                        DiagnosticSeverity.Error
-                    );
+                    this.addDiagnostic(ref, name);
                 }
             } else {
                 if (!(name in this.mapBlockGroups)) {
@@ -72,13 +68,25 @@ export class MapScriptsLogic extends BaseLogic {
                 }
 
                 if (!this.mapBlockGroups[name].includes(parseInt(ref.ref.key))) {
-                    this.addDiagnosticForReference(
-                        ref,
-                        `'Group '${ref.ref.key}' does not exist in terrain for ${name}. This will cause a segmentation fault when loading the map!`,
-                        DiagnosticSeverity.Error
-                    );
+                    this.addDiagnostic(ref, name);
                 }
             }
+        }
+    }
+
+    private addDiagnostic(ref: {ref: Match; file: Uri}, name: string) {
+        if (ref.ref.metadata?.type === 'addBlock') {
+            this.addDiagnosticForReference(
+                ref,
+                `'Group '${ref.ref.key}' does not exist in terrain for ${name}. This will cause this block to be ignored.`,
+                DiagnosticSeverity.Warning
+            );
+        } else { // i.e. addLine
+            this.addDiagnosticForReference(
+                ref,
+                `'Group '${ref.ref.key}' does not exist in terrain for ${name}. This will cause a segmentation fault when loading the map!`,
+                DiagnosticSeverity.Error
+            );
         }
     }
 

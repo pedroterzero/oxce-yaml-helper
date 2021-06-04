@@ -176,7 +176,7 @@ export class RulesetResolver implements Disposable {
         if (this.fileSystemWatcher) {
             this.fileSystemWatcher.dispose();
         }
-        this.fileSystemWatcher = workspace.createFileSystemWatcher('**/' + this.yamlPattern);
+        this.fileSystemWatcher = workspace.createFileSystemWatcher('**/{' + this.yamlPattern + ',Language/*.yml}');
         this.fileSystemWatcher.onDidDelete((e: Uri) => {
             logger.debug(`file deleted ${e.path}`);
             this.deletingFiles[e.path] = true;
@@ -294,11 +294,9 @@ export class RulesetResolver implements Disposable {
             const doc = rulesetParser.parseDocument(document.getText());
             const docObject = doc.regular.toJSON();
 
-            const isLanguageFile = file.path.indexOf('Language/') !== -1 && file.path.slice(file.path.lastIndexOf('.')) === '.yml';
-
             let translations: Translation[] = [];
             let parsed: ParsedRuleset;
-            if (isLanguageFile) {
+            if (this.isLanguageFile(file)) {
                 translations = rulesetParser.getTranslationsFromLanguageFile(docObject);
                 parsed = {translations};
             } else {
@@ -326,6 +324,10 @@ export class RulesetResolver implements Disposable {
         }
 
         return;
+    }
+
+    private isLanguageFile(file: Uri) {
+        return file.path.indexOf('Language/') !== -1 && file.path.slice(file.path.lastIndexOf('.')) === '.yml';
     }
 
     private async getTextDocument(file: Uri) {
