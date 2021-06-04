@@ -275,7 +275,8 @@ export class WorkspaceFolderRuleset {
         const diagnosticsPerFile: FilesWithDiagnostics = {};
         for (const file of this.referenceFiles) {
             if (file.file.path.startsWith(Uri.joinPath(assetUri, '/').path)) {
-                // do not check assets obviously
+                // do not check assets obviously, but do store its logic data
+                rulesetDefinitionChecker.checkLogicData(this, file, [], this.hierarchy);
                 continue;
             }
 

@@ -60,6 +60,7 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'alienMissions.interruptResearch': ['research'],
     'alienMissions.operationBaseType': ['alienDeployments'],
     'alienMissions.waves[].trajectory': ['ufoTrajectories'],
+    'alienMissions.waves[].ufo': ['ufos'],
     '/^alienMissions\\.raceWeights\\.\\d+$/': ['alienRaces'],
     '/^alienMissions\\.regionWeights\\.\\d+$/': ['regions'],
     'alienMissions.siteType': ['alienDeployments'],
@@ -138,7 +139,7 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'items.zombieUnitByType.value': ['units'],
     'manufacture.producedItems': ['items'],
     'manufacture.randomProducedItems[][]': ['items'],
-    'manufacture.requiredItems': ['items'],
+    'manufacture.requiredItems': ['_any_', 'items', 'crafts'],
     'manufacture.requires': ['research'],
     'manufacture.requiresBaseFunc': ['facilities.provideBaseFunc'],
     'manufacture.spawnedPersonType': ['soldiers'], // also scientists and engineers
@@ -199,7 +200,7 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'terrains.mapBlocks[].randomizedItems[].itemList': ['items'],
     'terrains.script': ['mapScripts'],
     'ufopaedia.requires': ['research'],
-    'ufopaedia.weapon': ['items'],
+    // 'ufopaedia.weapon': ['items'],
     'ufos.raceBonus': ['alienRaces'],
     'units.armor': ['armors'],
     'units.builtInWeaponSets[]': ['items'],
@@ -209,12 +210,14 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
 
 // add numeric fields from logic handler
 const handler = new LogicHandler;
+// for (const field of handler.getNumericFields().filter(field => !(field in typeLinks))) {
 for (const field of handler.getNumericFields()) {
     typeLinks[field] = ['_numeric_', '_dummy_'];
 }
-// add non numeric fields too
+// add non numeric fields too (make sure to concat and not overwrite)
+// for (const field of handler.getRelatedLogicFields().filter(field => !(field in typeLinks) && !handler.getNumericFields().includes(field))) {
 for (const field of handler.getRelatedLogicFields().filter(field => !handler.getNumericFields().includes(field))) {
-    typeLinks[field] = ['_dummy_'];
+    typeLinks[field] = (field in typeLinks ? typeLinks[field] : []).concat(['_dummy_']);
 }
 
 export const typeLinksPossibleKeys: {[key: string]: (key: string) => string[]} = {
