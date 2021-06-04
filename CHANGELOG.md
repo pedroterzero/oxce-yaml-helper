@@ -18,6 +18,7 @@
 - Add hitMissSound vanilla ids
 - No longer check ufopaedia.weapon (it's a translatable string)
 - Properly handle refNodes in logic checkers may need to add in other positions)
+- Reload Language/*.yml on changes, so translations get picked up #26
 
 # v0.8.1
 - Added syntax highlighting for y-script loop statements
