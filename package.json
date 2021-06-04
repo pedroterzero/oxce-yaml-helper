@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom Ruleset Linker",
     "description": "This extension aims to turn Visual Studio code into an OpenXcom ruleset modding IDE. It links rulesets so you can easily navigate between linked rules. It checks for problems in the rulesets, and a lot of other things.",
-    "version": "0.9.0-alpha9-csv-editor",
+    "version": "0.9.0-alpha10-csv-editor",
     "author": {
         "name": "pedroterzero"
     },
@@ -178,7 +178,7 @@
         "@typescript-eslint/eslint-plugin": "^4.16.1",
         "@typescript-eslint/parser": "^4.16.1",
         "eslint": "^7.21.0",
-        "fs-extra": "^9.1.0",
+        "fs-extra": "^10.0.0",
         "mocha": "^8.3.1",
         "nyc": "^15.1.0",
         "typescript": "^4.2.3",
