@@ -1,3 +1,25 @@
+# v.0.8.2
+- Added missing vanilla armor sprites
+- Fix sprite index checking with subX/subY for more sprite types (INTICON)
+- Do not retrieve keys from aliases (they only need checking once), fixes problems
+- Store logic data for vanilla assets (but don't check them), prevents false positives when checking them
+- Improved message in case of mapblock that does not cause segfault but will just cause block to be ignored
+- Fix autocomplete for line that is also start of an array entry
+- Improve duplicate error message (use related information, #35)
+- Fix relatedlogic fields overwriting existing typeLinks
+- Added missing type link for alienMissions.waves[].ufo
+- Added missing lt & le in y-script highlighting
+- manufacture.requiredItems add crafts as valid type
+- Added missing stringType (alienDeployments.objectiveFailed)
+- Combine alienMissions data from multiple files
+- Ufopaedia image no longer required for type 3, apparently
+- Parse comments in extraSprites/extraSounds (so duplicates can be ignored)
+- Enable subX/subY for BIGOBS and FLOOROBS
+- Add hitMissSound vanilla ids
+- No longer check ufopaedia.weapon (it's a translatable string)
+- Properly handle refNodes in logic checkers may need to add in other positions)
+- Reload Language/*.yml on changes, so translations get picked up #26
+
 # v0.8.1
 - Added syntax highlighting for y-script loop statements
 

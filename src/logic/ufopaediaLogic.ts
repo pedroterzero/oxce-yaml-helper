@@ -19,7 +19,7 @@ export class UfopaediaLogic extends BaseLogic {
         'ufopaedia.id': this.checkTypeProvided,
     }
 
-    private imageRequiredTypeIds = [1, 2, 3, 7, 10, 11, 12, 13, 14, 15, 16, 17];
+    private imageRequiredTypeIds = [1, 2/*, 3*/, 7, 10, 11, 12, 13, 14, 15, 16, 17];
 
     // numeric fields makes sure numeric references get picked up by the recursive retriever, and then
     // and then not handled as regular references but only by this logic

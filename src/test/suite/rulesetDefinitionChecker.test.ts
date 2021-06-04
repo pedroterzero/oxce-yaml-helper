@@ -157,7 +157,7 @@ describe('rulesetDefinitionChecker', () => {
         assert.notStrictEqual(diagnostic, undefined);
     });
 
-    const ufopaediaImageErrorMessage =  'Ufopaedia articles with type_ids 1, 2, 3, 7, 10, 11, 12, 13, 14, 15, 16, 17 must have an image_id. Otherwise this will cause a segmentation fault when opening the article!';
+    const ufopaediaImageErrorMessage =  'Ufopaedia articles with type_ids 1, 2, 7, 10, 11, 12, 13, 14, 15, 16, 17 must have an image_id. Otherwise this will cause a segmentation fault when opening the article!';
     it('finds a diagnostic for an ufopaedia without image_id', () => {
         const diagnostic = findDiagnostic('ufopaedia.rul', ufopaediaImageErrorMessage, 2, 13);
         assert.notStrictEqual(diagnostic, undefined);

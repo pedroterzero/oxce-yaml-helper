@@ -17,6 +17,21 @@ export interface LogicInterface {
     storeRelationLogicReference(ref: Match, file: ReferenceFile): void;
 }
 
+type EntryValue = {
+    [key: string]: number | string;
+};
+
+type Entry = number | string | EntryValue[] | {
+    [key: string]: Entry;
+};
+
+type EntryData = {
+    [key: string]: {
+        [key: string]: Entry | (EntryData | undefined);
+        refNode?: Entry;
+    };
+};
+
 export class BaseLogic implements LogicInterface {
     protected fields: LogicCheckMethods = {};
     /**
@@ -148,7 +163,7 @@ export class BaseLogic implements LogicInterface {
         return Object.keys(ret).length > 0 ? ret : undefined;
     }
 
-    protected collectGenericData(entries: LogicDataEntry[], fields: string[], data: { [key: string]: { [key: string]: number | string | {[key: string]: number | string}[]}; }, mergeDuplicates = false) {
+    protected collectGenericData(entries: LogicDataEntry[], fields: string[], data: EntryData, mergeDuplicates = false) {
         for (const field of fields) {
             const fieldData = this.getFieldData(entries, field);
             if (fieldData) {
@@ -170,7 +185,7 @@ export class BaseLogic implements LogicInterface {
         }
     }
 
-    private mergeDuplicates(data: { [key: string]: { [key: string]: string | number | { [key: string]: string | number; }[]; }; }, key: string, subFieldName: string, fieldData: { [key: string]: string | number; }) {
+    private mergeDuplicates(data: EntryData, key: string, subFieldName: string, fieldData: { [key: string]: string | number; }) {
         let merged;
 
         if (Array.isArray(data[key][subFieldName]) && Array.isArray(fieldData[key])) {

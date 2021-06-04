@@ -200,7 +200,7 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'terrains.mapBlocks[].randomizedItems[].itemList': ['items'],
     'terrains.script': ['mapScripts'],
     'ufopaedia.requires': ['research'],
-    'ufopaedia.weapon': ['items'],
+    // 'ufopaedia.weapon': ['items'],
     'ufos.raceBonus': ['alienRaces'],
     'units.armor': ['armors'],
     'units.builtInWeaponSets[]': ['items'],

@@ -176,6 +176,10 @@ export class RulesetRecursiveKeyRetriever {
                 metadata._name = item.value.value;
             }
 
+            if (item.value?.comment) {
+                metadata._comment = item.value.comment.trim();
+            }
+
             if (Object.keys(metadata).length > 0) {
                 match.metadata = metadata;
             }
@@ -229,6 +233,11 @@ export class RulesetRecursiveKeyRetriever {
                     this.loopEntry(ruleProperty, path + '[]', matches, logicData, newNamesByPath, lookupAll);
                 }
             } else {
+                if (['ALIAS'].includes(ruleProperty.type)) {
+                    // ignore ALIAS (refNode)
+                    return;
+                }
+
                 this.checkForDefinitionName(path, ruleProperty, namesByPath);
 
                 let newPath = path;

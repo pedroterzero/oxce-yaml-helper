@@ -219,6 +219,9 @@ export class typedProperties {
 
     private static metadataFields: metadataFields = {
         'items': ['damageType', 'blastRadius', 'damageAlter.FixRadius'],
+        'extraSprites.BIGOBS.PCK': ['height', 'width', 'subX', 'subY'],
+        'extraSprites.FLOOROB.PCK': ['height', 'width', 'subX', 'subY'],
+        'extraSprites.INTICON.PCK': ['height', 'width', 'subX', 'subY'],
         'extraSprites.Projectiles': ['height', 'subY'],
     }
 
