@@ -19,4 +19,5 @@ export const typeHintMessages: {[key: string]: (value: string) => string} = {
         - if damageType is 2, 3, 6 or 9 AND blastRadius is not 0 or damageAlter.FixRadius is not 0 - it should go in X1.PCK
         - otherwise it should go in SMOKE.PCK
     `,
+    'extraSpritesMulti': (value) => `These sprites should be spaced ${value} entries apart, otherwise the wrong sprites will show up in-game`
 };
