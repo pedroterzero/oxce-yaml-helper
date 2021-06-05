@@ -1,4 +1,8 @@
-# v.0.8.2
+# v0.8.3
+- Add sprite index checking with subX/subY for more sprite types (HANDOB)
+- Added helpful hint for multi sprites
+
+# v0.8.2
 - Added missing vanilla armor sprites
 - Fix sprite index checking with subX/subY for more sprite types (INTICON)
 - Do not retrieve keys from aliases (they only need checking once), fixes problems
