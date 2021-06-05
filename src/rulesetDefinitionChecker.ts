@@ -108,7 +108,9 @@ export class RulesetDefinitionChecker {
                 );
             }
 
-            const message = `${duplicate.definition.type} ${duplicate.key} is duplicate (add # ignoreDuplicate after this to ignore this entry)`;
+            let message = `${duplicate.definition.type} ${duplicate.key} is duplicate (add # ignoreDuplicate after this to ignore this entry)`;
+
+            message = this.checkDuplicateHints(duplicate, message);
 
             const range = new Range(...duplicate.definition.rangePosition[0], ...duplicate.definition.rangePosition[1]);
             diagnostics.push({
@@ -120,6 +122,16 @@ export class RulesetDefinitionChecker {
         }
 
         // appendFile(workspacePath + '/messages.txt', doc.fileName.slice(workspacePath.length + 1) + "\n==========\n" + messages.join("\n") + "\n\n", () => { return; });
+    }
+
+    private checkDuplicateHints(duplicate: DuplicateMatches, message: string) {
+        if (duplicate.definition.type.startsWith('extraSprites.')) {
+            if (duplicate.definition.metadata?.spriteSize) {
+                message += `\nHint: ${typeHintMessages.extraSpritesMulti(duplicate.definition.metadata.spriteSize as string).trim()}`;
+            }
+        }
+
+        return message;
     }
 
     private checkReferences(file: ReferenceFile, lookup: TypeLookup, diagnostics: Diagnostic[]) {
