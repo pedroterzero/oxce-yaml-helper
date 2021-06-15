@@ -93,8 +93,8 @@ export class CsvToYamlConverter {
             }
 
             if (key.slice(-2) === '[]') {
-                if (typeof row[key] === 'string') {
-                    const parts = row[key].split(',');
+                if (['string', 'number'].includes(typeof row[key])) {
+                    const parts = row[key].toString().split(',');
                     for (let i = 0; i < parts.length; i++) {
                         // keep ints as ints
                         let val = parts[i];
