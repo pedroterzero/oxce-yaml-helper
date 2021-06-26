@@ -1,3 +1,6 @@
+# v0.8.4
+- Some small documentation hover fixes (fix import from wiki)
+
 # v0.8.3
 - Add sprite index checking with subX/subY for more sprite types (HANDOB)
 - Added helpful hint for multi sprites
