@@ -382,11 +382,11 @@
     },
     "sickBayAbsoluteBonus": {
       "description": "How much additional HP is healed per day.```\n - type: STR_FIELD_HOSPITAL\n   sickBayAbsoluteBonus: 0.75\n   sickBayRelativeBonus: 0.0\n - type: STR_SURGERY_ROOM\n   sickBayAbsoluteBonus: 0.25\n   sickBayRelativeBonus: 1.0\n - type: STR_REGENERATION_ROOM\n   sickBayAbsoluteBonus: 0.0\n   sickBayRelativeBonus: 10.0\n - type: STR_GOAULD_SARCOPHAGUS\n   sickBayAbsoluteBonus: 90.0\n   sickBayRelativeBonus: 0.0\n\n```\n\nExamples, considering the ruleset above:\n\n*   with no facilities: 1 hp healed per day\n*   with one field hospital: 1.75 hp per day\n*   with one surgery room: 1.25 hp per day + 1% of soldier's max hp\n*   with 2 field hospitals and 2 surgery rooms: 3 hp per day + 2% of soldier's max hp\n*   with regeneration room: 10% of soldier's max hp... i.e. fully recovered in 10 days or less\n*   with Goa'uld sarcophagus: 90 hp per day... i.e. fully healed overnight",
-      "default": "0.00.0"
+      "default": "0.0"
     },
     "sickBayRelativeBonus": {
       "description": "How much additional HP is healed per day.```\n - type: STR_FIELD_HOSPITAL\n   sickBayAbsoluteBonus: 0.75\n   sickBayRelativeBonus: 0.0\n - type: STR_SURGERY_ROOM\n   sickBayAbsoluteBonus: 0.25\n   sickBayRelativeBonus: 1.0\n - type: STR_REGENERATION_ROOM\n   sickBayAbsoluteBonus: 0.0\n   sickBayRelativeBonus: 10.0\n - type: STR_GOAULD_SARCOPHAGUS\n   sickBayAbsoluteBonus: 90.0\n   sickBayRelativeBonus: 0.0\n\n```\n\nExamples, considering the ruleset above:\n\n*   with no facilities: 1 hp healed per day\n*   with one field hospital: 1.75 hp per day\n*   with one surgery room: 1.25 hp per day + 1% of soldier's max hp\n*   with 2 field hospitals and 2 surgery rooms: 3 hp per day + 2% of soldier's max hp\n*   with regeneration room: 10% of soldier's max hp... i.e. fully recovered in 10 days or less\n*   with Goa'uld sarcophagus: 90 hp per day... i.e. fully healed overnight",
-      "default": "0.00.0"
+      "default": "0.0"
     },
     "leavesBehindOnSell": {
       "description": "A facility to leave behind a dismantled facility (must be of the same size); or a list of 1x1 facilities to fill in the old facility's place.",
@@ -960,31 +960,31 @@
     },
     "accuracyAimed": {
       "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](https://www.ufopaedia.org/index.php/Firing_Accuracy) when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
-      "default": "0000"
+      "default": "0"
     },
     "accuracySnap": {
       "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](https://www.ufopaedia.org/index.php/Firing_Accuracy) when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
-      "default": "0000"
+      "default": "0"
     },
     "accuracyAuto": {
       "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](https://www.ufopaedia.org/index.php/Firing_Accuracy) when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
-      "default": "0000"
+      "default": "0"
     },
     "accuracyMelee": {
       "description": "The base accuracy (in percent) applied to a soldier's [Firing Accuracy](https://www.ufopaedia.org/index.php/Firing_Accuracy) when firing an Aimed/Snap/Auto shot or doing a Melee attack.\n\nNote: in OXCE, it doesn't need to be applied only to firing accuracy, a combination of many other attributes can be used instead, see **accuracyMultiplier** and **meleeMultiplier**.",
-      "default": "0000"
+      "default": "0"
     },
     "accuracyPanic": {
       "description": "The accuracy bonus (in flat percent) applied during psi attacks (Panic/MindControl/Use). **accuracyMultiplier** is also used in the calculations.",
-      "default": "2000"
+      "default": "20"
     },
     "accuracyMindControl": {
       "description": "The accuracy bonus (in flat percent) applied during psi attacks (Panic/MindControl/Use). **accuracyMultiplier** is also used in the calculations.",
-      "default": "2000"
+      "default": "0"
     },
     "accuracyUse": {
       "description": "The accuracy bonus (in flat percent) applied during psi attacks (Panic/MindControl/Use). **accuracyMultiplier** is also used in the calculations.",
-      "default": "2000"
+      "default": "0"
     },
     "accuracyThrow": {
       "description": "The base accuracy (in percent) applied when throwing items. See also **throwMultiplier**.",
@@ -1044,15 +1044,15 @@
     },
     "shotgunBehavior": {
       "description": "Attributes affecting how shotguns work.\n\nMore info: [https://openxcom.org/forum/index.php/topic,4834.0.html](https://openxcom.org/forum/index.php/topic,4834.0.html)",
-      "default": "0100100"
+      "default": "0"
     },
     "shotgunSpread": {
       "description": "Attributes affecting how shotguns work.\n\nMore info: [https://openxcom.org/forum/index.php/topic,4834.0.html](https://openxcom.org/forum/index.php/topic,4834.0.html)",
-      "default": "0100100"
+      "default": "100"
     },
     "shotgunChoke": {
       "description": "Attributes affecting how shotguns work.\n\nMore info: [https://openxcom.org/forum/index.php/topic,4834.0.html](https://openxcom.org/forum/index.php/topic,4834.0.html)",
-      "default": "0100100"
+      "default": "100"
     },
     "maxRange": {
       "description": "Maximum range at which this weapon can operate.",
@@ -1104,11 +1104,11 @@
     },
     "tuLoad": {
       "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to load/unload this item.\n\n**Note**: in OXCE, when loading a weapon, you need to **additionally** pay the cost of moving the ammo from its current inventory slot into a hand slot! Consider that when balancing reload costs.\n\n**Update**: since OXCE v6.2, the OXCE behavior is now turned off by default. It can be enabled using the **extendedItemReloadCost** setting.",
-      "default": "158"
+      "default": "15"
     },
     "tuUnload": {
       "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to load/unload this item.\n\n**Note**: in OXCE, when loading a weapon, you need to **additionally** pay the cost of moving the ammo from its current inventory slot into a hand slot! Consider that when balancing reload costs.\n\n**Update**: since OXCE v6.2, the OXCE behavior is now turned off by default. It can be enabled using the **extendedItemReloadCost** setting.",
-      "default": "158"
+      "default": "8"
     },
     "ammo": {
       "description": "In OXCE, you can load multiple **different** types of ammo into one gun at the same time. This allows you to create, for example, a rifle with a built-in grenade launcher. There are up to 4 ammo slots, which can be assigned to Aimed/Snap/Auto actions. Going back to the rifle with a grenade launcher example, you could have the rifle with Aimed and Snap and sacrifice the Auto action for implementing let's say a Snap shot for the grenade launcher.\n\nExample:\n\n```\n - type: STR_WEAPON_WITH_4_AMMO_SLOTS\n   ammo:\n     0:\n       compatibleAmmo: [ STR_AMMO_1, STR_AMMO_2 ]\n       tuLoad: 5\n       tuUnload: 2\n     1:\n       compatibleAmmo: [ STR_AMMO_3 ]\n       tuLoad: 10\n       tuUnload: 4\n     2:\n       compatibleAmmo: [ STR_AMMO_4, STR_AMMO_5 ]\n       tuLoad: 10\n       tuUnload: 4\n     3:\n       compatibleAmmo: [ STR_GRENADE_AMMO ]\n       tuLoad: 20\n       tuUnload: 8\n\n```",
@@ -1160,19 +1160,19 @@
     },
     "tuAimed": {
       "description": "The percentage (0-100%) of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
-      "default": "0000"
+      "default": "0"
     },
     "tuSnap": {
       "description": "The percentage (0-100%) of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
-      "default": "0000"
+      "default": "0"
     },
     "tuAuto": {
       "description": "The percentage (0-100%) of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
-      "default": "0000"
+      "default": "0"
     },
     "tuMelee": {
       "description": "The percentage (0-100%) of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) (from the soldier's total) required to fire an Aimed/Snap/Auto Shot or doing a Melee attack. If 0, the weapon does not have the corresponding attack.",
-      "default": "0000"
+      "default": "0"
     },
     "tuUse": {
       "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to use this item (for non-offensive items). It's a flat rate if **flatRate** is true, otherwise it's a percentage (0-100%).",
@@ -1180,23 +1180,23 @@
     },
     "tuMindControl": {
       "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to use this item. If not specified, defaults to **tuUse**.",
-      "default": "-1-1"
+      "default": "-1"
     },
     "tuPanic": {
       "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to use this item. If not specified, defaults to **tuUse**.",
-      "default": "-1-1"
+      "default": "-1"
     },
     "tuThrow": {
       "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to throw/prime/unprime this item.",
-      "default": "255025"
+      "default": "25"
     },
     "tuPrime": {
       "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to throw/prime/unprime this item.",
-      "default": "255025"
+      "default": "50"
     },
     "tuUnprime": {
       "description": "Amount of [Time Units](https://www.ufopaedia.org/index.php/Time_Units) required to throw/prime/unprime this item.",
-      "default": "255025"
+      "default": "25"
     },
     "costAimed": {
       "description": "Extended way of defining the cost of item use. Instead of spending only time units, you can also define to spend energy, morale, HP, mana and stun. All costXXX settings override tuXXX settings, for example costAimed overrides tuAimed, etc.\n\nExample:\n\n```\n - type: STR_FUNNY_WEAPON\n   costAimed:\n     time: 90\n     energy: 20\n     morale: 65\n     mana: 5\n\n```",
@@ -1504,19 +1504,19 @@
     },
     "spawnUnit": {
       "description": "Used for spawning units from items.\n\nMore info: [https://openxcom.org/forum/index.php/topic,6535.0.html](https://openxcom.org/forum/index.php/topic,6535.0.html)",
-      "default": "--1"
+      "default": "-"
     },
     "spawnUnitFaction": {
       "description": "Used for spawning units from items.\n\nMore info: [https://openxcom.org/forum/index.php/topic,6535.0.html](https://openxcom.org/forum/index.php/topic,6535.0.html)",
-      "default": "--1"
+      "default": "-1"
     },
     "ai.useDelay": {
       "description": "1/ Used to override AI delay defined by global settings.\n\n2/ How many times should an AI unit try to perform a melee attack (in the single go)? In vanilla, the unit used the melee attack until the target was neutralized or until it ran out of TUs. This attribute gives you the option to perform \"hit and run\".\n\n```\n ai:\n   useDelay: 1\n   meleeHitCount: 15\n\n```",
-      "default": "-125"
+      "default": "-1"
     },
     "ai.meleeHitCount": {
       "description": "1/ Used to override AI delay defined by global settings.\n\n2/ How many times should an AI unit try to perform a melee attack (in the single go)? In vanilla, the unit used the melee attack until the target was neutralized or until it ran out of TUs. This attribute gives you the option to perform \"hit and run\".\n\n```\n ai:\n   useDelay: 1\n   meleeHitCount: 15\n\n```",
-      "default": "-125"
+      "default": "25"
     }
   },
   "itemCategories": {
@@ -1624,11 +1624,11 @@
     },
     "ToWound": {
       "description": "Determines how many fatal wounds should be inflicted. Default settings equal to vanilla calculations. Formula is quite hard to describe in words, so here's the code:```\n if (damage > 0) {\n   if (RandomWound) {\n     if (RNG::generate(0, 10) < int(damage \\* ToWound)) {\n       return RNG::generate(1,3);\n     }\n   } else {\n     return (int)std::round(damage \\* ToWound);\n   }\n }\n\n```",
-      "default": "1.0true"
+      "default": "1.0"
     },
     "RandomWound": {
       "description": "Determines how many fatal wounds should be inflicted. Default settings equal to vanilla calculations. Formula is quite hard to describe in words, so here's the code:```\n if (damage > 0) {\n   if (RandomWound) {\n     if (RNG::generate(0, 10) < int(damage \\* ToWound)) {\n       return RNG::generate(1,3);\n     }\n   } else {\n     return (int)std::round(damage \\* ToWound);\n   }\n }\n\n```",
-      "default": "1.0true"
+      "default": "true"
     },
     "ToTime": {
       "description": "How much of the primary damage is applied to the unit's TUs.",
@@ -5154,19 +5154,19 @@
     },
     "ai.fireChoiceIntelCoeff": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,5679.0.html](https://openxcom.org/forum/index.php/topic,5679.0.html)",
-      "default": "55"
+      "default": "5"
     },
     "ai.fireChoiceAggroCoeff": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,5679.0.html](https://openxcom.org/forum/index.php/topic,5679.0.html)",
-      "default": "55"
+      "default": "5"
     },
     "ai.extendedFireModeChoice": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,5980.0.html](https://openxcom.org/forum/index.php/topic,5980.0.html)",
-      "default": "falsefalse"
+      "default": "false"
     },
     "ai.respectMaxRange": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,5980.0.html](https://openxcom.org/forum/index.php/topic,5980.0.html)",
-      "default": "falsefalse"
+      "default": "false"
     },
     "ai.destroyBaseFacilities": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,6663.0.html](https://openxcom.org/forum/index.php/topic,6663.0.html)",
@@ -5174,11 +5174,11 @@
     },
     "ai.pickUpWeaponsMoreActively": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,6882.0.html](https://openxcom.org/forum/index.php/topic,6882.0.html)",
-      "default": "falsefalse"
+      "default": "false"
     },
     "ai.pickUpWeaponsMoreActivelyCiv": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,6882.0.html](https://openxcom.org/forum/index.php/topic,6882.0.html)",
-      "default": "falsefalse"
+      "default": "false"
     },
     "surrenderMode": {
       "description": "Allows enemies to surrender (they will be taken as prisoners). Possible options:\n\n*   0 = no surrender\n*   1 = if all remaining standing enemies can surrender; and they want to surrender at this very moment (their current status is panicking or berserking)... end the battle\n*   2 = if all remaining standing enemies can surrender; and they have panicked/berserked at least once or have been stunned at least once... end the battle\n*   3 = same as option 2, but enemies must also have empty hands\n\nIn all 3 cases, enemies marked as \"auto surrender\" are not checked and count as surrendered.",
