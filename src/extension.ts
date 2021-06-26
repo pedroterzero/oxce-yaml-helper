@@ -9,6 +9,7 @@ import { ConfigurationWatcher } from './configurationWatcher';
 import { RulesetCompletionProvider } from './rulesetCompletionProvider';
 import { ConvertCsvCommand } from './commands/convertCsvCommand';
 import { ConvertCsvToRulCommand } from './commands/convertCsvToRulCommand';
+import { AutoOrderWeaponsCommand } from './commands/autoOrderWeaponsCommand';
 
 export const rulesetResolver = new RulesetResolver();
 
@@ -36,6 +37,8 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.convertCsv', ConvertCsvCommand.handler));
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.convertCsvToRul', ConvertCsvToRulCommand.handler));
+
+    context.subscriptions.push(commands.registerCommand('oxcYamlHelper.autoOrderWeapons', AutoOrderWeaponsCommand.handler));
 
     // setTimeout(() => {
         // commands.executeCommand('oxcYamlHelper.convertCsv', Uri.file('/home/peter/mods/X-Com-From-the-Ashes/Ruleset/items_FTA.rul'));
