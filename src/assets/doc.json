@@ -2288,6 +2288,10 @@
       "description": "Allows defense against **psiVision**.\n\nMore info: [https://openxcom.org/forum/index.php/topic,7816.msg132821.html#msg132821](https://openxcom.org/forum/index.php/topic,7816.msg132821.html#msg132821)",
       "default": "0"
     },
+    "alwaysVisible": {
+      "description": "When set **true** unit will be always visible for player.",
+      "default": "false"
+    },
     "stats": {
       "description": "Like soldier stats (see below) but these are treated as stat bonuses while wearing a given type of armor.",
       "default": "-"
@@ -3231,6 +3235,10 @@
     "capturable": {
       "description": "Can this unit be captured alive?\n\nNote: units which cannot be captured alive are insta-killed when they fall unconscious.",
       "default": "true"
+    },
+    "liveAlien": {
+      "description": "What item ID should be used for live alien in base.\n\nNote: by default game try find item with same name as unit, you can set **\"\"** to mark that there is no live alien.",
+      "default": "~"
     },
     "builtInWeaponSets": {
       "description": "A set of lists of weapons this unit can come pre-equipped with. Game will pick one set \"at random\" (randomness comes from the current alien tech level definition). These weapons WILL appear in inventory slots (references items).",
