@@ -2,6 +2,15 @@ import { DiagnosticSeverity } from "vscode";
 import { LogicDataEntry } from "../rulesetTree";
 import { BaseLogic } from "./baseLogic";
 
+type Entry = {
+    [key: string]: number | string;
+}[];
+
+type AlienDeployment = {
+    data: Entry;
+    // raceWeights: Entry;
+}
+
 export class AlienDeploymentsLogic extends BaseLogic {
     // we need these additional fields to do our check
     private additionalNumericFields = [
@@ -13,6 +22,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
 
     private additionalFields = [
         'alienDeployments.data',
+        'alienDeployments.refNode',
         // 'alienDeployments.lowQty',
     ];
 
@@ -31,7 +41,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
 
     protected numericFields = ([] as string[]).concat(this.additionalNumericFields);
 
-    private data: {[key: string]: {[key: string]: number | string | {[key: string]: number | string}[], data: {[key: string]: number | string}[]}} = {};
+    private data: {[key: string]: {[key: string]: number | string | Entry | AlienDeployment, data: Entry, refNode: AlienDeployment}} = {};
 
     private state = this.getDefaultState();
 
@@ -65,8 +75,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
                 continue;
             }
 
-            if (!(name in this.data) || !('data' in this.data[name])) {
-
+            if (!(name in this.data) || (!('data' in this.data[name]) && !('data' in this.data[name].refNode))) {
                 this.addDiagnosticForReference(
                     ref,
                     `'${name}' does not have data: set. This can lead to crashes in-game.`,
@@ -97,9 +106,12 @@ export class AlienDeploymentsLogic extends BaseLogic {
                 continue;
             }
 
+            // no real need to check refNode here, it already gets checked and merged(?) anyhow
             const data = this.data[name].data[parseInt(index)];
+            // const refNodeData = this.data[name].refNode?.data[parseInt(index)] || {};
 
             for (const field of this.requiredDataFields) {
+                // if (!(field in data) && !(field in refNodeData)) {
                 if (!(field in data)) {
                     this.state.dataError[`${index}-${name}`] = true;
 
