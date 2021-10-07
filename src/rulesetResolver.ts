@@ -319,7 +319,7 @@ export class RulesetResolver implements Disposable {
             /*await */rulesetFileCacheManager.put(file, parsed);
 
             return parsed;
-        } catch (error) {
+        } catch (error: any) {
             logger.error('loadYamlIntoTree', file.path, error.message);
         }
 
