@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom Ruleset Linker",
     "description": "This extension aims to turn Visual Studio code into an OpenXcom ruleset modding IDE. It links rulesets so you can easily navigate between linked rules. It checks for problems in the rulesets, and a lot of other things.",
-    "version": "0.9.0-alpha13-csv-editor",
+    "version": "0.9.0-alpha14-csv-editor",
     "author": {
         "name": "pedroterzero"
     },
@@ -177,19 +177,19 @@
     "devDependencies": {
         "@types/dot-object": "^2.1.2",
         "@types/flat-cache": "^2.0.0",
-        "@types/fs-extra": "^9.0.11",
-        "@types/glob": "^7.1.3",
-        "@types/mocha": "^8.2.2",
-        "@types/node": "^14.17.2",
+        "@types/fs-extra": "^9.0.13",
+        "@types/glob": "^7.1.4",
+        "@types/mocha": "^9.0.0",
+        "@types/node": "^14.17.21",
         "@types/papaparse": "^5.2.5",
         "@types/vscode": "^1.51.0",
-        "@typescript-eslint/eslint-plugin": "^4.26.0",
-        "@typescript-eslint/parser": "^4.26.0",
-        "eslint": "^7.27.0",
+        "@typescript-eslint/eslint-plugin": "^4.33.0",
+        "@typescript-eslint/parser": "^4.33.0",
+        "eslint": "^7.32.0",
         "fs-extra": "^10.0.0",
-        "mocha": "^8.4.0",
+        "mocha": "^9.1.2",
         "nyc": "^15.1.0",
-        "typescript": "^4.3.2",
+        "typescript": "^4.3.5",
         "vscode-test": "^1.5.2"
     },
     "dependencies": {
