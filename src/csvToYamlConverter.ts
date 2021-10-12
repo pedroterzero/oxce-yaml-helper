@@ -4,7 +4,7 @@ const { readFile, writeFile } = fsp;
 import { parse as csvParse } from "papaparse";
 import { Document, parseDocument } from "yaml";
 import * as dot from 'dot-object';
-import { window } from "vscode";
+import { commands, ConfigurationTarget, Range, Selection, TextDocument, TextEditorRevealType, window, workspace } from "vscode";
 import { typedProperties } from "./typedProperties";
 import { logger } from "./logger";
 import { Collection } from "yaml/types";
@@ -37,26 +37,77 @@ export class CsvToYamlConverter {
 
         this.handleDeletes();
 
-        this.fixCommentIndents();
+        // this.fixCommentIndents();
 
-        writeFile(this.outFile, this.fixCommentIndents());
-    }
-
-    private fixCommentIndents () {
+        // writeFile(this.outFile, this.fixCommentIndents());
         if (!this.doc) {
-            return '';
+            return;
         }
 
-        const output = this.doc.toString();
+        // write the merged ruleset
+        await writeFile(this.outFile, this.doc.toString());
+
+        // now open it so we can format it
+        console.log(`opening processed ${this.outFile}`);
+        const document = await workspace.openTextDocument(this.outFile);
+        await window.showTextDocument(document);
+
+        await this.formatDocument(document);
+    }
+
+    private async formatDocument(document: TextDocument) {
+        const position = window.activeTextEditor?.selection.active;
+
+        // format it (wait a little bit first, otherwise formatDocument does not always seem to work?)
+        // await new Promise(resolve => setTimeout(resolve, 100));
+        // logger.debug('Formatting document');
+        const doc = document.getText();
+
+        const defaultFormatter = workspace.getConfiguration('editor').inspect('defaultFormatter');
+
+        await workspace.getConfiguration('editor').update('defaultFormatter', 'redhat.vscode-yaml', ConfigurationTarget.Workspace);
+
+        await commands.executeCommand('editor.action.formatDocument');
+
+        if (doc === document.getText()) {
+            logger.debug('Document did not get changed, trying again (this happens sometimes, could also be nothing to format');
+            await commands.executeCommand('editor.action.formatDocument');
+        }
+
+        if (defaultFormatter?.workspaceValue) {
+            await workspace.getConfiguration('editor').update('defaultFormatter', defaultFormatter.workspaceValue, ConfigurationTarget.Workspace);
+        } else {
+            await workspace.getConfiguration('editor').update('defaultFormatter', undefined, ConfigurationTarget.Workspace);
+        }
+        // logger.debug('Formatting document done');
+
+        // fix indents
+        await writeFile(this.outFile, this.fixCommentIndents(document.getText()));
+
+        // refresh the editor
+        await commands.executeCommand('workbench.action.files.revert');
+
+        if (position && window.activeTextEditor) {
+            window.activeTextEditor.revealRange(new Range(position.with(position.line, 0), position.with(position.line, 0)), TextEditorRevealType.InCenterIfOutsideViewport);
+        }
+    }
+
+    private fixCommentIndents (output: string) {
+        // if (!this.doc) {
+        //     return '';
+        // }
+
+        // const output = this.doc.toString();
 
         let currentLineOfNewOutput = 0;
+        let linesFixed = 0;
         const outputFixed = output.split("\n");
         for (const line of this.originalFile.split("\n")) {
             const cleaned = line.trimEnd();
 
             let matches;
             if ((matches = cleaned.match(/^#(.+)$/))) {
-                console.log('old file', matches[1]);
+                // console.log('old file', matches[1]);
 
                 // find in the new output
                 let lineNumber = -1;
@@ -71,7 +122,8 @@ export class CsvToYamlConverter {
                     const regex = new RegExp(`^\\s+#${matches[1]}\\s*$`);
                     if (regex.exec(cleaned)) {
                         outputFixed[lineNumber] = `#${matches[1]}`;
-                        console.log('match', matches[1]);
+                        linesFixed++;
+                        // console.log('match', matches[1]);
                         break;
                     }
 
@@ -79,6 +131,8 @@ export class CsvToYamlConverter {
                 }
             }
         }
+
+        logger.debug(`Fixed ${linesFixed} indents`);
 
         return outputFixed.join("\n");
     }
