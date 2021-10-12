@@ -4,7 +4,7 @@ const { readFile, writeFile } = fsp;
 import { parse as csvParse } from "papaparse";
 import { Document, parseDocument } from "yaml";
 import * as dot from 'dot-object';
-import { commands, ConfigurationTarget, Range, Selection, TextDocument, TextEditorRevealType, window, workspace } from "vscode";
+import { commands, ConfigurationTarget, Range, TextDocument, TextEditorRevealType, window, workspace } from "vscode";
 import { typedProperties } from "./typedProperties";
 import { logger } from "./logger";
 import { Collection } from "yaml/types";
