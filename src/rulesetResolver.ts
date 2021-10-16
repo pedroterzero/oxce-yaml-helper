@@ -6,6 +6,7 @@ import { rulesetParser } from "./rulesetParser";
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { rulesetFileCacheManager } from './rulesetFileCacheManager';
 import { existsSync } from 'fs';
+import { glob } from 'glob';
 
 export type ParsedRuleset = {
     definitions?: Definition[];
@@ -135,6 +136,17 @@ export class RulesetResolver implements Disposable {
         });
 
         await this.getAssetRulesets(files);
+
+        if (existsSync(Uri.joinPath(workspaceFolder.uri, '../40k').fsPath)) {
+            this.rulesetHierarchy.parent = Uri.joinPath(workspaceFolder.uri, '../40k');
+
+            await new Promise<void>((resolve) => {
+                glob(Uri.joinPath(this.rulesetHierarchy.parent, '**/*.rul').fsPath, {}, (_er, foundFiles) => {
+                    files = files.concat(...foundFiles.map(path => Uri.file(path)));
+                    resolve();
+                });
+            });
+        }
 
         this.rulesetHierarchy.mod = workspaceFolder.uri;
 

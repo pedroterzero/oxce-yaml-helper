@@ -9,6 +9,8 @@ export const stringTypes = ([] as string[]).concat([
     'alienDeployments.objectiveComplete',
     'alienDeployments.objectiveFailed',
     'alienDeployments.objectivePopup',
+    'alienDeployments.reinforcements[].briefing.desc',
+    'alienDeployments.reinforcements[].briefing.title',
     'commendations.description',
     'crafts.weaponStrings',
     'cutscenes.slideshow.slides[].caption',
