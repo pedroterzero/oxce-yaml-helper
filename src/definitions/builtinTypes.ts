@@ -86,10 +86,10 @@ export const builtinTypes: {[key: string]: string[]} = {
     '/^extended\\.tags\\.(Rule(Armor|Item|Skill|Soldier|SoldierBonus)|Battle(Item|Game|Unit))\\.[a-zA-Z0-9_]+$/': ['int'],
     'facilities.verticalLevels[].terrain': ['baseTerrain'],
     'interfaces.backgroundImage': builtinBackgrounds,
-    'manufacture.category': [
-        'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
-        'STR_EQUIPMENT', 'STR_WEAPON'
-    ],
+    // 'manufacture.category': [
+    //     'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
+    //     'STR_EQUIPMENT', 'STR_WEAPON'
+    // ],
     'manufacture.spawnedPersonType': ['STR_ENGINEER', 'STR_SCIENTIST'],
     'mapScripts.commands[].terrain': ['baseTerrain', 'globeTerrain'],
     'units.rank': [

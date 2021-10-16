@@ -39,5 +39,5 @@ export const stringTypes = ([] as string[]).concat([
     'ufopaedia.weapon',
     // not sure
     // 'items.categories',
-    // 'manufacture.category',
+    'manufacture.category',
 ], getAdditionalStringTypes());

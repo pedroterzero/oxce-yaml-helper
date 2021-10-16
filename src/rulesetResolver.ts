@@ -404,9 +404,10 @@ export class RulesetResolver implements Disposable {
     private checkForCommonProblems() {
         const problemsByPath = rulesetDefinitionChecker.getProblemsByPath();
         const itemsCategories = problemsByPath['items.categories'] || 0;
-        const manufactureCategory = problemsByPath['manufacture.category'] || 0;
+        // const manufactureCategory = problemsByPath['manufacture.category'] || 0;
 
-        if (itemsCategories + manufactureCategory > 25) {
+        // if (itemsCategories + manufactureCategory > 25) {
+        if (itemsCategories > 25) {
             this.proposeDisableCategories();
         }
     }
