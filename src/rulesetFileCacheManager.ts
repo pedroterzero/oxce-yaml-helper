@@ -26,8 +26,8 @@ export class RulesetFileCacheManager {
         // check if cache dir exists, otherwise create it
         try {
             await stat(this.getCachePath());
-        } catch (error) {
-            if (error.code === 'NOENT') {
+        } catch (error: any) {
+            if (error.code === 'ENOENT') {
                 await mkdir(this.getCachePath(), { recursive: true });
             } else {
                 throw error;

@@ -1,3 +1,7 @@
+# v0.8.5
+- Fix with alienDeployment logic checker (respect refNodes)
+- Update documentation
+
 # v0.8.4
 - Some small documentation hover fixes (fix import from wiki)
 
