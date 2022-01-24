@@ -137,15 +137,28 @@ export class RulesetResolver implements Disposable {
 
         await this.getAssetRulesets(files);
 
-        if (existsSync(Uri.joinPath(workspaceFolder.uri, '../40k').fsPath)) {
-            this.rulesetHierarchy.parent = Uri.joinPath(workspaceFolder.uri, '../40k');
+        const parentMods = workspace.getConfiguration('oxcYamlHelper').get<string[]>('parentMods') || [];
+        if (parentMods.length) {
+            const missingMods = [];
+            for (const parentMod of parentMods) {
+                if (existsSync(Uri.joinPath(workspaceFolder.uri, `../${parentMod}`).fsPath)) {
+                    logger.debug(`Adding in parent mod ${parentMod}`);
+                    this.rulesetHierarchy[`parent${parentMod}`] = Uri.joinPath(workspaceFolder.uri, `../${parentMod}`);
 
-            await new Promise<void>((resolve) => {
-                glob(Uri.joinPath(this.rulesetHierarchy.parent, '**/*.rul').fsPath, {}, (_er, foundFiles) => {
-                    files = files.concat(...foundFiles.map(path => Uri.file(path)));
-                    resolve();
-                });
-            });
+                    await new Promise<void>((resolve) => {
+                        glob(Uri.joinPath(this.rulesetHierarchy[`parent${parentMod}`], '**/*.rul').fsPath, {}, (_er, foundFiles) => {
+                            files = files.concat(...foundFiles.map(path => Uri.file(path)));
+                            resolve();
+                        });
+                    });
+                } else {
+                    missingMods.push(parentMod);
+                }
+            }
+
+            if (missingMods.length) {
+                window.showErrorMessage(`Cannot find parent mods paths for '${missingMods.join(', ')}'`);
+            }
         }
 
         this.rulesetHierarchy.mod = workspaceFolder.uri;
