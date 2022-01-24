@@ -10,7 +10,7 @@ const expectedDocumentation = [
     {
         type: 'items',
         property: 'IgnoreDirection',
-        documentation: "Should the damage calculation ignore from which direction the projectile came? Used for example for smoke or fire.\n\n**Default: false**"
+        documentation: "Should the damage calculation ignore from which direction the projectile came? Uses front armor for damage calculation. Used for example for smoke or fire.\n\n**Default: false**"
     },
     {
         type: 'constants',
