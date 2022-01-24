@@ -174,6 +174,10 @@
       "description": "List of \"rectangles\" on the globe defined as _\\[lon1, lon2, lat1, lat2\\]_. Any activity within these areas counts towards the region's graph activity.\n\nExample:\n\n```\n regions:\n   - type: STR_EUROPE\n     areas:\n       - [335, 60, -70, -35]\n\n```",
       "default": "-"
     },
+    "deleteOldAreas": {
+      "description": "Can be used in mods to delete areas defined by a parent mod.",
+      "default": "false"
+    },
     "regionWeight": {
       "description": "Weight of this region when selecting regions for alien missions.",
       "default": "0"
@@ -414,6 +418,14 @@
       "description": "String ID of the craft name.",
       "default": "required"
     },
+    "selectSound": {
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a craft is selected on the globe. Can be a list with multiple options.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10195.msg143053.html#msg143053](https://openxcom.org/forum/index.php/topic,10195.msg143053.html#msg143053)",
+      "default": "-"
+    },
+    "takeoffSound": {
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a craft is taking off from a base. Can be a list with multiple options.",
+      "default": "-"
+    },
     "requires": {
       "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to unlock this craft. If none are specified, this craft is unlocked from the start.",
       "default": "-"
@@ -455,7 +467,7 @@
       "default": "-"
     },
     "soldiers": {
-      "description": "Amount of soldiers this craft can carry.",
+      "description": "Amount of units (soldiers and vehicles) this craft can carry.",
       "default": "0"
     },
     "pilots": {
@@ -467,8 +479,40 @@
       "default": "true"
     },
     "vehicles": {
-      "description": "Amount of vehicles this craft can carry.",
+      "description": "Amount of vehicles this craft can carry.\n\nNote: in OXCE, it's the amount of vehicles **and** 2x2 soldiers. In OXCE, it can also have a value of -1, which means unlimited.",
       "default": "0"
+    },
+    "maxSmallSoldiers": {
+      "description": "Maximum amount of 1x1 soldiers this craft can carry. (-1 = unlimited)",
+      "default": "-1"
+    },
+    "maxLargeSoldiers": {
+      "description": "Maximum amount of 2x2 soldiers this craft can carry. (-1 = unlimited)",
+      "default": "-1"
+    },
+    "maxSmallVehicles": {
+      "description": "Maximum amount of 1x1 vehicles this craft can carry. (-1 = unlimited)",
+      "default": "-1"
+    },
+    "maxLargeVehicles": {
+      "description": "Maximum amount of 2x2 vehicles this craft can carry. (-1 = unlimited)",
+      "default": "-1"
+    },
+    "maxSmallUnits": {
+      "description": "Maximum amount of 1x1 soldiers and 1x1 vehicles this craft can carry. (-1 = unlimited)",
+      "default": "-1"
+    },
+    "maxLargeUnits": {
+      "description": "Maximum amount of 2x2 soldiers and 2x2 vehicles this craft can carry. (-1 = unlimited)",
+      "default": "-1"
+    },
+    "maxSoldiers": {
+      "description": "Maximum amount of 1x1 soldiers and 2x2 soldiers this craft can carry. (-1 = unlimited)",
+      "default": "-1"
+    },
+    "maxVehicles": {
+      "description": "Maximum amount of 1x1 vehicles and 2x2 vehicles this craft can carry. (-1 = unlimited)",
+      "default": "-1"
     },
     "costBuy": {
       "description": "Amount of money spent for purchasing this craft. If set to 0, the craft will not be available in the Purchase/Recruit screen.",
@@ -511,7 +555,7 @@
       "default": "-"
     },
     "craftInventoryTile": {
-      "description": "Coordinates \\[x, y, z\\] of the craft inventory tile (weapon's pile) in the craft. If not specified, tile occupied by the first soldier is used.",
+      "description": "Coordinates \\[x, y, z\\] of the craft inventory tile (weapon's pile) in the craft. If not specified, tile occupied by the first soldier is used.\n\nNote: You can change this attribute only if your mod also contains the **battlescapeTerrainData** attribute. Since OXCE 7.4.4 this limitation doesn't apply.",
       "default": "-"
     },
     "mapVisible": {
@@ -811,7 +855,7 @@
       "default": "15"
     },
     "vaporColorSurface": {
-      "description": "The color offset (0-3 in TFTD) to use for the vapor trail (for surface deployments, i.e. non-underwater).",
+      "description": "The color offset (0-3 in TFTD) to use for the vapor trail (for surface deployments, i.e. non-underwater).\n\nNote: The **vaporColor** and **vaporColorSurface** indices are mod-specific since OXCE 7.1, not global anymore. If you want to use a vapor color from a parent mod, you need to specify it explicitly, for example:\n\n```\n vaporColor: { mod: xcom2, index: 0 }\n\n```\n\ninstead of\n\n```\n vaporColor: 0\n\n```",
       "default": "-1"
     },
     "vaporDensitySurface": {
@@ -827,7 +871,15 @@
       "default": "-"
     },
     "reloadSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon is reloaded. Can be a list with multiple options. If not specified, default reload sound is used.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this ammo/weapon is reloaded. Can be a list with multiple options. If not specified, default reload sound is used.",
+      "default": "-"
+    },
+    "primeSound": {
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this item is primed. Can be a list with multiple options.",
+      "default": "-"
+    },
+    "unprimeSound": {
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this item is unprimed. Can be a list with multiple options.",
       "default": "-"
     },
     "fireSound": {
@@ -912,6 +964,10 @@
     },
     "power": {
       "description": "Weapon power. Usually corresponds to weapon's average damage. For some weapons/items, it determines the range (e.g. for incendiary or smoke).",
+      "default": "0"
+    },
+    "powerForAnimation": {
+      "description": "Weapon power used for area-of-effect explosion animation radius. Only used if greater than zero. Doesn't affect any damage calculations, purely visual.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10308.0.html](https://openxcom.org/forum/index.php/topic,10308.0.html)",
       "default": "0"
     },
     "hidePower": {
@@ -1123,19 +1179,19 @@
       "default": "false"
     },
     "confAimed": {
-      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```",
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```\n\nExample 3: Custom names and custom short names: [https://openxcom.org/forum/index.php/topic,9742.msg143229.html#msg143229](https://openxcom.org/forum/index.php/topic,9742.msg143229.html#msg143229)\n\n```\nitems:\n  - type: STR_RIFLE\n    confAimed:\n      shots: 4\n      name: STR_BIG_BOOM\n      shortName: STR_BIG_BOOM_SHORT\n    confSnap:\n      name: STR_SMALL_BOOM\n      shortName: STR_SMALL_BOOM_SHORT\n    confAuto:\n      shots: 2\n      name: STR_SMALL_BOOM_X2\n      shortName: STR_SMALL_BOOM_X2_SHORT\n\n``````\nextraStrings:\n  - type: en-US\n    strings:\n      STR_BIG_BOOM: \"Big boom\"\n      STR_BIG_BOOM_SHORT: \"Big (x{0})\"\n      STR_SMALL_BOOM: \"Small boom\"\n      STR_SMALL_BOOM_SHORT: \"Small\"\n      STR_SMALL_BOOM_X2: \"Double boom\"\n      STR_SMALL_BOOM_X2_SHORT: \"Small (x{0})\"\n\n```",
       "default": "-"
     },
     "confSnap": {
-      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```",
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```\n\nExample 3: Custom names and custom short names: [https://openxcom.org/forum/index.php/topic,9742.msg143229.html#msg143229](https://openxcom.org/forum/index.php/topic,9742.msg143229.html#msg143229)\n\n```\nitems:\n  - type: STR_RIFLE\n    confAimed:\n      shots: 4\n      name: STR_BIG_BOOM\n      shortName: STR_BIG_BOOM_SHORT\n    confSnap:\n      name: STR_SMALL_BOOM\n      shortName: STR_SMALL_BOOM_SHORT\n    confAuto:\n      shots: 2\n      name: STR_SMALL_BOOM_X2\n      shortName: STR_SMALL_BOOM_X2_SHORT\n\n``````\nextraStrings:\n  - type: en-US\n    strings:\n      STR_BIG_BOOM: \"Big boom\"\n      STR_BIG_BOOM_SHORT: \"Big (x{0})\"\n      STR_SMALL_BOOM: \"Small boom\"\n      STR_SMALL_BOOM_SHORT: \"Small\"\n      STR_SMALL_BOOM_X2: \"Double boom\"\n      STR_SMALL_BOOM_X2_SHORT: \"Small (x{0})\"\n\n```",
       "default": "-"
     },
     "confAuto": {
-      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```",
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```\n\nExample 3: Custom names and custom short names: [https://openxcom.org/forum/index.php/topic,9742.msg143229.html#msg143229](https://openxcom.org/forum/index.php/topic,9742.msg143229.html#msg143229)\n\n```\nitems:\n  - type: STR_RIFLE\n    confAimed:\n      shots: 4\n      name: STR_BIG_BOOM\n      shortName: STR_BIG_BOOM_SHORT\n    confSnap:\n      name: STR_SMALL_BOOM\n      shortName: STR_SMALL_BOOM_SHORT\n    confAuto:\n      shots: 2\n      name: STR_SMALL_BOOM_X2\n      shortName: STR_SMALL_BOOM_X2_SHORT\n\n``````\nextraStrings:\n  - type: en-US\n    strings:\n      STR_BIG_BOOM: \"Big boom\"\n      STR_BIG_BOOM_SHORT: \"Big (x{0})\"\n      STR_SMALL_BOOM: \"Small boom\"\n      STR_SMALL_BOOM_SHORT: \"Small\"\n      STR_SMALL_BOOM_X2: \"Double boom\"\n      STR_SMALL_BOOM_X2_SHORT: \"Small (x{0})\"\n\n```",
       "default": "-"
     },
     "confMelee": {
-      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```",
+      "description": "A mapping between actions and ammo slots (see above).\n\nExample:\n\n```\n - type: STR_RIFLE_WITH_A_GRENADE_LAUNCHER\n   confAimed:\n     shots: 1\n     followProjectiles: true    # default\n     name: STR_AIMED_SHOT\n     ammoSlot: 0\n     arcing: false\n   confSnap:\n     shots: 2\n     followProjectiles: false   # the camera stays still while shooting (prevents minigun seizures)\n     name: STR_DOUBLE_SNAP_SHOT\n     ammoSlot: 0\n     arcing: false\n   confAuto:\n     shots: 1\n     name: STR_LAUNCH_GRENADE\n     ammoSlot: 3\n     arcing: true\n   confMelee:\n     name: STR_PUNCH_IN_THE_FACE\n\n```\n\nExample 2: Battery-powered weapons: [https://openxcom.org/forum/index.php/topic,9293.0.html](https://openxcom.org/forum/index.php/topic,9293.0.html)\n\n```\n - type: STR_LASGUN\n   compatibleAmmo: [STR_LASGUN_CLIP]\n   confAimed:\n     spendPerShot: 4        # 4x battery consumption for 2x power\n     name: STR_BIG_BOOM\n   confSnap:\n     name: STR_SMALL_BOOM\n   tags:\n     BPL_AIMED_2X_POWER: 1  # custom script\n\n```\n\nExample 3: Custom names and custom short names: [https://openxcom.org/forum/index.php/topic,9742.msg143229.html#msg143229](https://openxcom.org/forum/index.php/topic,9742.msg143229.html#msg143229)\n\n```\nitems:\n  - type: STR_RIFLE\n    confAimed:\n      shots: 4\n      name: STR_BIG_BOOM\n      shortName: STR_BIG_BOOM_SHORT\n    confSnap:\n      name: STR_SMALL_BOOM\n      shortName: STR_SMALL_BOOM_SHORT\n    confAuto:\n      shots: 2\n      name: STR_SMALL_BOOM_X2\n      shortName: STR_SMALL_BOOM_X2_SHORT\n\n``````\nextraStrings:\n  - type: en-US\n    strings:\n      STR_BIG_BOOM: \"Big boom\"\n      STR_BIG_BOOM_SHORT: \"Big (x{0})\"\n      STR_SMALL_BOOM: \"Small boom\"\n      STR_SMALL_BOOM_SHORT: \"Small\"\n      STR_SMALL_BOOM_X2: \"Double boom\"\n      STR_SMALL_BOOM_X2_SHORT: \"Small (x{0})\"\n\n```",
       "default": "-"
     },
     "psiAttackName": {
@@ -1307,7 +1363,7 @@
       "default": "-1"
     },
     "recoveryDividers": {
-      "description": "Definition how special items (with **specialType** > 1 and **specialType** < 200) should be recovered from the mission.\n\nMore info here: [https://openxcom.org/forum/index.php/topic,6616.0.html](https://openxcom.org/forum/index.php/topic,6616.0.html)",
+      "description": "Definition how special items (with **specialType** > 1 and **specialType** < 200) should be recovered from the mission.\n\nMore info here: [https://openxcom.org/forum/index.php/topic,6616.0.html](https://openxcom.org/forum/index.php/topic,6616.0.html)\n\nNote: since OXCE v7.2 also negative values can be used and will be treated as multipliers, not dividers: [https://openxcom.org/forum/index.php/topic,6616.msg142693.html#msg142693](https://openxcom.org/forum/index.php/topic,6616.msg142693.html#msg142693)",
       "default": "-"
     },
     "recoveryTransformations": {
@@ -1430,6 +1486,10 @@
       "description": "Whether this **specialWeapon** is used when clicking on the empty hand slot in soldier's inventory. Used for punching/kicking with bare hands :)",
       "default": "false"
     },
+    "specialUseEmptyHandShow": {
+      "description": "If true, the sprite of the special weapon will be shown in the empty hand UI (similar to what was done in OXC in April 2020). **specialUseEmptyHand** must be true too.",
+      "default": "false"
+    },
     "fuseType": {
       "description": "Defines how item priming works.\n\nPossible options:\n\n*   \\-3 No priming. Flares always glow if **defaultBehavior** is true.\n*   \\-2 Can be primed (without timer). Proxies work normally. Grenades explode instantly after throwing. Flares glow only after priming.\n*   \\-1 Can be primed (for manually specified amount of turns). Grenades explode after set time. Proxies and flares disappear after set time.\n*   0-63 Can be primed (for fixed amount of turns).\n\nDefaults:\n\n*   \\-2 for proximity grenades\n*   \\-1 for grenades\n*   \\-3 for everything else",
       "default": "<="
@@ -1539,8 +1599,8 @@
       "default": "0"
     },
     "RandomType": {
-      "description": "Defines how will be dice be rolled to determine damage based on power (primary damage calculation). Possible options:\n\n*   0 = default vanilla behavior dependent on damageType\n*   1 = 0-200% spread\n*   2 = 50-150% spread\n*   3 = flat damage equal to power\n*   4 = random damage in range defined by **fireDamageRange**\n*   5 = no damage\n*   6 = 0-200% spread (2 dice roll), i.e. 0-100% + 0-100%\n*   7 = 50-200% spread",
-      "default": "0"
+      "description": "Defines how will the dice be rolled to determine the damage based on power (primary damage calculation).\n\nPossible options (**until OXCE 7.1**):\n\n*   0 = default OpenXcom behavior dependent on damageType (can be like 1, 2, 4 or 5) (affected by **damageRange** (1) and **explosiveDamageRange** (2))\n*   1 = hardcoded 0-200% spread (**NOT** affected by **damageRange**)\n*   2 = hardcoded 50-150% spread (**NOT** affected by **explosiveDamageRange**)\n*   3 = flat damage equal to power\n*   4 = random damage in range defined by **fireDamageRange**\n*   5 = no damage\n*   6 = 0-200% spread (2 dice roll), i.e. 0-100% + 0-100%\n*   7 = 50-200% spread\n\nPossible options (**since OXCE 7.1**):\n\n*   0 = behavior dependent on damageType (can be 8, 9, 4 or 5)\n*   1 = hardcoded 0-200% spread (**NOT** affected by **damageRange**)\n*   2 = hardcoded 50-150% spread (**NOT** affected by **explosiveDamageRange**)\n*   3 = flat damage equal to power\n*   4 = random damage in range defined by **fireDamageRange**\n*   5 = no damage\n*   6 = 0-200% spread (2 dice roll), i.e. 0-100% + 0-100%\n*   7 = 50-200% spread\n*   8 = standard = 0-200% spread (affected by **damageRange**)\n*   9 = explosion = 50-150% spread (affected by **explosiveDamageRange**)",
+      "default": "8"
     },
     "ResistType": {
       "description": "A damage type, i.e. what resistance of the target unit's armor is applied. Same values like **damageType**.",
@@ -1551,7 +1611,7 @@
       "default": "false"
     },
     "IgnoreDirection": {
-      "description": "Should the damage calculation ignore from which direction the projectile came? Used for example for smoke or fire.",
+      "description": "Should the damage calculation ignore from which direction the projectile came? Uses front armor for damage calculation. Used for example for smoke or fire.",
       "default": "false"
     },
     "IgnoreSelfDestruct": {
@@ -1752,6 +1812,10 @@
       "description": "Algorithm to use when considering retreating from the dogfight (unless overridden by mission wave).\n\nPossible options:\n\n*   0 = flee if you're losing\n*   1 = never flee, never crash (since OXCE v6.5, they fight until 0% HP, not 50% HP)\n*   2 = random preference (0 or 1) determined at spawn",
       "default": "2"
     },
+    "softlockThreshold": {
+      "description": "When a hunter-killer UFO (which is faster than the player craft) fires this many times and still doesn't destroy the player craft, it disengages and stops hunting.",
+      "default": "100"
+    },
     "huntSpeed": {
       "description": "When hunter-killer finds a target, it will change speed to a percentage of its maximum speed.\n\nPossible options:\n\n*   0 = don't change speed, i.e. keep current speed\n*   1-99 = set speed to a percentage of maximum speed\n*   100 = speed up to maximum\n*   100+ = yes, you can go beyond maximum speed... but only during the chase, when intercepted, the maximum speed will be correctly considered for all relevant calculations and game mechanics",
       "default": "100"
@@ -1801,8 +1865,8 @@
       "default": "672"
     },
     "radarChance": {
-      "description": "Chance (0-100%) of this UFO radar detecting a craft that enters its range.",
-      "default": "100"
+      "description": "Unused.",
+      "default": "0"
     },
     "sightRange": {
       "description": "UFO's sight range (for detecting X-COM bases) in nautical miles.",
@@ -1919,6 +1983,10 @@
     "script": {
       "description": "The map generation script name.",
       "default": "DEFAULT"
+    },
+    "mapScripts": {
+      "description": "List of map scripts used to generate the map (if used, overrides **script**). One is chosen at random during map generation.",
+      "default": "-"
     },
     "enviroEffects": {
       "description": "String ID of enviro effects for missions using this terrain.\n\nNote: if enviro effects are defined both on terrain and on alien deployment, the deployment's enviro effects are used.",
@@ -2168,6 +2236,10 @@
       "description": "String ID of the [item](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) that represents this armor in [Base Stores](https://www.ufopaedia.org/index.php/Base_Stores) for equipping. Set to _STR\\_NONE_ to not require an item (eg. [coveralls](https://www.ufopaedia.org/index.php/Coveralls)).",
       "default": "-"
     },
+    "specab": {
+      "description": "Special ability of an xcom soldier wearing this armor:\n\n*   0 = None\n*   1 = [Explodes on Death](https://www.ufopaedia.org/index.php/Cyberdisc) (Requires **power** and **blastRadius** properties to be set on the corpse)\n*   2 = [Burns Floor](https://www.ufopaedia.org/index.php/Silacoid)\n*   3 = [Burns Floor and explodes on Death](https://www.ufopaedia.org/index.php/Bio-Drone)\n\nNote: Explodes on Death refers to when the unit is collapsing. This can be either be due to the unit not having any remaining HPs or that the stun level exceeds its HP. Only when the damageType is set to DT\\_STUN, DT\\_HE, DT\\_IN or DT\\_MELEE (OpenXcom) or the value for damageAlter **IgnoreSelfDestruct** on the damaging item is set to true (OpenXcom Extended), the unit will **not** explode.",
+      "default": "0"
+    },
     "specialWeapon": {
       "description": "Alternative method of defining a melee/psi weapon for aliens (and civilians); instead of defining it on the unit itself.\n\nNote: in OXCE, this can be used also for Soldiers. It can be any type of weapon (not only melee/psi) and does not block the inventory. Instead it is accessed via a special icon.",
       "default": "-"
@@ -2289,7 +2361,7 @@
       "default": "0"
     },
     "alwaysVisible": {
-      "description": "When set **true** unit will be always visible for player.",
+      "description": "When set to **true**, the unit will always be visible to the player.",
       "default": "false"
     },
     "stats": {
@@ -2491,7 +2563,7 @@
       "default": "-"
     },
     "trainingStatCaps": {
-      "description": "Maximum stats this soldier can gain through combat/martial training in the base.",
+      "description": "Maximum stats this soldier can gain through combat/martial training in the base.\n\nNote: since OXCE v7.2, it can also be used to disable psi-training: [https://openxcom.org/forum/index.php/topic,10208.msg142696.html#msg142696](https://openxcom.org/forum/index.php/topic,10208.msg142696.html#msg142696)",
       "default": "statCaps"
     },
     "dogfightExperience": {
@@ -2834,6 +2906,26 @@
       "description": "Defines the bonus to night vision (in tiles). Cannot go beyond global maximum view distance.",
       "default": "0"
     },
+    "frontArmor": {
+      "description": "Defines the bonus (or malus) to front armor.",
+      "default": "0"
+    },
+    "sideArmor": {
+      "description": "Defines the bonus (or malus) to left and right side armor.",
+      "default": "0"
+    },
+    "leftArmorDiff": {
+      "description": "Defines the bonus (or malus) to left side armor. Stacks with **sideArmor**.",
+      "default": "0"
+    },
+    "rearArmor": {
+      "description": "Defines the bonus (or malus) to rear armor.",
+      "default": "0"
+    },
+    "underArmor": {
+      "description": "Defines the bonus (or malus) to under armor.",
+      "default": "0"
+    },
     "stats": {
       "description": "Defines the bonus to soldier's stats (same way as the armor can). Can go even beyond any cap/maximum.",
       "default": "-"
@@ -2892,6 +2984,18 @@
     },
     "sprite": {
       "description": "This is an int corresponding to the sprite of the commendation. If the integer does not correspond to a sprite, the game will crash.",
+      "default": "-"
+    },
+    "missionMarkerFilter": {
+      "description": "A list of mission marker names. Used to filter missions when combined with the **totalMissions** criteria.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10190.msg142628.html#msg142628](https://openxcom.org/forum/index.php/topic,10190.msg142628.html#msg142628)",
+      "default": "-"
+    },
+    "missionTypeFilter": {
+      "description": "A list of mission types. Used to filter missions when combined with the **totalMissions** criteria.",
+      "default": "-"
+    },
+    "soldierBonusTypes": {
+      "description": "A list of soldier bonus types per decoration level.\n\nMore info: [https://openxcom.org/forum/index.php/topic,7405.msg116840.html#msg116840](https://openxcom.org/forum/index.php/topic,7405.msg116840.html#msg116840)",
       "default": "-"
     },
     "criteria": {
@@ -3213,7 +3317,7 @@
       "default": "30"
     },
     "specab": {
-      "description": "Special ability of this unit:\n\n*   0 = None\n*   1 = [Explodes on Death](https://www.ufopaedia.org/index.php/Cyberdisc) (Requires **power** and **blastRadius** properties to be set on the corpse)\n*   2 = [Burns Floor](https://www.ufopaedia.org/index.php/Silacoid)\n*   3 = [Burns Floor and explodes on Death](https://www.ufopaedia.org/index.php/Bio-Drone)",
+      "description": "Special ability of this unit:\n\n*   0 = None\n*   1 = [Explodes on Death](https://www.ufopaedia.org/index.php/Cyberdisc) (Requires **power** and **blastRadius** properties to be set on the corpse)\n*   2 = [Burns Floor](https://www.ufopaedia.org/index.php/Silacoid)\n*   3 = [Burns Floor and explodes on Death](https://www.ufopaedia.org/index.php/Bio-Drone)\n\nNote: Explodes on Death refers to when the unit is collapsing. This can be either be due to the unit not having any remaining HPs or that the stun level exceeds its HP. Only when the damageType is set to DT\\_STUN, DT\\_HE, DT\\_IN or DT\\_MELEE (OpenXcom) or the value for damageAlter **IgnoreSelfDestruct** on the damaging item is set to true (OpenXcom Extended), the unit will **not** explode.",
       "default": "0"
     },
     "spawnUnit": {
@@ -3221,7 +3325,7 @@
       "default": "-"
     },
     "livingWeapon": {
-      "description": "Is this unit a living weapon?\n\nIf yes, it ignores any weapon loadout associated with its rank in the alien deployment and only attacks with a weapon derived from its name (must be marked as **fixedWeapon**). The weapon's name is the unit's type without the first 4 letters (STR\\_) and with a suffix (\\_WEAPON). For example: STR\\_REAPER => REAPER\\_WEAPON.",
+      "description": "Is this unit a living weapon?\n\nIf yes, it ignores any weapon loadout associated with its rank in the alien deployment and only attacks with a weapon derived from its race name (must be marked as **fixedWeapon**). The weapon's name is the unit's race name without the first 4 letters (STR\\_) and with a suffix (\\_WEAPON). For example: STR\\_REAPER => REAPER\\_WEAPON.",
       "default": "false"
     },
     "meleeWeapon": {
@@ -3237,7 +3341,7 @@
       "default": "true"
     },
     "liveAlien": {
-      "description": "What item ID should be used for live alien in base.\n\nNote: by default game try find item with same name as unit, you can set **\"\"** to mark that there is no live alien.",
+      "description": "String ID of the item that will be used to represent the live/captured alien in the base/geoscape.\n\nNotes:\n\n*   OXC compatibility: by default **liveAlien** is the same as **type** (but only if such an item exists)\n*   you can use an empty string **\"\"** to explicitly indicate that there is no live alien",
       "default": "~"
     },
     "builtInWeaponSets": {
@@ -3281,7 +3385,7 @@
       "default": "-"
     },
     "aggroSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit aggros.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this unit aggros.\n\nIn OXCE, a list of sound IDs can be used too, the game then chooses one randomly each time.",
       "default": "-1"
     },
     "moveSound": {
@@ -3432,6 +3536,10 @@
       "description": "Map script used to generate the map (overrides the map script from terrain definition).",
       "default": "-"
     },
+    "mapScripts": {
+      "description": "List of map scripts used to generate the map (overrides **script** and any of the map scripts from terrain definition). One is chosen at random during map generation.",
+      "default": "-"
+    },
     "alert": {
       "description": "String ID of the message to display in the alert popup when this mission spawns on the Geoscape.",
       "default": "STR_ALIENS_TERRORISE"
@@ -3477,12 +3585,68 @@
       "default": "0"
     },
     "unlockedResearch": {
-      "description": "String ID of a research topic that will be granted for free (only if the mission is finished successfully).\n\nNote: there will be no Ufopaedia article shown nor any other related effect; the research will just be silently added into the list of finished research projects.",
+      "description": "String ID of a research topic that will be granted for free (only on mission success).  \n\nString ID of a research topic that will be granted for free (only on mission failure).  \nString ID of a research topic that will be granted for free (only on mission site despawn).\n\nNote: there will be no Ufopaedia article shown nor any other related effect; the research will just be silently added into the list of finished research projects.",
+      "default": "-"
+    },
+    "unlockedResearchOnFailure": {
+      "description": "String ID of a research topic that will be granted for free (only on mission success).  \n\nString ID of a research topic that will be granted for free (only on mission failure).  \nString ID of a research topic that will be granted for free (only on mission site despawn).\n\nNote: there will be no Ufopaedia article shown nor any other related effect; the research will just be silently added into the list of finished research projects.",
+      "default": "-"
+    },
+    "unlockedResearchOnDespawn": {
+      "description": "String ID of a research topic that will be granted for free (only on mission success).  \n\nString ID of a research topic that will be granted for free (only on mission failure).  \nString ID of a research topic that will be granted for free (only on mission site despawn).\n\nNote: there will be no Ufopaedia article shown nor any other related effect; the research will just be silently added into the list of finished research projects.",
+      "default": "-"
+    },
+    "successEvents": {
+      "description": "Weighted lists of events that spawn instantly after a trigger (mission success, mission failure or mission site despawn).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10319.0.html](https://openxcom.org/forum/index.php/topic,10319.0.html)",
+      "default": "-"
+    },
+    "despawnEvents": {
+      "description": "Weighted lists of events that spawn instantly after a trigger (mission success, mission failure or mission site despawn).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10319.0.html](https://openxcom.org/forum/index.php/topic,10319.0.html)",
+      "default": "-"
+    },
+    "failureEvents": {
+      "description": "Weighted lists of events that spawn instantly after a trigger (mission success, mission failure or mission site despawn).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10319.0.html](https://openxcom.org/forum/index.php/topic,10319.0.html)",
+      "default": "-"
+    },
+    "counterSuccess": {
+      "description": "String IDs of custom counters for various battle outcomes. The counter values can be used in Arc/Mission/Event scripts (see **missionMarkerName**).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "counterFailure": {
+      "description": "String IDs of custom counters for various battle outcomes. The counter values can be used in Arc/Mission/Event scripts (see **missionMarkerName**).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "counterDespawn": {
+      "description": "String IDs of custom counters for various battle outcomes. The counter values can be used in Arc/Mission/Event scripts (see **missionMarkerName**).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "counterAll": {
+      "description": "String IDs of custom counters for various battle outcomes. The counter values can be used in Arc/Mission/Event scripts (see **missionMarkerName**).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "decreaseCounterSuccess": {
+      "description": "String IDs of custom counters for various battle outcomes. The counter values can be used in Arc/Mission/Event scripts (see **missionMarkerName**).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "decreaseCounterFailure": {
+      "description": "String IDs of custom counters for various battle outcomes. The counter values can be used in Arc/Mission/Event scripts (see **missionMarkerName**).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "decreaseCounterDespawn": {
+      "description": "String IDs of custom counters for various battle outcomes. The counter values can be used in Arc/Mission/Event scripts (see **missionMarkerName**).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "decreaseCounterAll": {
+      "description": "String IDs of custom counters for various battle outcomes. The counter values can be used in Arc/Mission/Event scripts (see **missionMarkerName**).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
       "default": "-"
     },
     "missionBountyItem": {
       "description": "String ID of an item that will be added to base stores for free (only if the mission is finished successfully).\n\nNote: the player will be informed in the Debriefing screen.",
       "default": "-"
+    },
+    "missionBountyItemCount": {
+      "description": "Defines how many **missionBountyItem** items should be added.",
+      "default": "1"
     },
     "bughuntMinTurn": {
       "description": "Possibility to override global bug hunt minimum turn for this alien deployment only (usually to set a higher number for longer missions).",
@@ -3504,6 +3668,10 @@
       "description": "Maximum number of times the **genMission** can be generated.",
       "default": "1000"
     },
+    "genMissionRaceFromAlienBase": {
+      "description": "True = use alien race from the alien base (vanilla behavior); False = use alien race from the mission's **raceWeights** (if not empty)\n\nMore info: [https://openxcom.org/forum/index.php/topic,5717.msg143441.html#msg143441](https://openxcom.org/forum/index.php/topic,5717.msg143441.html#msg143441)",
+      "default": "true"
+    },
     "baseSelfDestructCode": {
       "description": "Discovering this research topic destroys all corresponding alien bases immediately.",
       "default": "-"
@@ -3520,12 +3688,28 @@
       "description": "The maximum frequency (in minutes) of hunt missions generated by an alien base.",
       "default": "60"
     },
+    "huntMissionRaceFromAlienBase": {
+      "description": "True = use alien race from the alien base; False = use alien race from the mission's **raceWeights** (if not empty)",
+      "default": "true"
+    },
     "huntMissionWeights": {
       "description": "A weighted list of hunt missions a base can generate, listed by \"number of months passed\".",
       "default": "-"
     },
     "alienBaseUpgrades": {
-      "description": "A weighted list of alien base upgrades, listed by \"number of months passed\".",
+      "description": "A weighted list of alien base upgrades, listed by \"number of months passed\".\n\nMore info: [https://openxcom.org/forum/index.php/topic,6430.0.html](https://openxcom.org/forum/index.php/topic,6430.0.html)",
+      "default": "-"
+    },
+    "resetAlienBaseAgeAfterUpgrade": {
+      "description": "Defines whether the age of an alien base should be reset after an upgrade. Note: when upgrading from type A to type B, the flag is read from **type A**.",
+      "default": "false"
+    },
+    "resetAlienBaseAge": {
+      "description": "Defines whether the age of an alien base should be reset after an upgrade. Note: when upgrading from type A to type B, the flag is read from **type B**.",
+      "default": "false"
+    },
+    "upgradeRace": {
+      "description": "Defines the new race for an alien base after an upgrade (into this type). Note: when upgrading from type A to type B, the flag is read from **type B**.",
       "default": "-"
     },
     "fakeUnderwaterSpawnChance": {
@@ -3616,6 +3800,10 @@
       "description": "Minimum quantity of aliens to spawn on superhuman. (minimum quantity for veteran/genius is the median of this and the previous value)",
       "default": "required"
     },
+    "medQty": {
+      "description": "Gives the ability to define more granular enemy numbers by difficulty. Defines quantity of aliens to spawn on veteran difficulty. Affects also experienced and genius difficulty.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10304.0.html](https://openxcom.org/forum/index.php/topic,10304.0.html)",
+      "default": "0"
+    },
     "dQty": {
       "description": "Delta in Quantity, i.e. random number of aliens to spawn on top of the minimum (all difficulties).",
       "default": "required"
@@ -3681,7 +3869,7 @@
       "default": "false"
     },
     "turns": {
-      "description": "A list of turns on which this reinforcements wave should apply. Ignored if **objectiveDestroyed** is true.",
+      "description": "A list of turns on which this reinforcements wave should apply. Ignored if **objectiveDestroyed** is true.\n\nNote: since OXCE v7.2, also turn 0 (zero) can be used. It spawns reinforcements before the first player turn (i.e. before the battle).",
       "default": "-"
     },
     "minTurn": {
@@ -3888,6 +4076,14 @@
       "description": "Item to be added to base stores, when the research is completed.\n\nTip: allows you to create unique items in limited quantities (e.g. special weapons, keys to special missions, etc.). Don't forget to inform the player in the pedia article!",
       "default": "-"
     },
+    "spawnedItemCount": {
+      "description": "Defines how many **spawnedItem** items should be added.",
+      "default": "1"
+    },
+    "spawnedItemList": {
+      "description": "A list of items to be added to base stores, when the research is completed.",
+      "default": "-"
+    },
     "spawnedEvent": {
       "description": "Geoscape event to be scheduled, when the research is completed.",
       "default": "-"
@@ -3987,7 +4183,7 @@
       "default": "-"
     },
     "producedItems": {
-      "description": "List of [items](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) manufactured per production. If not specified, defaults to 1 item with the same string ID as the manufacture project.",
+      "description": "List of [items](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) manufactured per production. If not specified, defaults to 1 item with the same string ID as the manufacture project.\n\nNote: It's possible to add only one craft per list.",
       "default": "name: 1"
     },
     "randomProducedItems": {
@@ -4056,6 +4252,10 @@
       "description": "String ID of the description displayed on this article.\n\nIn OXCE, you can use the {ALT} keyword to switch between primary and secondary color.",
       "default": "-"
     },
+    "align_bottom": {
+      "description": "If set to true, the **text** will be vertically aligned to the bottom.",
+      "default": "false"
+    },
     "text_width": {
       "description": "Maximum width of the text displayed, only applicable to _TextImage_ articles.",
       "default": "EU (0), TFTD (157)"
@@ -4122,7 +4322,11 @@
         },
         "objective": {
           "description": "_true_ Marks this wave as the one that carries out the mission objective. Only for mission site / supply missions.",
-          "default": "-"
+          "default": "false"
+        },
+        "objectiveOnTheLandingSite": {
+          "description": "Only relevant when using non-point mission zone areas for mission site spawning.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10305.0.html](https://openxcom.org/forum/index.php/topic,10305.0.html)",
+          "default": "false"
         },
         "hunterKillerPercentage": {
           "description": "The chance (0-100%) to become a hunter-killer UFO upon spawning.\n\nPossible options:\n\n*   \\-1 = take the info from RuleUfo\n*   0 = not a hunter-killer\n*   1-99 = percentage chance to be flagged as hunter-killer upon spawn\n*   100 = always a hunter-killer",
@@ -4141,7 +4345,7 @@
           "default": "false"
         },
         "interruptPercentage": {
-          "description": "The chance (0-100%) to interrupt the alien mission when successfully shooting down a UFO from this wave.\n\nPossible options:\n\n*   0 = cannot interrupt\n*   1-99 = percentage chance to be interrupted\n*   100 = always interrupted",
+          "description": "The chance (0-100%) to interrupt the alien mission when successfully shooting down a UFO from this wave; or when winning a ground mission of a landed UFO.\n\nPossible options:\n\n*   0 = cannot interrupt\n*   1-99 = percentage chance to be interrupted\n*   100 = always interrupted",
           "default": "0"
         }
       }
@@ -4149,6 +4353,10 @@
     "objective": {
       "description": "Missions are split by objective:\n\n*   0 = score (default if omitted)\n*   1 = infiltration\n*   2 = alien base\n*   3 = mission site (terror etc)\n*   4 = retaliation\n*   5 = supply",
       "default": "0"
+    },
+    "showAlienBase": {
+      "description": "Should a new alien base be discovered/shown immediately after it is spawned? (works for **objective** 1 and 2)",
+      "default": "false"
     },
     "spawnUfo": {
       "description": "UFO to spawn for retaliation.",
@@ -4169,6 +4377,10 @@
     "endlessInfiltration": {
       "description": "Should an infiltration mission end after the first cycle (false) or continue indefinitely (true)?",
       "default": "true"
+    },
+    "multiUfoRetaliation": {
+      "description": "Should the retaliation mission end after the first base defense (false) or continue until all already spawned UFOs disappear (true)?",
+      "default": "false"
     },
     "despawnEvenIfTargeted": {
       "description": "Should a mission site expire/despawn even if it is targeted by an xcom craft or not?",
@@ -4276,6 +4488,22 @@
       "description": "This command only applies if the new month's funds are below this threshold. Not checked before first month.",
       "default": "infinity"
     },
+    "missionVarName": {
+      "description": "These variables allow accessing internal mission script tracking variables (see **varName**), or internal object counters.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "missionMarkerName": {
+      "description": "These variables allow accessing internal mission script tracking variables (see **varName**), or internal object counters.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "counterMin": {
+      "description": "This script command only applies if the corresponding counter (**missionVarName** or **missionMarkerName**) is at least this number.",
+      "default": "0"
+    },
+    "counterMax": {
+      "description": "This script command only applies if the corresponding counter (**missionVarName** or **missionMarkerName**) is at most this number. -1 denotes no limit",
+      "default": "-1"
+    },
     "researchTriggers": {
       "description": "A list of research topics that can influence the execution of this mission. For example\n\n*   \"_STR\\_THE\\_ULTIMATE\\_THREAT: true_\" means the mission would only run if the player has researched the Ultimate Threat.\n*   \"_STR\\_TLETH\\_TH\\_ALIEN\\_CITY: false_\" means the mission would only run if the player has not researched T'Leth.\n\nSeveral research triggers can be combined and for the mission to appear all must be fulfilled.",
       "default": "-"
@@ -4286,6 +4514,14 @@
     },
     "facilityTriggers": {
       "description": "A list of base facilities that can influence the execution of this script. Similar to research triggers; checks the presence of a facility (in any xcom base).",
+      "default": "-"
+    },
+    "xcomBaseInRegionTriggers": {
+      "description": "A list of regions that can influence the execution of this script. Similar to research triggers; checks the presence (or absence) of an xcom base in a given region.",
+      "default": "-"
+    },
+    "xcomBaseInCountryTriggers": {
+      "description": "A list of countries that can influence the execution of this script. Similar to research triggers; checks the presence (or absence) of an xcom base in a given country.",
       "default": "-"
     },
     "maxRuns": {
@@ -4358,6 +4594,22 @@
       "description": "This command only applies if the new month's funds are below this threshold. Not checked before first month.",
       "default": "infinity"
     },
+    "missionVarName": {
+      "description": "These variables allow accessing internal mission script tracking variables (see **varName**), or internal object counters.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "missionMarkerName": {
+      "description": "These variables allow accessing internal mission script tracking variables (see **varName**), or internal object counters.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "counterMin": {
+      "description": "This script command only applies if the corresponding counter (**missionVarName** or **missionMarkerName**) is at least this number.",
+      "default": "0"
+    },
+    "counterMax": {
+      "description": "This script command only applies if the corresponding counter (**missionVarName** or **missionMarkerName**) is at most this number. -1 denotes no limit",
+      "default": "-1"
+    },
     "researchTriggers": {
       "description": "A list of research topics that can influence the execution of this script. For example\n\n*   \"_STR\\_MARTIAL\\_SOLUTION: true_\" means the command would only run if the player has researched The Martian Solution.\n*   \"_STR\\_CYDONIA\\_OR\\_BUST: false_\" means the command would only run if the player has not researched Cydonia or Bust yet.\n\nSeveral research triggers can be combined and all must be fulfilled.",
       "default": "-"
@@ -4368,6 +4620,14 @@
     },
     "facilityTriggers": {
       "description": "A list of base facilities that can influence the execution of this script. Similar to research triggers; checks the presence of a facility (in any xcom base).",
+      "default": "-"
+    },
+    "xcomBaseInRegionTriggers": {
+      "description": "A list of regions that can influence the execution of this script. Similar to research triggers; checks the presence (or absence) of an xcom base in a given region.",
+      "default": "-"
+    },
+    "xcomBaseInCountryTriggers": {
+      "description": "A list of countries that can influence the execution of this script. Similar to research triggers; checks the presence (or absence) of an xcom base in a given country.",
       "default": "-"
     }
   },
@@ -4424,6 +4684,30 @@
       "description": "This command only applies if the new month's funds are below this threshold. Not checked before first month.",
       "default": "infinity"
     },
+    "missionVarName": {
+      "description": "These variables allow accessing internal mission script tracking variables (see **varName**), or internal object counters.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "missionMarkerName": {
+      "description": "These variables allow accessing internal mission script tracking variables (see **varName**), or internal object counters.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10318.0.html](https://openxcom.org/forum/index.php/topic,10318.0.html)",
+      "default": "-"
+    },
+    "counterMin": {
+      "description": "This script command only applies if the corresponding counter (**missionVarName** or **missionMarkerName**) is at least this number.",
+      "default": "0"
+    },
+    "counterMax": {
+      "description": "This script command only applies if the corresponding counter (**missionVarName** or **missionMarkerName**) is at most this number. -1 denotes no limit",
+      "default": "-1"
+    },
+    "missionMinRuns": {
+      "description": "_Deprecated:_ use **counterMin** instead.",
+      "default": "-"
+    },
+    "missionMaxRuns": {
+      "description": "_Deprecated:_ use **counterMax** instead.",
+      "default": "-"
+    },
     "researchTriggers": {
       "description": "A list of research topics that can influence the execution of this script. For example\n\n*   \"_STR\\_MARTIAL\\_SOLUTION: true_\" means the command would only run if the player has researched The Martian Solution.\n*   \"_STR\\_CYDONIA\\_OR\\_BUST: false_\" means the command would only run if the player has not researched Cydonia or Bust yet.\n\nSeveral research triggers can be combined and all must be fulfilled.",
       "default": "-"
@@ -4434,6 +4718,14 @@
     },
     "facilityTriggers": {
       "description": "A list of base facilities that can influence the execution of this script. Similar to research triggers; checks the presence of a facility (in any xcom base).",
+      "default": "-"
+    },
+    "xcomBaseInRegionTriggers": {
+      "description": "A list of regions that can influence the execution of this script. Similar to research triggers; checks the presence (or absence) of an xcom base in a given region.",
+      "default": "-"
+    },
+    "xcomBaseInCountryTriggers": {
+      "description": "A list of countries that can influence the execution of this script. Similar to research triggers; checks the presence (or absence) of an xcom base in a given country.",
       "default": "-"
     },
     "affectsGameProgression": {
@@ -4781,6 +5073,10 @@
     "captionAlign": {
       "description": "The horizontal text alignment for the caption text. Possible values: 0 = left, 1 = center, 2 = right.",
       "default": "0"
+    },
+    "captionVerticalAlign": {
+      "description": "The vertical text alignment for the caption text. Possible values: 0 = top, 1 = middle, 2 = bottom.",
+      "default": "0"
     }
   },
   "globalVariables": {
@@ -4959,6 +5255,14 @@
     "alienInventoryOffsetBigUnit": {
       "description": "Hand slots of the \"alien inventory\" (inventory accessible via Middle-button-click) will be shifted away from each other by this much for 2x2 units.",
       "default": "32"
+    },
+    "selectBaseSound": {
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a base is selected on the globe. Can be a list with multiple options.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10195.msg143054.html#msg143054](https://openxcom.org/forum/index.php/topic,10195.msg143054.html#msg143054)",
+      "default": "-"
+    },
+    "startDogfightSound": {
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when a dogfight starts. Can be a list with multiple options.",
+      "default": "-"
     },
     "drawEnemyRadarCircles": {
       "description": "When should the alien UFO (hunter-killer) and alien base radar ranges be drawn? Possible options:\n\n*   0 = never drawn\n*   1 = drawn for bases if discovered and for UFOs if hyper-detected\n*   2 = drawn for bases if discovered and for UFOs if detected",
