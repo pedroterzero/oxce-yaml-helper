@@ -13,6 +13,8 @@ type AlienMission = {
 
 export class AlienMissionsLogic extends BaseLogic {
     private additionalFields = [
+        'alienMissions.operationType',
+        'alienMissions.objective',
         'alienMissions.raceWeights',
         'alienMissions.refNode',
         'alienMissions.waves',
@@ -50,7 +52,15 @@ export class AlienMissionsLogic extends BaseLogic {
                 continue;
             }
 
+            // This works because it uses operationType: 3 to create a new base with objective: 2 being create base
+
             if (!this.data[name]?.waves && !this.data[name]?.refNode?.waves) {
+                // additional check (by Buscher), https://discord.com/channels/582086836923531270/836314823783481386/898893079468212285
+                // "This works because it uses operationType: 3 to create a new base with objective: 2 being create base"
+                if (this.data[name]?.operationType === 3 && this.data[name]?.objective === 2) {
+                    continue;
+                }
+
                 this.addDiagnosticForReference(
                     ref,
                     `'${name}' does not have waves: set. This will lead to a segmentation fault when this mission triggers.`,
