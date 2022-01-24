@@ -1,5 +1,5 @@
 import { ExtensionContext, extensions, Uri, workspace } from "vscode";
-import { load } from "flat-cache";
+import { create } from "flat-cache";
 import { ParsedRuleset } from "./rulesetResolver";
 import { createHash } from "crypto";
 import { rulesetResolver } from "./extension";
@@ -63,7 +63,7 @@ export class RulesetFileCacheManager {
     }
 
     private getCache(file: Uri) {
-        return load(file.path.replace(/\//g, '_'), this.getCachePath());
+        return create(file.path.replace(/\//g, '_'), this.getCachePath());
     }
 
     public async retrieve(file: Uri) {

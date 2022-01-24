@@ -42,7 +42,7 @@ const expectedDocumentation = {
         {
             // alienMissions.waves.objective
             position: new Position(8, 12),
-            value: "_true_ Marks this wave as the one that carries out the mission objective. Only for mission site / supply missions.\n\n**Default: -**"
+            value: "_true_ Marks this wave as the one that carries out the mission objective. Only for mission site / supply missions.\n\n**Default: false**"
         }
     ]
 };
