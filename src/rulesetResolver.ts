@@ -137,6 +137,35 @@ export class RulesetResolver implements Disposable {
 
         await this.getAssetRulesets(files);
 
+        // load parent mods into the mix
+        files = await this.findParentMods(workspaceFolder, files);
+
+        this.rulesetHierarchy.mod = workspaceFolder.uri;
+
+        logger.debug(`Hierarchy: ${JSON.stringify(this.rulesetHierarchy)}`);
+
+        for (const idx in files) {
+            if (!files[idx].fsPath) {
+                // make sure we get the fs path (we don't get them from the workspace)
+                files[idx] = Uri.file(files[idx].path);
+            }
+        }
+
+        if (files.length === 0) {
+            logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not an OXC(E) project.`);
+            return files;
+        }
+
+        return files;
+    }
+
+    /**
+     * Loads any parent mods if specified in the settings
+     * @param workspaceFolder
+     * @param files
+     * @returns
+     */
+    private async findParentMods(workspaceFolder: WorkspaceFolder, files: Uri[]) {
         const parentMods = workspace.getConfiguration('oxcYamlHelper').get<string[]>('parentMods') || [];
         if (parentMods.length) {
             const missingMods = [];
@@ -159,22 +188,6 @@ export class RulesetResolver implements Disposable {
             if (missingMods.length) {
                 window.showErrorMessage(`Cannot find parent mods paths for '${missingMods.join(', ')}'`);
             }
-        }
-
-        this.rulesetHierarchy.mod = workspaceFolder.uri;
-
-        logger.debug(`Hierarchy: ${JSON.stringify(this.rulesetHierarchy)}`);
-
-        for (const idx in files) {
-            if (!files[idx].fsPath) {
-                // make sure we get the fs path (we don't get them from the workspace)
-                files[idx] = Uri.file(files[idx].path);
-            }
-        }
-
-        if (files.length === 0) {
-            logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not an OXC(E) project.`);
-            return files;
         }
 
         return files;
