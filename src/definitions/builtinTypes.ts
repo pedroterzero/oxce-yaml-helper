@@ -83,13 +83,15 @@ export const builtinTypes: {[key: string]: string[]} = {
     'enviroEffects.paletteTransformations.value': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
     'enviroEffects.environmentalConditions': factions,
     'events.background': builtinBackgrounds,
-    '/^extended\\.tags\\.(Rule(Armor|Item|Soldier|SoldierBonus)|Battle(Item|Game|Unit))\\.[a-zA-Z0-9_]+$/': ['int'],
+    '/^extended\\.tags\\.(Rule(Armor|Item|Skill|Soldier|SoldierBonus)|Battle(Item|Game|Unit))\\.[a-zA-Z0-9_]+$/': ['int'],
+    'facilities.verticalLevels[].terrain': ['baseTerrain'],
     'interfaces.backgroundImage': builtinBackgrounds,
-    'manufacture.category': [
-        'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
-        'STR_EQUIPMENT', 'STR_WEAPON'
-    ],
+    // 'manufacture.category': [
+    //     'STR_AMMUNITION', 'STR_CRAFT', 'STR_CRAFT_AMMUNITION', 'STR_CRAFT_WEAPON',
+    //     'STR_EQUIPMENT', 'STR_WEAPON'
+    // ],
     'manufacture.spawnedPersonType': ['STR_ENGINEER', 'STR_SCIENTIST'],
+    'mapScripts.commands[].terrain': ['baseTerrain', 'globeTerrain'],
     'units.rank': [
         'STR_LIVE_COMMANDER', 'STR_LIVE_ENGINEER', 'STR_LIVE_LEADER', 'STR_LIVE_MEDIC',
         'STR_LIVE_NAVIGATOR', 'STR_LIVE_SOLDIER', 'STR_LIVE_TERRORIST',

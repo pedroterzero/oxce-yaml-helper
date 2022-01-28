@@ -10,14 +10,15 @@ export class UfopaediaLogic extends BaseLogic {
 
     private additionalFields = [
         'ufopaedia.image_id', // we need to know if there's an image id
-        'ufopaedia.rect_text'
+        'ufopaedia.rect_text',
+        'ufopaedia.section'
     ].concat(this.additionalNumericFields);
 
     // this is the field we will be checking
     protected relatedFieldLogicMethods = {
         'ufopaedia.type_id': this.checkTypeLogic,
         'ufopaedia.id': this.checkTypeProvided,
-    }
+    };
 
     private imageRequiredTypeIds = [1, 2/*, 3*/, 7, 10, 11, 12, 13, 14, 15, 16, 17];
 
@@ -25,7 +26,7 @@ export class UfopaediaLogic extends BaseLogic {
     // and then not handled as regular references but only by this logic
     protected numericFields = this.additionalNumericFields;
 
-    private data: {[key: string]: {[key: string]: number}} = {};
+    private data: {[key: string]: {[key: string]: number | string}} = {};
 
     public getFields(): string[] {
         return ([] as string[]).concat(this.additionalFields);
@@ -48,6 +49,10 @@ export class UfopaediaLogic extends BaseLogic {
         for (const ref of this.referencesToCheck[key]) {
             const name = this.getNameFromMetadata(ref.ref, 'ufopaedia');
             if (!name) {
+                continue;
+            }
+
+            if (this.data[name]?.section === 'STR_NOT_AVAILABLE') {
                 continue;
             }
 
