@@ -19,9 +19,13 @@ export const stringTypes = ([] as string[]).concat([
     'enviroEffects.environmentalConditions.STR_NEUTRAL.message',
     'events.description',
     'items.confAimed.name',
+    'items.confAimed.shortName',
     'items.confAuto.name',
+    'items.confAuto.shortName',
     'items.confMelee.name',
+    'items.confMelee.shortName',
     'items.confSnap.name',
+    'items.confSnap.shortName',
     'items.medikitActionName',
     'items.name', // not sure
     'items.primeActionMessage',

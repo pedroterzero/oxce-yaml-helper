@@ -8,12 +8,14 @@ import { getAdditionalIgnoreTypes } from "../utilities";
  */
 export const ignoreTypes = [
     'armors.layersDefaultPrefix',
+    'armors.scripts.damageSpecialUnit',
     'armors.scripts.damageUnit',
     'armors.scripts.hitUnit',
     'armors.scripts.newTurnUnit',
     'armors.scripts.recolorUnitSprite',
     'armors.scripts.returnFromMissionUnit',
     'armors.scripts.selectUnitSprite',
+    'armors.scripts.tryPsiAttackUnit',
     '/^armors\\.layersSpecificPrefix\\.\\d+$/',
     'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
     'crafts.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
@@ -52,6 +54,8 @@ export const ignoreTypes = [
     'ufos.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
     'ufos.battlescapeTerrainData.mapDataSets', // may want to check that the files exist
     'ufos.battlescapeTerrainData.name', // may want to check that the files exist
+    'ufos.scripts.detectUfoFromBase',
+    'ufos.scripts.detectUfoFromCraft',
     'units.race', // optional according to Finnik
     // 'units.civilianRecoveryType', // ruleset validator will catch it
     // references to parent mod resources -- @TODO: one day(?) validate that the parent mod actually exists?
@@ -71,6 +75,7 @@ export const ignoreTypes = [
     'facilities.spriteShape.mod',
     'items.bulletSprite.mod',
     'items.bigSprite.mod',
+    'items.customItemPreviewIndex.mod',
     'items.explosionHitSound.mod',
     'items.explosionHitSound[].mod',
     'items.fireSound.mod',
@@ -83,7 +88,10 @@ export const ignoreTypes = [
     'items.meleeHitSound.mod',
     'items.meleeMissAnimation.mod',
     'items.meleeSound.mod',
+    'items.psiSound.mod',
+    'items.psiMissSound.mod',
     'items.specialIconSprite.mod',
+    'items.vaporColorSurface.mod',
     'units.deathSound.mod',
     'units.deathSound[].mod',
     'units.aggroSound.mod',
