@@ -27,7 +27,7 @@ export class AlienMissionsLogic extends BaseLogic {
     protected relatedFieldLogicMethods = {
         'alienMissions.type': this.checkForRequiredFields,
         'alienMissions.waves[].ufo': this.checkForRequiredWaveFields,
-    }
+    };
 
     private data: {[key: string]: {[key: string]: number | string | Entry | AlienMission, waves: Entry, refNode: AlienMission}} = {};
     private missionData: {[key: string]: {[key: string]: {[key: string]: number | string}[]}} = {};
