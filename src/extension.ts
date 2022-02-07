@@ -40,11 +40,6 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.autoOrderWeapons', AutoOrderWeaponsCommand.handler));
 
-    // setTimeout(() => {
-        // commands.executeCommand('oxcYamlHelper.convertCsv', Uri.file('/home/peter/mods/X-Com-From-the-Ashes/Ruleset/items_FTA.rul'));
-        // commands.executeCommand('oxcYamlHelper.convertCsvToRul', Uri.file('/home/peter/mods/X-Com-From-the-Ashes/Ruleset/items_FTA-items.csv'));
-    // }, 10);
-
     // load the recommender
     new ExtensionRecommender;
     // and config watcher
