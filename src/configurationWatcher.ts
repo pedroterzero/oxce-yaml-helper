@@ -21,6 +21,9 @@ export class ConfigurationWatcher {
                 // this.requestRestart();
                 rulesetResolver.refreshWorkspaceFolderRulesets();
             }
+            if (event.affectsConfiguration('oxcYamlHelper.findMissingTranslations')) {
+                rulesetResolver.refreshWorkspaceFolderRulesets();
+            }
 
             if (event.affectsConfiguration('oxcYamlHelper.validateCategories')) {
                 if (this.determineValidateCategoriesRefreshNeeded(this.validateCategories)) {

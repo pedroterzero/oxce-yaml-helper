@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom Ruleset Linker",
     "description": "This extension aims to turn Visual Studio code into an OpenXcom ruleset modding IDE. It links rulesets so you can easily navigate between linked rules. It checks for problems in the rulesets, and a lot of other things.",
-    "version": "0.9.0-alpha16-csv-editor",
+    "version": "0.9.0-alpha17-csv-editor-with-translation-checker",
     "author": {
         "name": "pedroterzero"
     },
@@ -75,7 +75,7 @@
                 "oxcYamlHelper.translationLocale": {
                     "type": "string",
                     "default": "en-US",
-                    "description": "Locale to use when showing translations on hovering"
+                    "description": "Locale to use when showing translations on hovering. This is also used to check for missing translations, if enabled."
                 },
                 "oxcYamlHelper.cacheStrategy": {
                     "type": "string",
@@ -107,6 +107,11 @@
                     ],
                     "default": "yes",
                     "markdownDescription": "Performs checks on categories. These seem to be undefined a lot of the time, so the check can be turned off here."
+                },
+                "oxcYamlHelper.findMissingTranslations": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Finds missing translations. The locale used is the one set in `oxcYamlHelper.translationLocale`."
                 },
                 "oxcYamlHelper.findDuplicateDefinitions": {
                     "type": "boolean",

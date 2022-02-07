@@ -146,6 +146,12 @@ export class RulesetDefinitionChecker {
                 continue;
             }
 
+            if (this.isExtraStringType(ref.path)) {
+                // check if the reference points to an existing translation
+                this.checkForValidTranslationReference(ref, diagnostics);
+                continue;
+            }
+
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
                 // can never match because the key simply does not exist for any type
@@ -157,6 +163,14 @@ export class RulesetDefinitionChecker {
                     this.addReferenceDiagnostic(ref, diagnostics, this.incorrectTypeMessage, result);
                 }
             }
+        }
+    }
+
+    private checkForValidTranslationReference(ref: Match, diagnostics: Diagnostic[]) {
+        // console.log(`checking translation ${ref.path} => ${ref.key}`);
+        const translation = rulesetResolver.getTranslationForKey(ref.key, undefined, true);
+        if (translation === undefined) {
+            this.addReferenceDiagnostic(ref, diagnostics, () => `No translation entry found for "${ref.key}" (${ref.path})`);
         }
     }
 
@@ -450,8 +464,8 @@ export class RulesetDefinitionChecker {
             // ignore these assorted types for now
             return false;
         }
-        if (this.isExtraStringType(ref.path)) {
-            // ignore extraStrings for now
+        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations') && this.isExtraStringType(ref.path)) {
+            // allow translation checking to be disabled
             return false;
         }
         if (ref.path in builtinTypes && builtinTypes[ref.path].indexOf(ref.key) !== -1) {
