@@ -152,11 +152,7 @@ export const fixListOrderIds = async (file: Uri, startListOrderId?: number) => {
     writeFileSync(file.fsPath, doc.toString());
 
 
-    // writeFileSync('/home/peter/vmshare/oxce/user/mods/UNEXCOM/Ruleset/csv/byAmmo.yml', stringify(orderedAmmos));
-    // writeFileSync('/home/peter/vmshare/oxce/user/mods/UNEXCOM/Ruleset/csv/byWeapon.yml', stringify(byWeapon));
-    // writeFileSync('/home/peter/vmshare/oxce/user/mods/UNEXCOM/Ruleset/csv/ids.yml', stringify(cleanedIds.map(obj => {
-    //     return {type: obj.id, listOrder: obj.order};
-    // })));
+
 
     // console.log(stringify(ammos));
     // console.log(stringify(ammosByWeapon));
