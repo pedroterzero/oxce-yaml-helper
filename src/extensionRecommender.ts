@@ -8,7 +8,7 @@ export class ExtensionRecommender {
         installIt: 'Install it!',
         notNow: 'Not now',
         never: 'Stop bugging me about this',
-    }
+    };
 
     public constructor() {
         this.init();
