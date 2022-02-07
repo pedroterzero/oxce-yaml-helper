@@ -1,12 +1,15 @@
 'use strict';
 
-import { ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
+import { commands, ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';
 import { RulesetHoverProvider } from './rulesetHoverProvider';
 import { ConfigurationWatcher } from './configurationWatcher';
 import { RulesetCompletionProvider } from './rulesetCompletionProvider';
+import { ConvertCsvCommand } from './commands/convertCsvCommand';
+import { ConvertCsvToRulCommand } from './commands/convertCsvToRulCommand';
+import { AutoOrderWeaponsCommand } from './commands/autoOrderWeaponsCommand';
 
 export const rulesetResolver = new RulesetResolver();
 
@@ -31,6 +34,11 @@ export function activate(context: ExtensionContext) {
 
     const triggerCharacters = " abcdefghijklmnopqrstuvwxyz0123456789".split('');
     context.subscriptions.push(languages.registerCompletionItemProvider(documentFilters, new RulesetCompletionProvider(), ...triggerCharacters));
+
+    context.subscriptions.push(commands.registerCommand('oxcYamlHelper.convertCsv', ConvertCsvCommand.handler));
+    context.subscriptions.push(commands.registerCommand('oxcYamlHelper.convertCsvToRul', ConvertCsvToRulCommand.handler));
+
+    context.subscriptions.push(commands.registerCommand('oxcYamlHelper.autoOrderWeapons', AutoOrderWeaponsCommand.handler));
 
     // load the recommender
     new ExtensionRecommender;

@@ -8,7 +8,7 @@ export class ExtensionRecommender {
         installIt: 'Install it!',
         notNow: 'Not now',
         never: 'Stop bugging me about this',
-    }
+    };
 
     public constructor() {
         this.init();
@@ -25,6 +25,12 @@ export class ExtensionRecommender {
             'kisstkondoros.vscode-gutter-preview',
             'noRecommendImagePreview',
             'Install the Image Preview extension to improve QoL even more! This enables image previews for extraSprites et cetera.'
+        );
+
+        this.recommend(
+            'janisdd.vscode-edit-csv',
+            'noRecommendCsvEditor',
+            'Install the Edit Csv extension to improve QoL even more! This enables editing rulesets as a spreadsheet.'
         );
     }
 

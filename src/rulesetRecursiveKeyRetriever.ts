@@ -345,6 +345,12 @@ export class RulesetRecursiveKeyRetriever {
             range = ruleProperty.value.range;
         }
 
+        if (ruleProperty.type === 'PLAIN' && value.toString().length !== range[1] - range[0]) {
+            // fix trailing whitespace, apparently the library does not properly handle this -- at least I hope that's what it is
+            // logger.debug(`Fixing range for ${path} from ${range[0]}-${range[1]} to ${range[0]}-${range[0] + value.toString().length}`);
+            range[1] = range[0] + value.toString().length;
+        }
+
         if (typeof value === 'boolean' || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
             // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
             return {stop: true};
