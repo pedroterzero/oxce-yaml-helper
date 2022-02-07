@@ -8,10 +8,15 @@ import { getAdditionalIgnoreTypes } from "../utilities";
  */
 export const ignoreTypes = [
     'armors.layersDefaultPrefix',
+    'armors.scripts.damageSpecialUnit',
     'armors.scripts.damageUnit',
     'armors.scripts.hitUnit',
+    'armors.scripts.newTurnUnit',
     'armors.scripts.recolorUnitSprite',
+    'armors.scripts.returnFromMissionUnit',
     'armors.scripts.selectUnitSprite',
+    'armors.scripts.tryPsiAttackUnit',
+    '/^armors\\.layersSpecificPrefix\\.\\d+$/',
     'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
     'crafts.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
     'crafts.battlescapeTerrainData.mapDataSets', // may want to check that the files exist
@@ -31,8 +36,12 @@ export const ignoreTypes = [
     // 'facilities.mapName', // may want to check that the files exist
     'interfaces.elements[].id', // could type check this, but the validator probably catches these
     'interfaces.palette', // could type check this, but the validator probably catches these
+    'items.accuracyMultiplier',
     'items.scripts.createItem',
+    'items.scripts.newTurnItem',
+    'items.scripts.recolorItemSprite',
     'items.scripts.selectItemSprite',
+    'globalVariables.fontName', // may want to check that the files exist
     'globe.data', // may want to check that the files exist
     'mapScripts.commands[].type',
     'mapScripts.commands[].direction',
@@ -45,6 +54,51 @@ export const ignoreTypes = [
     'ufos.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
     'ufos.battlescapeTerrainData.mapDataSets', // may want to check that the files exist
     'ufos.battlescapeTerrainData.name', // may want to check that the files exist
+    'ufos.scripts.detectUfoFromBase',
+    'ufos.scripts.detectUfoFromCraft',
     'units.race', // optional according to Finnik
     // 'units.civilianRecoveryType', // ruleset validator will catch it
+    // references to parent mod resources -- @TODO: one day(?) validate that the parent mod actually exists?
+    'armors.annoyedFemale[].mod',
+    'armors.annoyedMale[].mod',
+    'armors.customArmorPreviewIndex.mod',
+    'armors.customArmorPreviewIndex[].mod',
+    'armors.deathFemale[].mod',
+    'armors.deathMale[].mod',
+    'armors.moveSound.mod',
+    'armors.selectUnitFemale[].mod',
+    'armors.selectUnitMale[].mod',
+    'armors.selectWeaponFemale[].mod',
+    'armors.selectWeaponMale[].mod',
+    'armors.startMovingFemale[].mod',
+    'armors.startMovingMale[].mod',
+    'facilities.spriteShape.mod',
+    'items.bulletSprite.mod',
+    'items.bigSprite.mod',
+    'items.customItemPreviewIndex.mod',
+    'items.explosionHitSound.mod',
+    'items.explosionHitSound[].mod',
+    'items.fireSound.mod',
+    'items.fireSound[].mod',
+    'items.floorSprite.mod',
+    'items.handSprite.mod',
+    'items.hitAnimation.mod',
+    'items.hitSound.mod',
+    'items.meleeAnimation.mod',
+    'items.meleeHitSound.mod',
+    'items.meleeMissAnimation.mod',
+    'items.meleeSound.mod',
+    'items.psiSound.mod',
+    'items.psiMissSound.mod',
+    'items.specialIconSprite.mod',
+    'items.vaporColorSurface.mod',
+    'units.deathSound.mod',
+    'units.deathSound[].mod',
+    'units.aggroSound.mod',
+    'units.moveSound.mod',
+    'soldiers.deathFemale[].mod',
+    'soldiers.deathMale[].mod',
+    'soldiers.rankSprite.mod',
+    'soldiers.rankBattleSprite.mod',
+    'soldiers.rankTinySprite.mod',
 ].concat(typedProperties.getStoreVariables(), getAdditionalIgnoreTypes());

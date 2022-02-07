@@ -9,6 +9,8 @@ export const stringTypes = ([] as string[]).concat([
     'alienDeployments.objectiveComplete',
     'alienDeployments.objectiveFailed',
     'alienDeployments.objectivePopup',
+    'alienDeployments.reinforcements[].briefing.desc',
+    'alienDeployments.reinforcements[].briefing.title',
     'commendations.description',
     'crafts.weaponStrings',
     'cutscenes.slideshow.slides[].caption',
@@ -17,9 +19,13 @@ export const stringTypes = ([] as string[]).concat([
     'enviroEffects.environmentalConditions.STR_NEUTRAL.message',
     'events.description',
     'items.confAimed.name',
+    'items.confAimed.shortName',
     'items.confAuto.name',
+    'items.confAuto.shortName',
     'items.confMelee.name',
+    'items.confMelee.shortName',
     'items.confSnap.name',
+    'items.confSnap.shortName',
     'items.medikitActionName',
     'items.name', // not sure
     'items.primeActionMessage',
@@ -37,5 +43,5 @@ export const stringTypes = ([] as string[]).concat([
     'ufopaedia.weapon',
     // not sure
     // 'items.categories',
-    // 'manufacture.category',
+    'manufacture.category',
 ], getAdditionalStringTypes());

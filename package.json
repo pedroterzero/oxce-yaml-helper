@@ -135,7 +135,9 @@
                 "id": "yaml",
                 "extensions": [
                     ".rul",
-                    ".nam"
+                    ".nam",
+                    ".sav",
+                    ".asav"
                 ]
             },
             {

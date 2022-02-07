@@ -1,3 +1,12 @@
+# v0.8.6
+- Remove check on manufacture.category
+- Don't check ufopaedia articles with section: STR_NOT_AVAILABLE
+- manufacture.producedItems, allow crafts
+- Don't check waves for operationType=3, objective=2
+- Add a whole bunch of types to ignore (submod stuff, scripts, and others)
+- Add a whole bunch of translation types
+- Add more builtin types
+
 # v0.8.5
 - Fix with alienDeployment logic checker (respect refNodes)
 - Update documentation
