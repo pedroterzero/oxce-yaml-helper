@@ -4,7 +4,7 @@ import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from "./workspaceFo
 import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
 import { ignoreTypes } from "./definitions/ignoreTypes";
-import { stringTypes } from "./definitions/stringTypes";
+import { ignoreStringTypes, stringTypes } from "./definitions/stringTypes";
 import { rulesetResolver } from "./extension";
 import { logger } from "./logger";
 import { FilesWithDiagnostics, LogicHandler } from "./logic/logicHandler";
@@ -146,7 +146,7 @@ export class RulesetDefinitionChecker {
                 continue;
             }
 
-            if (this.isExtraStringType(ref.path)) {
+            if (this.isCheckableTranslatableString(ref)) {
                 // check if the reference points to an existing translation
                 this.checkForValidTranslationReference(ref, diagnostics);
                 continue;
@@ -164,6 +164,19 @@ export class RulesetDefinitionChecker {
                 }
             }
         }
+    }
+
+    private isCheckableTranslatableString(ref: Match) {
+        if (this.isExtraStringType(ref.path)) {
+            return true;
+        }
+        if (typedProperties.isDefinitionPropertyForPath(ref.path.split('.').slice(0, -1).join('.'), ref.path.split('.').slice(-1).join('.'), 'DUMMY')) {
+            if (!ignoreStringTypes.includes(ref.path)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private checkForValidTranslationReference(ref: Match, diagnostics: Diagnostic[]) {

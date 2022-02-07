@@ -10,6 +10,7 @@ type LinkerConfig = {
     globalVariables?: string[];
     ignoreTypes?: string[];
     stringTypes?: string[];
+    ignoreStringTypes?: string[];
     typeLinks?: {
         [key: string]: string[];
     };
@@ -68,6 +69,10 @@ export const getAdditionalBuiltinTypes = () => {
 
 export const getAdditionalStringTypes = () => {
     return getLinkerConfig()?.stringTypes ?? [];
+};
+
+export const getAdditionalIgnoreStringTypes = () => {
+    return getLinkerConfig()?.ignoreStringTypes ?? [];
 };
 
 export const getAdditionalIgnoreTypes = () => {
