@@ -6,11 +6,15 @@ type LinkerConfig = {
     builtinTypes?: {
         [key: string]: string[];
     };
+    vetoTypes?: string[];
+    globalVariables?: string[];
     ignoreTypes?: string[];
     stringTypes?: string[];
     typeLinks?: {
         [key: string]: string[];
     };
+    keyReferenceTypes?: string[];
+    definitionNameKeys?: {[key: string]: string[]};
 };
 
 let config: LinkerConfig;
@@ -68,4 +72,20 @@ export const getAdditionalStringTypes = () => {
 
 export const getAdditionalIgnoreTypes = () => {
     return getLinkerConfig()?.ignoreTypes ?? [];
+};
+
+export const getAdditionalKeyReferenceTypes = () => {
+    return (getLinkerConfig()?.keyReferenceTypes ?? []).reduce((a, v) => ({ ...a, [v]: {}}), {});
+};
+
+export const getAdditionalVetoTypes = () => {
+    return getLinkerConfig()?.vetoTypes ?? [];
+};
+
+export const getAdditionalTypePropertyHints = () => {
+    return getLinkerConfig()?.definitionNameKeys ?? {};
+};
+
+export const getAdditionalGlobalVariablePaths = () => {
+    return getLinkerConfig()?.globalVariables ?? [];
 };
