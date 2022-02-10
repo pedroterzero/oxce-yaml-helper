@@ -48,6 +48,7 @@ export const stringTypes = [
 ];
 
 export const ignoreStringTypes = [
+    'cutscenes.type',
     'extended.tags.BattleGame',
     'extended.tags.BattleItem',
     'extended.tags.BattleUnit',
@@ -56,6 +57,7 @@ export const ignoreStringTypes = [
     'extended.tags.RuleItem',
     'extended.tags.RuleSoldier',
     'extended.tags.RuleSoldierBonus',
+    'extended.tags.RuleUfo',
     'extraSprites.type',
     'extraSprites.typeSingle',
     'extraSprites.BASEBITS.PCK.files',
@@ -68,12 +70,16 @@ export const ignoreStringTypes = [
     'extraSprites.SMOKE.PCK.files',
     'extraSprites.SPICONS.DAT.files',
     'extraSprites.X1.PCK.files',
+    'extraSounds.type',
     'extraSounds.BATTLE.CAT.files',
     'extraSounds.GEO.CAT.files',
+    'facilities.provideBaseFunc',
     'interfaces.type',
     'mapScripts.type',
+    'MCDPatches.type',
     'missionScripts.type',
     'musics.type',
+    'startingConditions.type',
     'terrains.mapBlocks[].name',
     'terrains.name',
     'ufoTrajectories.id',
