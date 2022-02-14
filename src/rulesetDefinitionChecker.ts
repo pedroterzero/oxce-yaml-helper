@@ -12,6 +12,7 @@ import { mergeAndConcat } from "merge-anything";
 import { typeHintMessages } from "./definitions/typeHintMessages";
 import { typedProperties } from "./typedProperties";
 import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
+import { FileNotInWorkspaceError } from "./rulesetResolver";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -181,7 +182,20 @@ export class RulesetDefinitionChecker {
 
     private checkForValidTranslationReference(ref: Match, diagnostics: Diagnostic[]) {
         // console.log(`checking translation ${ref.path} => ${ref.key}`);
-        const translation = rulesetResolver.getTranslationForKey(ref.key, undefined, true);
+        let translation;
+        try {
+            translation = rulesetResolver.getTranslationForKey(ref.key, undefined, true);
+        }
+        catch (error) {
+            if (error instanceof FileNotInWorkspaceError) {
+                // file not in workspace, just ignore it
+                // console.log('File not in workspace');
+                return;
+            } else {
+                throw error;
+            }
+        }
+
         if (translation === undefined) {
             this.addReferenceDiagnostic(ref, diagnostics, () => `No translation entry found for "${ref.key}" (${ref.path})`);
         }

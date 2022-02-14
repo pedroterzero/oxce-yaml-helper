@@ -15,6 +15,8 @@ export type ParsedRuleset = {
     logicData?: LogicDataEntry[];
 };
 
+export class FileNotInWorkspaceError extends Error {}
+
 export class RulesetResolver implements Disposable {
     private loaded = false;
     private context?: ExtensionContext;
@@ -361,7 +363,9 @@ export class RulesetResolver implements Disposable {
 
         const folder = workspace.getWorkspaceFolder(sourceUri);
         if (!folder) {
-            return;
+            // file is most likely not in the workspace folder, so ignore it
+            // logger.debug(`getTranslationForKey: ${sourceUri.path} is not in the workspace`);
+            throw new FileNotInWorkspaceError();
         }
 
         const translation = rulesetTree.getTranslation(key, folder);
