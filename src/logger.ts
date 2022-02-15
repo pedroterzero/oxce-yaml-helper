@@ -9,6 +9,7 @@ export enum LogLevel {
 
 // read loglevel from env
 export const logLevel: LogLevel = workspace.getConfiguration('oxcYamlHelper').get('debugLevel') ?? ((process.env.LOGLEVEL ? +process.env.LOGLEVEL : undefined) ?? LogLevel.Info);
+console.log(`logevel is ${logLevel}`);
 
 export class Logger {
     public constructor () {
