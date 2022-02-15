@@ -50,5 +50,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: vscode-package
-        path: *.vsix
+        path: '*.vsix'
 
