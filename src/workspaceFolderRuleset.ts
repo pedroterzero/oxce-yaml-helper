@@ -336,6 +336,6 @@ export class WorkspaceFolderRuleset {
             ...this.translationFiles.map(file => file.translations)
         );
 
-        logger.debug(`Number of translations for ${rulesetResolver.getLocale()}: ${Object.keys(this.translations[rulesetResolver.getLocale()]).length}`);
+        logger.debug(`Number of translations for ${rulesetResolver.getLocale()}: ${Object.keys(this.translations[rulesetResolver.getLocale()] ?? {}).length}`);
     }
 }
