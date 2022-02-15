@@ -75,6 +75,8 @@ describe('rulesetCompletionProvider', () => {
             const editor = await window.showTextDocument(document);
 
             console.log(`document shown`);
+
+            console.log(`document EOL before change: ${document.eol}`);
             await editor.edit(builder => { builder.setEndOfLine(EndOfLine.CRLF); });
             // save and wait for refresh so we check both CRLF=>LF and vice versa
             console.log(`crlf enabled, saving`);
