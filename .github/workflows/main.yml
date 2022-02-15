@@ -31,10 +31,17 @@ jobs:
         name: code-coverage-report
         path: coverage
   package:
+    needs: build
     runs-on: ubuntu-latest
     # run if build is successful
     # if: steps.build.outcome == 'success'
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Install Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
     - name: Package
       run: npx vsce package -o openxcom-ruleset-linker.vsix
     - name: Retrieve package
