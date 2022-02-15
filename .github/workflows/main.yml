@@ -3,6 +3,9 @@ on: push
 #    branches:
 #      - master
 
+env:
+  LOGLEVEL: 0 # debug
+
 jobs:
   build:
     strategy:
