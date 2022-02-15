@@ -12,7 +12,6 @@ import { mergeAndConcat } from "merge-anything";
 import { typeHintMessages } from "./definitions/typeHintMessages";
 import { typedProperties } from "./typedProperties";
 import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
-import { FileNotInWorkspaceError } from "./rulesetResolver";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -149,7 +148,7 @@ export class RulesetDefinitionChecker {
 
             if (this.isCheckableTranslatableString(ref)) {
                 // check if the reference points to an existing translation
-                this.checkForValidTranslationReference(ref, diagnostics);
+                this.checkForValidTranslationReference(ref, file.file, diagnostics);
                 continue;
             }
 
@@ -180,21 +179,22 @@ export class RulesetDefinitionChecker {
         return false;
     }
 
-    private checkForValidTranslationReference(ref: Match, diagnostics: Diagnostic[]) {
+    private checkForValidTranslationReference(ref: Match, file: Uri, diagnostics: Diagnostic[]) {
         // console.log(`checking translation ${ref.path} => ${ref.key}`);
-        let translation;
+        const translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
+/*      let translation;
         try {
-            translation = rulesetResolver.getTranslationForKey(ref.key, undefined, true);
+            translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
         }
         catch (error) {
             if (error instanceof FileNotInWorkspaceError) {
                 // file not in workspace, just ignore it
-                // console.log('File not in workspace');
-                return;
+                console.log('File not in workspace');
+                // return;
             } else {
                 throw error;
             }
-        }
+        }*/
 
         if (translation === undefined) {
             this.addReferenceDiagnostic(ref, diagnostics, () => `No translation entry found for "${ref.key}" (${ref.path})`);
