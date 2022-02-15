@@ -14,6 +14,7 @@ function setupNyc() {
             ".history",
             "node_modules",
             "out/test/**",
+            ".vscode-test",
         ],
         extension: [
             ".ts",

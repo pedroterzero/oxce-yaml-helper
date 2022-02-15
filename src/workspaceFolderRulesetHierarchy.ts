@@ -1,5 +1,6 @@
 import { Uri } from "vscode";
 import { rulesetResolver } from "./extension";
+import { pathStartsWith } from "./utilities";
 import { WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 
 export class WorkspaceFolderRulesetHierarchy {
@@ -16,7 +17,7 @@ export class WorkspaceFolderRulesetHierarchy {
 
         for (const idx in this.ruleset.rulesetFiles) {
             const file =  this.ruleset.rulesetFiles[idx];
-            if (!file.file.path.startsWith(hierarchy.vanilla.path + '/')) {
+            if (!pathStartsWith(file.file, hierarchy.vanilla)) {
                 continue;
             }
 
@@ -31,7 +32,7 @@ export class WorkspaceFolderRulesetHierarchy {
     }
 
     private getDeletes(hierarchy: { [key: string]: Uri; }) {
-        const modFiles =  this.ruleset.referenceFiles.filter(file => file.file.path.startsWith(Uri.joinPath(hierarchy.mod, '/').path));
+        const modFiles =  this.ruleset.referenceFiles.filter(file => pathStartsWith(file.file, hierarchy.mod));
         const parsed: {path: string, key: string}[] = [];
         for (const file of modFiles) {
             const refs = file.references.filter(ref => ref.path.match(/^[a-zA-Z]+\.delete$/));

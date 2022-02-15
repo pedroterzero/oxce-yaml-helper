@@ -1,3 +1,8 @@
+# make sure test ruleset files are lf, otherwise tests won't work properly
+src/test/suite/fixtures/*.rul text eol=lf
+src/test/suite/fixtures/*.yml text eol=lf
+src/test/suite/fixtures/Language/*.yml text eol=lf
+
 # Set default behavior to automatically normalize line endings.
 * text=auto
 .eslintrc.js linguist-vendored=true
