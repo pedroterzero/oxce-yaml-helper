@@ -26,8 +26,6 @@ const testCompletion = (document: TextDocument | undefined, entries: typeof expe
         throw new Error('no document');
     }
 
-    console.log(`document found in testCompletion()`);
-
     for (const entry of entries) {
         const completions = completionProvider.provideCompletionItems(document, entry.position);
         if (!completions || Object.keys(completions).length === 0) {
@@ -37,9 +35,6 @@ const testCompletion = (document: TextDocument | undefined, entries: typeof expe
                 assert.fail('No or empty completions object returned');
             // }
         } else {
-            console.log(`expected completions`, entry.completions);
-            console.log(`found completions`, completions);
-
             assert.strictEqual(Object.keys(completions).length, entry.completions.length);
             assert.strictEqual(
                 undefined,
@@ -71,28 +66,19 @@ describe('rulesetCompletionProvider', () => {
                 throw new Error('no document');
             }
 
-            console.log(`document found`);
             const editor = await window.showTextDocument(document);
 
-            console.log(`document shown`);
-
-            console.log(`document EOL before change: ${document.eol}`);
             await editor.edit(builder => { builder.setEndOfLine(EndOfLine.CRLF); });
             // save and wait for refresh so we check both CRLF=>LF and vice versa
-            console.log(`crlf enabled, saving`);
 
             await document.save();
-            console.log(`saved, waiting for refresh`);
 
             await waitForRefresh(rulesetResolver);
-
-            console.log(`refreshed, starting test`);
 
             testCompletion(document, expectedCompletions);
 
             // restore
             await editor.edit(builder => { builder.setEndOfLine(EndOfLine.LF); });
-            console.log(`lf restored`);
             await document.save();
             await waitForRefresh(rulesetResolver);
         });
