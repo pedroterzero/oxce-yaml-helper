@@ -243,9 +243,9 @@ export class RulesetDefinitionChecker {
             }
 
             console.log('is in mod path?');
-            console.log(`${def.file.path}`);
-            console.log(`${hierarchy.mod.path}`);
-            if (def.file.path.indexOf(hierarchy.mod.path) !== 0) {
+            console.log(`${def.file.path} -- ${def.file.fsPath}`);
+            console.log(`${hierarchy.mod.path} -- ${hierarchy.mod.fsPath}`);
+            if (!def.file.path.startsWith(hierarchy.mod.path)) {
                 continue;
             }
 
