@@ -1,5 +1,6 @@
 import { Uri } from "vscode";
 import { rulesetResolver } from "./extension";
+import { pathStartsWith } from "./utilities";
 import { WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
 
 export class WorkspaceFolderRulesetHierarchy {
@@ -16,7 +17,7 @@ export class WorkspaceFolderRulesetHierarchy {
 
         for (const idx in this.ruleset.rulesetFiles) {
             const file =  this.ruleset.rulesetFiles[idx];
-            if (!file.file.path.startsWith(hierarchy.vanilla.path + '/')) {
+            if (!pathStartsWith(file.file, hierarchy.vanilla)) {
                 continue;
             }
 
