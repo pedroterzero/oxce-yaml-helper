@@ -95,8 +95,16 @@ describe('rulesetDefinitionChecker', () => {
 
     it('finds a diagnostic for duplicate type', () => {
         // const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_CHECK is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\titems.rul line 40");
+        // print the diagnostic collection
+
         console.log('diagnostics:');
-        console.log(rulesetTree.getDiagnosticCollection(workspaceFolder));
+        rulesetTree.getDiagnosticCollection(workspaceFolder)?.forEach((uri) => {
+            console.log('='.repeat(120));
+            console.log(uri.path);
+            rulesetTree.getDiagnosticCollection(workspaceFolder)?.get(uri)?.forEach((diagnostic) => {
+                console.log(`\t"${diagnostic.message}" ${diagnostic.range.start.line}:${diagnostic.range.start.character} - ${diagnostic.range.end.line}:${diagnostic.range.end.character}`);
+            });
+        });
 
         const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_CHECK is duplicate (add # ignoreDuplicate after this to ignore this entry)");
         assert.notStrictEqual(diagnostic, undefined);

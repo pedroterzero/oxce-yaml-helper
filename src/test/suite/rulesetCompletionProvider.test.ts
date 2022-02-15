@@ -70,9 +70,7 @@ describe('rulesetCompletionProvider', () => {
 
             await editor.edit(builder => { builder.setEndOfLine(EndOfLine.CRLF); });
             // save and wait for refresh so we check both CRLF=>LF and vice versa
-
             await document.save();
-
             await waitForRefresh(rulesetResolver);
 
             testCompletion(document, expectedCompletions);
