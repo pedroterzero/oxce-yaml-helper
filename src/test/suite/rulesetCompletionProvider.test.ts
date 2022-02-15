@@ -77,12 +77,14 @@ describe('rulesetCompletionProvider', () => {
             console.log(`document shown`);
             await editor.edit(builder => { builder.setEndOfLine(EndOfLine.CRLF); });
             // save and wait for refresh so we check both CRLF=>LF and vice versa
-            console.log(`crlf enabled`);
+            console.log(`crlf enabled, saving`);
 
             await document.save();
-            console.log(`saved`);
+            console.log(`saved, waiting for refresh`);
 
             await waitForRefresh(rulesetResolver);
+
+            console.log(`refreshed, starting test`);
 
             testCompletion(document, expectedCompletions);
 
