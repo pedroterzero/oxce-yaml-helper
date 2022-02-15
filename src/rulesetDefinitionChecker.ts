@@ -12,6 +12,7 @@ import { mergeAndConcat } from "merge-anything";
 import { typeHintMessages } from "./definitions/typeHintMessages";
 import { typedProperties } from "./typedProperties";
 import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
+import { pathStartsWith } from "./utilities";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -283,7 +284,7 @@ export class RulesetDefinitionChecker {
                 }
             }
 
-            if (def.file.path.indexOf(hierarchy.mod.path) !== 0) {
+            if (!pathStartsWith(def.file, hierarchy.mod)) {
                 continue;
             }
 

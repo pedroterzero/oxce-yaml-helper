@@ -7,7 +7,8 @@ export enum LogLevel {
     Error = 3
 }
 
-export const logLevel: LogLevel = workspace.getConfiguration('oxcYamlHelper').get('debugLevel') ?? LogLevel.Info;
+// read loglevel from env
+export const logLevel: LogLevel = (process.env.LOGLEVEL ? +process.env.LOGLEVEL : undefined) ?? (workspace.getConfiguration('oxcYamlHelper').get('debugLevel') ?? LogLevel.Info);
 
 export class Logger {
     public constructor () {
