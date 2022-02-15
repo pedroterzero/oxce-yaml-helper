@@ -3,8 +3,8 @@ on: push
 #    branches:
 #      - master
 
-env:
-  LOGLEVEL: 0 # debug
+#env:
+#  LOGLEVEL: 0 # debug
 
 jobs:
   build:
@@ -24,3 +24,21 @@ jobs:
       if: runner.os == 'Linux'
     - run: npm test
       if: runner.os != 'Linux'
+    - name: Archive code coverage results
+      if: runner.os == 'Linux'
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: coverage
+  package:
+    runs-on: ubuntu-latest
+    # run if build is successful
+    if: steps.build.outcome == 'success'
+    steps:
+    - name: Package
+      run: npx vsce package -o openxcom-ruleset-linker.vsix
+    - name: Retrieve package
+      uses: actions/upload-artifact@v2
+      with:
+        name: vscode-package
+        path: openxcom-ruleset-linker.vsix
