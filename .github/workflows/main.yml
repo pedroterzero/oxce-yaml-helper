@@ -33,7 +33,7 @@ jobs:
   package:
     runs-on: ubuntu-latest
     # run if build is successful
-    if: steps.build.outcome == 'success'
+    # if: steps.build.outcome == 'success'
     steps:
     - name: Package
       run: npx vsce package -o openxcom-ruleset-linker.vsix
