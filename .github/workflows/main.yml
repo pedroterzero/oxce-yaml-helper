@@ -1,4 +1,9 @@
-on: push
+#on: push
+on:
+  push:
+    tags-ignore:
+    - 'v*-alpha*'
+
 #  push:
 #    branches:
 #      - master
