@@ -12,6 +12,7 @@ import { mergeAndConcat } from "merge-anything";
 import { typeHintMessages } from "./definitions/typeHintMessages";
 import { typedProperties } from "./typedProperties";
 import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
+import { pathStartsWith } from "./utilities";
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -242,10 +243,7 @@ export class RulesetDefinitionChecker {
                 }
             }
 
-            console.log('is in mod path?');
-            console.log(`${def.file.path} -- ${def.file.fsPath}`);
-            console.log(`${hierarchy.mod.path} -- ${hierarchy.mod.fsPath}`);
-            if (!def.file.path.startsWith(hierarchy.mod.path)) {
+            if (!pathStartsWith(def.file, hierarchy.mod)) {
                 continue;
             }
 

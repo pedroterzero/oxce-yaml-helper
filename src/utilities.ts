@@ -69,3 +69,15 @@ export const getAdditionalStringTypes = () => {
 export const getAdditionalIgnoreTypes = () => {
     return getLinkerConfig()?.ignoreTypes ?? [];
 };
+
+export const pathStartsWith = (file1: Uri, file2: Uri) => {
+    // handle case insensitivity in windows -- on github actions, for some reason the mod path was /D:/ and the def path was /d:/
+    let file1path = file1.path;
+    let file2path = file2.path;
+    if (process.platform === 'win32') {
+        file1path = file1path.toLowerCase();
+        file2path = file2path.toLowerCase();
+    }
+
+    return file1path.startsWith(`${file2path}/`);
+};
