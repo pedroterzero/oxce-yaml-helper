@@ -97,6 +97,8 @@ describe('rulesetDefinitionChecker', () => {
         // const diagnostic = findDiagnostic('items.rul', "items STR_DUPLICATE_CHECK is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\titems.rul line 40");
         // print the diagnostic collection
 
+        console.log(`validate duplicates? ${workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions')}`);
+
         console.log('diagnostics:');
         rulesetTree.getDiagnosticCollection(workspaceFolder)?.forEach((uri) => {
             console.log('='.repeat(120));
