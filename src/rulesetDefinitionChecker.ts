@@ -141,18 +141,23 @@ export class RulesetDefinitionChecker {
                 continue;
             }
 
+            let isCheckableTranslation = false;
+            if (this.isCheckableTranslatableString(ref)) {
+                isCheckableTranslation = true;
+
+                // check if the reference points to an existing translation
+                this.checkForValidTranslationReference(ref, file.file, diagnostics);
+            }
+
             if (ref.path in typeLinks && typeLinks[ref.path].includes('_dummy_')) {
                 // dummy field indicates custom logic, so don't process the rest of this function
                 this.logicHandler.storeRelationLogicReference(ref, file);
                 continue;
             }
 
-            if (this.isCheckableTranslatableString(ref)) {
-                // check if the reference points to an existing translation
-                this.checkForValidTranslationReference(ref, file.file, diagnostics);
+            if (isCheckableTranslation) {
                 continue;
             }
-
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
                 // can never match because the key simply does not exist for any type
