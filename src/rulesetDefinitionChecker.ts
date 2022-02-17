@@ -173,6 +173,10 @@ export class RulesetDefinitionChecker {
     }
 
     private isCheckableTranslatableString(ref: Match) {
+        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations')) {
+            return false;
+        }
+
         if (this.isExtraStringType(ref.path)) {
             return true;
         }

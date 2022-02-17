@@ -48,6 +48,7 @@ export const stringTypes = [
 ];
 
 export const ignoreStringTypes = [
+    'arcScripts.type',
     'cutscenes.type',
     'extended.tags.BattleGame',
     'extended.tags.BattleItem',
