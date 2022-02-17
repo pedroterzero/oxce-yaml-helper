@@ -84,6 +84,7 @@ export const builtinTypes: {[key: string]: string[]} = {
     'enviroEffects.environmentalConditions': factions,
     'events.background': builtinBackgrounds,
     '/^extended\\.tags\\.(Rule(Armor|Item|Skill|Soldier|SoldierBonus|Ufo)|Battle(Item|Game|Unit))\\.[a-zA-Z0-9_]+$/': ['int'],
+    'facilities.verticalLevels[].type': ['ground'], // could also let this be caught by thy regular validator
     'facilities.verticalLevels[].terrain': ['baseTerrain'],
     'interfaces.backgroundImage': builtinBackgrounds,
     // 'manufacture.category': [
