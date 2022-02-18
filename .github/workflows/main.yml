@@ -57,6 +57,8 @@ jobs:
     - run: npm install
     - name: Package
       run: npx vsce package
+    -
+      run: ls -al out
 #      run: npx vsce package -o openxcom-ruleset-linker.vsix
     - name: Retrieve package
       uses: actions/upload-artifact@v2
