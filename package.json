@@ -21,7 +21,7 @@
     "activationEvents": [
         "workspaceContains:**/*.rul"
     ],
-    "main": "./out/extension",
+    "main": "./dist/extension",
     "contributes": {
         "commands": [
             {
