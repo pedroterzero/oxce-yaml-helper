@@ -166,7 +166,6 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish:nobundle": "npm run build",
         "vscode:prepublish": "npm run esbuild-base -- --minify && mkdir -p out/assets && cp -a src/assets/xcom1 out/assets",
         "esbuild-base": "rm -rf out && esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
         "esbuild": "npm run esbuild-base -- --sourcemap",

@@ -17,7 +17,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        # os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
@@ -55,10 +56,13 @@ jobs:
       with:
         node-version: 14.x
     - run: npm install
+    - run: npm run vscode:prepublish
+    - run: |
+        pwd
+        ls -Ral .
+        ls -al out
     - name: Package
       run: npx vsce package
-    -
-      run: ls -al out
 #      run: npx vsce package -o openxcom-ruleset-linker.vsix
     - name: Retrieve package
       uses: actions/upload-artifact@v2
