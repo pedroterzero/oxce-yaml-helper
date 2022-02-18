@@ -43,7 +43,7 @@ export function run(): Promise <void> {
     const mocha = new Mocha({
         color: true,
         ui: "bdd",
-        timeout: 10000
+        timeout: 5000
     });
 
     const testsRoot = path.resolve(__dirname, "..");

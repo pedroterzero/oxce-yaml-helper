@@ -435,7 +435,7 @@ export class RulesetResolver implements Disposable {
             throw new Error('Couldn\'t get extension context');
         }
 
-        let path = 'dist/assets/xcom1';
+        let path = 'out/assets/xcom1';
         if (existsSync(Uri.joinPath(this.context.extensionUri, '/src/assets/xcom1').fsPath)) {
             path = 'src/assets/xcom1';
         }
