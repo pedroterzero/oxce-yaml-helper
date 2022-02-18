@@ -1,5 +1,11 @@
 'use strict';
 
+// load first
+import { setup } from 'applicationinsights';
+
+setup('InstrumentationKey=7c49b0fd-9f4b-4441-97b3-1923c783e380;IngestionEndpoint=https://westeurope-4.in.applicationinsights.azure.com/').start();
+
+// handle the rest
 import { commands, ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
