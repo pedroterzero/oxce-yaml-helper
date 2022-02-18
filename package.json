@@ -166,8 +166,14 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run build",
+        "vscode:prepublish:nobundle": "npm run build",
+        "vscode:prepublish": "npm run clean-dist && npm run esbuild-base -- --minify && mkdir -p dist/assets && cp -a src/assets/xcom1 dist/assets",
+        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "test-compile": "tsc -p ./",
         "build": "npm run compile && cp -a src/assets/xcom1 out/assets/xcom1",
+        "clean-dist": "rm -rf dist/*",
         "clean": "rm -rf out/*",
         "compile": "npm run clean && tsc -p ./",
         "watch": "tsc -watch -p ./",
@@ -187,6 +193,7 @@
         "@types/vscode": "^1.51.0",
         "@typescript-eslint/eslint-plugin": "^5.10.0",
         "@typescript-eslint/parser": "^5.10.0",
+        "esbuild": "^0.14.22",
         "eslint": "^8.7.0",
         "fs-extra": "^10.0.0",
         "mocha": "^9.2.0",
@@ -195,7 +202,7 @@
         "vscode-test": "^1.5.2"
     },
     "dependencies": {
-        "applicationinsights": "^2.2.1",
+        "@vscode/extension-telemetry": "^0.4.9",
         "dot-object": "^2.1.4",
         "dot-prop": "^6.0.1",
         "flat-cache": "^3.0.4",

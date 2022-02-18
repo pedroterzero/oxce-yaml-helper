@@ -26,3 +26,8 @@ Dockerfile
 docker-compose.yml
 *.sh
 tsconfig.tsbuildinfo
+.github
+README-dev.md
+# bundle
+node_modules
+out
