@@ -59,8 +59,7 @@ jobs:
     - run: npm run vscode:prepublish
     - run: |
         pwd
-        ls -Ral .
-        ls -al out
+        ls -al ./ out/
     - name: Package
       run: npx vsce package
 #      run: npx vsce package -o openxcom-ruleset-linker.vsix
