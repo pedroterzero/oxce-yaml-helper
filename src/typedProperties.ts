@@ -56,6 +56,7 @@ export class typedProperties {
     private static typePropertyHints: typePropertyHints = {
         alienRaces: ['id'],
         extraSprites: ['type', 'typeSingle'],
+        events: ['name'],
         facilities: ['type', 'provideBaseFunc'],
         invs: ['id'],
         manufacture: ['name'],
@@ -72,6 +73,7 @@ export class typedProperties {
 
     private static vetoTypes: string[] = [
         'extraStrings',
+        'facilities.verticalLevels[]',
         'mapScripts.commands[]',
         'mapScripts.commands[].tunnelData.MCDReplacements[]',
         'mapScripts.commands[].verticalLevels[]',

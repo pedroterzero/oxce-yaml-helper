@@ -3,7 +3,7 @@
 // Hover to view descriptions of existing attributes.
 // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 {
-	"version": "0.2.0",
+    "version": "0.2.0",
     "configurations": [
         {
             "name": "Extension",
@@ -24,6 +24,24 @@
             "preLaunchTask": "npm: watch"
         },
         {
+            "name": "Extension no esbuild",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/out/**/*.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**/*.js",
+                // "/home/*/.vscode/extensions/**/*.js", // find out how to get extensions path cross platform
+                // "**/vs/workbench/services/extensions/node/extensionHostProcess.js" // might be a terrible idea
+            ],
+            "preLaunchTask": "npm: watch-tsc"
+        },
+        {
             "name": "Extension Tests",
             "type": "extensionHost",
             "request": "launch",
@@ -38,7 +56,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/test/**/*.js"
             ],
-            "preLaunchTask": "npm: watch"
+            "preLaunchTask": "npm: test-compile"
         }
     ]
 }

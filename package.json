@@ -13,7 +13,7 @@
         "url": "https://github.com/pedroterzero/oxce-yaml-helper.git"
     },
     "engines": {
-        "vscode": "^1.51.0"
+        "vscode": "^1.64.2"
     },
     "categories": [
         "Other"
@@ -171,11 +171,16 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run build",
-        "build": "npm run compile && cp -a src/assets/xcom1 out/assets/xcom1",
+        "vscode:prepublish": "npm run esbuild-base -- --minify && mkdir -p out/assets && cp -a src/assets/xcom1 out/assets",
+        "esbuild-base": "rm -rf out && esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "test-compile": "tsc -p ./",
+        "build": "npm run esbuild",
         "clean": "rm -rf out/*",
         "compile": "npm run clean && tsc -p ./",
-        "watch": "tsc -watch -p ./",
+        "watch": "npm run esbuild-watch",
+        "watch-tsc": "tsc -watch -p ./",
         "postinstall": "echo node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./out/test/runTest.js",
         "test:prepare": "node ./out/test/prepare.js",
@@ -187,25 +192,29 @@
         "@types/fs-extra": "^9.0.13",
         "@types/glob": "^7.2.0",
         "@types/mocha": "^9.1.0",
-        "@types/node": "^14.18.9",
+        "@types/node": "^14.18.12",
         "@types/papaparse": "^5.2.6",
-        "@types/vscode": "^1.51.0",
-        "@typescript-eslint/eslint-plugin": "^5.10.0",
-        "@typescript-eslint/parser": "^5.10.0",
-        "eslint": "^8.7.0",
+        "@types/vscode": "^1.64.0",
+        "@typescript-eslint/eslint-plugin": "^5.12.0",
+        "@typescript-eslint/parser": "^5.12.0",
+        "esbuild": "^0.14.23",
+        "eslint": "^8.9.0",
         "fs-extra": "^10.0.0",
-        "mocha": "^9.2.0",
+        "mocha": "^9.2.1",
         "nyc": "^15.1.0",
         "typescript": "^4.5.5",
-        "vscode-test": "^1.5.2"
+        "vscode-test": "^1.6.1"
     },
     "dependencies": {
+        "@vscode/extension-telemetry": "^0.4.9",
         "dot-object": "^2.1.4",
         "dot-prop": "^6.0.1",
         "flat-cache": "^3.0.4",
-        "merge-anything": "^4.0.2",
-        "yaml": "^1.10.2",
+        "install": "^0.13.0",
+        "merge-anything": "^5.0.2",
+        "npm": "^8.5.1",
         "papaparse": "^5.3.0",
-        "tiny-clean-object": "^1.1.0"
+        "tiny-clean-object": "^1.1.0",
+        "yaml": "^1.10.2"
     }
 }

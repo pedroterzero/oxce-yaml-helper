@@ -41,6 +41,7 @@ export const stringTypes = [
     'ufopaedia.pages[].text',
     'ufopaedia.pages[].title',
     'ufopaedia.weapon',
+    'units.rank',
     // not sure
     // 'items.categories',
     'manufacture.category',
