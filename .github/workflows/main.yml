@@ -56,8 +56,8 @@ jobs:
         node-version: 14.x
     - run: npm install
     - name: Package
-      run: npx vsce package
-#      run: npx vsce package --pre-release
+      # run: npx vsce package
+      run: npx vsce package --pre-release
 #      run: npx vsce package -o openxcom-ruleset-linker.vsix
     - name: Retrieve package
       uses: actions/upload-artifact@v2
