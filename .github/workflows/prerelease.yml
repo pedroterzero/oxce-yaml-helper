@@ -3,6 +3,7 @@ on:
     # Sequence of patterns matched against refs/tags
     tags:
     - 'v*-alpha*'
+    - 'v*-rc*'
 
 name: Upload Release Asset
 
