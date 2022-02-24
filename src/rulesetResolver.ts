@@ -7,6 +7,7 @@ import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { rulesetFileCacheManager } from './rulesetFileCacheManager';
 import { existsSync } from 'fs';
 import { glob } from 'glob';
+import { reporter } from './extension';
 
 export type ParsedRuleset = {
     definitions?: Definition[];
@@ -295,6 +296,7 @@ export class RulesetResolver implements Disposable {
             parsed = await this.parseDocument(file, workspaceFolder);
         }
         if (!parsed) {
+            reporter.sendTelemetryErrorEvent(`Could not parse/retrieve from cache ${file.path}`);
             logger.error(`Could not parse/retrieve from cache ${file.path}`);
             delete this.processingFiles[file.path];
             return;
@@ -358,6 +360,8 @@ export class RulesetResolver implements Disposable {
 
             return parsed;
         } catch (error: any) {
+            reporter.sendTelemetryException(error, {'file.path': file.path}/*, { 'numericMeasure': 123 }*/);
+            reporter.sendTelemetryErrorEvent('loadYamlIntoTree', {'file.path': file.path, 'error.message': error.message});
             logger.error('loadYamlIntoTree', file.path, error.message);
         }
 

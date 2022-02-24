@@ -4,7 +4,7 @@ import { Scalar, YAMLMap, YAMLSeq } from "yaml/types";
 import { YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { typedProperties } from "./typedProperties";
 import { LogicHandler } from "./logic/logicHandler";
-import * as dotProp from 'dot-prop';
+import { get, has } from "dot-prop";
 
 type Entry = YAMLSeq | YAMLDocumentItem | string | Scalar;
 
@@ -111,8 +111,8 @@ export class RulesetRecursiveKeyRetriever {
         } else {
             entry = entry as Scalar;
             const value = entry.value;
-            const range = (typeof value === 'object' && 'range' in value) ? value.range : entry.range;
-
+            //  tags: ~ (null), ignore it, null is also an object
+            const range = (typeof value === 'object' && value !== null && 'range' in value) ? value.range : entry.range;
             if ('type' in entry && ['QUOTE_DOUBLE', 'QUOTE_SINGLE', 'ALIAS'].indexOf(entry.type as string) !== -1) {
                 // ignore regular strings, also ALIAS for now?
                 return;
@@ -392,8 +392,8 @@ export class RulesetRecursiveKeyRetriever {
         const metadata: Record<string, unknown> = {};
         for (const fieldKey in fields) {
             const fieldName = fields[fieldKey];
-            if (properties && dotProp.has(properties, fieldName)) {
-                metadata[fieldKey] = dotProp.get(properties, fieldName);
+            if (properties && has(properties, fieldName)) {
+                metadata[fieldKey] = get(properties, fieldName);
             }
         }
 

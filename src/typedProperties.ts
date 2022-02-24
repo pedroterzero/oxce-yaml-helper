@@ -56,6 +56,7 @@ export class typedProperties {
     private static typePropertyHints: typePropertyHints = {
         alienRaces: ['id'],
         extraSprites: ['type', 'typeSingle'],
+        events: ['name'],
         facilities: ['type', 'provideBaseFunc'],
         invs: ['id'],
         manufacture: ['name'],
@@ -72,6 +73,7 @@ export class typedProperties {
 
     private static vetoTypes: string[] = [
         'extraStrings',
+        'facilities.verticalLevels[]',
         'mapScripts.commands[]',
         'mapScripts.commands[].tunnelData.MCDReplacements[]',
         'mapScripts.commands[].verticalLevels[]',
@@ -117,7 +119,7 @@ export class typedProperties {
 
     // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
     private static keyDefinitionTypes: {[key: string]: KeyReferenceOptions} = {
-        // not 100% sure about these yet. Perhaps they should only work for the current file? maybe they're not deifnitions at all?
+        // not 100% sure about these yet. Perhaps they should only work for the current file? maybe they're not definitions at all?
         'extended.tags.BattleGame': {},
         'extended.tags.BattleItem': {},
         'extended.tags.BattleUnit': {},
@@ -126,6 +128,7 @@ export class typedProperties {
         'extended.tags.RuleItem': {},
         'extended.tags.RuleSoldier': {},
         'extended.tags.RuleSoldierBonus': {},
+        'extended.tags.RuleUfo': {},
         'extraSprites.BASEBITS.PCK.files': {recurse: false},
         'extraSprites.BIGOBS.PCK.files': {recurse: false},
         'extraSprites.FLOOROB.PCK.files': {recurse: false},
