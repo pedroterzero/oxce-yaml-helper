@@ -6,23 +6,12 @@
         {
             "type": "npm",
             "script": "watch",
-            //"problemMatcher": "$tsc-watch",
-            "problemMatcher": {
-                "base": "$tsc-watch",
-                "background": {
-                    "activeOnStart": true,
-                    "beginsPattern": ".*build finished",
-                    "endsPattern": ".*watching for changes\\.\\.\\."
-                }
-            },
+            "problemMatcher": "$esbuild-watch",
             "isBackground": true,
-            "presentation": {
-                "reveal": "never"
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build",
+            // "presentation": {
+            //     "reveal": "never"
+            // },
         }
     ]
 }

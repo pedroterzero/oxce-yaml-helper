@@ -127,11 +127,6 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Stop prompting for OpenXCOM Ruleset Tools extension"
-                },
-                "oxcYamlHelper.parentMods": {
-                    "type": "array",
-                    "default": [],
-                    "description": "Names of parent mods (i.e. 40k, ROSIGMA). Note, these must point to existing directories under this mod's directory"
                 }
             }
         },

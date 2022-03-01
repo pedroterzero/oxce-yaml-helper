@@ -58,7 +58,7 @@ export class RulesetRecursiveKeyRetriever {
         yamlPairs.forEach((ruleType) => {
             if (ruleType.value.type === 'PLAIN') {
                 // globalVariables does this
-                this.processItems(ruleType, 'globalVariables', matches, logicData, {}, lookupAll);
+                this.processItems(ruleType, 'globalVariables', matches, logicData, {}, {}, lookupAll);
             } else {
                 ruleType.value.items.forEach((ruleProperties: YAMLSeq) => {
                     let path = ruleType.key.value;
@@ -66,7 +66,7 @@ export class RulesetRecursiveKeyRetriever {
                         path = `globalVariables.${path}`;
                     }
 
-                    this.processItems(ruleProperties, path, matches, logicData, {}, lookupAll);
+                    this.processItems(ruleProperties, path, matches, logicData, {}, {}, lookupAll);
                 });
             }
         });
@@ -74,7 +74,7 @@ export class RulesetRecursiveKeyRetriever {
         return [matches, logicData];
     }
 
-    private processItems(entry: Entry, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, lookupAll: boolean, parent?: YAMLSeq): Match | undefined {
+    private processItems(entry: Entry, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, metadataByPath: {[key: string]: Record<string, unknown>}, lookupAll: boolean, parent?: YAMLSeq): Match | undefined {
         this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
 
         let keyReferencePath;
@@ -100,13 +100,13 @@ export class RulesetRecursiveKeyRetriever {
         } else if (entry.type === 'PAIR') {
             // i.e. startingbase
             // console.log('looping PAIR', path + '.' + entry.key.value);
-            const ret = this.processItems(entry.value, path + '.' + entry.key.value, matches, logicData, namesByPath, lookupAll);
+            const ret = this.processItems(entry.value, path + '.' + entry.key.value, matches, logicData, namesByPath, metadataByPath, lookupAll);
             if (ret) {
                 matches.push(ret);
             }
         } else if ('items' in entry) {
             if (entry.items.length > 0) {
-                this.loopEntry(entry, path, matches, logicData, namesByPath, lookupAll);
+                this.loopEntry(entry, path, matches, logicData, namesByPath, metadataByPath, lookupAll);
             }
         } else {
             entry = entry as Scalar;
@@ -139,6 +139,20 @@ export class RulesetRecursiveKeyRetriever {
         }
 
         return;
+    }
+
+    /**
+     * If there's any metadata from a parent path, add it in. This is used for the logic checks. It's not really possible to do it specifically
+     * for every property, such as mapScripts.commands[].groups, because it can also be mapScripts.commands[].groups[] which is handled differently
+     * @param match
+     * @param metadataByPath
+     */
+    private addMetadataForLogicChecks(match: Match, metadataByPath: {[key: string]: Record<string, unknown>}) {
+        if (this.logicHandler.isRelatedLogicField(match.path)) {
+            for (const metadata of Object.values(metadataByPath)) {
+                match.metadata = {...match.metadata || {}, ...metadata};
+            }
+        }
     }
 
     private addNamesForRelatedLogicChecks(match: Match, namesByPath: { [key: string]: string; }) {
@@ -210,7 +224,7 @@ export class RulesetRecursiveKeyRetriever {
         }
     }
 
-    private loopEntry(entry: YAMLSeq, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, lookupAll: boolean) {
+    private loopEntry(entry: YAMLSeq, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, metadataByPath: {[key: string]: Record<string, unknown>}, lookupAll: boolean) {
         this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
 
         let index = -1;
@@ -228,9 +242,9 @@ export class RulesetRecursiveKeyRetriever {
                 // console.log(`looping ${ruleProperty} path ${path}[]`);
                 if (typedProperties.isKeyReferencePath(path + '[]') !== undefined) {
                     // this is quite unfortunate, but needed for things like manufacture.randomProducedItems[][]
-                    this.processItems(ruleProperty, path + '[]', matches, logicData, newNamesByPath, lookupAll);
+                    this.processItems(ruleProperty, path + '[]', matches, logicData, newNamesByPath, metadataByPath, lookupAll);
                 } else {
-                    this.loopEntry(ruleProperty, path + '[]', matches, logicData, newNamesByPath, lookupAll);
+                    this.loopEntry(ruleProperty, path + '[]', matches, logicData, newNamesByPath, metadataByPath, lookupAll);
                 }
             } else {
                 if (['ALIAS'].includes(ruleProperty.type)) {
@@ -253,7 +267,13 @@ export class RulesetRecursiveKeyRetriever {
                     newPath += '.' + ruleProperty?.key?.value;
                 }
 
-                const result = this.processItems(ruleProperty.value, newPath, matches, logicData, namesByPath, lookupAll, entry);
+                const result = this.processItems(ruleProperty.value, newPath, matches, logicData, namesByPath, metadataByPath, lookupAll, entry);
+
+                const metadata = this.addMetadata(path, entry);
+                if (metadata) {
+                    metadataByPath[path] = metadata;
+                }
+
                 if (result) {
                     const metadata = this.addMetadata(path, entry);
                     if (metadata) {
@@ -282,6 +302,7 @@ export class RulesetRecursiveKeyRetriever {
                     }
 
                     this.addNamesForRelatedLogicChecks(match, namesByPath);
+                    this.addMetadataForLogicChecks(match, metadataByPath);
 
                     // console.log(`range1 ${range[0]}:${range[1]}`);
                     matches.push(match);
