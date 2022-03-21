@@ -1,3 +1,18 @@
+# v1.0.0
+- Added spreadsheet (csv) editor functionality
+- Remove check on manufacture.category
+- Don't check ufopaedia articles with section: STR_NOT_AVAILABLE
+- manufacture.producedItems, allow crafts
+- Don't check waves for operationType=3, objective=2
+- Add a whole bunch of types to ignore (submod stuff, scripts, and others)
+- Add a whole bunch of translation types
+- Add more builtin types
+- Remove all FtA references and make them accessible to linker.yml
+- Switch to esbuild for building packages
+- Ignore mapScripts group checking for baseTerrain
+- Pass metadata from higher entries to lower (fixes .groups vs .groups[] existing simultaneously)
+- Add some missing builtin types for facilities.verticalLevels[].type
+
 # v0.8.5
 - Fix with alienDeployment logic checker (respect refNodes)
 - Update documentation

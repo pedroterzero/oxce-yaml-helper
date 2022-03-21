@@ -26,7 +26,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 14.x
-    - run: npm install
+    -
+      if: runner.os == 'Windows'
+      run: yarn install
+    -
+      if: runner.os != 'Windows'
+      run: npm install
     - run: xvfb-run -a npm test
       if: runner.os == 'Linux'
     - run: npm test
@@ -51,7 +56,8 @@ jobs:
         node-version: 14.x
     - run: npm install
     - name: Package
-      run: npx vsce package
+      # run: npx vsce package
+      run: npx vsce package --pre-release
 #      run: npx vsce package -o openxcom-ruleset-linker.vsix
     - name: Retrieve package
       uses: actions/upload-artifact@v2

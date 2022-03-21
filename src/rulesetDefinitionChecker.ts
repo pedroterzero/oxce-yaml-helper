@@ -395,7 +395,7 @@ export class RulesetDefinitionChecker {
             this.problemsByPath[ref.path]++;
 
             if (workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories') === 'no') {
-                if (['items.categories', 'manufacture.category'].indexOf(ref.path) !== -1) {
+                if (['items.categories'/*, 'manufacture.category'*/].indexOf(ref.path) !== -1) {
                     return;
                 }
             }

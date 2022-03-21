@@ -137,8 +137,8 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'items.zombieUnitByArmorMale.value': ['units'],
     'items.zombieUnitByType.key': ['_any_', 'soldiers', 'units'], // match any of these
     'items.zombieUnitByType.value': ['units'],
-    'manufacture.producedItems': ['items'],
-    'manufacture.randomProducedItems[][]': ['items'],
+    'manufacture.producedItems': ['_any_', 'items', 'crafts'],
+    'manufacture.randomProducedItems[][]': ['_any_', 'items', 'crafts'],
     'manufacture.requiredItems': ['_any_', 'items', 'crafts'],
     'manufacture.requires': ['research'],
     'manufacture.requiresBaseFunc': ['facilities.provideBaseFunc'],

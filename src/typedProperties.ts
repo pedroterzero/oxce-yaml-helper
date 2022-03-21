@@ -2,6 +2,7 @@ import { typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { logger } from "./logger";
 import { LogicHandler } from "./logic/logicHandler";
 import { Match, RuleType } from "./rulesetTree";
+import { getAdditionalGlobalVariablePaths, getAdditionalKeyReferenceTypes, getAdditionalTypePropertyHints, getAdditionalVetoTypes } from "./utilities";
 
 type typePropertyHints = {
     [key: string]: string[]
@@ -51,13 +52,11 @@ export class typedProperties {
         return false;
     }
 
-    // properties for which 'name' is the key
+    // properties for which 'type' is not the (only) key
     private static typePropertyHints: typePropertyHints = {
         alienRaces: ['id'],
-        covertOperations: ['name'],               // FtA
-        diplomacyFactions: ['name'],              // FtA
-        events: ['name'],                         // FtA
         extraSprites: ['type', 'typeSingle'],
+        events: ['name'],
         facilities: ['type', 'provideBaseFunc'],
         invs: ['id'],
         manufacture: ['name'],
@@ -69,11 +68,12 @@ export class typedProperties {
         'terrains.mapBlocks[]': ['name'],
         ufopaedia: ['id'],
         ufoTrajectories: ['id'],
+        ...getAdditionalTypePropertyHints()
     };
 
     private static vetoTypes: string[] = [
-        'battleScripts.commands[]', // FtA
         'extraStrings',
+        'facilities.verticalLevels[]',
         'mapScripts.commands[]',
         'mapScripts.commands[].tunnelData.MCDReplacements[]',
         'mapScripts.commands[].verticalLevels[]',
@@ -96,6 +96,7 @@ export class typedProperties {
         'startingBaseSuperhuman.crafts[]',
         'startingBaseSuperhuman.crafts[].weapons[]',
         'startingBaseSuperhuman.facilities[]',
+        ...getAdditionalVetoTypes()
     ];
 
     private static globalVariablePaths = [
@@ -105,13 +106,11 @@ export class typedProperties {
         'gameOver',
         'health',
         'lighting',
-        'loyaltyRatings', // FtA
-        'loyaltySettings', // FtA
         'mana',
         'missionRatings',
         'monthlyRatings',
         'recommendedUserOptions',
-        'reputationLevels', // FtA
+        ...getAdditionalGlobalVariablePaths()
     ];
 
     private static vetoTypeValues: {[key: string]: string[]} = {
@@ -120,7 +119,7 @@ export class typedProperties {
 
     // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
     private static keyDefinitionTypes: {[key: string]: KeyReferenceOptions} = {
-        // not 100% sure about these yet. Perhaps they should only work for the current file? maybe they're not deifnitions at all?
+        // not 100% sure about these yet. Perhaps they should only work for the current file? maybe they're not definitions at all?
         'extended.tags.BattleGame': {},
         'extended.tags.BattleItem': {},
         'extended.tags.BattleUnit': {},
@@ -129,6 +128,7 @@ export class typedProperties {
         'extended.tags.RuleItem': {},
         'extended.tags.RuleSoldier': {},
         'extended.tags.RuleSoldierBonus': {},
+        'extended.tags.RuleUfo': {},
         'extraSprites.BASEBITS.PCK.files': {recurse: false},
         'extraSprites.BIGOBS.PCK.files': {recurse: false},
         'extraSprites.FLOOROB.PCK.files': {recurse: false},
@@ -144,7 +144,8 @@ export class typedProperties {
         // '/^extraSprites\\.[a-zA-Z0-9]+(\\.PCK)?\\.files\\.\\d+$/',
     };
 
-    private static keyReferenceTypes: {[key: string]: KeyReferenceOptions} = Object.assign({}, typedProperties.keyDefinitionTypes, {
+    private static keyReferenceTypes: {[key: string]: KeyReferenceOptions} = {
+        ...typedProperties.keyDefinitionTypes,
         'arcScripts.randomArcs': {},
         'arcScripts.researchTriggers': {},
         'arcScripts.itemTriggers': {},
@@ -153,13 +154,6 @@ export class typedProperties {
         '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': {},
         '/^alienMissions\\.raceWeights\\.\\d+$/': {},
         '/^alienMissions\\.regionWeights\\.\\d+$/': {},
-        'covertOperations.instantSuccessDeployment': {}, // FtA
-        'covertOperations.instantTrapDeployment': {}, // FtA
-        'covertOperations.failureReputationScore': {}, // FtA
-        'covertOperations.requiredItems': {}, // FtA
-        'covertOperations.successReputationScore': {}, // FtA
-        'diplomacyFactions.helpTreatyEvents': {}, // FtA
-        'diplomacyFactions.helpTreatyMissions': {}, // FtA
         'enviroEffects.environmentalConditions': {},
         'events.everyMultiItemList': {},
         'events.weightedItemList': {},
@@ -188,7 +182,8 @@ export class typedProperties {
         'startingConditions.requiredItems': {},
         'ufos.raceBonus': {},
         'terrains.mapBlocks[].items': {},
-    });
+        ...getAdditionalKeyReferenceTypes()
+    };
 
     private static keyValueReferenceTypes: string[] = [
         'enviroEffects.armorTransformations',
@@ -209,7 +204,7 @@ export class typedProperties {
     // ATTENTION: when adding logic here, it also needs to be happen when checking references
     private static metadataLogicOverrides: logicOverrides = {
         'items.hitAnimation':  typedProperties.hitAnimationLogic,
-    }
+    };
 
     private static logicOverrides: logicOverrides = Object.assign({}, typedProperties.metadataLogicOverrides, {
         'crafts.sprite': typedProperties.typeLinksLogic,
@@ -224,11 +219,11 @@ export class typedProperties {
         'extraSprites.FLOOROB.PCK': ['height', 'width', 'subX', 'subY'],
         'extraSprites.INTICON.PCK': ['height', 'width', 'subX', 'subY'],
         'extraSprites.Projectiles': ['height', 'subY'],
-    }
+    };
 
     private static storeVariables: {[key: string]: boolean} = {
         'globalVariables.ftaGame': true
-    }
+    };
 
     private static additionalLogicPaths: string[] = [];
     private static keyReferenceTypesRegexes: {regex: RegExp, settings: KeyReferenceOptions}[] = [];
@@ -303,6 +298,15 @@ export class typedProperties {
     public static isTargetForSourceRule(sourceRuleType: RuleType | undefined, ruleType: string): boolean {
         if (!sourceRuleType) {
             return true;
+        }
+
+        // check regexes
+        for (const type in this.typeLinkRegexes) {
+            const regex = this.typeLinkRegexes[type].regex;
+            if (regex.exec(`${sourceRuleType.type}.${sourceRuleType.key}`)) {
+                // see if this is a regex type link
+                return this.typeLinkRegexes[type].values.includes(ruleType);
+            }
         }
 
         if (!(sourceRuleType.type in this.typeProperties)) {
