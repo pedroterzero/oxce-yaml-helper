@@ -4,7 +4,8 @@ on:
     branches:
     - '*'
     tags-ignore:
-    - 'v*-alpha*'
+    - 'v*'
+    # - 'v*-alpha*'
 
 #  push:
 #    branches:
