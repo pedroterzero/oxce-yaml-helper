@@ -16,7 +16,7 @@ export class MapScriptsLogic extends BaseLogic {
         'mapScripts.commands[].verticalGroup': this.checkGroupReferences,
         'mapScripts.commands[].crossingGroup': this.checkGroupReferences,
         'mapScripts.commands[].groups': this.checkGroupReferences,
-    }
+    };
 
     // numeric fields makes sure numeric references get picked up by the recursive retriever
     protected numericFields = Object.keys(this.relatedFieldLogicMethods);
@@ -44,6 +44,13 @@ export class MapScriptsLogic extends BaseLogic {
                 // if there is a terrain set for this command, use that as reference
                 name = ref.ref.metadata.terrain;
                 isTerrainReference = true;
+
+                if (name === 'baseTerrain') {
+                    // it's a lot of work to check this correctly, we need to find all baseTerrains in globe:, then check for the existence of the group
+                    // in all of them. for now just ignore this case
+                    // see: https://discordapp.com/channels/582086836923531270/836314823783481386/946827469200195604
+                    continue;
+                }
             } else {
                 name = this.getNameFromMetadata(ref.ref, 'mapScripts');
             }

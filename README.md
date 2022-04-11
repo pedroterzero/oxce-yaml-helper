@@ -4,6 +4,7 @@ Welcome to the OpenXcom (Extended) Ruleset Linker. This extension aims to turn V
 ## Features ([see below for video](#how-to-use-it))
 * **[Go to definition](#definitions)** for most things in OXC(E) rulesets (and FtA). This allows you to jump directly to the definition of most string ids.
 * **[Y-script syntax highlighting](#y-script-syntax-highlighting)**. Pretty self-explanatory, nice colours for y-script!
+* **[CSV editor](#csv-editor)**. Allows to export rulesets to .csv files, edit them as spreadsheets, and import the changes back into the rulesets
 * **[Context aware autocomplete](#context-aware-autocomplete)**. Adds additional autocomplete features; only suggests appropriate things, and works across files!
 * **[Translation Hover](#translation-hover)**. This means hovering over a string, for example `STR_FOOBAR`, will show the related translation for it, if existing
 * **[Reference checking](#reference-checking)** for most things in OXC(E) rulesets. This means the extension will tell you if you've mistyped a string ID or sprite ID, or referred to one that does not exist. This saves a lot of time to test a mod only to have it crash because something is wrong.
@@ -25,6 +26,11 @@ Go to any (supported) type, for example `STR_FOOBAR`. If it is defined anywhere 
 Any `.rul` file that has y-script in them, should have them automatically highlighted. You should not have to do anything to get this to work.
 
 ![Syntax highlighting](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/syntax-highlighting.png)
+
+### CSV editor
+In the file list, right-click on the `.rul` file you'd like to edit as a spreadsheet. Then click on `OpenXcom IDE - Edit as CSV`. Make any changes you'd like in the built-in spreadsheet editor (don't forget to save your changes in the editor) or use an external one. When finished, right click the `.csv` file, click on `OpenXcom IDE - Import to rul` to import your changes back into the `.rul` file.
+
+![CSV editor](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/csv-editor.gif)
 
 ### Context aware autocomplete
 Go to where you would like to insert a reference to another rule, then type `CTRL+space`. This will you show you approppriate suggestions; for example when adding an item to `requiresBuy` in `items`, it will only show research rules. It will also work across files, making life easier.
