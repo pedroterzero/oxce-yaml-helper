@@ -6,6 +6,7 @@ import { rulesetParser } from "./rulesetParser";
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { rulesetFileCacheManager } from './rulesetFileCacheManager';
 import { existsSync } from 'fs';
+import { glob } from 'glob';
 import { reporter } from './extension';
 
 export type ParsedRuleset = {
@@ -137,6 +138,9 @@ export class RulesetResolver implements Disposable {
 
         await this.getAssetRulesets(files);
 
+        // load parent mods into the mix
+        files = await this.findParentMods(workspaceFolder, files);
+
         this.rulesetHierarchy.mod = workspaceFolder.uri;
 
         logger.debug(`Hierarchy: ${JSON.stringify(this.rulesetHierarchy)}`);
@@ -151,6 +155,40 @@ export class RulesetResolver implements Disposable {
         if (files.length === 0) {
             logger.warn(`no ruleset files in project dir found, ${workspaceFolder.uri.path} is probably not an OXC(E) project.`);
             return files;
+        }
+
+        return files;
+    }
+
+    /**
+     * Loads any parent mods if specified in the settings
+     * @param workspaceFolder
+     * @param files
+     * @returns
+     */
+    private async findParentMods(workspaceFolder: WorkspaceFolder, files: Uri[]) {
+        const parentMods = workspace.getConfiguration('oxcYamlHelper').get<string[]>('parentMods') || [];
+        if (parentMods.length) {
+            const missingMods = [];
+            for (const parentMod of parentMods) {
+                if (existsSync(Uri.joinPath(workspaceFolder.uri, `../${parentMod}`).fsPath)) {
+                    logger.debug(`Adding in parent mod ${parentMod}`);
+                    this.rulesetHierarchy[`parent${parentMod}`] = Uri.joinPath(workspaceFolder.uri, `../${parentMod}`);
+
+                    await new Promise<void>((resolve) => {
+                        glob(Uri.joinPath(this.rulesetHierarchy[`parent${parentMod}`], '**/*.rul').fsPath, {}, (_er, foundFiles) => {
+                            files = files.concat(...foundFiles.map(path => Uri.file(path)));
+                            resolve();
+                        });
+                    });
+                } else {
+                    missingMods.push(parentMod);
+                }
+            }
+
+            if (missingMods.length) {
+                window.showErrorMessage(`Cannot find parent mods paths for '${missingMods.join(', ')}'`);
+            }
         }
 
         return files;
