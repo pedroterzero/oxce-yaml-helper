@@ -1,3 +1,6 @@
+# v1.1.0
+- Add support for sub-(sub-(sub-))mods
+
 # v1.0.0
 - Added spreadsheet (csv) editor functionality
 - Remove check on manufacture.category
