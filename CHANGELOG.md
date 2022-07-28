@@ -1,3 +1,6 @@
+# v1.2.0
+- Optionally check for STR_ with missing translation
+
 # v1.1.0
 - Add support for sub-(sub-(sub-))mods
 

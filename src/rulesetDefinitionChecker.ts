@@ -4,7 +4,7 @@ import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from "./workspaceFo
 import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
 import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
 import { ignoreTypes } from "./definitions/ignoreTypes";
-import { stringTypes } from "./definitions/stringTypes";
+import { ignoreStringTypes, stringTypes } from "./definitions/stringTypes";
 import { rulesetResolver } from "./extension";
 import { logger } from "./logger";
 import { FilesWithDiagnostics, LogicHandler } from "./logic/logicHandler";
@@ -141,12 +141,23 @@ export class RulesetDefinitionChecker {
                 continue;
             }
 
+            let isCheckableTranslation = false;
+            if (this.isCheckableTranslatableString(ref)) {
+                isCheckableTranslation = true;
+
+                // check if the reference points to an existing translation
+                this.checkForValidTranslationReference(ref, file.file, diagnostics);
+            }
+
             if (ref.path in typeLinks && typeLinks[ref.path].includes('_dummy_')) {
                 // dummy field indicates custom logic, so don't process the rest of this function
                 this.logicHandler.storeRelationLogicReference(ref, file);
                 continue;
             }
 
+            if (isCheckableTranslation) {
+                continue;
+            }
             const possibleKeys = this.getPossibleKeys(ref);
             if (possibleKeys.filter(key => key in lookup).length === 0) {
                 // can never match because the key simply does not exist for any type
@@ -158,6 +169,45 @@ export class RulesetDefinitionChecker {
                     this.addReferenceDiagnostic(ref, diagnostics, this.incorrectTypeMessage, result);
                 }
             }
+        }
+    }
+
+    private isCheckableTranslatableString(ref: Match) {
+        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations')) {
+            return false;
+        }
+
+        if (this.isExtraStringType(ref.path)) {
+            return true;
+        }
+        if (typedProperties.isDefinitionPropertyForPath(ref.path.split('.').slice(0, -1).join('.'), ref.path.split('.').slice(-1).join('.'), 'DUMMY')) {
+            if (!ignoreStringTypes.includes(ref.path)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private checkForValidTranslationReference(ref: Match, file: Uri, diagnostics: Diagnostic[]) {
+        // console.log(`checking translation ${ref.path} => ${ref.key}`);
+        const translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
+/*      let translation;
+        try {
+            translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
+        }
+        catch (error) {
+            if (error instanceof FileNotInWorkspaceError) {
+                // file not in workspace, just ignore it
+                console.log('File not in workspace');
+                // return;
+            } else {
+                throw error;
+            }
+        }*/
+
+        if (translation === undefined) {
+            this.addReferenceDiagnostic(ref, diagnostics, () => `No translation entry found for "${ref.key}" (${ref.path})`);
         }
     }
 
@@ -451,8 +501,8 @@ export class RulesetDefinitionChecker {
             // ignore these assorted types for now
             return false;
         }
-        if (this.isExtraStringType(ref.path)) {
-            // ignore extraStrings for now
+        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations') && this.isExtraStringType(ref.path)) {
+            // allow translation checking to be disabled
             return false;
         }
         if (ref.path in builtinTypes && builtinTypes[ref.path].indexOf(ref.key) !== -1) {

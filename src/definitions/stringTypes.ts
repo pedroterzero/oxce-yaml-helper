@@ -1,6 +1,6 @@
-import { getAdditionalStringTypes } from "../utilities";
+import { getAdditionalIgnoreStringTypes, getAdditionalStringTypes } from "../utilities";
 
-export const stringTypes = ([] as string[]).concat([
+export const stringTypes = [
     'alienDeployments.alert',
     'alienDeployments.alertDescription',
     'alienDeployments.briefing.desc',
@@ -45,4 +45,45 @@ export const stringTypes = ([] as string[]).concat([
     // not sure
     // 'items.categories',
     'manufacture.category',
-], getAdditionalStringTypes());
+    ...getAdditionalStringTypes()
+];
+
+export const ignoreStringTypes = [
+    'arcScripts.type',
+    'cutscenes.type',
+    'extended.tags.BattleGame',
+    'extended.tags.BattleItem',
+    'extended.tags.BattleUnit',
+    'extended.tags.GeoscapeSoldier',
+    'extended.tags.RuleArmor',
+    'extended.tags.RuleItem',
+    'extended.tags.RuleSoldier',
+    'extended.tags.RuleSoldierBonus',
+    'extended.tags.RuleUfo',
+    'extraSprites.type',
+    'extraSprites.typeSingle',
+    'extraSprites.BASEBITS.PCK.files',
+    'extraSprites.BIGOBS.PCK.files',
+    'extraSprites.FLOOROB.PCK.files',
+    'extraSprites.HANDOB.PCK.files',
+    'extraSprites.INTICON.PCK.files',
+    'extraSprites.HIT.PCK.files',
+    'extraSprites.Projectiles.files',
+    'extraSprites.SMOKE.PCK.files',
+    'extraSprites.SPICONS.DAT.files',
+    'extraSprites.X1.PCK.files',
+    'extraSounds.type',
+    'extraSounds.BATTLE.CAT.files',
+    'extraSounds.GEO.CAT.files',
+    'facilities.provideBaseFunc',
+    'interfaces.type',
+    'mapScripts.type',
+    'MCDPatches.type',
+    'missionScripts.type',
+    'musics.type',
+    'startingConditions.type',
+    'terrains.mapBlocks[].name',
+    'terrains.name',
+    'ufoTrajectories.id',
+    ...getAdditionalIgnoreStringTypes()
+];

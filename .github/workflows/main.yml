@@ -11,7 +11,8 @@ on:
 #    branches:
 #      - master
 
-#env:
+env:
+  TEST_TIMEOUT: 10000
 #  LOGLEVEL: 0 # debug
 
 jobs:
@@ -24,9 +25,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Install Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
-        node-version: 14.x
+        node-version: 16
     -
       if: runner.os == 'Windows'
       run: yarn install
@@ -52,9 +53,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Install Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
-        node-version: 14.x
+        node-version: 16
     - run: npm install
     - name: Package
       # run: npx vsce package

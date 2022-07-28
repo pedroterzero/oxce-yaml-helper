@@ -17,6 +17,8 @@ export type ParsedRuleset = {
     logicData?: LogicDataEntry[];
 };
 
+export class FileNotInWorkspaceError extends Error {}
+
 export class RulesetResolver implements Disposable {
     private loaded = false;
     private context?: ExtensionContext;
@@ -208,6 +210,17 @@ export class RulesetResolver implements Disposable {
                     }
                 }
             }
+
+            // also load language file(s) from vanilla
+            const languageAssets = await workspace.fs.readDirectory(Uri.joinPath(assetPath, '/Language'));
+
+            for (const [name, type] of languageAssets) {
+                if (type === FileType.File) {
+                    if (name.endsWith('.yml')) {
+                        files.push(Uri.joinPath(assetPath, '/Language/', name));
+                    }
+                }
+            }
         }
     }
 
@@ -382,7 +395,7 @@ export class RulesetResolver implements Disposable {
         return await workspace.openTextDocument(file);
     }
 
-    public getTranslationForKey(key: string, sourceUri?: Uri): string | undefined {
+    public getTranslationForKey(key: string, sourceUri?: Uri, undefinedIfMissing = false): string | undefined {
         if (!sourceUri) {
             sourceUri = window.activeTextEditor?.document.uri;
         }
@@ -392,10 +405,16 @@ export class RulesetResolver implements Disposable {
 
         const folder = workspace.getWorkspaceFolder(sourceUri);
         if (!folder) {
-            return;
+            // file is most likely not in the workspace folder, so ignore it
+            // logger.debug(`getTranslationForKey: ${sourceUri.path} is not in the workspace`);
+            throw new FileNotInWorkspaceError();
         }
 
         const translation = rulesetTree.getTranslation(key, folder);
+        if (translation === undefined && undefinedIfMissing) {
+            return;
+        }
+
         if (!translation) {
             return `No translation found for locale '${this.getLocale()}' '${key}'!`;
         }

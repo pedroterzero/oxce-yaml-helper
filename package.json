@@ -2,7 +2,7 @@
     "name": "oxc-yaml-helper",
     "displayName": "OpenXcom Ruleset Linker",
     "description": "This extension aims to turn Visual Studio code into an OpenXcom ruleset modding IDE. It links rulesets so you can easily navigate between linked rules. It checks for problems in the rulesets, and a lot of other things.",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "author": {
         "name": "pedroterzero"
     },
@@ -13,7 +13,7 @@
         "url": "https://github.com/pedroterzero/oxce-yaml-helper.git"
     },
     "engines": {
-        "vscode": "^1.64.2"
+        "vscode": "^1.69.0"
     },
     "categories": [
         "Other"
@@ -75,7 +75,7 @@
                 "oxcYamlHelper.translationLocale": {
                     "type": "string",
                     "default": "en-US",
-                    "description": "Locale to use when showing translations on hovering"
+                    "description": "Locale to use when showing translations on hovering. This is also used to check for missing translations, if enabled."
                 },
                 "oxcYamlHelper.cacheStrategy": {
                     "type": "string",
@@ -107,6 +107,11 @@
                     ],
                     "default": "yes",
                     "markdownDescription": "Performs checks on categories. These seem to be undefined a lot of the time, so the check can be turned off here."
+                },
+                "oxcYamlHelper.findMissingTranslations": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Finds missing translations. The locale used is the one set in `oxcYamlHelper.translationLocale`."
                 },
                 "oxcYamlHelper.findDuplicateDefinitions": {
                     "type": "boolean",
@@ -186,30 +191,29 @@
         "@types/flat-cache": "^2.0.0",
         "@types/fs-extra": "^9.0.13",
         "@types/glob": "^7.2.0",
-        "@types/mocha": "^9.1.0",
-        "@types/node": "^14.18.12",
+        "@types/mocha": "^9.1.1",
+        "@types/node": "^14.18.22",
         "@types/papaparse": "^5.2.6",
-        "@types/vscode": "^1.64.0",
-        "@typescript-eslint/eslint-plugin": "^5.12.0",
-        "@typescript-eslint/parser": "^5.12.0",
-        "esbuild": "^0.14.23",
-        "eslint": "^8.9.0",
-        "fs-extra": "^10.0.0",
-        "mocha": "^9.2.1",
+        "@types/vscode": "^1.69.0",
+        "@typescript-eslint/eslint-plugin": "^5.31.0",
+        "@typescript-eslint/parser": "^5.31.0",
+        "esbuild": "^0.14.50",
+        "eslint": "^8.20.0",
+        "fs-extra": "^10.1.0",
+        "mocha": "^10.0.0",
         "nyc": "^15.1.0",
-        "typescript": "^4.5.5",
+        "typescript": "^4.7.4",
         "vscode-test": "^1.6.1"
     },
     "dependencies": {
-        "@vscode/extension-telemetry": "^0.4.9",
+        "@vscode/extension-telemetry": "^0.6.2",
         "dot-object": "^2.1.4",
         "dot-prop": "^6.0.1",
         "flat-cache": "^3.0.4",
         "install": "^0.13.0",
         "merge-anything": "^5.0.2",
-        "npm": "^8.5.1",
-        "papaparse": "^5.3.0",
-        "tiny-clean-object": "^1.1.0",
+        "papaparse": "^5.3.2",
+        "tiny-clean-object": "^1.3.0",
         "yaml": "^1.10.2"
     }
 }
