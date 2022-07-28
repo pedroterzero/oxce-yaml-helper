@@ -11,7 +11,8 @@ on:
 #    branches:
 #      - master
 
-#env:
+env:
+  TEST_TIMEOUT: 10000
 #  LOGLEVEL: 0 # debug
 
 jobs:

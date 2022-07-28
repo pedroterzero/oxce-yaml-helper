@@ -43,7 +43,8 @@ export function run(): Promise <void> {
     const mocha = new Mocha({
         color: true,
         ui: "bdd",
-        timeout: 5000
+        // get from env
+        timeout: process.env.TEST_TIMEOUT || 5000,
     });
 
     const testsRoot = path.resolve(__dirname, "..");
