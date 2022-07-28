@@ -11,6 +11,7 @@ Welcome to the OpenXcom (Extended) Ruleset Linker. This extension aims to turn V
 * **[Documentation Hover](#documentation-hover)** (currently for most but not all properties). This means hovering over a property, for example `requiresBuy`, will show the documentation for it. This saves some trips to the wiki! Disableable in settings.
 * **[Image preview](#image-preview)** for **sprites and images** (through [Image Preview Extension](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-gutter-preview)).
 * **[Duplicate definition checking](#duplicate-definition-checking)** for most things in OXC(E) rulesets. This means that if you have a unit with the same name defined twice for example, it will tell you about it. This is disabled by default and can be enabled in the extension settings.
+* **[Missing translation checking](#missing-translation-checking)**. Tells you which STR_  items you don't have a translation for yet.
 
 ## How to install VScode and this extension
 Please see [this walkthrough guide](https://github.com/pedroterzero/oxce-yaml-helper/blob/main/INSTALL.md)!
@@ -63,6 +64,9 @@ Then open the '**Problems**' view. You can open this from the 'View' menu, then 
 Any duplicate definitions should then be shown in the problems view.
 
 ![Duplicate Definition Example](https://raw.githubusercontent.com/pedroterzero/oxce-yaml-helper/main/docs/find-duplicate-definitions.gif)
+
+### Missing translation checking
+This automatically marks STR_ items you don't have a translations for yet. It can be disabled in the settings. It uses the `translationLocale` to determine which language to check in.
 
 ## Credits
 - Inspired (that's not really the right word) by https://github.com/shanehofstetter/rails-i18n-vscode
