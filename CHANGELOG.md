@@ -1,3 +1,6 @@
+# v1.2.1
+- Security updates
+
 # v1.2.0
 - Optionally check for STR_ with missing translation
 
