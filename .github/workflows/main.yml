@@ -27,7 +27,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 18
     -
       if: runner.os == 'Windows'
       run: yarn install
@@ -55,7 +55,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 18
     - run: npm install
     - name: Package
       # run: npx vsce package
