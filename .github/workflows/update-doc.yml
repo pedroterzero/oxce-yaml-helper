@@ -37,16 +37,15 @@ jobs:
         run: npm install
       -
         run: |
-          URL='https://web.archive.org/https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)'
+          URL='https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)'
           wget -O ruleset.html "$URL" || wget -O ruleset.html "https://web.archive.org/$URL"
 
       -
         run: npm run start
-      # - name: Update documentation
 
-      #   run: npm run update-doc
-      # - name: Commit changes
-      #   uses: EndBug/add-and-commit@v7
-      #   with:
-      #     author_name: 'GitHub Actions'
-      #     author_email: '''
+      # store doc.json as artifact
+      - name: Store artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: doc.json
+          path: doc.json
