@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: pedroterzero/oxce-ruleset-scraper
+          token: ${{ secrets.GIT_SCRAPER_TOKEN }}
           # ref: 'main'
       -
         name: Install Node.js
