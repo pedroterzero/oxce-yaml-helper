@@ -1,0 +1,53 @@
+# on manual
+name: Update documentation
+
+on:
+  workflow_dispatch:
+    # inputs:
+    #   version:
+    #     description: 'Version'
+    #     required: true
+    #     default: '0.0.0'
+
+
+#  push:
+#    branches:
+#      - master
+
+
+# simple job that checks out a repo
+jobs:
+  update-doc:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        run: |
+          mkdir scraper
+          cd scraper
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: git@github.com:pedroterzero/oxce-ruleset-scraper.git
+      -
+        name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      -
+        run: npm install
+      -
+        run: |
+          URL='https://web.archive.org/https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)'
+          wget -O ruleset.html "$URL" || wget -O ruleset.html "https://web.archive.org/$URL"
+
+      -
+        run: npm run start
+      # - name: Update documentation
+
+      #   run: npm run update-doc
+      # - name: Commit changes
+      #   uses: EndBug/add-and-commit@v7
+      #   with:
+      #     author_name: 'GitHub Actions'
+      #     author_email: '''
