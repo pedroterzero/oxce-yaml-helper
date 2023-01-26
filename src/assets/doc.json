@@ -257,7 +257,7 @@
       "default": "1"
     },
     "grav": {
-      "description": "Is this facility a [Grav Shield](https://www.ufopaedia.org/index.php/Grav_Shield)? Doubles the power of your base defenses. Does not stack.",
+      "description": "Is this facility a [Grav Shield](https://www.ufopaedia.org/index.php/Grav_Shield)? Each shield allows for an extra defense round in which all of your base defenses can fire again.",
       "default": "false"
     },
     "size": {
@@ -362,6 +362,10 @@
     },
     "hitSound": {
       "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when the base defense hits a target.",
+      "default": "0"
+    },
+    "placeSound": {
+      "description": "Sound ID from [GEO.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when the facility is placed (or when the facility remains after dismantling another facility).",
       "default": "0"
     },
     "mapName": {
@@ -518,6 +522,10 @@
       "description": "Amount of money spent for purchasing this craft. If set to 0, the craft will not be available in the Purchase/Recruit screen.",
       "default": "0"
     },
+    "monthlyBuyLimit": {
+      "description": "How many craft of this type you can purchase per month. 0 = infinite.",
+      "default": "0"
+    },
     "costRent": {
       "description": "Amount of money spent monthly for renting this craft. If set to 0, the craft is not on rental and won't count towards base maintenance.",
       "default": "0"
@@ -555,7 +563,7 @@
       "default": "-"
     },
     "craftInventoryTile": {
-      "description": "Coordinates \\[x, y, z\\] of the craft inventory tile (weapon's pile) in the craft. If not specified, tile occupied by the first soldier is used.\n\nNote: You can change this attribute only if your mod also contains the **battlescapeTerrainData** attribute. Since OXCE 7.4.4 this limitation doesn't apply.",
+      "description": "Coordinates \\[x, y, z\\] of the craft inventory tile (weapon's pile) in the craft. If not specified, tile occupied by the first soldier is used.\n\nNote: You can change this attribute only if your mod also contains the **battlescapeTerrainData** attribute. Since OXCE 7.4.4 this limitation doesn't apply.\n\nNote: Since OXCE 7.4.6 this attribute can be used also on craft that don't use **deployment**, for example STR\\_SKYRANGER.",
       "default": "-"
     },
     "mapVisible": {
@@ -564,6 +572,14 @@
     },
     "deployment": {
       "description": "Custom positions for the unit deployment in the craft, listed as: _\\[x, y, z, facing\\]_\n\nIf not specified, units are placed on empty spots from top-left to bottom-right facing top-right.",
+      "default": "-"
+    },
+    "useAllStartTiles": {
+      "description": "Should the craft preview features use all spawnable/start tiles or only the ones specified by the **deployment** ?\n\nMore info: [https://openxcom.org/forum/index.php/topic,10370.msg144057.html#msg144057](https://openxcom.org/forum/index.php/topic,10370.msg144057.html#msg144057)",
+      "default": "false"
+    },
+    "customPreview": {
+      "description": "String ID of an alien deployment that should be used for craft preview (overrides the default alien deployment STR\\_CRAFT\\_DEPLOYMENT\\_PREVIEW).",
       "default": "-"
     },
     "keepCraftAfterFailedMission": {
@@ -724,6 +740,10 @@
       "description": "Amount of ammo restored every hour while the craft is [Rearming](https://www.ufopaedia.org/index.php/Rearming) in base. If specified, **clip**s are spent depending on their **clipSize**, and **reamRate** should be a multiple of **clipSize**. If the **clipSize** of the specified ammo is 0, no **clip**s are spent.",
       "default": "1"
     },
+    "bulletSaving": {
+      "description": "Should statistical bullet saving apply for this craft weapon?",
+      "default": "false"
+    },
     "projectileType": {
       "description": "Type of the weapon projectile, used for the projectile sprite in dogfights:\n\n*   0 - [Stingray](https://www.ufopaedia.org/index.php/Stingray)\n*   1 - [Avalanche](https://www.ufopaedia.org/index.php/Avalanche)\n*   2 - [Cannon](https://www.ufopaedia.org/index.php/Cannon)\n*   3 - [Fusion Ball](https://www.ufopaedia.org/index.php/Fusion_Ball)\n*   4 - [Laser Cannon](https://www.ufopaedia.org/index.php/Laser_Cannon)\n*   5 - [Plasma Beam](https://www.ufopaedia.org/index.php/Plasma_Beam)",
       "default": "2"
@@ -774,6 +794,10 @@
       "description": "A list of research topics required to be able to buy this item.\n\nNote: you _can_ use the item even if the requirements are not met... you just can't buy it.",
       "default": "-"
     },
+    "requiresBuyCountry": {
+      "description": "An allied country required to be able to buy this item.",
+      "default": "-"
+    },
     "requiresBuyBaseFunc": {
       "description": "A list of services (for a given base) required to be able to buy this item.",
       "default": "-"
@@ -784,6 +808,10 @@
     },
     "costBuy": {
       "description": "Amount of money spent for purchasing this item. If set to 0, this item will not be available in the Purchase/Recruit screen.",
+      "default": "0"
+    },
+    "monthlyBuyLimit": {
+      "description": "How many items of this type you can purchase per month. 0 = infinite.",
       "default": "0"
     },
     "costSell": {
@@ -1450,6 +1478,10 @@
       "description": "Item height in a soldier's inventory (in grid units).",
       "default": "1"
     },
+    "inventoryMoveCost": {
+      "description": "Cost of moving item between slots. Does not apply to dropping items from hands.```\ninventoryMoveCost:\n  basePercent: 100 #TU multiplier of base cost\n\n```",
+      "default": "100"
+    },
     "fixedWeapon": {
       "description": "Is this weapon fixed (cannot be dropped from the Inventory)? (it's part of a unit, e.g. tanks and terrorist units)",
       "default": "false"
@@ -1628,7 +1660,7 @@
     },
     "IgnoreOverKill": {
       "description": "Disables overkill damage, i.e. units won't get vaporized/disintegrated when killed (by a hit doing a lot more damage than necessary to kill).",
-      "default": "false"
+      "default": "true"
     },
     "ArmorEffectiveness": {
       "description": "How effective is a unit's front/side/rear/bottom armor against this damage. 1.0 is 100%.",
@@ -2103,7 +2135,7 @@
       "default": "-"
     },
     "rects": {
-      "description": "A list of possible areas on the map where (random) placement/checks/removal can happen. If not specified, entire map is considered.\n\nEach item in the list is a group of four integers \\[x, y, width, height\\].",
+      "description": "A list of possible areas on the map where (random) placement/checks/removal can happen. If not specified, entire map is considered.\n\nEach item in the list is a group of four integers \\[x, y, width, length\\].",
       "default": "-"
     },
     "label": {
@@ -2280,6 +2312,10 @@
       "description": "Type of movement provided by this armor:\n\n*   0 = Walking\n*   1 = Flying\n*   2 = Sliding (no walking animation)\n*   3 = Floating (fly underwater, walk on the surface)\n*   4 = Sinking (walk underwater, fly on the surface)\n\nit also defines the body of a tank (32-images) in your spriteSheet or the change in sprites while flying using a flying armor see: [TANKS.PCK](https://www.ufopaedia.org/index.php/TANKS.PCK), [XCOM\\_2.PCK](https://www.ufopaedia.org/index.php/XCOM_2.PCK)",
       "default": "0"
     },
+    "moveCost": {
+      "description": "Detailed configs for custom move costs. Defaults:```\n   moveCost:\n     #first level of multipliers\n     basePercent: [100, 100] #overall move cost\n   \n     #second level of multipliers\n     baseNormalPercent: [100, 100] #move cost for ground\n     baseFlyPercent: [100, 100] #move cost for flying\n   \n     #third level of multipliers\n     walkPercent: [100, 50] #cost of normal move type\n     runPercent: [75, 75] #cost of run aka with \\`ctrl\\`\n     strafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside\n     sneakPercent: [100, 50] #cost move type with \\`alt\\`, force unit to move on ground\n   \n     flyWalkPercent: [100, 50] #cost of normal move type in air\n     flyRunPercent: [75, 75] #cost of run aka with \\`ctrl\\` in air\n     flyStrafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside in air\n     flyUpPercent: [100, 0] #cost of flying up\n     flyDownPercent: [100, 0] #cost of flying down\n     gravLiftPercent: [100, 0] #cost for using gravLift\n\n```",
+      "default": ""
+    },
     "turnBeforeFirstStep": {
       "description": "If enabled, the cost of turning at the beginning of the walking sequence will always be considered.\n\nNote: if disabled, the turn cost will be considered only if the walking sequence is interrupted before the first step, e.g. when a new enemy spotted while turning.",
       "default": "false"
@@ -2444,6 +2480,10 @@
       "description": "Does this armor allow strafing? Defaults are: true = for 1x1 units, false = for 2x2 units.",
       "default": "vanilla"
     },
+    "allowsSneaking": {
+      "description": "Does this armor allow sneaking? (with **alt**, forces a unit to move on the ground even if it can fly) Defaults are: true = for 1x1 units, false = for 2x2 units.",
+      "default": "<="
+    },
     "allowsKneeling": {
       "description": "Does this armor allow kneeling? Defaults are: true = for xcom soldiers, false = for xcom vehicles, aliens and civilians.",
       "default": "vanilla"
@@ -2600,6 +2640,10 @@
     },
     "costBuy": {
       "description": "Amount of money spent for hiring this soldier type. If set to 0, the soldier type will not be available in the Purchase/Recruit screen.",
+      "default": "0"
+    },
+    "monthlyBuyLimit": {
+      "description": "How many soldiers of this type you can hire per month. 0 = infinite.",
       "default": "0"
     },
     "costSalary": {
@@ -3260,6 +3304,14 @@
       "description": "[Score](https://www.ufopaedia.org/index.php/Score) this unit is worth.",
       "default": "0"
     },
+    "cosmetic": {
+      "description": "Is this unit ignored in soldier diaries and commendations?\n\nMore info: [https://openxcom.org/forum/index.php/topic,10352.0.html](https://openxcom.org/forum/index.php/topic,10352.0.html)",
+      "default": "false"
+    },
+    "ignoredByAI": {
+      "description": "Is this unit ignored by the AI?\n\nMore info: [https://openxcom.org/forum/index.php/topic,10353.0.html](https://openxcom.org/forum/index.php/topic,10353.0.html)",
+      "default": "false"
+    },
     "vip": {
       "description": "Is this unit a VIP? Used for \"Escort the VIP\" and \"Protect the VIP\" mission types.",
       "default": "false"
@@ -3273,7 +3325,7 @@
       "default": "-"
     },
     "spawnedSoldier": {
-      "description": "When \"recovering\" a soldier, you can (optionally) specify overrides for any of the soldier's attributes. Uses the same syntax as the saved games. Cannot override soldier's ID.",
+      "description": "When \"recovering\" a soldier, you can (optionally) specify overrides for any of the soldier's attributes. Uses the same syntax as the saved games. Cannot override soldier's ID and name.",
       "default": "-"
     },
     "intelligence": {
@@ -3441,7 +3493,7 @@
       "default": "required"
     },
     "isHidden": {
-      "description": "If enabled, the mission will not appear in the mission list in New Battle GUI. Doesn't work when debug is enabled in options.cfg.",
+      "description": "If enabled, the mission will not appear in the mission list in New Battle GUI. Doesn't work when debug is enabled in options.cfg.\n\nSince OXCE 7.6 there is also a special use for craft preview, more details: [https://openxcom.org/forum/index.php/topic,10370.msg147475.html#msg147475](https://openxcom.org/forum/index.php/topic,10370.msg147475.html#msg147475)",
       "default": "false"
     },
     "customUfo": {
@@ -3966,8 +4018,16 @@
       "description": "A list of items (and their quantities) required for a mission (e.g. a skeleton key from EU2012).",
       "default": "-"
     },
+    "craftTransformations": {
+      "description": "A list of craft transformations (oldCraft: newCraft).\n\nMore info: [https://openxcom.org/forum/index.php/topic,4444.msg148706.html#msg148706](https://openxcom.org/forum/index.php/topic,4444.msg148706.html#msg148706)",
+      "default": "-"
+    },
     "destroyRequiredItems": {
       "description": "Defines whether required items should be destroyed or not (when craft landing is confirmed).",
+      "default": "false"
+    },
+    "requireCommanderOnboard": {
+      "description": "Defines whether a commander must be present onboard for this mission.",
       "default": "false"
     }
   },
@@ -4143,6 +4203,14 @@
     "unlockFinalMission": {
       "description": "If true, this research topic allows to send a spacecraft to the final mission.",
       "default": "false"
+    },
+    "increaseCounter": {
+      "description": "A list of object counters to increase when the project is completed.",
+      "default": "-"
+    },
+    "decreaseCounter": {
+      "description": "A list of object counters to decrease when the project is completed.",
+      "default": "-"
     }
   },
   "manufacture": {
@@ -4199,7 +4267,7 @@
       "default": "-"
     },
     "spawnedSoldier": {
-      "description": "When \"manufacturing\" a soldier, you can (optionally) specify overrides for any of the soldier's attributes. Uses the same syntax as the saved games. Cannot override soldier's ID.\n\nMore info: [https://openxcom.org/forum/index.php/topic,8615.msg132649.html#msg132649](https://openxcom.org/forum/index.php/topic,8615.msg132649.html#msg132649)",
+      "description": "When \"manufacturing\" a soldier, you can (optionally) specify overrides for any of the soldier's attributes. Uses the same syntax as the saved games. Cannot override soldier's ID and name.\n\nMore info: [https://openxcom.org/forum/index.php/topic,8615.msg132649.html#msg132649](https://openxcom.org/forum/index.php/topic,8615.msg132649.html#msg132649)",
       "default": "-"
     },
     "startFrom": {
@@ -4720,6 +4788,10 @@
       "description": "A list of base facilities that can influence the execution of this script. Similar to research triggers; checks the presence of a facility (in any xcom base).",
       "default": "-"
     },
+    "soldierTypeTriggers": {
+      "description": "A list of soldier types that can influence the execution of this script. Similar to research triggers; checks the presence of a soldier type (in any xcom base).",
+      "default": "-"
+    },
     "xcomBaseInRegionTriggers": {
       "description": "A list of regions that can influence the execution of this script. Similar to research triggers; checks the presence (or absence) of an xcom base in a given region.",
       "default": "-"
@@ -4777,7 +4849,7 @@
       "default": "-"
     },
     "spawnedSoldier": {
-      "description": "When \"hiring\" a soldier, you can (optionally) specify overrides for any of the soldier's attributes. Uses the same syntax as the saved games. Cannot override soldier's ID.",
+      "description": "When \"hiring\" a soldier, you can (optionally) specify overrides for any of the soldier's attributes. Uses the same syntax as the saved games. Cannot override soldier's ID and name.",
       "default": "-"
     },
     "everyItemList": {
@@ -4790,6 +4862,10 @@
     },
     "randomItemList": {
       "description": "A list of item IDs. When this event pops up one of them is selected randomly and transferred to the HQ (within 1 hour).",
+      "default": "-"
+    },
+    "randomMultiItemList": {
+      "description": "A list of \"lists of item IDs and their quantities\". When this event pops up one of the lists is selected randomly and everything in that list is transferred to the HQ (within 1 hour).",
       "default": "-"
     },
     "weightedItemList": {
@@ -4863,8 +4939,12 @@
   },
   "musics": {
     "type": {
-      "description": "Name of the music track.",
+      "description": "Internal name of the music track.",
       "default": "required"
+    },
+    "name": {
+      "description": "Name of the music track. If empty, **type** is used as name.",
+      "default": "-"
     },
     "catPos": {
       "description": "The track's index in the catalog (CAT) file. Only relevant for music stored in CAT files, obviously.",
@@ -5192,6 +5272,10 @@
       "description": "Research topic required to be able to hire engineers.",
       "default": "-"
     },
+    "hireEngineersRequiresBaseFunc": {
+      "description": "A list of base services required to be able to hire engineers.",
+      "default": "-"
+    },
     "costScientist": {
       "description": "Monthly salary of a single scientist (in dollars). Please note that hiring cost is twice as much.",
       "default": "0"
@@ -5202,6 +5286,10 @@
     },
     "hireScientistsUnlockResearch": {
       "description": "Research topic required to be able to hire scientists.",
+      "default": "-"
+    },
+    "hireScientistsRequiresBaseFunc": {
+      "description": "A list of services required to be able to hire scientists.",
       "default": "-"
     },
     "soldiersPerSergeant": {
@@ -5332,9 +5420,9 @@
       "description": "Show the INFO button (where applicable) or not?",
       "default": "false"
     },
-    "extraNerdyPediaInfo": {
-      "description": "Display extra item info (accuracy modifier and power bonus) in the main pedia article or not?",
-      "default": "false"
+    "extraNerdyPediaInfoType": {
+      "description": "Display extra item info (accuracy modifier and power bonus) in the main pedia article or not?\n\n*   0 = don't display\n*   1 = display with full names\n*   2 = display with abbreviations",
+      "default": "0"
     },
     "alienFuel": {
       "description": "Name of an item representing alien fuel and a quantity to recover from a single fuel cell. Format: \\[name, quantity\\].",
@@ -5525,8 +5613,12 @@
       "default": "false"
     },
     "difficultyCoefficient": {
-      "description": "Difficulty coefficients (per 5 game difficulty levels) affecting various game mechanics, for example:\n\n*   Monthly rating threshold for losing the game (together with **defeatScore**) | (defeatScore) +100 points \\* difficultyCoefficient\n*   UFO firing rate during dogfight | -2 gs \\* difficultyCoefficient\n*   UFO escape countdown during dogfight | (100-200%) -30 gs \\* difficultyCoefficient\n*   Retaliation odds after shooting down UFO | (4%) +4% \\* difficultyCoefficient\n*   Odds of shootdown-triggered retaliation targeting xcom base region or not | (50%) +6% \\* difficultyCoefficient (needs confirmation)\n*   Chance of aliens facing in the direction of the xcom craft at a start of a mission | 25% \\* difficultyCoefficient\n*   Various AI decisions (in Battlescape)\n*   Together with **statGrowthMultipliers** affects how alien stats change with difficulty level | + (statGrowthMultipliers/100) \\* difficultyCoefficient\n*   Does not affect aimAndArmorMultipliers.",
+      "description": "Difficulty coefficients (per 5 game difficulty levels) affecting various game mechanics, for example:\n\n*   Monthly rating threshold for losing the game (together with **defeatScore**) | (defeatScore) +100 points \\* difficultyCoefficient\n*   UFO firing rate during dogfight | -2 gs \\* difficultyCoefficient\n*   UFO escape countdown during dogfight | (100-200%) -30 gs \\* difficultyCoefficient\n*   Retaliation odds after shooting down UFO | (4%) +4% \\* difficultyCoefficient\n*   Odds of shootdown-triggered retaliation targeting xcom base region or not | (50%) +6% \\* difficultyCoefficient\n*   Chance of aliens facing in the direction of the xcom craft at a start of a mission | 20% \\* difficultyCoefficient\n*   Various AI decisions (in Battlescape)\n    *   judging explosive efficacy\n    *   limiting number of waypoints for blasters\n    *   deciding whether to spend extra TU to attack from behind in melee (OXCE only)\n    *   odds of making USE action on psi-amps (OXCE only)\n*   Together with **statGrowthMultipliers** affects how alien stats change with difficulty level | + (statGrowthMultipliers/100) \\* difficultyCoefficient\n*   Does not affect aimAndArmorMultipliers, aimMultipliers and armorMultipliers.",
       "default": "[0, 1, 2, 3, 4]"
+    },
+    "difficultyCoefficientOverrides": {
+      "description": "Ability to override **difficultyCoefficient** effects:\n\n*   Monthly rating threshold for losing the game | directly specified value per difficulty\n*   UFO firing rate during dogfight | percentual multiplier per difficulty\n*   UFO escape countdown during dogfight | percentual multiplier per difficulty\n*   Retaliation odds after shooting down UFO | directly specified percentage value per difficulty\n*   Odds of shootdown-triggered retaliation targeting xcom base region or not | directly specified percentage value per difficulty\n*   Chance of aliens facing in the direction of the xcom craft at a start of a mission | directly specified percentage value per difficulty\n\nExample (with some vanilla values):\n\n```\ndifficultyCoefficientOverrides:\n  monthlyRatingThresholds: [-900, -800, -700, -600, -500]   # vanilla points; please note that only NEGATIVE numbers are accepted here\n  ufoFiringRateCoefficients: [100, 95, 90, 85, 80]          # percent of default... percentages instead of vanilla flat values\n  ufoEscapeCountdownCoefficients: [100, 95, 90, 85, 80]     # percent of default... percentages instead of vanilla flat values\n  retaliationTriggerOdds: [4, 8, 12, 16, 20]                # vanilla percentages\n  retaliationBaseRegionOdds: [50, 56, 62, 68, 74]           # vanilla percentages\n  aliensFacingCraftOdds: [0, 20, 40, 60, 80]                # vanilla percentages\n\n```",
+      "default": "-"
     },
     "difficultyBasedRetaliationDelay": {
       "description": "Defines a delay (in months, per difficulty level) for spawning retaliation missions after dogfights. If the campaign is still in the \"protected period\", retaliation missions won't spawn. This can be used to prevent unlucky base defense missions in early game for beginners.\n\nNote: does not affect regularly spawned retaliation missions (via monthly mission script), nor alien base gen/hunt missions.",
@@ -5534,6 +5626,14 @@
     },
     "aimAndArmorMultipliers": {
       "description": "Affects armor values and firing accuracy of aliens for different difficulty levels.",
+      "default": "[0.5, 1.0, 1.0, 1.0, 1.0]"
+    },
+    "aimMultipliers": {
+      "description": "Affects firing accuracy of aliens for different difficulty levels.",
+      "default": "[0.5, 1.0, 1.0, 1.0, 1.0]"
+    },
+    "armorMultipliers": {
+      "description": "Affects armor values of aliens for different difficulty levels.",
       "default": "[0.5, 1.0, 1.0, 1.0, 1.0]"
     },
     "statGrowthMultipliers": {
