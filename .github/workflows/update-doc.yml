@@ -64,13 +64,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: doc.json
-          path: .
+          path: src/assets
       -
         name: Commit changes
         run: |
           git config --local user.email "pedro@pedro"
           git config --local user.name "Github Actions"
-          git add doc.json
+          git add src/assets/doc.json
           git commit -m "Update doc.json" -a || echo "No changes to commit"
           git push
 
