@@ -2,6 +2,7 @@
 name: Update documentation
 
 on:
+  push:
   workflow_dispatch:
     # inputs:
     #   version:
