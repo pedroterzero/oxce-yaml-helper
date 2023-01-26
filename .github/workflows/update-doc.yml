@@ -2,7 +2,7 @@
 name: Update documentation
 
 on:
-  push:
+  # push:
   workflow_dispatch:
     # inputs:
     #   version:
@@ -22,14 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        run: |
-          mkdir scraper
-          cd scraper
-      -
         name: Checkout
         uses: actions/checkout@v3
         with:
           repository: git@github.com:pedroterzero/oxce-ruleset-scraper.git
+          ref: 'main'
       -
         name: Install Node.js
         uses: actions/setup-node@v3
