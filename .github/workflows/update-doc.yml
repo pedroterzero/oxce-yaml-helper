@@ -39,7 +39,7 @@ jobs:
         name: Retrieve wiki page
         run: |
           URL='https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)'
-          wget --timeout=30 --tries=3 -O ruleset.html "$URL" || curl -sLf -o ruleset.html "https://web.archive.org/$URL"
+          wget --timeout=30 --tries=3 -O ruleset.html "$URL" || curl -Lf -o ruleset.html "https://web.archive.org/$URL"
 
       -
         name: Parse the wiki page
