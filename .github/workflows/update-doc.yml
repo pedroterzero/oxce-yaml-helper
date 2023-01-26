@@ -2,14 +2,9 @@
 name: Update documentation
 
 on:
-  push:
+  schedule:
+    - cron: '0 2 * * *'
   workflow_dispatch:
-    # inputs:
-    #   version:
-    #     description: 'Version'
-    #     required: true
-    #     default: '0.0.0'
-
 
 #  push:
 #    branches:
