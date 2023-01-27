@@ -1,3 +1,6 @@
+# v1.2.3
+- restore parentMods configuration setting
+
 # v1.2.2
 - Updated ruleset documentation
 - Add ruleset documentation to extension
