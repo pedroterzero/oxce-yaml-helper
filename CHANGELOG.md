@@ -1,3 +1,7 @@
+# v1.2.2
+- Updated ruleset documentation
+- Add ruleset documentation to extension
+
 # v1.2.1
 - Security updates
 

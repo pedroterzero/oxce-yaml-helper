@@ -11,6 +11,7 @@ import { RulesetCompletionProvider } from './rulesetCompletionProvider';
 import { ConvertCsvCommand } from './commands/convertCsvCommand';
 import { ConvertCsvToRulCommand } from './commands/convertCsvToRulCommand';
 import { AutoOrderWeaponsCommand } from './commands/autoOrderWeaponsCommand';
+import { GenerateDocumentationCommand } from './commands/generateDocumentationCommand';
 
 export const rulesetResolver = new RulesetResolver();
 export let reporter: TelemetryReporter;
@@ -53,6 +54,12 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.convertCsvToRul', ConvertCsvToRulCommand.handler));
 
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.autoOrderWeapons', AutoOrderWeaponsCommand.handler));
+
+    context.subscriptions.push(commands.registerCommand('oxcYamlHelper.generateDocumentation', GenerateDocumentationCommand.handler));
+
+    if (workspace.getConfiguration('oxcYamlHelper').get<boolean>('showRulesetDocumentationOnStartup')) {
+        commands.executeCommand('oxcYamlHelper.generateDocumentation');
+    }
 
     // load the recommender
     new ExtensionRecommender;
