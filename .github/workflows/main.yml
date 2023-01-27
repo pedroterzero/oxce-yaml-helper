@@ -40,7 +40,7 @@ jobs:
       if: runner.os != 'Linux'
     - name: Archive code coverage results
       if: runner.os == 'Linux'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: code-coverage-report
         path: coverage
@@ -62,7 +62,7 @@ jobs:
       run: npx vsce package --pre-release
 #      run: npx vsce package -o openxcom-ruleset-linker.vsix
     - name: Retrieve package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: vscode-package
         path: '*.vsix'
