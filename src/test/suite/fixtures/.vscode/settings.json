@@ -2,5 +2,6 @@
     "oxcYamlHelper.debugLevel": 3,
     "oxcYamlHelper.findDuplicateDefinitions": true,
     "oxcYamlHelper.cacheStrategy": "nothing",
-    "oxcYamlHelper.validateCategories": "yes"
+    "oxcYamlHelper.validateCategories": "yes",
+    "oxcYamlHelper.showRulesetDocumentationOnStartup": false
 }
