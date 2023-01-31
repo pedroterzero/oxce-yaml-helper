@@ -58,12 +58,16 @@ jobs:
         node-version: 18
     - run: npm install
     - name: Package
+      id: package
       # run: npx vsce package
-      run: npx vsce package --pre-release
+      run: |
+        npx vsce package --pre-release
+        VSIX=$(echo *.vsix)
+        echo "PACKAGE_FILENAME=$VSIX" >> $GITHUB_OUTPUT
 #      run: npx vsce package -o openxcom-ruleset-linker.vsix
     - name: Retrieve package
       uses: actions/upload-artifact@v3
       with:
-        name: vscode-package
+        name: ${{ steps.package.outputs.PACKAGE_FILENAME }}
         path: '*.vsix'
 
