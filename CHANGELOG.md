@@ -1,3 +1,7 @@
+# v1.2.4
+- allow sorting of documentation attributes
+- allow hiding of documentation attributes in table of contents
+
 # v1.2.3
 - restore parentMods configuration setting
 
