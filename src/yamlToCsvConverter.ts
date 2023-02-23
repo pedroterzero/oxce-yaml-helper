@@ -54,7 +54,7 @@ export class YamlToCsvConverter {
         }
 
         const doc = await readFile(this.inFile);
-        return parse(doc.toString());
+        return parse(doc.toString(), {maxAliasCount: 4096});
     }
 
     private makeDotted(row: { [key: string]: any }) {

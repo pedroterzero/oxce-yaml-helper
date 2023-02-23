@@ -1,3 +1,6 @@
+# v1.2.5
+- increased maxAliasCount for CSV converter
+
 # v1.2.4
 - allow sorting of documentation attributes
 - allow hiding of documentation attributes in table of contents

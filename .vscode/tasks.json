@@ -12,6 +12,16 @@
             // "presentation": {
             //     "reveal": "never"
             // },
+        },
+        {
+            "type": "npm",
+            "script": "watch-tsc",
+            "problemMatcher": "$tsc-watch",
+            "isBackground": true,
+            "group": "build",
+            // "presentation": {
+            //     "reveal": "never"
+            // },
         }
     ]
 }

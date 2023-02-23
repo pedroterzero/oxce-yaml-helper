@@ -58,7 +58,7 @@ export class ConvertCsvCommand {
         }
 
         const doc = await readFile(targetFile);
-        const parsed = parse(doc.toString());
+        const parsed = parse(doc.toString(), {maxAliasCount: 4096});
 
         const types = Object.keys(parsed).filter(type => type !== 'extended');
 

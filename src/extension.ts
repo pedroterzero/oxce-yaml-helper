@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, ExtensionContext, extensions, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
+import { commands, ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
 import TelemetryReporter from '@vscode/extension-telemetry';
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
@@ -26,8 +26,6 @@ const loadWithProgress = () => {
 export function activate(context: ExtensionContext) {
     // create telemetry reporter on extension activation
     reporter = new TelemetryReporter(
-        'pedroterzero.oxc-yaml-helper',
-        extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version || 'unknown',
         'InstrumentationKey=7c49b0fd-9f4b-4441-97b3-1923c783e380;IngestionEndpoint=https://westeurope-4.in.applicationinsights.azure.com/'
     );
 
