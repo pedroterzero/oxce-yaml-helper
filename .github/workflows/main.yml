@@ -61,7 +61,7 @@ jobs:
       id: package
       # run: npx vsce package
       run: |
-        npx vsce package --pre-release
+        npx @vscode/vsce package --pre-release
         VSIX=$(echo *.vsix)
         echo "PACKAGE_FILENAME=$VSIX" >> $GITHUB_OUTPUT
 #      run: npx vsce package -o openxcom-ruleset-linker.vsix

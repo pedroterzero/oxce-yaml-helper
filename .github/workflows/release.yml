@@ -22,7 +22,7 @@ jobs:
       - name: Build & package project
         id: create_package
         run: |
-          npx vsce package
+          npx @vscode/vsce package
           VSIX=$(echo *.vsix)
           echo "::set-output name=package_filename::$VSIX"
       - name: Create Release
