@@ -38,6 +38,9 @@ export const ignoreTypes = [
     'interfaces.palette', // could type check this, but the validator probably catches these
     'items.accuracyMultiplier',
     'items.scripts.createItem',
+    'items.scripts.inventorySpriteOverlay[].code',
+    'items.scripts.inventorySpriteOverlay[].new',
+    'items.scripts.inventorySpriteOverlay[].offset',
     'items.scripts.newTurnItem',
     'items.scripts.recolorItemSprite',
     'items.scripts.selectItemSprite',

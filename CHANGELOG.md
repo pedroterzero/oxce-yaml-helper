@@ -1,3 +1,6 @@
+# v1.2.6
+- Added recognition for items.scripts.inventorySpriteOverlay
+
 # v1.2.5
 - increased maxAliasCount for CSV converter
 
