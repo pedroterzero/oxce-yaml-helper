@@ -438,6 +438,10 @@
       "description": "A list of services required to buy this craft.",
       "default": "-"
     },
+    "requiresBuyCountry": {
+      "description": "An allied country required to be able to buy this craft.",
+      "default": "-"
+    },
     "sprite": {
       "description": "Sprite ID from [BASEBITS.PCK](https://www.ufopaedia.org/index.php/BASEBITS.PCK) used to draw this craft in the Basescape and from [INTICON.PCK](https://www.ufopaedia.org/index.php/INTICON.PCK) used to draw the damage indicator in dogfights.\n\nNote that:\n\n*   the corresponding id for INTICON.PCK for the minimized craft icon is sprite+0\n*   the corresponding id for INTICON.PCK for the dogfight image is sprite+11\n*   the corresponding id for BASEBITS.PCK is sprite+33",
       "default": "-1"
@@ -773,6 +777,10 @@
     "type": {
       "description": "String ID of the internal item name.",
       "default": "required"
+    },
+    "ufopediaType": {
+      "description": "String ID of alternate ufopedia article for this item (when accessed via middle-button click).\n\nMore info: [https://openxcom.org/forum/index.php/topic,8707.msg154796.html#msg154796](https://openxcom.org/forum/index.php/topic,8707.msg154796.html#msg154796)",
+      "default": "-"
     },
     "name": {
       "description": "String ID of the displayed item name, for cases where it's different from the internal name. If omitted, **type** is used. Only affects inventory screens and battlescape internals. Does not change the name of items in geoscape lists.",
@@ -1531,7 +1539,7 @@
       "default": "<="
     },
     "specialChance": {
-      "description": "The chance (0-100%) of special effects happening, including:\n\n*   mine triggering (see above)\n*   corpse explosion (e.g. of a bio-drone corpse)\n*   zombification (e.g. by a chryssalid weapon)",
+      "description": "The chance (0-100%) of special effects happening, including:\n\n*   mine triggering (see above)\n*   corpse explosion (e.g. of a bio-drone corpse)\n*   zombification (e.g. by a chryssalid weapon), see also **zombieUnitChance**\n*   unit spawning (e.g. by a brainsucker launcher), see also **spawnUnitChance**\n*   item spawning (e.g. by a flare launcher), see also **spawnItemChance**",
       "default": "100"
     },
     "isExplodingInHands": {
@@ -1577,30 +1585,6 @@
     "landOnly": {
       "description": "Can this item only be used on land?",
       "default": "false"
-    },
-    "zombieUnit": {
-      "description": "String ID of the unit used for zombification (eg. [Chrysallids](https://www.ufopaedia.org/index.php/Chrysallid) turn units into [Zombies](https://www.ufopaedia.org/index.php/Zombie)).",
-      "default": "-"
-    },
-    "zombieUnitByArmorMale": {
-      "description": "Overrides **zombieUnit**. Based on armor worn by the victim. A list of String ID pairs.",
-      "default": "-"
-    },
-    "zombieUnitByArmorFemale": {
-      "description": "Overrides **zombieUnit**. Based on armor worn by the victim. A list of String ID pairs.",
-      "default": "-"
-    },
-    "zombieUnitByType": {
-      "description": "Overrides **zombieUnit**. Based on the victim soldier/unit type. A list of String ID pairs.",
-      "default": "-"
-    },
-    "spawnUnit": {
-      "description": "Used for spawning units from items.\n\nMore info: [https://openxcom.org/forum/index.php/topic,6535.0.html](https://openxcom.org/forum/index.php/topic,6535.0.html)",
-      "default": "-"
-    },
-    "spawnUnitFaction": {
-      "description": "Used for spawning units from items.\n\nMore info: [https://openxcom.org/forum/index.php/topic,6535.0.html](https://openxcom.org/forum/index.php/topic,6535.0.html)",
-      "default": "-1"
     },
     "ai.useDelay": {
       "description": "1/ Used to override AI delay defined by global settings.\n\n2/ How many times should an AI unit try to perform a melee attack (in the single go)? In vanilla, the unit used the melee attack until the target was neutralized or until it ran out of TUs. This attribute gives you the option to perform \"hit and run\".\n\n```\n ai:\n   useDelay: 1\n   meleeHitCount: 15\n\n```",
@@ -2313,7 +2297,7 @@
       "default": "0"
     },
     "moveCost": {
-      "description": "Detailed configs for custom move costs. Defaults:```\n   moveCost:\n     #first level of multipliers\n     basePercent: [100, 100] #overall move cost\n   \n     #second level of multipliers\n     baseNormalPercent: [100, 100] #move cost for ground\n     baseFlyPercent: [100, 100] #move cost for flying\n   \n     #third level of multipliers\n     walkPercent: [100, 50] #cost of normal move type\n     runPercent: [75, 75] #cost of run aka with \\`ctrl\\`\n     strafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside\n     sneakPercent: [100, 50] #cost move type with \\`alt\\`, force unit to move on ground\n   \n     flyWalkPercent: [100, 50] #cost of normal move type in air\n     flyRunPercent: [75, 75] #cost of run aka with \\`ctrl\\` in air\n     flyStrafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside in air\n     flyUpPercent: [100, 0] #cost of flying up\n     flyDownPercent: [100, 0] #cost of flying down\n     gravLiftPercent: [100, 0] #cost for using gravLift\n\n```",
+      "description": "Detailed configs for custom move costs. Defaults:```\n   moveCost:\n     #first level of multipliers\n     basePercent: [100, 100] #overall move cost\n   \n     #second level of multipliers\n     baseNormalPercent: [100, 100] #move cost for ground\n     baseFlyPercent: [100, 100] #move cost for flying\n     baseClimbPercent: [100, 100] #move cost for climbing ladders\n   \n     #third level of multipliers\n     walkPercent: [100, 50] #cost of normal move type\n     runPercent: [75, 75] #cost of run aka with \\`ctrl\\`\n     strafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside\n     sneakPercent: [100, 50] #cost move type with \\`alt\\`, force unit to move on ground\n   \n     flyWalkPercent: [100, 50] #cost of normal move type in air\n     flyRunPercent: [75, 75] #cost of run aka with \\`ctrl\\` in air\n     flyStrafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside in air\n     flyUpPercent: [100, 0] #cost of flying up\n     flyDownPercent: [100, 0] #cost of flying down\n     climbUpPercent: [100, 50] #cost of climbing up\n     climbDownPercent: [100, 50] #cost of climbing down\n     gravLiftPercent: [100, 0] #cost for using gravLift\n\n```",
       "default": ""
     },
     "turnBeforeFirstStep": {
@@ -2588,6 +2572,10 @@
     },
     "requiresBuyBaseFunc": {
       "description": "A list of services (for a given base) required to be able to hire this soldier type.",
+      "default": "-"
+    },
+    "requiresBuyCountry": {
+      "description": "An allied country required to be able to hire this soldier.",
       "default": "-"
     },
     "minStats": {
@@ -3451,6 +3439,10 @@
     "pickUpWeaponsMoreActively": {
       "description": "Allows AI to pick up weapons more actively. More info: [https://openxcom.org/forum/index.php/topic,6882.0.html](https://openxcom.org/forum/index.php/topic,6882.0.html)\n\nPossible options:\n\n*   \\-1 = use global setting (disabled by default)\n*   0 = disabled\n*   1 = enabled",
       "default": "-1"
+    },
+    "avoidsFire": {
+      "description": "Allows AI to not be afraid to pathfind through fire. More info: [https://openxcom.org/forum/index.php/topic,11212.0.html](https://openxcom.org/forum/index.php/topic,11212.0.html)\n\nPossible options:\n\n*   false = can pathfind through fire without problems\n*   true = can pathfind through fire, but with a big penalty (usually this results in not walking through fire)\n\nIf not defined, vanilla algorithm is used, which allows pathfinding through fire to units with **specab: 2** (e.g. Silacoid) and **specab: 3** (e.g. Bio-Drone).",
+      "default": "vanilla"
     }
   },
   "alienRaces": {
@@ -3994,6 +3986,10 @@
       "description": "A list of allowed/forbidden armors for a mission. Only one of these two attributes can be used.",
       "default": "-"
     },
+    "forbiddenArmorsInNextStage": {
+      "description": "A list of forbidden armors for a mission (in second stage).\n\nMore info: [https://openxcom.org/forum/index.php/topic,10194.msg149818.html#msg149818](https://openxcom.org/forum/index.php/topic,10194.msg149818.html#msg149818)",
+      "default": "-"
+    },
     "allowedVehicles forbiddenVehicles": {
       "description": "A list of allowed/forbidden vehicles (HWP/SWS) for a mission. Not permitted vehicles will stay at the base. Only one of these two attributes can be used.",
       "default": "-"
@@ -4242,6 +4238,10 @@
       "description": "Monetary deduction per production.",
       "default": "0"
     },
+    "points": {
+      "description": "[Score](https://www.ufopaedia.org/index.php/Score) earned/lost for completing every production item.",
+      "default": "0"
+    },
     "refund": {
       "description": "Whether the resources needed for a project should be refunded when a project is cancelled before completion.\n\nNotes:\n\n*   if enabled, the _STOP PRODUCTION_ button is replaced by a _REFUND_ button\n*   in case you didn't know: in vanilla, when you started a manufacture project (even with 0 engineers allocated and no time passed yet), all the resources were irrevocably gone",
       "default": "false"
@@ -4393,7 +4393,11 @@
           "default": "false"
         },
         "objectiveOnTheLandingSite": {
-          "description": "Only relevant when using non-point mission zone areas for mission site spawning.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10305.0.html](https://openxcom.org/forum/index.php/topic,10305.0.html)",
+          "description": "Only relevant when using non-point mission zone areas for mission site spawning.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10305.0.html](https://openxcom.org/forum/index.php/topic,10305.0.html)\n\nSince OXCE v7.9 also relevant for alien base building: [https://openxcom.org/forum/index.php/topic,10860.0.html](https://openxcom.org/forum/index.php/topic,10860.0.html)",
+          "default": "false"
+        },
+        "objectiveOnXcomBase": {
+          "description": "Overrides the mission site location with an xcom base location.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10810.0.html](https://openxcom.org/forum/index.php/topic,10810.0.html)",
           "default": "false"
         },
         "hunterKillerPercentage": {
@@ -4419,7 +4423,7 @@
       }
     },
     "objective": {
-      "description": "Missions are split by objective:\n\n*   0 = score (default if omitted)\n*   1 = infiltration\n*   2 = alien base\n*   3 = mission site (terror etc)\n*   4 = retaliation\n*   5 = supply",
+      "description": "Missions are split by objective:\n\n*   0 = score (default if omitted)\n*   1 = infiltration\n*   2 = alien base\n*   3 = mission site (terror etc)\n*   4 = retaliation\n*   5 = supply\n*   6 = instant xcom base defense: [https://openxcom.org/forum/index.php/topic,10808.0.html](https://openxcom.org/forum/index.php/topic,10808.0.html)",
       "default": "0"
     },
     "showAlienBase": {
@@ -4448,6 +4452,10 @@
     },
     "multiUfoRetaliation": {
       "description": "Should the retaliation mission end after the first base defense (false) or continue until all already spawned UFOs disappear (true)?",
+      "default": "false"
+    },
+    "ignoreBaseDefenses": {
+      "description": "Should the attacking retaliation UFO ignore xcom base defenses?",
       "default": "false"
     },
     "despawnEvenIfTargeted": {
@@ -5260,6 +5268,10 @@
       "description": "Time (in hours) it takes for newly hired personnel to arrive at a base.",
       "default": "0"
     },
+    "hireByCountryOdds hireByRegionOdds": {
+      "description": "Used to define the odds of attempting to name the soldier based on the country/region where it was hired.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10845.0.html](https://openxcom.org/forum/index.php/topic,10845.0.html)",
+      "default": "0"
+    },
     "costEngineer": {
       "description": "Monthly salary of a single engineer (in dollars). Please note that hiring cost is twice as much.",
       "default": "0"
@@ -5699,6 +5711,10 @@
     "extendedUnderwaterThrowFactor": {
       "description": "Allows globally changing underwater throwing range.\n\n*   0 = vanilla, turned off\n*   1+ = turned on, e.g. 60 means underwater throwing range equals to 60% of the surface throwing range\n\nMore info: [https://openxcom.org/forum/index.php/topic,8273.msg132698.html#msg132698](https://openxcom.org/forum/index.php/topic,8273.msg132698.html#msg132698)",
       "default": "0"
+    },
+    "extendedExperienceAwardSystem": {
+      "description": "Allows to switch between OXC and OXCE experience award system.\n\n*   false = use OXC system\n*   true = use OXCE system\n\nMore info: [https://openxcom.org/forum/index.php/topic,4230.msg154823.html#msg154823](https://openxcom.org/forum/index.php/topic,4230.msg154823.html#msg154823)",
+      "default": "true"
     },
     "doorSound": {
       "description": "Sound of normal doors opening.",
