@@ -5529,7 +5529,7 @@
       "default": "see example"
     },
     "health": {
-      "description": "Health recovery modding options. Allows soldiers to go into battle even with missing health.\n\nMore info: FIXME\n\nExample:\n\n```\n health:\n   woundThreshold: 100             # default is 100\n   replenishAfterMission: true\n\n```",
+      "description": "Health recovery modding options. Allows soldiers to go into battle even with missing health.\n\nMore info: [https://openxcom.org/forum/index.php/topic,8020.0.html](https://openxcom.org/forum/index.php/topic,8020.0.html)\n\nExample:\n\n```\n health:\n   woundThreshold: 100             # default is 100\n   replenishAfterMission: true\n\n```",
       "default": "see example"
     },
     "minReactionAccuracy": {
