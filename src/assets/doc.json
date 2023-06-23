@@ -5613,7 +5613,7 @@
       "default": "40"
     },
     "bughuntTimeUnitsLeft": {
-      "description": "Defines a threshold for \"too much TUs\".\n\nIf a unit doesn't have any weapon (in both hands) or if a unit has \"low morale\" or if a unit has \"too much TUs\" (i.e. cannot/doesn't move for whatever reason)... it counts as powerless and bug hunt can be activated.\n\nIf there is still a unit that is not powerless, bug hunt won't be activated.",
+      "description": "Defines a threshold for \"too much TUs\". Threshold is configured as percentage of max. TUs.\n\nIf a unit doesn't have any weapon (in both hands) or if a unit has \"low morale\" or if a unit has \"too much TUs\" (i.e. cannot/doesn't move for whatever reason)... it counts as powerless and bug hunt can be activated.\n\nIf there is still a unit that is not powerless, bug hunt won't be activated.",
       "default": "60"
     },
     "startingDifficulty": {
