@@ -2393,7 +2393,7 @@
       "default": "- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0\n- 1.0"
     },
     "loftempsSet": {
-      "description": "List of [LOFTEMPS](https://www.ufopaedia.org/index.php/LOFTEMPS) IDs (1 for 1x1 units, 4 for 2x2 units) used to represent a unit wearing this armor in 3D voxel space.",
+      "description": "List of [LOFTEMPS](https://www.ufopaedia.org/index.php/LOFTEMPS) IDs (1 for 1x1 units, 4 for 2x2 units) used to represent a unit wearing this armor in 3D voxel space.\n\nNotes: Because of bug in unit voxel logic for 2x2 units only **\\[ 92, 89, 90, 91 \\]** is correctly handled",
       "default": "-"
     },
     "loftemps": {
