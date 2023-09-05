@@ -4385,7 +4385,7 @@
           "default": "required"
         },
         "timer": {
-          "description": "How long after the previous wave should this wave arrive? (in minutes)\n\nNotes:\n\n*   The timer can vary between 50-150% of the stated value, so a UFO with a 9000 value will be spawned between 4500-13500 minutes (each day has 1440 minutes)\n*   If the UFO is crashed/destroyed the timer of the next UFO on the wave will be delayed by (30 \\* (RNG::generate(0, 400) + 48)) minutes, or between 1.0 and 9.3 days",
+          "description": "How long after the previous wave should this wave arrive? (in minutes)\n\nNotes:\n\n*   The timer can vary between 50-150% of the stated value, so a UFO with a 9000 value will be spawned between 4500-13500 minutes (each day has 1440 minutes)\n*   If the UFO is crashed/destroyed the timer of the next UFO on the wave will be delayed by (30 \\* (RNG::generate(0, 400) + 48)) minutes, or between 1.0 and 9.3 days\n*   The timer on the first (or the only) wave will be overwritten with the **startDelay** value from the mission script if the latter is not equal 0",
           "default": "0"
         },
         "objective": {
