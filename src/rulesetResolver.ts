@@ -100,7 +100,7 @@ export class RulesetResolver implements Disposable {
         progress.report({increment: increment, message: `${file} (${filesLoaded}/${totalFiles})`});
     }
 
-    private ruleSheetReloaded (): void {
+    private ruleSheetReloaded (_progress: Progress<{ message?: string; increment?: number }>): void {
         // wait until we are not processing files anymore
         if (Object.keys(this.processingFiles).length > 0 || Object.keys(this.deletingFiles).length > 0) {
             // logger.debug(`still processing ${Object.keys(this.processingFiles).length} files (deleted: ${Object.keys(this.deletingFiles).length}), open: ${workspace.textDocuments.length}`);
@@ -373,7 +373,7 @@ export class RulesetResolver implements Disposable {
 
             return parsed;
         } catch (error: any) {
-            reporter.sendTelemetryException(error, {'file.path': file.path}/*, { 'numericMeasure': 123 }*/);
+            reporter.sendTelemetryErrorEvent(error, {'file.path': file.path}/*, { 'numericMeasure': 123 }*/);
             reporter.sendTelemetryErrorEvent('loadYamlIntoTree', {'file.path': file.path, 'error.message': error.message});
             logger.error('loadYamlIntoTree', file.path, error.message);
         }

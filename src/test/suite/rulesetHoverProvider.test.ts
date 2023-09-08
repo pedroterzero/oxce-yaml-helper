@@ -37,7 +37,7 @@ const expectedDocumentation = {
         {
             // alienMissions.objective
             position: new Position(3, 8),
-            value: "Missions are split by objective:\n\n*   0 = score (default if omitted)\n*   1 = infiltration\n*   2 = alien base\n*   3 = mission site (terror etc)\n*   4 = retaliation\n*   5 = supply\n\n**Default: 0**"
+            value: "Missions are split by objective:\n\n*   0 = score (default if omitted)\n*   1 = infiltration\n*   2 = alien base\n*   3 = mission site (terror etc)\n*   4 = retaliation\n*   5 = supply\n*   6 = instant xcom base defense: [https://openxcom.org/forum/index.php/topic,10808.0.html](https://openxcom.org/forum/index.php/topic,10808.0.html)\n\n**Default: 0**"
         },
         {
             // alienMissions.waves.objective
