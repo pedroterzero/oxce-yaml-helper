@@ -13,7 +13,7 @@
         "url": "https://github.com/pedroterzero/oxce-yaml-helper.git"
     },
     "engines": {
-        "vscode": "^1.76.2"
+        "vscode": "^1.80.0"
     },
     "categories": [
         "Other"
