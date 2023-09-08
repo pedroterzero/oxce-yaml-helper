@@ -1,3 +1,7 @@
+# v1.2.7
+- Updated ruleset documentation
+- Bump package versions
+
 # v1.2.6
 - Added recognition for items.scripts.inventorySpriteOverlay
 
