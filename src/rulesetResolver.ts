@@ -373,7 +373,7 @@ export class RulesetResolver implements Disposable {
 
             return parsed;
         } catch (error: any) {
-            reporter.sendTelemetryException(error, {'file.path': file.path}/*, { 'numericMeasure': 123 }*/);
+            reporter.sendTelemetryErrorEvent(error, {'file.path': file.path}/*, { 'numericMeasure': 123 }*/);
             reporter.sendTelemetryErrorEvent('loadYamlIntoTree', {'file.path': file.path, 'error.message': error.message});
             logger.error('loadYamlIntoTree', file.path, error.message);
         }
