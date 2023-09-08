@@ -217,13 +217,13 @@
         "@types/vscode": "^1.82.0",
         "@typescript-eslint/eslint-plugin": "^6.6.0",
         "@typescript-eslint/parser": "^6.6.0",
+        "@vscode/test-electron": "^2.3.4",
         "esbuild": "^0.19.2",
         "eslint": "^8.48.0",
         "fs-extra": "^11.1.1",
         "mocha": "^10.2.0",
         "nyc": "^15.1.0",
-        "typescript": "^5.2.2",
-        "vscode-test": "^1.6.1"
+        "typescript": "^5.2.2"
     },
     "dependencies": {
         "@vscode/extension-telemetry": "^0.8.4",
