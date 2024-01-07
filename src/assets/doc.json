@@ -128,6 +128,14 @@
       "description": "String ID of the country name.",
       "default": "required"
     },
+    "provideBaseFunc": {
+      "description": "A list of services an xcom base in this country provides after being built.",
+      "default": "-"
+    },
+    "forbiddenBaseFunc": {
+      "description": "A list of services that cannot be used anymore after an xcom base is built in this country.",
+      "default": "-"
+    },
     "signedPactEvent": {
       "description": "String ID of the event triggered when the country leaves Xcom project.",
       "default": "-"
@@ -165,6 +173,14 @@
     "type": {
       "description": "String ID of the region name.",
       "default": "required"
+    },
+    "provideBaseFunc": {
+      "description": "A list of services an xcom base in this region provides after being built.",
+      "default": "-"
+    },
+    "forbiddenBaseFunc": {
+      "description": "A list of services that cannot be used anymore after an xcom base is built in this region.",
+      "default": "-"
     },
     "cost": {
       "description": "Amount of money spent building an X-COM base in this region (first base is free).",
@@ -266,6 +282,14 @@
     },
     "size": {
       "description": "Size of the facility, in grid units. Every facility is square, so a size of 1 means 1x1, 2 means 2x2, etc. Bigger facilities are made up of multiple sprites, for example a 2x2 facility will use 4 sprites for **spriteShape** and 4 sprites for **spriteFacility** (top-left, top-right, bottom-left, bottom-right).",
+      "default": "1"
+    },
+    "sizeX": {
+      "description": "Size of the facility in the X direction. Overrides **size**.",
+      "default": "1"
+    },
+    "sizeY": {
+      "description": "Size of the facility in the Y direction. Overrides **size**.",
       "default": "1"
     },
     "buildCost": {
@@ -622,13 +646,13 @@
       "description": "Maximum altitude (0-4) this craft can dogfight to.",
       "default": "-1"
     },
-    "maxItems": {
-      "description": "Amount of items this craft can carry.",
-      "default": "0"
+    "defaultAltitude": {
+      "description": "Altitude displayed on the GUI when a craft doesn't follow any UFO (or the UFO is crashed/landed).",
+      "default": "STR_VERY_LOW"
     },
-    "maxStorageSpace": {
-      "description": "Total size of items/equipment this craft can carry. Does not include HWP, HWP ammo and armor worn by soldiers.",
-      "default": "0.0"
+    "maxItems": {
+      "description": "Amount of items this craft can carry.\n\nDefault for a craft is 999999. Default for a craft weapon/module is 0.",
+      "default": "0"
     },
     "shieldRechargedAtBase": {
       "description": "How many shield points are recharged when landed at base per hour.",
@@ -693,6 +717,10 @@
     "shieldBleedThrough": {
       "description": "Defines the percent of damage that passes the shield when it goes down. A value of 0 means that with even just 1 shield point, any single hit will be blocked, while 100 means 100% of the damage left after the shield blocks it will go on to damage the craft.",
       "default": "0"
+    },
+    "maxStorageSpace": {
+      "description": "Total size of items/equipment this craft can carry. Does not include HWP, HWP ammo and armor worn by soldiers.\n\nDefault for a craft is 99999.0. Default for a craft weapon/module is 0.0.",
+      "default": "0.0"
     }
   },
   "craftWeapons": {
@@ -1876,6 +1904,14 @@
       "description": "Sound played when this type of UFO starts hunting an XCOM craft, from GEO.CAT.",
       "default": "-1"
     },
+    "hitSound": {
+      "description": "Sound played when this type of UFO damages/destroys an xcom base, from GEO.CAT.",
+      "default": "-1"
+    },
+    "hitImage": {
+      "description": "Allows to override the background image of the base damaged/destroyed popup window.",
+      "default": "-"
+    },
     "raceBonus": {
       "description": "Modifies or overrides the UFO Stats per alien race.\n\nYou can use this to make the same type of UFO have different [stats](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#UFO_Stats) depending on the alien race.\n\n```\n - type: STR_TERROR_SHIP\n   raceBonus:\n     STR_MUTON:\n       hitBonus: 20\n       craftCustomDeploy: STR_MORE_SCARY_WEAPONS\n       missionCustomDeploy: STR_TERROR_SITE_MUTONS\n     STR_ETHEREAL:\n       missionCustomDeploy: STR_END_OF_THE_WORLD\n\n```",
       "default": "-"
@@ -2948,6 +2984,10 @@
       "description": "The reset flag can be used to clear the bonuses gained by previous transformations. It also clears the list of previously performed transformations.\n\nFor example: 1. you train karate and gain a bonus 2. then you transform the guy into a MEC and want to lose all the previous bonuses (since MECs can't benefit from karate training... I hope)\n\nNote: stats gained by \"classic\" transformations (i.e. those that are NOT bonuses) will NOT be reset; only bonuses can be reset",
       "default": "false"
     },
+    "resetRank": {
+      "description": "Reset the soldier rank back to Rookie during the transformation?",
+      "default": "false"
+    },
     "soldierBonusType": {
       "description": "ID of a soldier bonus applied to a soldier undergoing this transformation.",
       "default": "-"
@@ -3482,12 +3522,8 @@
       "description": "Alternative to **members**. Instead of defining just a single unit type per alien rank, you can define any number of unit types here and one will be chosen randomly (each time a new unit is generated). To increase a chance of a certain unit type being selected, you can add it multiple times.",
       "default": "-"
     },
-    "retaliationMission": {
-      "description": "String ID of an alien mission, that can be generated after a dogfight against this race. If empty, a random retaliation mission will be used instead.",
-      "default": "-"
-    },
     "retaliationMissionWeights": {
-      "description": "A weighted list of alien missions that can be generated after a dogfight against this race, listed by \"number of months passed\". If used, **retaliationMission** is ignored.\n\nMore info: [https://openxcom.org/forum/index.php/topic,9496.0.html](https://openxcom.org/forum/index.php/topic,9496.0.html)",
+      "description": "A weighted list of alien missions that can be generated after a dogfight against this race, listed by \"number of months passed\".\n\nMore info: [https://openxcom.org/forum/index.php/topic,9496.0.html](https://openxcom.org/forum/index.php/topic,9496.0.html)",
       "default": "-"
     },
     "retaliationAggression": {
@@ -4220,6 +4256,10 @@
       "description": "Will this item be destroyed (removed from stores) after research is finished?",
       "default": "false"
     },
+    "neededItem": {
+      "description": "Allows to override the needed item (i.e. if it's different than the name of the research project).",
+      "default": "-"
+    },
     "unlockFinalMission": {
       "description": "If true, this research topic allows to send a spacecraft to the final mission.",
       "default": "false"
@@ -4474,8 +4514,16 @@
       "description": "Should an infiltration mission end after the first cycle (false) or continue indefinitely (true)?",
       "default": "true"
     },
+    "skipScoutingPhase": {
+      "description": "Mark all xcom bases in the mission region as retaliation targets automatically at the mission start? (and also before each UFO is spawned, if the modder decides to spawn more UFOs)",
+      "default": "false"
+    },
     "multiUfoRetaliation": {
-      "description": "Should the retaliation mission end after the first base defense (false) or continue until all already spawned UFOs disappear (true)?",
+      "description": "Keep generating UFOs until the first base defense?",
+      "default": "false"
+    },
+    "multiUfoRetaliationExtra": {
+      "description": "Keep generating UFOs until the end of the alien mission?",
       "default": "false"
     },
     "ignoreBaseDefenses": {
