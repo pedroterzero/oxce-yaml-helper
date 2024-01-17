@@ -907,11 +907,11 @@
       "default": "-1"
     },
     "bulletSpeed": {
-      "description": "How much faster (or slower, if you use a negative number) is a projectile fired from this weapon compared to the default.\n\nDefined as a whole number that will be added to the default speed, e.g. 0 provides 0 additional speed; 1 will provide 1 additional speed; etc.",
+      "description": "How much faster (or slower, if you use a negative number) is a projectile fired from this weapon compared to the default. Defined as a whole number that will be added to the default speed, e.g. 0 provides 0 additional speed; 1 will provide 1 additional speed; etc.",
       "default": "0"
     },
     "explosionSpeed": {
-      "description": "How much faster (or slower, if you use a negative number) is an explosion (hitAnimation) of this item animated compared to the default.\n\nDefined as a whole number that will be multiplied by 10 and the difference from the default speed will be your additional speed, e.g. 0 provides 0\\*10 = 0 additional speed; 1 will provide (1\\*10) - {default} = additional speed; etc.",
+      "description": "How much faster (or slower, if you use a negative number) is an explosion (hitAnimation) of this item animated compared to the default. Defined as a whole number that will be multiplied by 10 and the difference from the default speed will be your additional speed, e.g. 0 provides 0\\*10 = 0 additional speed; 1 will provide (1\\*10) - {default} = additional speed; etc.",
       "default": "0"
     },
     "turretType": {
@@ -4393,11 +4393,11 @@
       "default": "EU (0), TFTD (157)"
     },
     "rect_stats": {
-      "description": "Rectangle (**x**, **y**, **width**, **height**) of the stats text on the screen, only applicable to _Craft_ articles.",
+      "description": "Rectangle (**x**, **y**, **width**, **height**) of the stats text on the screen, only applicable to _Craft_ articles.\n\nExample:\n\n```\n\\- id: STR_SKYRANGER\n  rect_stats:\n    x: 7\n    y: 42\n    width: 307\n    height: 125\n\n```",
       "default": "-"
     },
     "rect_text": {
-      "description": "Rectangle (**x**, **y**, **width**, **height**) of the description text on the screen, only applicable to _Craft_ articles.\n\nIn OXCE, it is also applicable to _TextImage_ articles.",
+      "description": "Rectangle (**x**, **y**, **width**, **height**) of the description text on the screen, only applicable to _Craft_ articles. Defined in the same way as \"rect\\_stats\".\n\nIn OXCE, it is also applicable to _TextImage_ articles.",
       "default": "-"
     },
     "weapon": {
