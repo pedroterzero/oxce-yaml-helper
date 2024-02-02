@@ -1,7 +1,7 @@
 import { TextDocument, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
 import { logger } from "./logger";
 import { Definition, LogicDataEntry, Match, RangedEntryInterface, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
-import { Document, parseDocument } from 'yaml';
+import { Document, parseDocument } from 'yaml2';
 import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
 import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
 import { rulesetDefinitionFinder } from "./rulesetDefinitionFinder";
@@ -14,10 +14,9 @@ export interface ParsedDocument {
     regular: Document,
 }
 export interface YAMLDocument {
-    contents: { items: YAMLDocumentItem[] };
-    anchors: {
-        getNode: (name: string) => YAMLNode | undefined
-    };
+    // contents: ReturnType<typeof parseDocument>['contents'];
+    contents: Document['contents'];
+    anchors: null;
 }
 
 export interface YAMLDocumentItem {
@@ -162,15 +161,21 @@ export class RulesetParser {
 
     public parseDocument (yaml: string): ParsedDocument {
         const yamlDocument: YAMLDocument = {} as YAMLDocument;
-        let doc: Document = new Document();
+        let doc;
         try {
             // I am not sure why I have to cast this to Document, are yaml package's types broken?
-            doc = parseDocument(yaml, {maxAliasCount: 1024});
+            doc = parseDocument(yaml, { });
 
-            yamlDocument.anchors = doc.anchors;
-            yamlDocument.contents = doc.contents;
+            // yamlDocument.anchors = [];
+            if (doc.contents) {
+                yamlDocument.contents = doc.contents;
+            }
         } catch (error) {
             logger.error('could not parse yaml document', { error });
+        }
+
+        if (!doc) {
+            throw new Error('Could not parse yaml document');
         }
 
         return {

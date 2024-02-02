@@ -23,11 +23,14 @@ export class RulesetRefnodeFinder {
 
     public findRefNodeRangeInYAML(yaml: string, key: string): number[] {
         const doc = rulesetParser.parseDocument(yaml).parsed;
-        const node = doc.anchors.getNode(key);
+        // const node = doc.anchors.getNode(key);
 
-        if (node) {
-            return node.range as number[];
+        if (key) {
+            console.log(key, doc);
         }
+        // if (node) {
+        //     return node.range as number[];
+        // }
 
         return [0, 0];
     }

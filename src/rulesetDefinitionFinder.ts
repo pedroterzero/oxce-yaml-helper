@@ -1,6 +1,6 @@
 import { typedProperties } from "./typedProperties";
 import { Definition, Match } from "./rulesetTree";
-import { logger } from "./logger";
+// import { logger } from "./logger";
 
 export class RulesetDefinitionFinder {
     public getDefinitionsFromReferences(references: Match[] | undefined): Definition[] {
@@ -58,7 +58,7 @@ export class RulesetDefinitionFinder {
         return definitions;
     }
 
-    private addSpritesheetIndexes(ref: Match, references: Match[], description: string, multiplier = 1) {
+    private addSpritesheetIndexes(ref: Match, references: Match[], _description: string, multiplier = 1) {
         if (!('metadata' in ref) || !ref.metadata) {
             return;
         }
@@ -106,7 +106,7 @@ export class RulesetDefinitionFinder {
 
                 newRef.metadata.spriteSize = yLoops * xLoops;
             }
-            logger.debug(`adding ${description} ref key ${newRef.key}`);
+            // logger.debug(`adding ${description} ref key ${newRef.key}`);
 
             references.push(newRef);
         }

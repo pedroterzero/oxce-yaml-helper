@@ -1,15 +1,16 @@
-import { logger } from "./logger";
+import { Node, isMap, isScalar, isSeq } from "yaml2";
+import { YAMLDocument } from "./rulesetParser";
 import { LogicDataEntry, Match, RuleType } from "./rulesetTree";
-import { Scalar, YAMLMap, YAMLSeq } from "yaml/types";
-import { YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
 import { typedProperties } from "./typedProperties";
-import { LogicHandler } from "./logic/logicHandler";
-import { get, has } from "dot-prop";
 
-type Entry = YAMLSeq | YAMLDocumentItem | string | Scalar;
+interface NodeInfo {
+    value: any;
+    path: string;
+    range: [number, number];
+  }
 
 export class RulesetRecursiveKeyRetriever {
-    private logicHandler = new LogicHandler();
+    // private logicHandler = new LogicHandler();
 
     public getKeyInformationFromYAML(doc: YAMLDocument, key: string, range: number[]): RuleType | undefined {
         const [references] = this.findAllReferencesInYamlDocument(doc, true);
@@ -36,13 +37,88 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     public findAllReferencesInYamlDocument(doc: YAMLDocument, lookupAll = false): [Match[], LogicDataEntry[]] {
-        return this.findKeyInformationInYamlDocument(doc, lookupAll);
+        const ret = this.findKeyInformationInYamlDocument(doc, lookupAll);
+        // console.log(JSON.stringify(ret, null, 2));
+        return ret;
+        // return this.findKeyInformationInYamlDocument(doc, lookupAll);
     }
 
     private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): [Match[], LogicDataEntry[]] {
+        // const matches: Match[] = [];
+        const logicData: LogicDataEntry[] = [];
+
+        if (lookupAll) {
+            console.log(lookupAll);
+        }
+        // console.log(yamlDocument.contents);
+
+       const nodes = this.traverseNode(yamlDocument.contents!);
+
+        // console.log(nodes.length, JSON.stringify(nodes, null, 2));
+        const matches: Match[] = nodes.map((node) => {
+            const match: Match = {
+                key: node.value,
+                path: node.path,
+                range: node.range,
+                metadata: {}
+            };
+
+            return match;
+        });
+
+        return [
+            matches,
+            logicData
+        ];
+    }
+
+    private traverseNode(node: Node, path: string[] = [], depth: number = 0, isRoot: boolean = true): NodeInfo[] {
+        const results: NodeInfo[] = [];
+        const newPath = path.filter((item, index) => index !== 1 || item !== '[]').join('.').replaceAll('.[]', '[]');
+
+        if (isMap(node)) {
+            const isKeyReferencePath = typedProperties.isKeyReferencePath(newPath);
+            node.items.forEach((item: any) => {
+                const key = item.key.value;
+
+                if (isKeyReferencePath) {
+                    results.push({
+                        value: key,
+                        path: newPath,
+                        range: node.range ? [node.range[0], node.range[1]] : [0, 0],
+                    });
+                }
+
+                results.push(...this.traverseNode(item.value, path.concat(key), depth, isRoot && isScalar(item.value)));
+            });
+        } else if (isSeq(node)) {
+            node.items.forEach((item: any, _index: number) => {
+                results.push(...this.traverseNode(item, path.concat('[]'), depth + 1, false));
+            });
+        } else if (isScalar(node)) {
+            const isFloat = (typeof node.value === 'number' && this.isFloat(node.value));
+
+            if (typeof node.value !== 'boolean' && !isFloat && !this.isUndefinableNumericProperty(newPath, node.value)) {
+                const finalPath = isRoot ? 'globalVariables.' + newPath : newPath;
+                results.push({
+                    value: node.value,
+                    path: finalPath,
+                    range: node.range ? [node.range[0], node.range[1]] : [0, 0],
+                });
+            }
+        }
+
+        return results;
+    }
+
+    private isFloat(n: number): boolean {
+        return Number(n) === n && n % 1 !== 0;
+    }
+
+/*    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): [Match[], LogicDataEntry[]] {
         // logger.debug('findKeyInformationInYamlDocument');
 
-        const yamlPairs = yamlDocument.contents.items;
+        const yamlPairs = yamlDocument.contents && 'items' in yamlDocument.contents ? yamlDocument.contents.items : null;
         if (!yamlPairs) {
             logger.warn('yamlDocument does not have any items');
             return [[], []];
@@ -146,7 +222,7 @@ export class RulesetRecursiveKeyRetriever {
      * for every property, such as mapScripts.commands[].groups, because it can also be mapScripts.commands[].groups[] which is handled differently
      * @param match
      * @param metadataByPath
-     */
+     *//*
     private addMetadataForLogicChecks(match: Match, metadataByPath: {[key: string]: Record<string, unknown>}) {
         if (this.logicHandler.isRelatedLogicField(match.path)) {
             for (const metadata of Object.values(metadataByPath)) {
@@ -331,7 +407,7 @@ export class RulesetRecursiveKeyRetriever {
      * @param path
      * @param ruleProperty
      * @param namesByPath
-     */
+     *//*
     private checkForDefinitionName(path: string, ruleProperty: any, namesByPath: { [key: string]: string; }) {
         for (const key of typedProperties.getPossibleTypeKeys(path)) {
             if (ruleProperty.key?.value === key) {
@@ -389,7 +465,7 @@ export class RulesetRecursiveKeyRetriever {
 
     private isBoolean(value: any, path: string) {
         return typeof value === 'boolean' && !typedProperties.isStoreVariable(path);
-    }
+    }*/
 
     private isUndefinableNumericProperty(path: string, value: any): boolean {
         if (parseInt(value) !== value) {
@@ -402,7 +478,7 @@ export class RulesetRecursiveKeyRetriever {
         return !typedProperties.isNumericProperty(type, key);
     }
 
-    private addMetadata(path: string, entry: YAMLSeq): Record<string, unknown> | undefined {
+/*    private addMetadata(path: string, entry: YAMLSeq): Record<string, unknown> | undefined {
         // TODO we seem to come here too many times, check with one item (properties.type === 'STR_12GAUGE_NON_LETHAL_X8')
         const fields = typedProperties.getMetadataFieldsForType(path, entry.toJSON());
         if (!fields) {
@@ -419,7 +495,7 @@ export class RulesetRecursiveKeyRetriever {
         }
 
         return metadata;
-    }
+    }*/
 
     private checkForRangeMatch(range1: number[], range2: number[]): boolean {
         return range1[0] === range2[0] && range1[1] === range2[1];

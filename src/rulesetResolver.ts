@@ -48,7 +48,12 @@ export class RulesetResolver implements Disposable {
 
         this.onDidLoadRulesheet(this.ruleSheetLoaded.bind(this, progress));
 
+        // eslint-disable-next-line no-debugger
+//        debugger;
+        // console.profile();
         await this.loadYamlFiles();
+        // console.profileEnd();
+        // eslint-disable-next-line no-debugger
         progress.report({ increment: 100 });
         logger.debug(`yaml files loaded, took ${((new Date()).getTime() - start.getTime()) / 1000}s`);
 
@@ -116,6 +121,7 @@ export class RulesetResolver implements Disposable {
         if (!workspace.workspaceFolders) {
             return;
         }
+
 
         return Promise.all(workspace.workspaceFolders.map(async workspaceFolder => {
             logger.debug('loading yaml files for workspace dir:', workspaceFolder.name);
@@ -345,15 +351,22 @@ export class RulesetResolver implements Disposable {
 
         try {
             const doc = rulesetParser.parseDocument(document.getText());
-            const docObject = doc.regular.toJSON();
+            // const docObject = doc.regular.toJSON();
 
-            let translations: Translation[] = [];
+            const translations: Translation[] = [];
             let parsed: ParsedRuleset;
             if (this.isLanguageFile(file)) {
-                translations = rulesetParser.getTranslationsFromLanguageFile(docObject);
+                // translations = rulesetParser.getTranslationsFromLanguageFile(docObject);
                 parsed = {translations};
             } else {
+                console.log(file.path);
                 const [references, logicData] = rulesetParser.getReferencesRecursively(doc.parsed);
+
+                if (file.path.endsWith('items_FTA.rul')) {
+                    console.log(JSON.stringify(references, null, 2));
+                }
+
+
                 rulesetParser.addRangePositions(references, document);
                 rulesetParser.addRangePositions(logicData, document);
                 logger.debug(`found ${references?.length} references in file ${this.getCleanFile(file, workspaceFolder.uri)}`);
@@ -363,7 +376,7 @@ export class RulesetResolver implements Disposable {
 
                 // can't use references (yet), variables and extraStrings are not references (yet) (they are keys, not values)
                 const variables = rulesetParser.getVariables(references);
-                translations = rulesetParser.getTranslations(docObject);
+                // translations = rulesetParser.getTranslations(docObject);
 
                 parsed = {definitions, references, variables, translations, logicData};
             }
