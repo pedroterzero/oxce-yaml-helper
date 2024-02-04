@@ -78,18 +78,26 @@ export class RulesetRecursiveKeyRetriever {
 
         if (isMap(node)) {
             const isKeyReferencePath = typedProperties.isKeyReferencePath(newPath);
+            let typeValue = '';
             node.items.forEach((item: any) => {
                 const key = item.key.value;
+
+                // Handle extraSprites
+                if (typedProperties.isExtraFilesRule(newPath, key, item.value.value)) {
+                    typeValue = item.value.value;
+                }
 
                 if (isKeyReferencePath) {
                     results.push({
                         value: key,
                         path: newPath,
-                        range: node.range ? [node.range[0], node.range[1]] : [0, 0],
+                        range: item.key.range ? [item.key.range[0], item.key.range[1]] : [0, 0],
                     });
+                    return;
                 }
 
-                results.push(...this.traverseNode(item.value, path.concat(key), depth, isRoot && isScalar(item.value)));
+                const newPathForChild = this.buildNewPathForChild(path, key, typeValue, newPath);
+                results.push(...this.traverseNode(item.value, newPathForChild, depth, isRoot && isScalar(item.value)));
             });
         } else if (isSeq(node)) {
             node.items.forEach((item: any, _index: number) => {
@@ -109,6 +117,13 @@ export class RulesetRecursiveKeyRetriever {
         }
 
         return results;
+    }
+
+    private buildNewPathForChild(path: string[], key: string, typeValue: string, newPath: string) {
+        if (typeValue && key !== 'type' && newPath !== 'extraSprites.files') {
+            return path.concat(typeValue, key);
+        }
+        return path.concat(key);
     }
 
     private isFloat(n: number): boolean {
