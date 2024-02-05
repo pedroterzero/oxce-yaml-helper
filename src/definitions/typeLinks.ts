@@ -1,13 +1,18 @@
-import { LogicHandler } from "../logic/logicHandler";
-import { getAdditionalLinks } from "../utilities";
+import { LogicHandler } from '../logic/logicHandler';
+import { getAdditionalLinks } from '../utilities';
 
 type TypeLinks = {
-    [key: string]: string[]
+    [key: string]: string[];
     // [key: string]: (string | [string, number])[];
 };
 
 export const spriteTypeLinks: TypeLinks = {
-    'crafts.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
+    'crafts.sprite': [
+        '_numeric_',
+        'extraSprites.INTICON.PCK.files',
+        'extraSprites.INTICON.PCK.files',
+        'extraSprites.BASEBITS.PCK.files',
+    ],
     'craftWeapons.sprite': ['_numeric_', 'extraSprites.INTICON.PCK.files', 'extraSprites.BASEBITS.PCK.files'],
     'facilities.spriteFacility': ['_numeric_', 'extraSprites.BASEBITS.PCK.files'],
     'items.bigSprite': ['_numeric_', 'extraSprites.BIGOBS.PCK.files'],
@@ -37,7 +42,9 @@ export const soundTypeLinks: TypeLinks = {
     'units.panicSound': ['_numeric_', BATTLE_CAT],
 };
 
-export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundTypeLinks, {
+export const typeLinks: TypeLinks = {
+    ...spriteTypeLinks,
+    ...soundTypeLinks,
     'alienDeployments.abortCutscene': ['cutscenes'],
     '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': ['alienDeployments'],
     'alienDeployments.briefing.cutscene': ['cutscenes'],
@@ -114,7 +121,7 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'facilities.buildOverFacilities': ['facilities'],
     'facilities.destroyedFacility': ['facilities'],
     'facilities.mapName': ['terrains.mapBlocks[]'],
-    'facilities.requires': ['research'],
+    'facilities.requires[]': ['research'],
     'globalVariables.fakeUnderwaterBaseUnlockResearch': ['research'],
     'globalVariables.mana.unlockResearch': ['research'],
     'globalVariables.newBaseUnlockResearch': ['research'],
@@ -124,7 +131,7 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'items.compatibleAmmo[]': ['items'],
     '/^items\\.ammo\\.[0-3]\\.compatibleAmmo\\[\\]$/': ['items'],
     'items.defaultInventorySlot': ['invs'],
-    'items.requires': ['research'],
+    'items.requires[]': ['research'],
     'items.requiresBuy': ['research'],
     'items.requiresBuyBaseFunc': ['facilities.provideBaseFunc'],
     'items.spawnUnit': ['units'],
@@ -205,18 +212,19 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'units.armor': ['armors'],
     'units.builtInWeaponSets[][]': ['items'],
     'units.psiWeapon': ['items'],
-    'units.spawnUnit': ['units']
-}, getAdditionalLinks());
+    'units.spawnUnit': ['units'],
+    ...getAdditionalLinks(),
+};
 
 // add numeric fields from logic handler
-const handler = new LogicHandler;
+const handler = new LogicHandler();
 // for (const field of handler.getNumericFields().filter(field => !(field in typeLinks))) {
 for (const field of handler.getNumericFields()) {
     typeLinks[field] = ['_numeric_', '_dummy_'];
 }
 // add non numeric fields too (make sure to concat and not overwrite)
 // for (const field of handler.getRelatedLogicFields().filter(field => !(field in typeLinks) && !handler.getNumericFields().includes(field))) {
-for (const field of handler.getRelatedLogicFields().filter(field => !handler.getNumericFields().includes(field))) {
+for (const field of handler.getRelatedLogicFields().filter((field) => !handler.getNumericFields().includes(field))) {
     typeLinks[field] = (field in typeLinks ? typeLinks[field] : []).concat(['_dummy_']);
 }
 
