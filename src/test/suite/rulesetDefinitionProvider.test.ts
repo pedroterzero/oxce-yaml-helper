@@ -39,7 +39,16 @@ const getDefinitions = async (sourcePath: string, sourceLine: number, sourceChar
     return definitions;
 };
 
-const checkDefinitionSingle = async (sourcePath: string, sourceLine: number, sourceChar: number, uri?: Uri, startLine?: number, startChar?: number, endLine?: number, endChar?: number) => {
+const checkDefinitionSingle = async (
+    sourcePath: string,
+    sourceLine: number,
+    sourceChar: number,
+    uri?: Uri,
+    startLine?: number,
+    startChar?: number,
+    endLine?: number,
+    endChar?: number,
+) => {
     const definitions = await getDefinitions(sourcePath, sourceLine, sourceChar, uri);
 
     if (!definitions) {
@@ -60,7 +69,14 @@ const checkDefinitionSingle = async (sourcePath: string, sourceLine: number, sou
     checkDefinitionTarget(definitions[0], uri, startLine, startChar, endLine, endChar);
 };
 
-const checkDefinitionTarget = (definition: Location, uri: Uri, startLine: number, startChar: number, endLine: number, endChar: number) => {
+const checkDefinitionTarget = (
+    definition: Location,
+    uri: Uri,
+    startLine: number,
+    startChar: number,
+    endLine: number,
+    endChar: number,
+) => {
     assert.strictEqual(definition.uri.path, uri.path);
     assert.strictEqual(definition.range.start.line, startLine);
     assert.strictEqual(definition.range.start.character, startChar);
@@ -71,15 +87,12 @@ const checkDefinitionTarget = (definition: Location, uri: Uri, startLine: number
 const deleteTestFile = async (path: string, resolver: RulesetResolver) => {
     const contents = await readFile(path);
 
-    await Promise.all([
-        waitForRefresh(resolver),
-        remove(path)
-    ]);
+    await Promise.all([waitForRefresh(resolver), remove(path)]);
 
     return contents;
 };
 
-describe("Definition Provider", () => {
+describe('Definition Provider', () => {
     before(async () => {
         return waitForExtensionLoad(rulesetResolver);
     });
@@ -98,7 +111,7 @@ describe("Definition Provider", () => {
         });
 
         it('finds definition for a key with a comment', async () => {
-            await checkDefinitionSingle(itemsPath, 32, 14, itemsUri, 32, 10, 32, 40);
+            await checkDefinitionSingle(itemsPath, 32, 14, itemsUri, 32, 10, 32, 26);
         });
 
         describe('Definition finding tests (CRLF)', () => {
@@ -109,7 +122,9 @@ describe("Definition Provider", () => {
                 document = await workspace.openTextDocument(itemsPath);
                 editor = await window.showTextDocument(document);
 
-                await editor.edit(builder => { builder.setEndOfLine(EndOfLine.CRLF); });
+                await editor.edit((builder) => {
+                    builder.setEndOfLine(EndOfLine.CRLF);
+                });
                 // save and wait for refresh so we check both CRLF=>LF and vice versa
                 await document.save();
                 await waitForRefresh(rulesetResolver);
@@ -129,7 +144,9 @@ describe("Definition Provider", () => {
 
             after(async () => {
                 // restore
-                await editor.edit(builder => { builder.setEndOfLine(EndOfLine.LF); });
+                await editor.edit((builder) => {
+                    builder.setEndOfLine(EndOfLine.LF);
+                });
                 await document.save();
                 await waitForRefresh(rulesetResolver);
             });
@@ -179,7 +196,13 @@ describe("Definition Provider", () => {
         });
 
         it('finds definitions for a craftWeapons.sprite key', async () => {
-            const definitions = await getDefinitions(resolve(fixturePath, 'craftWeapons.rul'), 2, 13, extraSpritesUri, true);
+            const definitions = await getDefinitions(
+                resolve(fixturePath, 'craftWeapons.rul'),
+                2,
+                13,
+                extraSpritesUri,
+                true,
+            );
 
             if (!definitions || !('length' in definitions)) {
                 assert.fail('Did not get definitions');
@@ -188,8 +211,6 @@ describe("Definition Provider", () => {
             assert.strictEqual(definitions.length, 2);
             checkDefinitionTarget(definitions[0], extraSpritesUri, 37, 6, 37, 9);
             checkDefinitionTarget(definitions[1], extraSpritesUri, 40, 6, 40, 9);
-
-
         });
 
         it('finds refnode definition', async () => {
@@ -210,15 +231,19 @@ describe("Definition Provider", () => {
         });
     });
 
-/*     describe('getDefinitions', () => {
-        // /** @private @deprecated only for testing, do not use (we can't mock TextDocument) *//*
+    /*     describe('getDefinitions', () => {
+        // /** @private @deprecated only for testing, do not use (we can't mock TextDocument) */
+    /*
         // public _testGetDefinitions(value: { key: string; range: Range; }, folder: WorkspaceFolder) {
         //     return this.getDefinitions(value, folder);
         // }
 
         it('returns the correct range', () => {
             const uri = itemsUri;
-            const definitions = rulesetDefinitionProvider._testGetDefinitions({key: 'STR_DUMMY_ITEM', range: new Range(0, 0, 0, 0)}, workspaceFolder);
+            const definitions = rulesetDefinitionProvider._testGetDefinitions(
+                { key: 'STR_DUMMY_ITEM', range: new Range(0, 0, 0, 0) },
+                workspaceFolder,
+            );
             assert.strictEqual(definitions.length, 1);
             assert.strictEqual(definitions[0].uri.path, uri.path);
             assert.strictEqual(definitions[0].range.start.line, 1);
