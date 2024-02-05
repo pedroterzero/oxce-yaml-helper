@@ -1,6 +1,6 @@
 manufacture:
   - name: STR_DUMMY_MANUFACTURE
     requiredItems:
-      STR_DUMMY_ITEM: 1
+      STR_ITEM_DELETE_TEST: 1
     randomProducedItems:
     - [25, {STR_DUMMY_NESTED_ITEM: 1}]

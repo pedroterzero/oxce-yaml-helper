@@ -1,38 +1,38 @@
-import { Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, Range, Uri, workspace } from "vscode";
-import { DefinitionLookup, Match } from "./rulesetTree";
-import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from "./workspaceFolderRuleset";
-import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
-import { builtinResourceIds, builtinTypes } from "./definitions/builtinTypes";
-import { ignoreTypes } from "./definitions/ignoreTypes";
-import { ignoreStringTypes, stringTypes } from "./definitions/stringTypes";
-import { rulesetResolver } from "./extension";
-import { logger } from "./logger";
-import { FilesWithDiagnostics, LogicHandler } from "./logic/logicHandler";
-import { mergeAndConcat } from "merge-anything";
-import { typeHintMessages } from "./definitions/typeHintMessages";
-import { typedProperties } from "./typedProperties";
-import { WorkspaceFolderRulesetHierarchy } from "./workspaceFolderRulesetHierarchy";
-import { pathStartsWith } from "./utilities";
+import { Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, Range, Uri, workspace } from 'vscode';
+import { DefinitionLookup, Match } from './rulesetTree';
+import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from './workspaceFolderRuleset';
+import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from './definitions/typeLinks';
+import { builtinResourceIds, builtinTypes } from './definitions/builtinTypes';
+import { ignoreTypes } from './definitions/ignoreTypes';
+import { ignoreStringTypes, stringTypes } from './definitions/stringTypes';
+import { rulesetResolver } from './extension';
+import { logger } from './logger';
+import { FilesWithDiagnostics, LogicHandler } from './logic/logicHandler';
+import { mergeAndConcat } from 'merge-anything';
+import { typeHintMessages } from './definitions/typeHintMessages';
+import { typedProperties } from './typedProperties';
+import { WorkspaceFolderRulesetHierarchy } from './workspaceFolderRulesetHierarchy';
+import { pathStartsWith } from './utilities';
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
 };
 
 type DuplicateMatches = {
-    key: string,
-    definition: DefinitionLookup,
-    duplicates: DefinitionLookup[]
+    key: string;
+    definition: DefinitionLookup;
+    duplicates: DefinitionLookup[];
 };
 
 type TypeMatchResult = {
-    match: boolean,
-    expected: string[],
-    found: string[]
+    match: boolean;
+    expected: string[];
+    found: string[];
 };
 
 export class RulesetDefinitionChecker {
-    private problemsByPath: {[key: string]: number} = {};
-    private duplicatesPerFile: {[key: string]: DuplicateMatches[]} = {};
+    private problemsByPath: { [key: string]: number } = {};
+    private duplicatesPerFile: { [key: string]: DuplicateMatches[] } = {};
 
     private ignoreDefinitionRegexes: RegExp[] = [
         /^extraSprites\.files\.\d+$/,
@@ -41,18 +41,26 @@ export class RulesetDefinitionChecker {
         /^terrains\.mapBlocks\[\]$/,
     ];
 
-    private builtinTypeRegexes: {regex: RegExp, values: string[]}[] = [];
+    private builtinTypeRegexes: { regex: RegExp; values: string[] }[] = [];
     private stringTypeRegexes: RegExp[] = [];
     private ignoreTypesRegexes: RegExp[] = [];
 
-    private ignoreTypeValues: {[key: string]: string[]} = {
-        'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
-        'extraSounds': ['BATTLE.CAT'],
+    private ignoreTypeValues: { [key: string]: string[] } = {
+        extraSprites: [
+            'BASEBITS.PCK',
+            'BIGOBS.PCK',
+            'FLOOROB.PCK',
+            'HANDOB.PCK',
+            'INTICON.PCK',
+            'Projectiles',
+            'SMOKE.PCK',
+        ],
+        extraSounds: ['BATTLE.CAT'],
     };
 
     private noWarnAboutIncorrectType = Object.keys(spriteTypeLinks).concat(Object.keys(soundTypeLinks));
 
-    private logicHandler = new LogicHandler;
+    private logicHandler = new LogicHandler();
 
     public constructor() {
         this.loadRegexes();
@@ -60,11 +68,16 @@ export class RulesetDefinitionChecker {
 
     public init(lookup: TypeLookup) {
         this.checkDefinitions(lookup);
-        this.logicHandler = new LogicHandler;
+        this.logicHandler = new LogicHandler();
     }
 
-    public checkFile(file: ReferenceFile, ruleset: WorkspaceFolderRuleset, _workspacePath: string, hierarchy: WorkspaceFolderRulesetHierarchy): Diagnostic[] {
-        const diagnostics : Diagnostic[] = [];
+    public checkFile(
+        file: ReferenceFile,
+        ruleset: WorkspaceFolderRuleset,
+        _workspacePath: string,
+        hierarchy: WorkspaceFolderRulesetHierarchy,
+    ): Diagnostic[] {
+        const diagnostics: Diagnostic[] = [];
 
         this.checkReferences(file, ruleset.definitionsLookup, diagnostics);
         this.addDuplicateDefinitions(file, diagnostics);
@@ -81,7 +94,12 @@ export class RulesetDefinitionChecker {
      * @param diagnostics
      * @param hierarchy
      */
-    public checkLogicData(ruleset: WorkspaceFolderRuleset, file: ReferenceFile, diagnostics: Diagnostic[], hierarchy: WorkspaceFolderRulesetHierarchy) {
+    public checkLogicData(
+        ruleset: WorkspaceFolderRuleset,
+        file: ReferenceFile,
+        diagnostics: Diagnostic[],
+        hierarchy: WorkspaceFolderRulesetHierarchy,
+    ) {
         let logicData;
         if ((logicData = ruleset.getLogicData(file.file))) {
             // console.log(`checking! ${file.file.path}`);
@@ -105,7 +123,10 @@ export class RulesetDefinitionChecker {
             const relatedInformation = [];
             for (const dupdef of duplicate.duplicates) {
                 relatedInformation.push(
-                    new DiagnosticRelatedInformation(new Location(dupdef.file, new Range(...dupdef.rangePosition[0], ...dupdef.rangePosition[1])), 'also defined here')
+                    new DiagnosticRelatedInformation(
+                        new Location(dupdef.file, new Range(...dupdef.rangePosition[0], ...dupdef.rangePosition[1])),
+                        'also defined here',
+                    ),
                 );
             }
 
@@ -118,7 +139,7 @@ export class RulesetDefinitionChecker {
                 range,
                 message,
                 severity: DiagnosticSeverity.Warning,
-                relatedInformation
+                relatedInformation,
             });
         }
 
@@ -128,7 +149,9 @@ export class RulesetDefinitionChecker {
     private checkDuplicateHints(duplicate: DuplicateMatches, message: string) {
         if (duplicate.definition.type.startsWith('extraSprites.')) {
             if (duplicate.definition.metadata?.spriteSize) {
-                message += `\nHint: ${typeHintMessages.extraSpritesMulti(duplicate.definition.metadata.spriteSize as string).trim()}`;
+                message += `\nHint: ${typeHintMessages
+                    .extraSpritesMulti(duplicate.definition.metadata.spriteSize as string)
+                    .trim()}`;
             }
         }
 
@@ -159,7 +182,7 @@ export class RulesetDefinitionChecker {
                 continue;
             }
             const possibleKeys = this.getPossibleKeys(ref);
-            if (possibleKeys.filter(key => key in lookup).length === 0) {
+            if (possibleKeys.filter((key) => key in lookup).length === 0) {
                 // can never match because the key simply does not exist for any type
                 this.addReferenceDiagnostic(ref, diagnostics, this.nonexistantDefinitionMessage);
             } else {
@@ -180,7 +203,13 @@ export class RulesetDefinitionChecker {
         if (this.isExtraStringType(ref.path)) {
             return true;
         }
-        if (typedProperties.isDefinitionPropertyForPath(ref.path.split('.').slice(0, -1).join('.'), ref.path.split('.').slice(-1).join('.'), 'DUMMY')) {
+        if (
+            typedProperties.isDefinitionPropertyForPath(
+                ref.path.split('.').slice(0, -1).join('.'),
+                ref.path.split('.').slice(-1).join('.'),
+                'DUMMY',
+            )
+        ) {
             if (!ignoreStringTypes.includes(ref.path)) {
                 return true;
             }
@@ -192,7 +221,7 @@ export class RulesetDefinitionChecker {
     private checkForValidTranslationReference(ref: Match, file: Uri, diagnostics: Diagnostic[]) {
         // console.log(`checking translation ${ref.path} => ${ref.key}`);
         const translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
-/*      let translation;
+        /*      let translation;
         try {
             translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
         }
@@ -207,11 +236,15 @@ export class RulesetDefinitionChecker {
         }*/
 
         if (translation === undefined) {
-            this.addReferenceDiagnostic(ref, diagnostics, () => `No translation entry found for "${ref.key}" (${ref.path})`);
+            this.addReferenceDiagnostic(
+                ref,
+                diagnostics,
+                () => `No translation entry found for "${ref.key}" (${ref.path})`,
+            );
         }
     }
 
-    public checkDefinitions (lookup: TypeLookup) {
+    public checkDefinitions(lookup: TypeLookup) {
         this.duplicatesPerFile = {};
 
         if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions')) {
@@ -256,7 +289,7 @@ export class RulesetDefinitionChecker {
     }
 
     private getDuplicatesByKeyAndType(lookup: TypeLookup) {
-        const dupes: {[key: string]: {[key: string]: DefinitionLookup[]}} = {};
+        const dupes: { [key: string]: { [key: string]: DefinitionLookup[] } } = {};
         const hierarchy = rulesetResolver.getRulesetHierarchy();
 
         for (const key in lookup) {
@@ -274,12 +307,19 @@ export class RulesetDefinitionChecker {
         return dupes;
     }
 
-    private getDuplicateKeys (keyDefs: DefinitionLookup[], key: string, hierarchy: { [key: string]: Uri; }): Duplicates | undefined {
+    private getDuplicateKeys(
+        keyDefs: DefinitionLookup[],
+        key: string,
+        hierarchy: { [key: string]: Uri },
+    ): Duplicates | undefined {
         const duplicates: Duplicates = {};
 
-        definitions:
-        for (const def of keyDefs) {
-            if (def.metadata && '_comment' in def.metadata && (def.metadata._comment as string).includes('ignoreDuplicate')) {
+        definitions: for (const def of keyDefs) {
+            if (
+                def.metadata &&
+                '_comment' in def.metadata &&
+                (def.metadata._comment as string).includes('ignoreDuplicate')
+            ) {
                 // explicitly ignored by comment
                 continue;
             }
@@ -308,7 +348,7 @@ export class RulesetDefinitionChecker {
     }
 
     private groupDuplicates(duplicates: Duplicates) {
-        const ret: {[key: string]: DefinitionLookup[]} = {};
+        const ret: { [key: string]: DefinitionLookup[] } = {};
 
         for (const type in duplicates) {
             const typeDupes = duplicates[type];
@@ -352,7 +392,7 @@ export class RulesetDefinitionChecker {
         return retval;
     }
 
-    private checkForLogicOverrides (ref: Match, lookup: TypeLookup) {
+    private checkForLogicOverrides(ref: Match, lookup: TypeLookup) {
         const overrides = typedProperties.checkForMetadataLogicOverrides(ref);
         if (overrides) {
             for (const override of overrides) {
@@ -372,16 +412,16 @@ export class RulesetDefinitionChecker {
     private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup): TypeMatchResult {
         if (rawTypeLinks.includes('_dummy_')) {
             // shortcut for dummy (custom logic)
-            return {match: false, expected: [], found: []};
+            return { match: false, expected: [], found: [] };
         }
 
-        const {matchType, typeValues: typeLinks} = this.processTypeLinks(rawTypeLinks, possibleKeys);
+        const { matchType, typeValues: typeLinks } = this.processTypeLinks(rawTypeLinks, possibleKeys);
 
-        const matches: {[key: string]: boolean} = {};
+        const matches: { [key: string]: boolean } = {};
         // store what we expect
-        const expected: {[key: string]: boolean} = {};
+        const expected: { [key: string]: boolean } = {};
         // store what we found
-        const found: {[key: string]: boolean} = {};
+        const found: { [key: string]: boolean } = {};
         for (const target in typeLinks) {
             expected[target] = true;
             for (const key of typeLinks[target]) {
@@ -399,26 +439,38 @@ export class RulesetDefinitionChecker {
 
         if (matchType === 'any') {
             // if we have found any match, it's OK
-            return {match: Object.values(matches).length > 0, expected: Object.keys(expected), found: Object.keys(found)};
+            return {
+                match: Object.values(matches).length > 0,
+                expected: Object.keys(expected),
+                found: Object.keys(found),
+            };
         } else {
             // if we have found the number of matches we expect (1 per target typeLink), it's OK
-            return {match: Object.values(matches).length === Object.values(typeLinks).length, expected: Object.keys(expected), found: Object.keys(found)};
+            return {
+                match: Object.values(matches).length === Object.values(typeLinks).length,
+                expected: Object.keys(expected),
+                found: Object.keys(found),
+            };
         }
     }
 
     private processTypeLinks(rawTypeLinks: string[], rawPossibleKeys: string[]) {
         const keyMatchType = rawPossibleKeys.includes('_all_') ? 'all' : 'any';
-        const possibleKeys = rawPossibleKeys.filter(key => !['_any_', '_all_'].includes(key));
+        const possibleKeys = rawPossibleKeys.filter((key) => !['_any_', '_all_'].includes(key));
 
         const matchType = rawTypeLinks.includes('_any_') ? 'any' : 'all';
-        const typeLinks = rawTypeLinks.filter(key => !['_any_', '_all_'].includes(key));
+        const typeLinks = rawTypeLinks.filter((key) => !['_any_', '_all_'].includes(key));
 
         if (keyMatchType === 'all' && typeLinks.length !== possibleKeys.length) {
-            logger.error(`Number of typeLinks fields (${JSON.stringify(typeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
+            logger.error(
+                `Number of typeLinks fields (${JSON.stringify(
+                    typeLinks,
+                )}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`,
+            );
             // throw new Error(`Number of typeLinks fields (${JSON.stringify(rawTypeLinks)}) should match number of possibleKeys (${JSON.stringify(possibleKeys)})`);
         }
 
-        const typeValues: {[key: string]: string[]} = {};
+        const typeValues: { [key: string]: string[] } = {};
         for (const index in typeLinks) {
             if (keyMatchType === 'all') {
                 typeValues[typeLinks[index]] = [possibleKeys[index]];
@@ -427,10 +479,15 @@ export class RulesetDefinitionChecker {
             }
         }
 
-        return {matchType, typeValues};
+        return { matchType, typeValues };
     }
 
-    private addReferenceDiagnostic(ref: Match, diagnostics: Diagnostic[], messageFunction: (ref: Match, target?: TypeMatchResult) => string, target?: TypeMatchResult) {
+    private addReferenceDiagnostic(
+        ref: Match,
+        diagnostics: Diagnostic[],
+        messageFunction: (ref: Match, target?: TypeMatchResult) => string,
+        target?: TypeMatchResult,
+    ) {
         if (!ref.rangePosition) {
             throw new Error('rangePosition missing');
         }
@@ -445,7 +502,7 @@ export class RulesetDefinitionChecker {
             this.problemsByPath[ref.path]++;
 
             if (workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories') === 'no') {
-                if (['items.categories'/*, 'manufacture.category'*/].indexOf(ref.path) !== -1) {
+                if (['items.categories[]' /*, 'manufacture.category'*/].indexOf(ref.path) !== -1) {
                     return;
                 }
             }
@@ -501,7 +558,10 @@ export class RulesetDefinitionChecker {
             // ignore these assorted types for now
             return false;
         }
-        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations') && this.isExtraStringType(ref.path)) {
+        if (
+            !workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations') &&
+            this.isExtraStringType(ref.path)
+        ) {
             // allow translation checking to be disabled
             return false;
         }
@@ -515,8 +575,8 @@ export class RulesetDefinitionChecker {
             const [min, max] = builtinResourceIds[ref.path];
 
             if (parseInt(ref.key) >= min && parseInt(ref.key) <= max) {
-              // built in resource id
-              return false;
+                // built in resource id
+                return false;
             }
         }
 
@@ -569,12 +629,12 @@ export class RulesetDefinitionChecker {
         this.problemsByPath = {};
     }
 
-    private loadRegexes () {
+    private loadRegexes() {
         for (const type in builtinTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.builtinTypeRegexes.push({
                     regex: new RegExp(type.slice(1, -1)),
-                    values: builtinTypes[type]
+                    values: builtinTypes[type],
                 });
 
                 delete builtinResourceIds[type];
@@ -591,9 +651,7 @@ export class RulesetDefinitionChecker {
 
         for (const type of ignoreTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
-                this.ignoreTypesRegexes.push(
-                    new RegExp(type.slice(1, -1))
-                );
+                this.ignoreTypesRegexes.push(new RegExp(type.slice(1, -1)));
             }
         }
     }

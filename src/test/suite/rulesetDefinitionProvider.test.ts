@@ -10,7 +10,9 @@ import { waitForExtensionLoad, waitForRefresh } from './tools';
 const rulesetDefinitionProvider = new RulesetDefinitionProvider();
 const fixturePath = resolve(__dirname, '../../../src/test/suite/fixtures');
 const itemsPath = resolve(fixturePath, 'items.rul');
+const itemsDeletePath = resolve(fixturePath, 'items-delete-test.rul');
 const itemsUri = Uri.file(itemsPath);
+const itemsDeleteUri = Uri.file(itemsDeletePath);
 const extraSpritesPath = resolve(fixturePath, 'extraSprites.rul');
 const extraSpritesUri = Uri.file(extraSpritesPath);
 const manufacturePath = resolve(fixturePath, 'manufacture.rul');
@@ -153,13 +155,13 @@ describe('Definition Provider', () => {
         });
 
         it('does not find deleted definitions', async () => {
-            await checkDefinitionSingle(manufacturePath, 3, 8, itemsUri, 1, 10, 1, 24);
+            await checkDefinitionSingle(manufacturePath, 3, 8, itemsDeleteUri, 1, 10, 1, 30);
 
-            const contents = await deleteTestFile(itemsPath, rulesetResolver);
+            const contents = await deleteTestFile(itemsDeletePath, rulesetResolver);
             await checkDefinitionSingle(manufacturePath, 3, 8);
 
             // restore file
-            await writeFile(itemsPath, contents);
+            await writeFile(itemsDeletePath, contents);
         });
 
         it('does not find a undefinable numeric property', async () => {

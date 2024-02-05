@@ -1,5 +1,5 @@
-import { workspace } from "vscode";
-import { rulesetResolver } from "./extension";
+import { workspace } from 'vscode';
+import { rulesetResolver } from './extension';
 
 export class ConfigurationWatcher {
     // private choices = {
@@ -41,9 +41,9 @@ export class ConfigurationWatcher {
         if (!this.validateCategories) {
             restart = true;
         } else {
-            if (['yes', 'always'].includes(oldValue) && this.getValidateCategories() == 'no') {
+            if (['yes', 'always'].includes(oldValue) && this.getValidateCategories() === 'no') {
                 restart = true;
-            } else if (['yes', 'always'].includes(this.getValidateCategories()) && oldValue == 'no') {
+            } else if (['yes', 'always'].includes(this.getValidateCategories()) && oldValue === 'no') {
                 restart = true;
             }
         }
@@ -54,7 +54,7 @@ export class ConfigurationWatcher {
     //     return workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions');
     // }
 
-    private getValidateCategories () {
+    private getValidateCategories() {
         return workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories') || 'no';
     }
 
@@ -69,7 +69,6 @@ export class ConfigurationWatcher {
     //         }
     //     });
     // }
-
 }
 
 //export const extensionRecommender = new ExtensionRecommender;
