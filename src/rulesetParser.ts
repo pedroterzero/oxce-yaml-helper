@@ -1,17 +1,26 @@
-import { TextDocument, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from "vscode";
-import { logger } from "./logger";
-import { Definition, LogicDataEntry, Match, RangedEntryInterface, rulesetTree, RuleType, Translation, Variables } from "./rulesetTree";
+import { TextDocument, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from 'vscode';
+import { logger } from './logger';
+import {
+    Definition,
+    LogicDataEntry,
+    Match,
+    RangedEntryInterface,
+    rulesetTree,
+    RuleType,
+    Translation,
+    Variables,
+} from './rulesetTree';
 import { Document, parseDocument } from 'yaml2';
-import { rulesetRecursiveKeyRetriever } from "./rulesetRecursiveKeyRetriever";
-import { rulesetRefnodeFinder } from "./rulesetRefnodeFinder";
-import { rulesetDefinitionFinder } from "./rulesetDefinitionFinder";
-import { rulesetVariableFinder } from "./rulesetVariableFinder";
-import { rulesetTranslationFinder } from "./rulesetTranslationFinder";
-import { typedProperties } from "./typedProperties";
+import { rulesetRecursiveKeyRetriever } from './rulesetRecursiveKeyRetriever';
+import { rulesetRefnodeFinder } from './rulesetRefnodeFinder';
+import { rulesetDefinitionFinder } from './rulesetDefinitionFinder';
+import { rulesetVariableFinder } from './rulesetVariableFinder';
+import { rulesetTranslationFinder } from './rulesetTranslationFinder';
+import { typedProperties } from './typedProperties';
 
 export interface ParsedDocument {
-    parsed: YAMLDocument,
-    regular: Document,
+    parsed: YAMLDocument;
+    regular: Document;
 }
 export interface YAMLDocument {
     // contents: ReturnType<typeof parseDocument>['contents'];
@@ -26,7 +35,7 @@ export interface YAMLDocumentItem {
 }
 
 export interface YAMLNode {
-    range?: [number, number] | null
+    range?: [number, number] | null;
 }
 
 export type JsonObject = {
@@ -50,23 +59,32 @@ export class RulesetParser {
         return rulesetTranslationFinder.findAllVariablesInYamlDocument(doc);
     }
 
-    public getTranslationsFromLanguageFile(doc: any): Translation[] {
-        return rulesetTranslationFinder.findAllTranslationsInTranslationFile(doc);
+    public getTranslationsFromLanguageFile(doc: any, currentLocale: string): Translation[] {
+        return rulesetTranslationFinder.findAllTranslationsInTranslationFile(doc, currentLocale);
     }
 
     public findTypeOfKey(key: string, range: Range): RuleType | undefined {
-        logger.debug(`Looking for requested key ${key} in ${window.activeTextEditor?.document.fileName}`);
+        logger.debug(
+            `Looking for requested key ${key} in ${window.activeTextEditor?.document.fileName}`,
+        );
 
         const document = window.activeTextEditor?.document;
         if (!document) {
             return;
         }
 
-        let sourceRange: [number, number] = [document.offsetAt(range.start), document.offsetAt(range.end)];
+        let sourceRange: [number, number] = [
+            document.offsetAt(range.start),
+            document.offsetAt(range.end),
+        ];
         // logger.debug(`Searching for type ${key} in ${document.fileName}`);
         sourceRange = this.fixRangesForWindowsLineEndingsIfNeeded(document, sourceRange, true);
 
-        const rule = rulesetRecursiveKeyRetriever.getKeyInformationFromYAML(this.parseDocument(document.getText()).parsed, key, sourceRange);
+        const rule = rulesetRecursiveKeyRetriever.getKeyInformationFromYAML(
+            this.parseDocument(document.getText()).parsed,
+            key,
+            sourceRange,
+        );
         if (!rule) {
             return;
         }
@@ -79,7 +97,11 @@ export class RulesetParser {
         return rulesetRefnodeFinder.findRefNodeInDocument(file, key);
     }
 
-    public getDefinitionsByName(workspaceFolder: WorkspaceFolder, key: string, ruleType: RuleType | undefined): Location[] {
+    public getDefinitionsByName(
+        workspaceFolder: WorkspaceFolder,
+        key: string,
+        ruleType: RuleType | undefined,
+    ): Location[] {
         if (ruleType && this.isUndefinableNumericProperty(ruleType, key)) {
             return [];
         }
@@ -93,10 +115,17 @@ export class RulesetParser {
         for (const definition of definitions) {
             if (definition.rangePosition) {
                 const range = definition.range;
-                logger.debug(`opening ${definition.file.path.slice(workspaceFolder.uri.path.length + 1)} at ${range[0]}:${range[1]}`);
+                logger.debug(
+                    `opening ${definition.file.path.slice(
+                        workspaceFolder.uri.path.length + 1,
+                    )} at ${range[0]}:${range[1]}`,
+                );
 
                 locations.push(
-                    new Location(definition.file, new Range(...definition.rangePosition[0], ...definition.rangePosition[1]))
+                    new Location(
+                        definition.file,
+                        new Range(...definition.rangePosition[0], ...definition.rangePosition[1]),
+                    ),
                 );
             }
         }
@@ -117,8 +146,14 @@ export class RulesetParser {
         for (const ref of references) {
             ref.range = this.fixRangesForWindowsLineEndingsIfNeeded(document, ref.range);
             ref.rangePosition = [
-                [document.positionAt(ref.range[0]).line, document.positionAt(ref.range[0]).character],
-                [document.positionAt(ref.range[1]).line, document.positionAt(ref.range[1]).character]
+                [
+                    document.positionAt(ref.range[0]).line,
+                    document.positionAt(ref.range[0]).character,
+                ],
+                [
+                    document.positionAt(ref.range[1]).line,
+                    document.positionAt(ref.range[1]).character,
+                ],
             ];
         }
     }
@@ -128,8 +163,13 @@ export class RulesetParser {
      * @param document
      * @param range
      */
-    public fixRangesForWindowsLineEndingsIfNeeded(document: TextDocument, range: [number, number], reverse = false): [number, number] {
-        const correctRange = {...range};
+    public fixRangesForWindowsLineEndingsIfNeeded(
+        document: TextDocument,
+        range: [number, number],
+        reverse = false,
+    ): [number, number] {
+        return range;
+        const correctRange = { ...range };
         // if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('attemptCRLFFix')) {
         //     return correctRange;
         // }
@@ -144,7 +184,7 @@ export class RulesetParser {
                 lineBreaks = -1 * (document.getText().slice(0, range[0]).match(/\n/g)?.length || 0);
             } else {
                 // we're coming from LF and want CRLF position, so account for line breaks
-                const myText = document.getText().toString().replace(/\r\n/g, "\n");
+                const myText = document.getText().toString().replace(/\r\n/g, '\n');
                 // count number of line breaks
                 lineBreaks = myText.slice(0, range[0]).match(/\n/g)?.length || 0;
             }
@@ -159,12 +199,12 @@ export class RulesetParser {
         return correctRange;
     }
 
-    public parseDocument (yaml: string): ParsedDocument {
+    public parseDocument(yaml: string): ParsedDocument {
         const yamlDocument: YAMLDocument = {} as YAMLDocument;
         let doc;
         try {
             // I am not sure why I have to cast this to Document, are yaml package's types broken?
-            doc = parseDocument(yaml, { });
+            doc = parseDocument(yaml, {});
 
             // yamlDocument.anchors = [];
             if (doc.contents) {
@@ -180,7 +220,7 @@ export class RulesetParser {
 
         return {
             parsed: yamlDocument,
-            regular: doc
+            regular: doc,
         };
     }
 }

@@ -14,14 +14,21 @@ interface NodeInfo {
 export class RulesetRecursiveKeyRetriever {
     // private logicHandler = new LogicHandler();
 
-    public getKeyInformationFromYAML(doc: YAMLDocument, key: string, range: number[]): RuleType | undefined {
+    public getKeyInformationFromYAML(
+        doc: YAMLDocument,
+        key: string,
+        range: number[],
+    ): RuleType | undefined {
         const [references] = this.findAllReferencesInYamlDocument(doc, true);
 
         for (const ref of references) {
             // if (ref.key === key) {
             //     console.log(`key ${key}, docrange ${range[0]}:${range[1]}, refrange ${ref.range[0]}:${ref.range[1]}`);
             // }
-            if ((ref.key === key || ref.key.toString() === key) && this.checkForRangeMatch(range, ref.range)) {
+            if (
+                (ref.key === key || ref.key.toString() === key) &&
+                this.checkForRangeMatch(range, ref.range)
+            ) {
                 const ruleMatch: RuleType = {
                     type: ref.path.split('.').slice(0, -1).join('.'),
                     key: ref.path.split('.').slice(-1).join('.'),
@@ -38,7 +45,10 @@ export class RulesetRecursiveKeyRetriever {
         return;
     }
 
-    public findAllReferencesInYamlDocument(doc: YAMLDocument, lookupAll = false): [Match[], LogicDataEntry[]] {
+    public findAllReferencesInYamlDocument(
+        doc: YAMLDocument,
+        lookupAll = false,
+    ): [Match[], LogicDataEntry[]] {
         const ret = this.findKeyInformationInYamlDocument(doc, lookupAll);
         // console.log(JSON.stringify(ret, null, 2));
         return ret;
@@ -85,6 +95,11 @@ export class RulesetRecursiveKeyRetriever {
             .join('.')
             .replaceAll('.[]', '[]');
 
+        const specialPathResult = this.handleSpecialPaths(newPath, results);
+        if (specialPathResult !== null) {
+            return specialPathResult;
+        }
+
         if (isMap(node)) {
             const isKeyReferencePath = typedProperties.isKeyReferencePath(newPath);
             let typeValue = '';
@@ -124,7 +139,16 @@ export class RulesetRecursiveKeyRetriever {
             });
         } else if (isSeq(node)) {
             node.items.forEach((item: any, _index: number) => {
-                results.push(...this.traverseNode(item, lookupAll, path.concat('[]'), depth + 1, false, node));
+                results.push(
+                    ...this.traverseNode(
+                        item,
+                        lookupAll,
+                        path.concat('[]'),
+                        depth + 1,
+                        false,
+                        node,
+                    ),
+                );
             });
         } else if (isScalar(node)) {
             results.push(...this.handleScalar(node, isRoot, newPath, lookupAll));
@@ -140,7 +164,8 @@ export class RulesetRecursiveKeyRetriever {
         const isStoreVariable = typedProperties.isStoreVariable(finalPath);
         const isUndefinableNumeric = this.isUndefinableNumericProperty(finalPath, value);
 
-        const isValidValue = (typeof value !== 'boolean' && !isFloat && !isUndefinableNumeric) || lookupAll;
+        const isValidValue =
+            (typeof value !== 'boolean' && !isFloat && !isUndefinableNumeric) || lookupAll;
         if (isValidValue || isStoreVariable) {
             const range: [number, number] = node.range ? [node.range[0], node.range[1]] : [0, 0];
 
@@ -164,7 +189,12 @@ export class RulesetRecursiveKeyRetriever {
         return [];
     }
 
-    private getKeyReferencePathResult(key: string, newPath: string, item: any, parentNode: Node | null): NodeInfo {
+    private getKeyReferencePathResult(
+        key: string,
+        newPath: string,
+        item: any,
+        parentNode: Node | null,
+    ): NodeInfo {
         const metadata = this.getParentMetadata(parentNode, newPath, item);
 
         return {
@@ -204,13 +234,34 @@ export class RulesetRecursiveKeyRetriever {
         return metadata;
     }
 
-    private getParentMetadata(parentNode: Node | null, path: string, item: any): { [key: string]: string | number } {
+    private getParentMetadata(
+        parentNode: Node | null,
+        path: string,
+        item: any,
+    ): { [key: string]: string | number } {
         const metadata = this.getMetadata(parentNode, path.split('.').slice(0, -1).join('.'));
 
         // Add _name manually
         metadata._name = item.value.value;
 
         return metadata;
+    }
+
+    private handleSpecialPaths(newPath: string, results: NodeInfo[]): NodeInfo[] | null {
+        if (newPath === 'armors.layersDefinition') {
+            // short circuit for performance reasons
+            return results;
+        }
+        if (newPath === 'extraStrings') {
+            // don't process/store any of the extraStrings, just make a note they exist
+            results.push({
+                value: 'extraStrings',
+                path: newPath,
+                range: [0, 0],
+            });
+            return results;
+        }
+        return null;
     }
 
     private isFloat(n: number): boolean {

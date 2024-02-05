@@ -1,52 +1,60 @@
-import { typeLinks, typeLinksPossibleKeys } from "./definitions/typeLinks";
-import { logger } from "./logger";
-import { LogicHandler } from "./logic/logicHandler";
-import { Match, RuleType } from "./rulesetTree";
-import { getAdditionalGlobalVariablePaths, getAdditionalKeyReferenceTypes, getAdditionalTypePropertyHints, getAdditionalVetoTypes } from "./utilities";
+import { typeLinks, typeLinksPossibleKeys } from './definitions/typeLinks';
+import { logger } from './logger';
+import { LogicHandler } from './logic/logicHandler';
+import { Match, RuleType } from './rulesetTree';
+import {
+    getAdditionalGlobalVariablePaths,
+    getAdditionalKeyReferenceTypes,
+    getAdditionalTypePropertyHints,
+    getAdditionalVetoTypes,
+} from './utilities';
 
 type typePropertyHints = {
-    [key: string]: string[]
-}
+    [key: string]: string[];
+};
 
 type typeProperties = {
     [key: string]: {
-        [key: string]: typePropertyLink
-    }
-}
+        [key: string]: typePropertyLink;
+    };
+};
 
 type typePropertyLink = {
     target: string;
-    type?: 'numeric'
-}
-
+    type?: 'numeric';
+};
 
 type logicMethod = (key: string, path: string, ruleType: RuleType | Match) => LogicOverride[];
 
 type logicOverrides = {
     [key: string]: logicMethod;
-}
+};
 
 type metadataFields = {
-    [key: string]: string[]
+    [key: string]: string[];
 };
 
 type LogicOverride = {
     key: string;
     target: string | undefined;
-}
+};
 
 type KeyReferenceOptions = {
-    recurse?: boolean
-}
+    recurse?: boolean;
+};
 
 export class typedProperties {
-    public static isExtraFilesRule(path: string, key: string | undefined, name: string | undefined): boolean {
+    public static isExtraFilesRule(
+        path: string,
+        key: string | undefined,
+        name: string | undefined,
+    ): boolean {
         if (!key || !name) {
             return false;
         }
 
-        if (['extraSprites', 'extraSounds'].includes(path)/* && key !== 'type'*/) {
-           return `${path}.${name}.files` in this.keyDefinitionTypes;
+        if (['extraSprites', 'extraSounds'].includes(path) /* && key !== 'type'*/) {
+            return `${path}.${name}.files` in this.keyDefinitionTypes;
         }
 
         return false;
@@ -68,7 +76,7 @@ export class typedProperties {
         'terrains.mapBlocks[]': ['name'],
         ufopaedia: ['id'],
         ufoTrajectories: ['id'],
-        ...getAdditionalTypePropertyHints()
+        ...getAdditionalTypePropertyHints(),
     };
 
     private static vetoTypes: string[] = [
@@ -96,7 +104,7 @@ export class typedProperties {
         'startingBaseSuperhuman.crafts[]',
         'startingBaseSuperhuman.crafts[].weapons[]',
         'startingBaseSuperhuman.facilities[]',
-        ...getAdditionalVetoTypes()
+        ...getAdditionalVetoTypes(),
     ];
 
     private static globalVariablePaths = [
@@ -110,15 +118,15 @@ export class typedProperties {
         'missionRatings',
         'monthlyRatings',
         'recommendedUserOptions',
-        ...getAdditionalGlobalVariablePaths()
+        ...getAdditionalGlobalVariablePaths(),
     ];
 
-    private static vetoTypeValues: {[key: string]: string[]} = {
+    private static vetoTypeValues: { [key: string]: string[] } = {
         // 'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
     };
 
     // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
-    private static keyDefinitionTypes: {[key: string]: KeyReferenceOptions} = {
+    private static keyDefinitionTypes: { [key: string]: KeyReferenceOptions } = {
         // not 100% sure about these yet. Perhaps they should only work for the current file? maybe they're not definitions at all?
         'extended.tags.BattleGame': {},
         'extended.tags.BattleItem': {},
@@ -129,22 +137,22 @@ export class typedProperties {
         'extended.tags.RuleSoldier': {},
         'extended.tags.RuleSoldierBonus': {},
         'extended.tags.RuleUfo': {},
-        'extraSprites.BASEBITS.PCK.files': {recurse: false},
-        'extraSprites.BIGOBS.PCK.files': {recurse: false},
-        'extraSprites.FLOOROB.PCK.files': {recurse: false},
-        'extraSprites.HANDOB.PCK.files': {recurse: false},
-        'extraSprites.INTICON.PCK.files': {recurse: false},
-        'extraSprites.HIT.PCK.files': {recurse: false},
-        'extraSprites.Projectiles.files': {recurse: false},
-        'extraSprites.SMOKE.PCK.files': {recurse: false},
-        'extraSprites.SPICONS.DAT.files': {recurse: false},
-        'extraSprites.X1.PCK.files': {recurse: false},
-        'extraSounds.BATTLE.CAT.files': {recurse: false},
-        'extraSounds.GEO.CAT.files': {recurse: false},
+        'extraSprites.BASEBITS.PCK.files': { recurse: false },
+        'extraSprites.BIGOBS.PCK.files': { recurse: false },
+        'extraSprites.FLOOROB.PCK.files': { recurse: false },
+        'extraSprites.HANDOB.PCK.files': { recurse: false },
+        'extraSprites.INTICON.PCK.files': { recurse: false },
+        'extraSprites.HIT.PCK.files': { recurse: false },
+        'extraSprites.Projectiles.files': { recurse: false },
+        'extraSprites.SMOKE.PCK.files': { recurse: false },
+        'extraSprites.SPICONS.DAT.files': { recurse: false },
+        'extraSprites.X1.PCK.files': { recurse: false },
+        'extraSounds.BATTLE.CAT.files': { recurse: false },
+        'extraSounds.GEO.CAT.files': { recurse: false },
         // '/^extraSprites\\.[a-zA-Z0-9]+(\\.PCK)?\\.files\\.\\d+$/',
     };
 
-    private static keyReferenceTypes: {[key: string]: KeyReferenceOptions} = {
+    private static keyReferenceTypes: { [key: string]: KeyReferenceOptions } = {
         ...typedProperties.keyDefinitionTypes,
         'arcScripts.randomArcs': {},
         'arcScripts.researchTriggers': {},
@@ -182,7 +190,7 @@ export class typedProperties {
         'startingConditions.requiredItems': {},
         'ufos.raceBonus': {},
         'terrains.mapBlocks[].items': {},
-        ...getAdditionalKeyReferenceTypes()
+        ...getAdditionalKeyReferenceTypes(),
     };
 
     private static keyValueReferenceTypes: string[] = [
@@ -193,27 +201,28 @@ export class typedProperties {
         'items.zombieUnitByArmorMale',
     ];
 
-    private static arrayDefinitionTypes: string[] = [
-        'facilities.provideBaseFunc',
-    ];
-
+    private static arrayDefinitionTypes: string[] = ['facilities.provideBaseFunc'];
 
     // fully built from typeLinks now
     private static typeProperties: typeProperties = {};
 
     // ATTENTION: when adding logic here, it also needs to be happen when checking references
     private static metadataLogicOverrides: logicOverrides = {
-        'items.hitAnimation':  typedProperties.hitAnimationLogic,
+        'items.hitAnimation': typedProperties.hitAnimationLogic,
     };
 
-    private static logicOverrides: logicOverrides = Object.assign({}, typedProperties.metadataLogicOverrides, {
-        'crafts.sprite': typedProperties.typeLinksLogic,
-        'craftWeapons.sprite': typedProperties.typeLinksLogic,
-        'items.bulletSprite': typedProperties.typeLinksLogic,
-    });
+    private static logicOverrides: logicOverrides = Object.assign(
+        {},
+        typedProperties.metadataLogicOverrides,
+        {
+            'crafts.sprite': typedProperties.typeLinksLogic,
+            'craftWeapons.sprite': typedProperties.typeLinksLogic,
+            'items.bulletSprite': typedProperties.typeLinksLogic,
+        },
+    );
 
     private static metadataFields: metadataFields = {
-        'items': ['damageType', 'blastRadius', 'damageAlter.FixRadius'],
+        items: ['damageType', 'blastRadius', 'damageAlter.FixRadius'],
         'extraSprites.BIGOBS.PCK': ['height', 'width', 'subX', 'subY'],
         'extraSprites.HANDOB.PCK': ['height', 'width', 'subX', 'subY'],
         'extraSprites.FLOOROB.PCK': ['height', 'width', 'subX', 'subY'],
@@ -221,22 +230,25 @@ export class typedProperties {
         'extraSprites.Projectiles': ['height', 'subY'],
     };
 
-    private static storeVariables: {[key: string]: boolean} = {
-        'globalVariables.ftaGame': true
+    private static storeVariables: { [key: string]: boolean } = {
+        'globalVariables.ftaGame': true,
     };
 
     private static additionalLogicPaths: string[] = [];
-    private static keyReferenceTypesRegexes: {regex: RegExp, settings: KeyReferenceOptions}[] = [];
-    private static typeLinkRegexes: {regex: RegExp, values: string[]}[] = [];
+    private static keyReferenceTypesRegexes: {
+        regex: RegExp;
+        settings: KeyReferenceOptions;
+    }[] = [];
+    private static typeLinkRegexes: { regex: RegExp; values: string[] }[] = [];
 
-    public static init () {
+    public static init() {
         this.addTypeLinks();
         this.getAdditionalLogicPaths();
         this.getAdditionalMetadataFields();
         this.loadRegexes();
     }
 
-    public static isDefinitionPropertyForPath (type: string, key: string, value: string): boolean {
+    public static isDefinitionPropertyForPath(type: string, key: string, value: string): boolean {
         if (this.vetoTypes.indexOf(type) !== -1) {
             // explicitly blacklist some paths
             return false;
@@ -276,7 +288,7 @@ export class typedProperties {
         }
 
         if (ruleType in this.typePropertyHints) {
-            this.typePropertyHints[ruleType].forEach(key => {
+            this.typePropertyHints[ruleType].forEach((key) => {
                 if (key in rule) {
                     typeKey = key;
                 }
@@ -295,7 +307,10 @@ export class typedProperties {
      * @param sourceRuleType
      * @param ruleType
      */
-    public static isTargetForSourceRule(sourceRuleType: RuleType | undefined, ruleType: string): boolean {
+    public static isTargetForSourceRule(
+        sourceRuleType: RuleType | undefined,
+        ruleType: string,
+    ): boolean {
         if (!sourceRuleType) {
             return true;
         }
@@ -350,9 +365,16 @@ export class typedProperties {
     }
 
     public static checkForLogicOverrides(reference: Match, dummy?: undefined): LogicOverride[];
-    public static checkForLogicOverrides(key: string, sourceRuleType: RuleType | undefined): LogicOverride[];
-    public static checkForLogicOverrides(param: string | Match, sourceRuleType: RuleType | undefined): LogicOverride[] {
-        if (typeof param === 'object') { // reference
+    public static checkForLogicOverrides(
+        key: string,
+        sourceRuleType: RuleType | undefined,
+    ): LogicOverride[];
+    public static checkForLogicOverrides(
+        param: string | Match,
+        sourceRuleType: RuleType | undefined,
+    ): LogicOverride[] {
+        if (typeof param === 'object') {
+            // reference
             return this.getLogicOverrides(param.key, param.path, param);
         }
 
@@ -362,10 +384,18 @@ export class typedProperties {
             return [this.getBaseOverride(key)];
         }
 
-        return this.getLogicOverrides(key, sourceRuleType.type + '.' + sourceRuleType.key, sourceRuleType);
+        return this.getLogicOverrides(
+            key,
+            sourceRuleType.type + '.' + sourceRuleType.key,
+            sourceRuleType,
+        );
     }
 
-    private static getLogicOverrides(key: string, path: string, reference: Match | RuleType): LogicOverride[] {
+    private static getLogicOverrides(
+        key: string,
+        path: string,
+        reference: Match | RuleType,
+    ): LogicOverride[] {
         if (!(path in this.logicOverrides)) {
             return [this.getBaseOverride(key)];
         }
@@ -397,20 +427,26 @@ export class typedProperties {
      */
     private static typeLinksLogic(key: string, path: string): LogicOverride[] {
         const targets = typeLinks[path];
-        const keys = typeLinksPossibleKeys[path](key).filter(key => !['_all_', '_any_'].includes(key));
+        const keys = typeLinksPossibleKeys[path](key).filter(
+            (key) => !['_all_', '_any_'].includes(key),
+        );
 
         const overrides: LogicOverride[] = [];
         for (const key in targets) {
             overrides.push({
                 key: keys[key],
-                target: targets[key]
+                target: targets[key],
             });
         }
 
         return overrides;
     }
 
-    private static hitAnimationLogic(key: string, _path: string, ruleType: RuleType | Match): LogicOverride[] {
+    private static hitAnimationLogic(
+        key: string,
+        _path: string,
+        ruleType: RuleType | Match,
+    ): LogicOverride[] {
         const override = typedProperties.getBaseOverride(key);
 
         if (!ruleType?.metadata) {
@@ -423,10 +459,13 @@ export class typedProperties {
             if (['2', '3', '6', '9'].indexOf(damageType.toString()) !== -1) {
                 let ignore = false;
                 if ('damageAlter.FixRadius' in ruleType.metadata) {
-                    if (ruleType.metadata['damageAlter.FixRadius'] as number === 0) {
+                    if ((ruleType.metadata['damageAlter.FixRadius'] as number) === 0) {
                         ignore = true;
                     }
-                } else if ('blastRadius' in ruleType.metadata && ruleType.metadata['blastRadius'] as number === 0) {
+                } else if (
+                    'blastRadius' in ruleType.metadata &&
+                    (ruleType.metadata['blastRadius'] as number) === 0
+                ) {
                     ignore = true;
                 }
 
@@ -439,15 +478,18 @@ export class typedProperties {
         return [override];
     }
 
-    public static getMetadataFieldsForType(ruleType: string, rule: any): {[key: string]: string} | undefined {
+    public static getMetadataFieldsForType(
+        ruleType: string,
+        rule: any,
+    ): { [key: string]: string } | undefined {
         const typeKey = this.getTypeKey(rule, ruleType);
-        const metadataFields: {[key: string]: string} = {};
+        const metadataFields: { [key: string]: string } = {};
         if (typeKey) {
             metadataFields.type = typeKey;
         }
 
         if (ruleType in this.metadataFields) {
-            for (const field of  this.metadataFields[ruleType]) {
+            for (const field of this.metadataFields[ruleType]) {
                 metadataFields[field] = field;
             }
         }
@@ -460,7 +502,7 @@ export class typedProperties {
     }
 
     public static isStoreVariable(key: string) {
-        return (key in this.storeVariables);
+        return key in this.storeVariables;
     }
 
     public static getStoreVariables() {
@@ -530,16 +572,16 @@ export class typedProperties {
 
             let links = typeLinks[link];
             let numeric = false;
-            if (links.find(item => item === '_numeric_')) {
+            if (links.find((item) => item === '_numeric_')) {
                 numeric = true;
-                links = links.filter(item => item !== '_numeric_');
+                links = links.filter((item) => item !== '_numeric_');
                 // also remove from typeLinks itself
                 typeLinks[link] = links;
             }
 
             // TODO what if there is more?
             this.typeProperties[newLink][key] = {
-                target: links[0]
+                target: links[0],
             };
 
             if (numeric) {
@@ -548,12 +590,12 @@ export class typedProperties {
         }
     }
 
-    private static getAdditionalLogicPaths () {
-        this.additionalLogicPaths = (new LogicHandler).getPaths();
+    private static getAdditionalLogicPaths() {
+        this.additionalLogicPaths = new LogicHandler().getPaths();
     }
 
-    private static getAdditionalMetadataFields () {
-        const fields = (new LogicHandler).getAdditionalMetadataFields();
+    private static getAdditionalMetadataFields() {
+        const fields = new LogicHandler().getAdditionalMetadataFields();
         for (const field of fields) {
             const key = field.split('.').slice(0, -1).join('.');
             const val = field.split('.').slice(-1).join('.');
@@ -577,7 +619,7 @@ export class typedProperties {
         return;
     }
 
-    private static loadRegexes () {
+    private static loadRegexes() {
         // @TODO is this called more than once?
         if (this.keyReferenceTypesRegexes.length > 0) {
             logger.error('Should not happen!');
@@ -588,7 +630,7 @@ export class typedProperties {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.keyReferenceTypesRegexes.push({
                     regex: new RegExp(type.slice(1, -1)),
-                    settings: this.keyReferenceTypes[type]
+                    settings: this.keyReferenceTypes[type],
                 });
             }
         }
@@ -597,7 +639,7 @@ export class typedProperties {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.typeLinkRegexes.push({
                     regex: new RegExp(type.slice(1, -1)),
-                    values: typeLinks[type]
+                    values: typeLinks[type],
                 });
 
                 delete typeLinks[type];
