@@ -91,7 +91,6 @@ export class RulesetRecursiveKeyRetriever {
         }
 
         if (isMap(node)) {
-            const isKeyReferencePath = typedProperties.isKeyReferencePath(newPath);
             let typeValue = '';
             node.items.forEach((item: any) => {
                 const key = item.key.value;
@@ -101,8 +100,15 @@ export class RulesetRecursiveKeyRetriever {
                     typeValue = item.value.value;
                 }
 
-                if (isKeyReferencePath) {
-                    results.push(this.getKeyReferencePathResult(key, newPath, item, parentNode));
+                if (typedProperties.isKeyReferencePath(newPath)) {
+                    results.push(this.getReferencePathResult(key, item.key.range, newPath, item, parentNode));
+                    return;
+                }
+
+                if (typedProperties.isKeyValueReferencePath(newPath)) {
+                    results.push(this.getReferencePathResult(key, item.key.range, `${newPath}.key`, item, parentNode));
+                    // prettier-ignore
+                    results.push(this.getReferencePathResult(item.value.value, item.value.range, `${newPath}.value`, item, parentNode));
                     return;
                 }
 
@@ -171,13 +177,19 @@ export class RulesetRecursiveKeyRetriever {
         return [];
     }
 
-    private getKeyReferencePathResult(key: string, newPath: string, item: any, parentNode: Node | null): NodeInfo {
+    private getReferencePathResult(
+        key: string,
+        range: number[],
+        newPath: string,
+        item: any,
+        parentNode: Node | null,
+    ): NodeInfo {
         const metadata = this.getParentMetadata(parentNode, newPath, item);
 
         return {
             value: key,
             path: newPath,
-            range: item.key.range ? [item.key.range[0], item.key.range[1]] : [0, 0],
+            range: range ? [range[0], range[1]] : [0, 0],
             ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
         };
     }
