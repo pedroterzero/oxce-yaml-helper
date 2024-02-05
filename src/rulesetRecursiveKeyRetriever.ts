@@ -47,14 +47,14 @@ export class RulesetRecursiveKeyRetriever {
 
     private findKeyInformationInYamlDocument(
         yamlDocument: YAMLDocument,
-        _lookupAll: boolean,
+        lookupAll: boolean,
     ): [Match[], LogicDataEntry[]] {
         // const matches: Match[] = [];
         const logicData: LogicDataEntry[] = [];
 
         // console.log(yamlDocument.contents);
 
-        const nodes = this.traverseNode(yamlDocument.contents!);
+        const nodes = this.traverseNode(yamlDocument.contents!, lookupAll);
 
         // console.log(nodes.length, JSON.stringify(nodes, null, 2));
         const matches: Match[] = nodes.map((node) => {
@@ -73,6 +73,7 @@ export class RulesetRecursiveKeyRetriever {
 
     private traverseNode(
         node: Node,
+        lookupAll: boolean,
         path: string[] = [],
         depth: number = 0,
         isRoot: boolean = true,
@@ -103,7 +104,14 @@ export class RulesetRecursiveKeyRetriever {
                 const metadata = this.getMetadata(node, newPath);
                 const newPathForChild = this.buildNewPathForChild(path, key, typeValue, newPath);
                 results.push(
-                    ...this.traverseNode(item.value, newPathForChild, depth, isRoot && isScalar(item.value), node),
+                    ...this.traverseNode(
+                        item.value,
+                        lookupAll,
+                        newPathForChild,
+                        depth,
+                        isRoot && isScalar(item.value),
+                        node,
+                    ),
                 );
 
                 // Add metadata to the last result
@@ -116,23 +124,23 @@ export class RulesetRecursiveKeyRetriever {
             });
         } else if (isSeq(node)) {
             node.items.forEach((item: any, _index: number) => {
-                results.push(...this.traverseNode(item, path.concat('[]'), depth + 1, false, node));
+                results.push(...this.traverseNode(item, lookupAll, path.concat('[]'), depth + 1, false, node));
             });
         } else if (isScalar(node)) {
-            results.push(...this.handleScalar(node, isRoot, newPath));
+            results.push(...this.handleScalar(node, isRoot, newPath, lookupAll));
         }
 
         return results;
     }
 
-    private handleScalar(node: Scalar, isRoot: boolean, newPath: string) {
+    private handleScalar(node: Scalar, isRoot: boolean, newPath: string, lookupAll: boolean) {
         const { value } = node;
         const isFloat = typeof value === 'number' && this.isFloat(value);
         const finalPath = isRoot ? `globalVariables.${newPath}` : newPath;
         const isStoreVariable = typedProperties.isStoreVariable(finalPath);
         const isUndefinableNumeric = this.isUndefinableNumericProperty(finalPath, value);
 
-        const isValidValue = typeof value !== 'boolean' && !isFloat && !isUndefinableNumeric;
+        const isValidValue = (typeof value !== 'boolean' && !isFloat && !isUndefinableNumeric) || lookupAll;
         if (isValidValue || isStoreVariable) {
             const range: [number, number] = node.range ? [node.range[0], node.range[1]] : [0, 0];
 
