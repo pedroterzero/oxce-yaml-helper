@@ -30,26 +30,35 @@ before(async () => {
 describe('Extension Test Suite', () => {
     window.showInformationMessage('Start all tests.');
 
-	describe('activation', () => {
-        it('does load rulesets and returns definitions for existing key', function () {
-            const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
-            assert.notStrictEqual(workspaceFolder, undefined);
-            if (!workspaceFolder) {
-                throw new Error('Should not happen');
-            }
+    describe('activation', () => {
+        const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(fixturePath));
+        if (!workspaceFolder) {
+            throw new Error('Should not happen');
+        }
 
+        before(() => {
+            assert.notStrictEqual(workspaceFolder, undefined);
+        });
+
+        it('does load rulesets and returns definitions for existing key', function () {
             for (const def of definitions) {
                 const matches = rulesetTree.getDefinitionsByName(def.name, workspaceFolder, undefined);
                 assert.strictEqual(matches?.length, 1);
                 assert.notStrictEqual(matches.find(match => match.type === def.type), undefined);
+            }
+        });
 
+        it('does load rulesets and returns translation for existing key', function () {
+            for (const def of definitions) {
                 const translation = rulesetResolver.getTranslationForKey(def.name, workspaceFolder.uri);
                 assert.strictEqual(translation, def.translation);
-
-                const variables = rulesetTree.getVariables(workspaceFolder);
-                assert.strictEqual(variables && 'ftaGame' in variables, true);
-                assert.strictEqual(variables?.ftaGame, true);
             }
+        });
+
+        it('does load custom globalVariables properly', function () {
+            const variables = rulesetTree.getVariables(workspaceFolder);
+            assert.strictEqual(variables && 'ftaGame' in variables, true);
+            assert.strictEqual(variables?.ftaGame, true);
         });
     });
 });

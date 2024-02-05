@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import { readFile, remove, writeFile } from 'fs-extra';
 import { resolve } from 'path';
-import { EndOfLine, Location, Position, Uri, window, workspace } from 'vscode';
+import { EndOfLine, Location, Position, TextDocument, TextEditor, Uri, window, workspace } from 'vscode';
 import { rulesetResolver } from '../../extension';
 import { RulesetDefinitionProvider } from '../../rulesetDefinitionProvider';
 import { RulesetResolver } from '../../rulesetResolver';
@@ -101,24 +101,38 @@ describe("Definition Provider", () => {
             await checkDefinitionSingle(itemsPath, 32, 14, itemsUri, 32, 10, 32, 40);
         });
 
-        it('finds definition in correct place for CRLF files', async () => {
-            const document = await workspace.openTextDocument(itemsPath);
-            const editor = await window.showTextDocument(document);
+        describe('Definition finding tests (CRLF)', () => {
+            let document: TextDocument;
+            let editor: TextEditor;
 
-            await editor.edit(builder => { builder.setEndOfLine(EndOfLine.CRLF); });
-            // save and wait for refresh so we check both CRLF=>LF and vice versa
-            await document.save();
-            await waitForRefresh(rulesetResolver);
+            before(async () => {
+                document = await workspace.openTextDocument(itemsPath);
+                editor = await window.showTextDocument(document);
 
-            // same as above
-            await checkDefinitionSingle(itemsPath, 1, 18, itemsUri, 1, 10, 1, 24);
-            await checkDefinitionSingle(itemsPath, 12, 19, extraSpritesUri, 7, 6, 7, 9);
-            await checkDefinitionSingle(itemsPath, 15, 19, extraSpritesUri, 14, 6, 14, 9);
+                await editor.edit(builder => { builder.setEndOfLine(EndOfLine.CRLF); });
+                // save and wait for refresh so we check both CRLF=>LF and vice versa
+                await document.save();
+                await waitForRefresh(rulesetResolver);
+            });
 
-            // restore
-            await editor.edit(builder => { builder.setEndOfLine(EndOfLine.LF); });
-            await document.save();
-            await waitForRefresh(rulesetResolver);
+            it('finds definition in correct place for CRLF files - test 1', async () => {
+                await checkDefinitionSingle(itemsPath, 1, 18, itemsUri, 1, 10, 1, 24);
+            });
+
+            it('finds definition in correct place for CRLF files - test 2', async () => {
+                await checkDefinitionSingle(itemsPath, 12, 19, extraSpritesUri, 7, 6, 7, 9);
+            });
+
+            it('finds definition in correct place for CRLF files - test 3', async () => {
+                await checkDefinitionSingle(itemsPath, 15, 19, extraSpritesUri, 14, 6, 14, 9);
+            });
+
+            after(async () => {
+                // restore
+                await editor.edit(builder => { builder.setEndOfLine(EndOfLine.LF); });
+                await document.save();
+                await waitForRefresh(rulesetResolver);
+            });
         });
 
         it('does not find deleted definitions', async () => {

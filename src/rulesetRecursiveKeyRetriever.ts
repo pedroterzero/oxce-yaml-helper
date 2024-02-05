@@ -45,13 +45,10 @@ export class RulesetRecursiveKeyRetriever {
         // return this.findKeyInformationInYamlDocument(doc, lookupAll);
     }
 
-    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): [Match[], LogicDataEntry[]] {
+    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, _lookupAll: boolean): [Match[], LogicDataEntry[]] {
         // const matches: Match[] = [];
         const logicData: LogicDataEntry[] = [];
 
-        if (lookupAll) {
-            console.log(lookupAll);
-        }
         // console.log(yamlDocument.contents);
 
        const nodes = this.traverseNode(yamlDocument.contents!);
@@ -90,20 +87,18 @@ export class RulesetRecursiveKeyRetriever {
                 }
 
                 if (isKeyReferencePath) {
-                    const metadata = this.getParentMetadata(parentNode, newPath, item);
-
-                    results.push({
-                        value: key,
-                        path: newPath,
-                        range: item.key.range ? [item.key.range[0], item.key.range[1]] : [0, 0],
-                        ...Object.keys(metadata).length > 0 ? {metadata} : {},
-                    });
-
+                    results.push(this.getKeyReferencePathResult(key, newPath, item, parentNode));
                     return;
                 }
 
+                const metadata = this.getMetadata(node, newPath);
                 const newPathForChild = this.buildNewPathForChild(path, key, typeValue, newPath);
                 results.push(...this.traverseNode(item.value, newPathForChild, depth, isRoot && isScalar(item.value), node));
+
+                // Add metadata to the last result
+                if (Object.keys(metadata).length > 0 && results.length > 0) {
+                    results[results.length - 1].metadata = metadata;
+                }
             });
         } else if (isSeq(node)) {
             node.items.forEach((item: any, _index: number) => {
@@ -123,6 +118,17 @@ export class RulesetRecursiveKeyRetriever {
         }
 
         return results;
+    }
+
+    private getKeyReferencePathResult(key: string, newPath: string, item: any, parentNode: Node | null): NodeInfo {
+        const metadata = this.getParentMetadata(parentNode, newPath, item);
+
+        return {
+            value: key,
+            path: newPath,
+            range: item.key.range ? [item.key.range[0], item.key.range[1]] : [0, 0],
+            ...Object.keys(metadata).length > 0 ? {metadata} : {},
+        };
     }
 
     private buildNewPathForChild(path: string[], key: string, typeValue: string, newPath: string) {

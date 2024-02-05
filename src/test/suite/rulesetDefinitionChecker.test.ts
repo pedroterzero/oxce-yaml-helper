@@ -64,7 +64,7 @@ describe('rulesetDefinitionChecker', () => {
     });
 
     it('finds a diagnostic for non existing item', () => {
-        const diagnostic = findDiagnostic('items.rul', '"STR_DUMMY_AMMO" does not exist (items.compatibleAmmo)');
+        const diagnostic = findDiagnostic('items.rul', '"STR_DUMMY_AMMO" does not exist (items.compatibleAmmo[])');
         assert.notStrictEqual(diagnostic, undefined);
     });
 

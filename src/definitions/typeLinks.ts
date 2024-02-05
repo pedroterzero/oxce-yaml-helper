@@ -45,7 +45,7 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'alienDeployments.civiliansByType': ['units'],
     'alienDeployments.customUfo': ['ufos'],
     'alienDeployments.data[].extraRandomItems[]': ['items'],
-    'alienDeployments.data[].itemSets[]': ['items'],
+    'alienDeployments.data[].itemSets[][]': ['items'],
     'alienDeployments.enviroEffects': ['enviroEffects'],
     'alienDeployments.loseCutscene': ['cutscenes'],
     'alienDeployments.missionBountyItem': ['items'],
@@ -121,8 +121,8 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     'globalVariables.psiUnlockResearch': ['research'],
     'itemCategories.replaceBy': ['itemCategories'],
     'items.categories': ['itemCategories'],
-    'items.compatibleAmmo': ['items'],
-    '/^items\\.ammo\\.[0-3]\\.compatibleAmmo$/': ['items'],
+    'items.compatibleAmmo[]': ['items'],
+    '/^items\\.ammo\\.[0-3]\\.compatibleAmmo\\[\\]$/': ['items'],
     'items.defaultInventorySlot': ['invs'],
     'items.requires': ['research'],
     'items.requiresBuy': ['research'],
@@ -203,7 +203,7 @@ export const typeLinks: TypeLinks = Object.assign({}, spriteTypeLinks, soundType
     // 'ufopaedia.weapon': ['items'],
     'ufos.raceBonus': ['alienRaces'],
     'units.armor': ['armors'],
-    'units.builtInWeaponSets[]': ['items'],
+    'units.builtInWeaponSets[][]': ['items'],
     'units.psiWeapon': ['items'],
     'units.spawnUnit': ['units']
 }, getAdditionalLinks());
@@ -220,7 +220,7 @@ for (const field of handler.getRelatedLogicFields().filter(field => !handler.get
     typeLinks[field] = (field in typeLinks ? typeLinks[field] : []).concat(['_dummy_']);
 }
 
-export const typeLinksPossibleKeys: {[key: string]: (key: string) => string[]} = {
+export const typeLinksPossibleKeys: { [key: string]: (key: string) => string[] } = {
     // could improve this even more to make this all for the [MF][0123] variants?
     'armors.spriteInv': (key) => [
         '_any_',

@@ -1,5 +1,6 @@
-import { Position, Range, TextDocument } from 'vscode';
-import { logger } from './logger';
+import { Position, Range, TextDocument } from "vscode";
+import { logger } from "./logger";
+import { parse, parseDocument } from "yaml2";
 
 export type KeyMatch = {
     key: string;
@@ -24,7 +25,11 @@ export class KeyDetector {
      * @param position position to look for the key
      * @param document current document
      */
-    public static getRangeOfKeyAtPosition(position: Position, document: TextDocument, includeSemicolon: boolean): Range | undefined {
+    public static getRangeOfKeyAtPosition(
+        position: Position,
+        document: TextDocument,
+        includeSemicolon: boolean
+    ): Range | undefined {
         // const stringRegex = /\*[A-Za-z0-9_]+|(\*?[A-Z0-9_]+(\.(PCK|SPK|SCR))?)/g;
         let stringRegex;
         if (includeSemicolon) {
@@ -65,17 +70,28 @@ export class KeyDetector {
      * @param range range where call occurs
      * @param document current document
      */
-    public static getKeyAtRangeFromDocument(range: Range, document: TextDocument): string {
+    public static getKeyAtRangeFromDocument(
+        range: Range,
+        document: TextDocument
+    ): string {
         return document.getText(range);
     }
 
-    public static getAbsoluteKeyFromPositionInDocument(position: Position, document: TextDocument, includeSemicolon: boolean): { key: string, range: Range } | undefined {
-        const range = KeyDetector.getRangeOfKeyAtPosition(position, document, includeSemicolon);
+    public static getAbsoluteKeyFromPositionInDocument(
+        position: Position,
+        document: TextDocument,
+        includeSemicolon: boolean
+    ): { key: string; range: Range } | undefined {
+        const range = KeyDetector.getRangeOfKeyAtPosition(
+            position,
+            document,
+            includeSemicolon
+        );
         if (!range) {
             return;
         }
         const key: string = KeyDetector.getKeyAtRangeFromDocument(range, document);
-        logger.debug('getAbsoluteKeyFromPositionInDocument', { key, range });
+        logger.debug("getAbsoluteKeyFromPositionInDocument", { key, range });
         if (!KeyDetector.isValidKey(key)) {
             return;
         }
@@ -83,8 +99,15 @@ export class KeyDetector {
         return { key, range };
     }
 
-    public static findRuleType(position: Position, document: TextDocument): string | undefined {
-        const range = KeyDetector.getRangeOfKeyAtPosition(position, document, false);
+    public static findRuleType(
+        position: Position,
+        document: TextDocument
+    ): string | undefined {
+        const range = KeyDetector.getRangeOfKeyAtPosition(
+            position,
+            document,
+            false
+        );
         if (!range) {
             return;
         }
@@ -100,55 +123,43 @@ export class KeyDetector {
         return;
     }
 
-    public static findRulePath(position: Position, document: TextDocument): string {
+    public static findRulePath(
+        position: Position,
+        document: TextDocument
+    ): string {
         const text = document.getText().slice(0, document.offsetAt(position));
 
-        // handle CRLF also
-        const lines = text.split(/\r?\n/).reverse();
-        const editLine = lines.shift();
-        const matches = editLine?.match(/^(\s+)(?:-\s)?([a-zA-Z0-9-]+)(:(?:\s*\[\s*\[)?)?/);
-        const path = [];
+        return this.generatePathFromDocument(text);
+    }
 
-        let indent = 2;
-        if (matches) {
-            indent = matches[1].length;
-            if (matches[3] === ':') {
-                path.push(matches[2]);
-            } else if (matches[3]?.match(/:\s*\[\s*\[/)) {
-                path.push(matches[2] + '[]');
-            }
-        }
+    private static generatePathFromDocument(yamlStr: string): string {
+        const doc = parseDocument(yamlStr);
+        let path: string[] = [];
 
-        // get the first line too, in case that started an array entry
-        let prevLine = editLine || '';
-        for (const line of lines) {
-            const parentRegex = new RegExp(`^(\\s{1,${indent - 1}})([a-zA-Z]+|[0-9]+):(\\s*&[a-zA-Z0-9]+|\\s*\\[)?$`); // could be a trailing & reference
-
-            let matches;
-            if (line.trimEnd().match(/^[a-zA-Z]+:$/)) {
-                path.push(line.trimEnd().slice(0, -1));
-                break;
-            } else if ((matches = parentRegex.exec(line.trimEnd()))) {
-                indent = matches[1].length;
-
-                // is this parent followed by an array or was previous line an array?
-                let isArray = matches[3]?.trim() === '[';
-                // let prevLineMatches;
-                if (!isArray && (/*prevLineMatches = */new RegExp(`^\\s{${indent + 1},}-([^:]+:[^:]+)?$`).exec(prevLine))) {
-                    // if the previous line started with - and it had a : after that, it's an (unnamed) array
-                    isArray = true;
-                }
-
-                path.push(matches[2] + (isArray ? '[]' : ''));
+        const traverse = (node: any, currentPath: string[] = []): void => {
+            if (!node) {
+                return;
             }
 
-            prevLine = line;
-        }
+            if (node.items) {
+                // This node is a Map or Seq
+                node.items.forEach((item: any) => {
+                    if (item.key && item.value) {
+                        // Map item
+                        const key = typeof item.key.value === 'string' ? item.key.value : item.key;
+                        traverse(item.value, [...currentPath, key]);
+                    } else {
+                        // Seq item
+                        traverse(item, [...currentPath, ...currentPath.length > 1 ? ['[]'] : []]);
+                    }
+                });
+            } else if (node.value) {
+                // Scalar value
+                path = currentPath; // Reached a leaf node, update the path
+            }
+        };
 
-        const foundPath = path.reverse().join('.');
-
-        logger.debug(`Found path: ${foundPath}`);
-
-        return foundPath;
+        traverse(doc.contents);
+        return path.join('.').replaceAll('.[]', '[]'); // Format the path, merging sequence indicators
     }
 }
