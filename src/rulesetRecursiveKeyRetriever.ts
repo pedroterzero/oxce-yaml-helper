@@ -155,7 +155,7 @@ export class RulesetRecursiveKeyRetriever {
 
             // Add comment to metadata
             if (node.comment) {
-                metadata._comment = node.comment;
+                metadata._comment = node.comment.trim();
             }
 
             return [
@@ -196,7 +196,7 @@ export class RulesetRecursiveKeyRetriever {
 
         // Add comment to metadata
         if (node?.comment) {
-            metadata._comment = node.comment;
+            metadata._comment = node.comment.trim();
         }
 
         if (fields && nodeJson) {

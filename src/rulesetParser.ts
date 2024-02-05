@@ -1,22 +1,30 @@
-import { TextDocument, Location, Range, Uri, window, EndOfLine, WorkspaceFolder } from 'vscode';
+import { EndOfLine, Location, Range, TextDocument, Uri, WorkspaceFolder, window } from 'vscode';
+import { Document, Node, Pair, Scalar, YAMLMap, YAMLSeq, isNode, isPair, parseDocument } from 'yaml2';
 import { logger } from './logger';
+import { rulesetDefinitionFinder } from './rulesetDefinitionFinder';
+import { rulesetRecursiveKeyRetriever } from './rulesetRecursiveKeyRetriever';
+import { rulesetRefnodeFinder } from './rulesetRefnodeFinder';
+import { rulesetTranslationFinder } from './rulesetTranslationFinder';
 import {
     Definition,
     LogicDataEntry,
     Match,
     RangedEntryInterface,
-    rulesetTree,
     RuleType,
     Translation,
     Variables,
+    rulesetTree,
 } from './rulesetTree';
-import { Document, parseDocument } from 'yaml2';
-import { rulesetRecursiveKeyRetriever } from './rulesetRecursiveKeyRetriever';
-import { rulesetRefnodeFinder } from './rulesetRefnodeFinder';
-import { rulesetDefinitionFinder } from './rulesetDefinitionFinder';
 import { rulesetVariableFinder } from './rulesetVariableFinder';
-import { rulesetTranslationFinder } from './rulesetTranslationFinder';
 import { typedProperties } from './typedProperties';
+
+type AnchorMap = Map<
+    string,
+    {
+        start: number;
+        end: number;
+    }
+>;
 
 export interface ParsedDocument {
     parsed: YAMLDocument;
@@ -25,7 +33,7 @@ export interface ParsedDocument {
 export interface YAMLDocument {
     // contents: ReturnType<typeof parseDocument>['contents'];
     contents: Document['contents'];
-    anchors: null;
+    anchors: AnchorMap;
 }
 
 export interface YAMLDocumentItem {
@@ -64,19 +72,14 @@ export class RulesetParser {
     }
 
     public findTypeOfKey(key: string, range: Range): RuleType | undefined {
-        logger.debug(
-            `Looking for requested key ${key} in ${window.activeTextEditor?.document.fileName}`,
-        );
+        logger.debug(`Looking for requested key ${key} in ${window.activeTextEditor?.document.fileName}`);
 
         const document = window.activeTextEditor?.document;
         if (!document) {
             return;
         }
 
-        let sourceRange: [number, number] = [
-            document.offsetAt(range.start),
-            document.offsetAt(range.end),
-        ];
+        let sourceRange: [number, number] = [document.offsetAt(range.start), document.offsetAt(range.end)];
         // logger.debug(`Searching for type ${key} in ${document.fileName}`);
         sourceRange = this.fixRangesForWindowsLineEndingsIfNeeded(document, sourceRange, true);
 
@@ -116,9 +119,9 @@ export class RulesetParser {
             if (definition.rangePosition) {
                 const range = definition.range;
                 logger.debug(
-                    `opening ${definition.file.path.slice(
-                        workspaceFolder.uri.path.length + 1,
-                    )} at ${range[0]}:${range[1]}`,
+                    `opening ${definition.file.path.slice(workspaceFolder.uri.path.length + 1)} at ${range[0]}:${
+                        range[1]
+                    }`,
                 );
 
                 locations.push(
@@ -146,14 +149,8 @@ export class RulesetParser {
         for (const ref of references) {
             ref.range = this.fixRangesForWindowsLineEndingsIfNeeded(document, ref.range);
             ref.rangePosition = [
-                [
-                    document.positionAt(ref.range[0]).line,
-                    document.positionAt(ref.range[0]).character,
-                ],
-                [
-                    document.positionAt(ref.range[1]).line,
-                    document.positionAt(ref.range[1]).character,
-                ],
+                [document.positionAt(ref.range[0]).line, document.positionAt(ref.range[0]).character],
+                [document.positionAt(ref.range[1]).line, document.positionAt(ref.range[1]).character],
             ];
         }
     }
@@ -203,12 +200,11 @@ export class RulesetParser {
         const yamlDocument: YAMLDocument = {} as YAMLDocument;
         let doc;
         try {
-            // I am not sure why I have to cast this to Document, are yaml package's types broken?
-            doc = parseDocument(yaml, {});
+            doc = parseDocument(yaml);
 
-            // yamlDocument.anchors = [];
             if (doc.contents) {
                 yamlDocument.contents = doc.contents;
+                yamlDocument.anchors = this.collectAnchors(doc.contents);
             }
         } catch (error) {
             logger.error('could not parse yaml document', { error });
@@ -222,6 +218,34 @@ export class RulesetParser {
             parsed: yamlDocument,
             regular: doc,
         };
+    }
+
+    private collectAnchors(node: Node, anchors: AnchorMap = new Map()): AnchorMap {
+        if (node instanceof YAMLMap || node instanceof YAMLSeq) {
+            node.items.forEach((item) => {
+                if (isNode(item)) {
+                    this.collectAnchors(item, anchors);
+                } else if (isPair(item)) {
+                    if (isNode(item.key)) {
+                        this.collectAnchors(item.key, anchors);
+                    }
+                    if (isNode(item.value)) {
+                        this.collectAnchors(item.value, anchors);
+                    }
+                }
+            });
+        } else if (node instanceof Pair) {
+            if (isNode(node.key)) {
+                this.collectAnchors(node.key, anchors);
+            }
+            if (isNode(node.value)) {
+                this.collectAnchors(node.value, anchors);
+            }
+        } else if (node instanceof Scalar && node.anchor && node.range?.length) {
+            anchors.set(node.anchor, { start: node.range[0], end: node.range[1] });
+        }
+
+        return anchors;
     }
 }
 

@@ -229,7 +229,9 @@ describe('Definition Provider', () => {
                 return;
             }
 
-            checkDefinitionTarget(definition, itemsUri, 2, 10, 2, 28);
+            /// yaml2 no longer includes the anchor in the range
+            // checkDefinitionTarget(definition, itemsUri, 2, 10, 2, 28);
+            checkDefinitionTarget(definition, itemsUri, 2, 25, 2, 28);
         });
     });
 

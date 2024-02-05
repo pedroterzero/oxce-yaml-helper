@@ -1,12 +1,12 @@
-import { workspace, Location, Range, Uri } from "vscode";
-import { logger } from "./logger";
-import { rulesetParser } from "./rulesetParser";
+import { workspace, Location, Range, Uri } from 'vscode';
+import { logger } from './logger';
+import { rulesetParser } from './rulesetParser';
 
 export class RulesetRefnodeFinder {
     public findRefNodeInDocument(file: Uri, key: string): Location | undefined {
         logger.debug(`Looking for refNode ${key} in ${file.path}`);
 
-        const document = workspace.textDocuments.find(doc => doc.uri.path === file.path);
+        const document = workspace.textDocuments.find((doc) => doc.uri.path === file.path);
         if (!document) {
             throw new Error(`${file.path} not open, but it must be because we're looking for a refNode`);
         }
@@ -22,15 +22,11 @@ export class RulesetRefnodeFinder {
     }
 
     public findRefNodeRangeInYAML(yaml: string, key: string): number[] {
-        const doc = rulesetParser.parseDocument(yaml).parsed;
-        // const node = doc.anchors.getNode(key);
+        const anchor = rulesetParser.parseDocument(yaml).parsed.anchors.get(key);
 
-        if (key) {
-            console.log(key, doc);
+        if (anchor) {
+            return [anchor.start, anchor.end];
         }
-        // if (node) {
-        //     return node.range as number[];
-        // }
 
         return [0, 0];
     }
