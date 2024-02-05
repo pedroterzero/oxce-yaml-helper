@@ -45,7 +45,7 @@ export class typedProperties {
             return false;
         }
 
-        if (['extraSprites', 'extraSounds'].includes(path) && key !== 'type') {
+        if (['extraSprites', 'extraSounds'].includes(path)/* && key !== 'type'*/) {
            return `${path}.${name}.files` in this.keyDefinitionTypes;
         }
 

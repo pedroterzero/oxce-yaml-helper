@@ -2,11 +2,13 @@ import { Node, isMap, isScalar, isSeq } from "yaml2";
 import { YAMLDocument } from "./rulesetParser";
 import { LogicDataEntry, Match, RuleType } from "./rulesetTree";
 import { typedProperties } from "./typedProperties";
+import { get } from "lodash";
 
 interface NodeInfo {
     value: any;
     path: string;
     range: [number, number];
+    metadata?: any;
   }
 
 export class RulesetRecursiveKeyRetriever {
@@ -60,7 +62,7 @@ export class RulesetRecursiveKeyRetriever {
                 key: node.value,
                 path: node.path,
                 range: node.range,
-                metadata: {}
+                ...node.metadata ? {metadata: node.metadata} : {}
             };
 
             return match;
@@ -72,7 +74,7 @@ export class RulesetRecursiveKeyRetriever {
         ];
     }
 
-    private traverseNode(node: Node, path: string[] = [], depth: number = 0, isRoot: boolean = true): NodeInfo[] {
+    private traverseNode(node: Node, path: string[] = [], depth: number = 0, isRoot: boolean = true, parentNode: Node | null = null): NodeInfo[] {
         const results: NodeInfo[] = [];
         const newPath = path.filter((item, index) => index !== 1 || item !== '[]').join('.').replaceAll('.[]', '[]');
 
@@ -88,20 +90,24 @@ export class RulesetRecursiveKeyRetriever {
                 }
 
                 if (isKeyReferencePath) {
+                    const metadata = this.getParentMetadata(parentNode, newPath, item);
+
                     results.push({
                         value: key,
                         path: newPath,
                         range: item.key.range ? [item.key.range[0], item.key.range[1]] : [0, 0],
+                        ...Object.keys(metadata).length > 0 ? {metadata} : {},
                     });
+
                     return;
                 }
 
                 const newPathForChild = this.buildNewPathForChild(path, key, typeValue, newPath);
-                results.push(...this.traverseNode(item.value, newPathForChild, depth, isRoot && isScalar(item.value)));
+                results.push(...this.traverseNode(item.value, newPathForChild, depth, isRoot && isScalar(item.value), node));
             });
         } else if (isSeq(node)) {
             node.items.forEach((item: any, _index: number) => {
-                results.push(...this.traverseNode(item, path.concat('[]'), depth + 1, false));
+                results.push(...this.traverseNode(item, path.concat('[]'), depth + 1, false, node));
             });
         } else if (isScalar(node)) {
             const isFloat = (typeof node.value === 'number' && this.isFloat(node.value));
@@ -124,6 +130,31 @@ export class RulesetRecursiveKeyRetriever {
             return path.concat(typeValue, key);
         }
         return path.concat(key);
+    }
+
+    private getMetadata(node: Node | null, path: string): {[key: string]: string | number} {
+        const nodeJson = node?.toJSON();
+        const fields = typedProperties.getMetadataFieldsForType(path, nodeJson);
+        const metadata: {[key: string]: string | number} = {};
+        if (fields && nodeJson) {
+            Object.values(fields).forEach((field: string) => {
+                const value = get(nodeJson, field); // Use lodash's get function to access nested properties
+                if (value !== undefined) {
+                    metadata[field] = value;
+                }
+            });
+        }
+
+        return metadata;
+    }
+
+    private getParentMetadata(parentNode: Node | null, path: string, item: any): {[key: string]: string | number} {
+        const metadata = this.getMetadata(parentNode, path.split('.').slice(0, -1).join('.'));
+
+        // Add _name manually
+        metadata._name = item.value.value;
+
+        return metadata;
     }
 
     private isFloat(n: number): boolean {
