@@ -1,8 +1,8 @@
-import { Node, Scalar, isMap, isScalar, isSeq } from "yaml2";
-import { YAMLDocument } from "./rulesetParser";
-import { LogicDataEntry, Match, RuleType } from "./rulesetTree";
-import { typedProperties } from "./typedProperties";
-import { get } from "lodash";
+import { Node, Scalar, isMap, isScalar, isSeq } from 'yaml2';
+import { YAMLDocument } from './rulesetParser';
+import { LogicDataEntry, Match, RuleType } from './rulesetTree';
+import { typedProperties } from './typedProperties';
+import { get } from 'lodash';
 
 interface NodeInfo {
     value: any;
@@ -24,7 +24,7 @@ export class RulesetRecursiveKeyRetriever {
             if ((ref.key === key || ref.key.toString() === key) && this.checkForRangeMatch(range, ref.range)) {
                 const ruleMatch: RuleType = {
                     type: ref.path.split('.').slice(0, -1).join('.'),
-                    key: ref.path.split('.').slice(-1).join('.')
+                    key: ref.path.split('.').slice(-1).join('.'),
                 };
 
                 if (ref.metadata) {
@@ -45,7 +45,10 @@ export class RulesetRecursiveKeyRetriever {
         // return this.findKeyInformationInYamlDocument(doc, lookupAll);
     }
 
-    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, _lookupAll: boolean): [Match[], LogicDataEntry[]] {
+    private findKeyInformationInYamlDocument(
+        yamlDocument: YAMLDocument,
+        _lookupAll: boolean,
+    ): [Match[], LogicDataEntry[]] {
         // const matches: Match[] = [];
         const logicData: LogicDataEntry[] = [];
 
@@ -59,21 +62,27 @@ export class RulesetRecursiveKeyRetriever {
                 key: node.value,
                 path: node.path,
                 range: node.range,
-                ...node.metadata ? { metadata: node.metadata } : {}
+                ...(node.metadata ? { metadata: node.metadata } : {}),
             };
 
             return match;
         });
 
-        return [
-            matches,
-            logicData
-        ];
+        return [matches, logicData];
     }
 
-    private traverseNode(node: Node, path: string[] = [], depth: number = 0, isRoot: boolean = true, parentNode: Node | null = null): NodeInfo[] {
+    private traverseNode(
+        node: Node,
+        path: string[] = [],
+        depth: number = 0,
+        isRoot: boolean = true,
+        parentNode: Node | null = null,
+    ): NodeInfo[] {
         const results: NodeInfo[] = [];
-        const newPath = path.filter((item, index) => index !== 1 || item !== '[]').join('.').replaceAll('.[]', '[]');
+        const newPath = path
+            .filter((item, index) => index !== 1 || item !== '[]')
+            .join('.')
+            .replaceAll('.[]', '[]');
 
         if (isMap(node)) {
             const isKeyReferencePath = typedProperties.isKeyReferencePath(newPath);
@@ -93,13 +102,15 @@ export class RulesetRecursiveKeyRetriever {
 
                 const metadata = this.getMetadata(node, newPath);
                 const newPathForChild = this.buildNewPathForChild(path, key, typeValue, newPath);
-                results.push(...this.traverseNode(item.value, newPathForChild, depth, isRoot && isScalar(item.value), node));
+                results.push(
+                    ...this.traverseNode(item.value, newPathForChild, depth, isRoot && isScalar(item.value), node),
+                );
 
                 // Add metadata to the last result
                 if (Object.keys(metadata).length > 0 && results.length > 0) {
                     results[results.length - 1].metadata = {
                         ...results[results.length - 1].metadata,
-                        ...metadata
+                        ...metadata,
                     };
                 }
             });
@@ -124,7 +135,22 @@ export class RulesetRecursiveKeyRetriever {
         const isValidValue = typeof value !== 'boolean' && !isFloat && !isUndefinableNumeric;
         if (isValidValue || isStoreVariable) {
             const range: [number, number] = node.range ? [node.range[0], node.range[1]] : [0, 0];
-            return [{ value, path: finalPath, range }];
+
+            const metadata: { [key: string]: string | number } = {};
+
+            // Add comment to metadata
+            if (node.comment) {
+                metadata._comment = node.comment;
+            }
+
+            return [
+                {
+                    value,
+                    path: finalPath,
+                    range,
+                    ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
+                },
+            ];
         }
 
         return [];
@@ -137,7 +163,7 @@ export class RulesetRecursiveKeyRetriever {
             value: key,
             path: newPath,
             range: item.key.range ? [item.key.range[0], item.key.range[1]] : [0, 0],
-            ...Object.keys(metadata).length > 0 ? { metadata } : {},
+            ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
         };
     }
 
@@ -152,6 +178,12 @@ export class RulesetRecursiveKeyRetriever {
         const nodeJson = node?.toJSON();
         const fields = typedProperties.getMetadataFieldsForType(path, nodeJson);
         const metadata: { [key: string]: string | number } = {};
+
+        // Add comment to metadata
+        if (node?.comment) {
+            metadata._comment = node.comment;
+        }
+
         if (fields && nodeJson) {
             Object.values(fields).forEach((field: string) => {
                 const value = get(nodeJson, field); // Use lodash's get function to access nested properties
@@ -284,7 +316,7 @@ export class RulesetRecursiveKeyRetriever {
          * for every property, such as mapScripts.commands[].groups, because it can also be mapScripts.commands[].groups[] which is handled differently
          * @param match
          * @param metadataByPath
-         *//*
+         */ /*
 private addMetadataForLogicChecks(match: Match, metadataByPath: {[key: string]: Record<string, unknown>}) {
 if (this.logicHandler.isRelatedLogicField(match.path)) {
 for (const metadata of Object.values(metadataByPath)) {
@@ -469,65 +501,65 @@ names: namesByPath
 * @param path
 * @param ruleProperty
 * @param namesByPath
-*//*
-                                                                       private checkForDefinitionName(path: string, ruleProperty: any, namesByPath: { [key: string]: string; }) {
-                                                                           for (const key of typedProperties.getPossibleTypeKeys(path)) {
-                                                                               if (ruleProperty.key?.value === key) {
-                                                                                   namesByPath[path] = ruleProperty.value.value;
-                                                                               }
-                                                                           }
-                                                                       }
-    
-                                                                       private getRulePropertyType(ruleProperty: any, path: string, lookupAll: boolean) {
-                                                                           let value = ruleProperty.value;
-                                                                           let range = ruleProperty.range;
-    
-                                                                           const ignoreTypes = ['QUOTE_DOUBLE', 'QUOTE_SINGLE', 'ALIAS'];
-    
-                                                                           if (!value || ignoreTypes.indexOf(ruleProperty.type) !== -1) {
-                                                                               // empty value (happens with empty string for example) or type that we ignore
-                                                                               return {stop: true};
-                                                                           }
-    
-                                                                           if (typeof value === 'object' && 'type' in value && ignoreTypes.indexOf(value.type) !== -1) {
-                                                                               // ignore aliases for now(?)
-                                                                               return {stop: true};
-                                                                           }
-                                                                           if (['MAP', 'FLOW_SEQ', 'SEQ', 'FLOW_MAP'].indexOf(value.type) !== -1) {
-                                                                               return {value, loop: true};
-                                                                               // this.loopEntry(value, newPath, matches, lookupAll);
-                                                                               // return;
-                                                                           }
-    
-                                                                           if (['PAIR', 'SCALAR',].indexOf(ruleProperty.type) !== -1) { // i.e. Scalar
-                                                                               value = ruleProperty.value.value;
-                                                                               range = ruleProperty.value.range;
-                                                                           }
-    
-                                                                           if (ruleProperty.type === 'PLAIN' && value.toString().length !== range[1] - range[0]) {
-                                                                               // fix trailing whitespace, apparently the library does not properly handle this -- at least I hope that's what it is
-                                                                               // logger.debug(`Fixing range for ${path} from ${range[0]}-${range[1]} to ${range[0]}-${range[0] + value.toString().length}`);
-                                                                               range[1] = range[0] + value.toString().length;
-                                                                           }
-    
-                                                                           if (typeof value === 'boolean' || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
-                                                                               // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
-                                                                               return {stop: true};
-                                                                           }
-    
-                                                                           return {
-                                                                               value,
-                                                                               range
-                                                                           };
-                                                                       }
-    
-                                                                       private isFloat(value: any) {
-                                                                           return parseFloat(value) === value && parseInt(value) !== value;
-                                                                       }
-    
-                                                                       private isBoolean(value: any, path: string) {
-                                                                           return typeof value === 'boolean' && !typedProperties.isStoreVariable(path);
-                                                                       }*/
+*/ /*
+    private checkForDefinitionName(path: string, ruleProperty: any, namesByPath: { [key: string]: string; }) {
+        for (const key of typedProperties.getPossibleTypeKeys(path)) {
+            if (ruleProperty.key?.value === key) {
+                namesByPath[path] = ruleProperty.value.value;
+            }
+        }
+    }
+
+    private getRulePropertyType(ruleProperty: any, path: string, lookupAll: boolean) {
+        let value = ruleProperty.value;
+        let range = ruleProperty.range;
+
+        const ignoreTypes = ['QUOTE_DOUBLE', 'QUOTE_SINGLE', 'ALIAS'];
+
+        if (!value || ignoreTypes.indexOf(ruleProperty.type) !== -1) {
+            // empty value (happens with empty string for example) or type that we ignore
+            return {stop: true};
+        }
+
+        if (typeof value === 'object' && 'type' in value && ignoreTypes.indexOf(value.type) !== -1) {
+            // ignore aliases for now(?)
+            return {stop: true};
+        }
+        if (['MAP', 'FLOW_SEQ', 'SEQ', 'FLOW_MAP'].indexOf(value.type) !== -1) {
+            return {value, loop: true};
+            // this.loopEntry(value, newPath, matches, lookupAll);
+            // return;
+        }
+
+        if (['PAIR', 'SCALAR',].indexOf(ruleProperty.type) !== -1) { // i.e. Scalar
+            value = ruleProperty.value.value;
+            range = ruleProperty.value.range;
+        }
+
+        if (ruleProperty.type === 'PLAIN' && value.toString().length !== range[1] - range[0]) {
+            // fix trailing whitespace, apparently the library does not properly handle this -- at least I hope that's what it is
+            // logger.debug(`Fixing range for ${path} from ${range[0]}-${range[1]} to ${range[0]}-${range[0] + value.toString().length}`);
+            range[1] = range[0] + value.toString().length;
+        }
+
+        if (typeof value === 'boolean' || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
+            // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
+            return {stop: true};
+        }
+
+        return {
+            value,
+            range
+        };
+    }
+
+    private isFloat(value: any) {
+        return parseFloat(value) === value && parseInt(value) !== value;
+    }
+
+    private isBoolean(value: any, path: string) {
+        return typeof value === 'boolean' && !typedProperties.isStoreVariable(path);
+    }*/
 
     private isUndefinableNumericProperty(path: string, value: any): boolean {
         if (parseInt(value) !== value) {
