@@ -52,7 +52,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 107;
+const expectedNumberOfDiagnostics = 108;
 
 const originalSettingFindDuplicateDefinitions = workspace
     .getConfiguration('oxcYamlHelper')
