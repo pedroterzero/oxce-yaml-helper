@@ -190,7 +190,7 @@ export const typeLinks: TypeLinks = {
     'startingConditions.allowedCraft': ['crafts'],
     'startingConditions.allowedItemCategories': ['itemCategories'],
     'startingConditions.allowedItems': ['items'],
-    'startingConditions.allowedSoldierTypes': ['soldiers'],
+    'startingConditions.allowedSoldierTypes[]': ['soldiers'],
     'startingConditions.allowedVehicles': ['units'],
     'startingConditions.defaultArmor': ['soldiers'],
     '/^startingConditions\\.defaultArmor\\.[a-zA-Z0-9_]+$/': ['armors'],

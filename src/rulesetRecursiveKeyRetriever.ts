@@ -162,7 +162,11 @@ export class RulesetRecursiveKeyRetriever {
                 }
             });
         } else if (isSeq(node)) {
-            node.items.forEach((item: any, _index: number) => {
+            node.items.forEach((item: any, index: number) => {
+                if (typedProperties.isAdditionalLogicPath(newPath)) {
+                    namesByPath[`${newPath}[]`] = index.toString();
+                }
+
                 const [childResults, childLogicData] = this.traverseNode(
                     item,
                     lookupAll,
