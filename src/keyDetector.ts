@@ -135,21 +135,32 @@ export class KeyDetector {
         const match = targetLine.match(/^(\s*)/);
         currentItemIndentation = match ? match[1].length : 0;
 
-        // Traverse the remaining lines to find and include their parents
+        // Check if the last line starts with '-'
+        let previousLineWasListItem = targetLine.trim().startsWith('-');
+
+        // Iterate over the rest of the lines
         for (const line of lines.slice(1)) {
             // Skip lines starting with '#' or empty lines
             if (line.trim().startsWith('#') || line.trim().length === 0) {
                 continue;
             }
 
-            // Skip the first line since it's already included
+            // Determine the indentation of the current line
             const lineIndentation = line.match(/^(\s*)/)?.[1].length ?? 0;
+            // Check if the current line starts with '-'
+            const currentLineIsListItem = line.trim().startsWith('-');
 
-            // Only include lines with less indentation (parents)
-            if (lineIndentation < currentItemIndentation) {
+            // If the current line has less indentation than the previous one, or if both are list items with the same indentation, add it to the hierarchy
+            if (
+                lineIndentation < currentItemIndentation ||
+                (previousLineWasListItem && !currentLineIsListItem && lineIndentation === currentItemIndentation)
+            ) {
                 hierarchyLines.push(line);
-                currentItemIndentation = lineIndentation; // Update current indentation to match the new parent's
+                currentItemIndentation = lineIndentation;
             }
+
+            // Update the flag for the next iteration
+            previousLineWasListItem = currentLineIsListItem;
 
             // Once we reach the top level (no indentation), stop the search
             if (currentItemIndentation === 0) {
@@ -160,7 +171,6 @@ export class KeyDetector {
         // Reverse the hierarchy lines back to their original order and join them into a string
         return hierarchyLines.reverse().join('\n');
     }
-
     private static generatePathFromDocument(yamlStr: string): string {
         const doc = parseDocument(yamlStr);
         let path: string[] = [];
