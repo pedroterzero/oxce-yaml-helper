@@ -126,7 +126,10 @@ export class RulesetRecursiveKeyRetriever {
                     return;
                 }
 
-                const metadata = this.getMetadata(node, newPath);
+                const metadata = {
+                    ...this.getMetadata(node, newPath),
+                    ...(namesByPath ? { _names: namesByPath } : {}),
+                };
                 const newPathForChild = this.buildNewPathForChild(path, key, typeValue, newPath);
                 const [childResults, childLogicData] = this.traverseNode(
                     item.value,
