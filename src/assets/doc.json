@@ -128,6 +128,14 @@
       "description": "String ID of the country name.",
       "default": "required"
     },
+    "provideBaseFunc": {
+      "description": "A list of services an xcom base in this country provides after being built.",
+      "default": "-"
+    },
+    "forbiddenBaseFunc": {
+      "description": "A list of services that cannot be used anymore after an xcom base is built in this country.",
+      "default": "-"
+    },
     "signedPactEvent": {
       "description": "String ID of the event triggered when the country leaves Xcom project.",
       "default": "-"
@@ -165,6 +173,14 @@
     "type": {
       "description": "String ID of the region name.",
       "default": "required"
+    },
+    "provideBaseFunc": {
+      "description": "A list of services an xcom base in this region provides after being built.",
+      "default": "-"
+    },
+    "forbiddenBaseFunc": {
+      "description": "A list of services that cannot be used anymore after an xcom base is built in this region.",
+      "default": "-"
     },
     "cost": {
       "description": "Amount of money spent building an X-COM base in this region (first base is free).",
@@ -228,6 +244,10 @@
       "description": "Sprite ID from [BASEBITS.PCK](https://www.ufopaedia.org/index.php/BASEBITS.PCK) used to draw the facility's contents in the Basescape and UFOpaedia. Drawn on top of **spriteShape**. Not required for buildings size 2 or larger.",
       "default": "-1"
     },
+    "spriteEnabled": {
+      "description": "Should **spriteFacility** over **spriteShape** behavior be enabled for this facility? (For 1x1 facilities, it's enabled by default, as in vanilla.)",
+      "default": "false"
+    },
     "connectorsDisabled": {
       "description": "Should the game draw facility connectors leading from/to this facility in the base view?",
       "default": "false"
@@ -262,6 +282,14 @@
     },
     "size": {
       "description": "Size of the facility, in grid units. Every facility is square, so a size of 1 means 1x1, 2 means 2x2, etc. Bigger facilities are made up of multiple sprites, for example a 2x2 facility will use 4 sprites for **spriteShape** and 4 sprites for **spriteFacility** (top-left, top-right, bottom-left, bottom-right).",
+      "default": "1"
+    },
+    "sizeX": {
+      "description": "Size of the facility in the X direction. Overrides **size**.",
+      "default": "1"
+    },
+    "sizeY": {
+      "description": "Size of the facility in the Y direction. Overrides **size**.",
       "default": "1"
     },
     "buildCost": {
@@ -478,6 +506,18 @@
       "description": "Amount of units (soldiers and vehicles) this craft can carry.",
       "default": "0"
     },
+    "maxUnitsLimit": {
+      "description": "Amount of units (soldiers and vehicles) this craft can carry, INCLUDING all potential extensions provided by craft weapons/modules.",
+      "default": "same as soldiers"
+    },
+    "vehicles": {
+      "description": "Amount of vehicles and 2x2 soldiers this craft can carry.",
+      "default": "0"
+    },
+    "maxHWPUnitsLimit": {
+      "description": "Amount of vehicles and 2x2 soldiers this craft can carry, INCLUDING all potential extensions provided by craft weapons/modules.",
+      "default": "same as vehicles"
+    },
     "pilots": {
       "description": "How many pilots are required to pilot this craft.\n\nNotes:\n\n*   pilots are also soldiers and will be fighting in the Battlescape\n*   pilots give bonuses/penalties to the craft performance in the Dogfights (based on their skills)\n*   pilots gain experience via Dogfights\n*   you can manually assign pilots to the craft; if you don't want to, they can be assigned automatically",
       "default": "0"
@@ -485,10 +525,6 @@
     "allowLanding": {
       "description": "Should this craft be able to start a Battlescape mission?\n\nNote: you may want to set _false_ to your manned/piloted interceptors.",
       "default": "true"
-    },
-    "vehicles": {
-      "description": "Amount of vehicles this craft can carry.\n\nNote: in OXCE, it's the amount of vehicles **and** 2x2 soldiers. In OXCE, it can also have a value of -1, which means unlimited.",
-      "default": "0"
     },
     "maxSmallSoldiers": {
       "description": "Maximum amount of 1x1 soldiers this craft can carry. (-1 = unlimited)",
@@ -610,13 +646,13 @@
       "description": "Maximum altitude (0-4) this craft can dogfight to.",
       "default": "-1"
     },
-    "maxItems": {
-      "description": "Amount of items this craft can carry.",
-      "default": "0"
+    "defaultAltitude": {
+      "description": "Altitude displayed on the GUI when a craft doesn't follow any UFO (or the UFO is crashed/landed).",
+      "default": "STR_VERY_LOW"
     },
-    "maxStorageSpace": {
-      "description": "Total size of items/equipment this craft can carry. Does not include HWP, HWP ammo and armor worn by soldiers.",
-      "default": "0.0"
+    "maxItems": {
+      "description": "Amount of items this craft can carry.\n\nDefault for a craft is 999999. Default for a craft weapon/module is 0.",
+      "default": "0"
     },
     "shieldRechargedAtBase": {
       "description": "How many shield points are recharged when landed at base per hour.",
@@ -681,6 +717,10 @@
     "shieldBleedThrough": {
       "description": "Defines the percent of damage that passes the shield when it goes down. A value of 0 means that with even just 1 shield point, any single hit will be blocked, while 100 means 100% of the damage left after the shield blocks it will go on to damage the craft.",
       "default": "0"
+    },
+    "maxStorageSpace": {
+      "description": "Total size of items/equipment this craft can carry. Does not include HWP, HWP ammo and armor worn by soldiers.\n\nDefault for a craft is 99999.0. Default for a craft weapon/module is 0.0.",
+      "default": "0.0"
     }
   },
   "craftWeapons": {
@@ -701,7 +741,7 @@
       "default": "-1"
     },
     "stats": {
-      "description": "Contains the same set of attributes as [Craft Stats](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Craft_Stats). These dynamically increase/decrease the stats of a craft, when equipped.\n\nExamples:\n\n*   you can increase the craft's range by equipping an extra fuel tank\n*   you can increase the craft's hit chance by equipping advanced targeters\n*   you can increase the craft's radar range/chance by equipping an extra radar\n*   and so on...",
+      "description": "Contains the same set of attributes as [Craft Stats](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Craft_Stats). These dynamically increase/decrease the stats of a craft, when equipped.\n\nExamples:\n\n*   you can increase the craft's range by equipping an extra fuel tank\n*   you can increase the craft's hit chance by equipping advanced targeters\n*   you can increase the craft's radar range/chance by equipping an extra radar\n*   you can increase the craft's crew capacity by equipping an extra cargo module\n*   and so on...",
       "default": "-"
     },
     "hidePediaInfo": {
@@ -867,11 +907,11 @@
       "default": "-1"
     },
     "bulletSpeed": {
-      "description": "How much faster (or slower, if you use a negative number) is a projectile fired from this weapon compared to the default.\n\nDefined as a whole number that will be added to the default speed, e.g. 0 provides 0 additional speed; 1 will provide 1 additional speed; etc.",
+      "description": "How much faster (or slower, if you use a negative number) is a projectile fired from this weapon compared to the default. Defined as a whole number that will be added to the default speed, e.g. 0 provides 0 additional speed; 1 will provide 1 additional speed; etc.",
       "default": "0"
     },
     "explosionSpeed": {
-      "description": "How much faster (or slower, if you use a negative number) is an explosion (hitAnimation) of this item animated compared to the default.\n\nDefined as a whole number that will be multiplied by 10 and the difference from the default speed will be your additional speed, e.g. 0 provides 0\\*10 = 0 additional speed; 1 will provide (1\\*10) - {default} = additional speed; etc.",
+      "description": "How much faster (or slower, if you use a negative number) is an explosion (hitAnimation) of this item animated compared to the default. Defined as a whole number that will be multiplied by 10 and the difference from the default speed will be your additional speed, e.g. 0 provides 0\\*10 = 0 additional speed; 1 will provide (1\\*10) - {default} = additional speed; etc.",
       "default": "0"
     },
     "turretType": {
@@ -1864,6 +1904,14 @@
       "description": "Sound played when this type of UFO starts hunting an XCOM craft, from GEO.CAT.",
       "default": "-1"
     },
+    "hitSound": {
+      "description": "Sound played when this type of UFO damages/destroys an xcom base, from GEO.CAT.",
+      "default": "-1"
+    },
+    "hitImage": {
+      "description": "Allows to override the background image of the base damaged/destroyed popup window.",
+      "default": "-"
+    },
     "raceBonus": {
       "description": "Modifies or overrides the UFO Stats per alien race.\n\nYou can use this to make the same type of UFO have different [stats](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#UFO_Stats) depending on the alien race.\n\n```\n - type: STR_TERROR_SHIP\n   raceBonus:\n     STR_MUTON:\n       hitBonus: 20\n       craftCustomDeploy: STR_MORE_SCARY_WEAPONS\n       missionCustomDeploy: STR_TERROR_SITE_MUTONS\n     STR_ETHEREAL:\n       missionCustomDeploy: STR_END_OF_THE_WORLD\n\n```",
       "default": "-"
@@ -2248,6 +2296,10 @@
       "description": "String ID of the corpse [item](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) recovered in Debriefing. Defaults to **corpseBattle** if omitted.\n\nTip for modders: useful for example when you want to recover a \"damaged\" version of a soldier's armor.",
       "default": "-"
     },
+    "selfDestructItem": {
+      "description": "String ID of an [item](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) used for self destruct. Defaults to **corpseGeo** if omitted.\n\nTip for modders: self destruct can now also spawn items or units.",
+      "default": "-"
+    },
     "storeItem": {
       "description": "String ID of the [item](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Items) that represents this armor in [Base Stores](https://www.ufopaedia.org/index.php/Base_Stores) for equipping. Set to _STR\\_NONE_ to not require an item (eg. [coveralls](https://www.ufopaedia.org/index.php/Coveralls)).",
       "default": "-"
@@ -2349,8 +2401,16 @@
       "default": "0"
     },
     "personalLight": {
-      "description": "Intensity of the personal light for the unit wearing this armor.",
+      "description": "Intensity of personal light for a friendly unit wearing this armor.",
       "default": "15"
+    },
+    "personalLightHostile": {
+      "description": "Intensity of personal light for a hostile unit wearing this armor.",
+      "default": "0"
+    },
+    "personalLightNeutral": {
+      "description": "Intensity of personal light for a neutral unit wearing this armor.",
+      "default": "0"
     },
     "camouflageAtDay": {
       "description": "Makes the unit wearing this armor less visible during the day. Positive numbers set absolute distance (e.g. 7 means that unit is visible from 7 tiles away), negative numbers set relative distance (e.g. -10 means that unit is visible from a distance that is 10 tiles shorter than usual). Cannot decrease visibility below 1 tile.",
@@ -2924,6 +2984,10 @@
       "description": "The reset flag can be used to clear the bonuses gained by previous transformations. It also clears the list of previously performed transformations.\n\nFor example: 1. you train karate and gain a bonus 2. then you transform the guy into a MEC and want to lose all the previous bonuses (since MECs can't benefit from karate training... I hope)\n\nNote: stats gained by \"classic\" transformations (i.e. those that are NOT bonuses) will NOT be reset; only bonuses can be reset",
       "default": "false"
     },
+    "resetRank": {
+      "description": "Reset the soldier rank back to Rookie during the transformation?",
+      "default": "false"
+    },
     "soldierBonusType": {
       "description": "ID of a soldier bonus applied to a soldier undergoing this transformation.",
       "default": "-"
@@ -3305,7 +3369,7 @@
       "default": "false"
     },
     "civilianRecoveryType": {
-      "description": "Gets the type of staff (soldier/engineer/scientists) or type of item to be recovered when a civilian (or a player-controlled summoned unit) is saved.",
+      "description": "Gets the type of staff (soldier/engineer/scientists) or type of item to be recovered when a civilian (or a player-controlled summoned unit) is saved.\n\nSince OXCE v7.10 it can be used also on aliens.",
       "default": "-"
     },
     "spawnedPersonName": {
@@ -3458,12 +3522,8 @@
       "description": "Alternative to **members**. Instead of defining just a single unit type per alien rank, you can define any number of unit types here and one will be chosen randomly (each time a new unit is generated). To increase a chance of a certain unit type being selected, you can add it multiple times.",
       "default": "-"
     },
-    "retaliationMission": {
-      "description": "String ID of an alien mission, that can be generated after a dogfight against this race. If empty, a random retaliation mission will be used instead.",
-      "default": "-"
-    },
     "retaliationMissionWeights": {
-      "description": "A weighted list of alien missions that can be generated after a dogfight against this race, listed by \"number of months passed\". If used, **retaliationMission** is ignored.\n\nMore info: [https://openxcom.org/forum/index.php/topic,9496.0.html](https://openxcom.org/forum/index.php/topic,9496.0.html)",
+      "description": "A weighted list of alien missions that can be generated after a dogfight against this race, listed by \"number of months passed\".\n\nMore info: [https://openxcom.org/forum/index.php/topic,9496.0.html](https://openxcom.org/forum/index.php/topic,9496.0.html)",
       "default": "-"
     },
     "retaliationAggression": {
@@ -4196,6 +4256,10 @@
       "description": "Will this item be destroyed (removed from stores) after research is finished?",
       "default": "false"
     },
+    "neededItem": {
+      "description": "Allows to override the needed item (i.e. if it's different than the name of the research project).",
+      "default": "-"
+    },
     "unlockFinalMission": {
       "description": "If true, this research topic allows to send a spacecraft to the final mission.",
       "default": "false"
@@ -4329,11 +4393,11 @@
       "default": "EU (0), TFTD (157)"
     },
     "rect_stats": {
-      "description": "Rectangle (**x**, **y**, **width**, **height**) of the stats text on the screen, only applicable to _Craft_ articles.",
+      "description": "Rectangle (**x**, **y**, **width**, **height**) of the stats text on the screen, only applicable to _Craft_ articles.\n\nExample:\n\n```\n\\- id: STR_SKYRANGER\n  rect_stats:\n    x: 7\n    y: 42\n    width: 307\n    height: 125\n\n```",
       "default": "-"
     },
     "rect_text": {
-      "description": "Rectangle (**x**, **y**, **width**, **height**) of the description text on the screen, only applicable to _Craft_ articles.\n\nIn OXCE, it is also applicable to _TextImage_ articles.",
+      "description": "Rectangle (**x**, **y**, **width**, **height**) of the description text on the screen, only applicable to _Craft_ articles. Defined in the same way as \"rect\\_stats\".\n\nIn OXCE, it is also applicable to _TextImage_ articles.",
       "default": "-"
     },
     "weapon": {
@@ -4450,8 +4514,16 @@
       "description": "Should an infiltration mission end after the first cycle (false) or continue indefinitely (true)?",
       "default": "true"
     },
+    "skipScoutingPhase": {
+      "description": "Mark all xcom bases in the mission region as retaliation targets automatically at the mission start? (and also before each UFO is spawned, if the modder decides to spawn more UFOs)",
+      "default": "false"
+    },
     "multiUfoRetaliation": {
-      "description": "Should the retaliation mission end after the first base defense (false) or continue until all already spawned UFOs disappear (true)?",
+      "description": "Keep generating UFOs until the first base defense?",
+      "default": "false"
+    },
+    "multiUfoRetaliationExtra": {
+      "description": "Keep generating UFOs until the end of the alien mission?",
       "default": "false"
     },
     "ignoreBaseDefenses": {
@@ -4547,6 +4619,10 @@
     "minDifficulty": {
       "description": "This command only applies to difficulty levels of this or above.",
       "default": "0"
+    },
+    "maxDifficulty": {
+      "description": "This command only applies to difficulty levels of this or below.",
+      "default": "4"
     },
     "minScore": {
       "description": "This command only applies if last month's rating was above this threshold. Not checked before first month.",
@@ -4819,6 +4895,10 @@
     "description": {
       "description": "String ID of the event description. Use {0} placeholder (in the actual translation) for region/city name.",
       "default": "-"
+    },
+    "alignBottom": {
+      "description": "Should the description be bottom-aligned?",
+      "default": "false"
     },
     "background": {
       "description": "String ID of the background image to use in the window when this event pops up on the Geoscape.",
@@ -5625,7 +5705,7 @@
       "default": "false"
     },
     "difficultyCoefficient": {
-      "description": "Difficulty coefficients (per 5 game difficulty levels) affecting various game mechanics, for example:\n\n*   Monthly rating threshold for losing the game (together with **defeatScore**) | (defeatScore) +100 points \\* difficultyCoefficient\n*   UFO firing rate during dogfight | -2 gs \\* difficultyCoefficient\n*   UFO escape countdown during dogfight | (100-200%) -30 gs \\* difficultyCoefficient\n*   Retaliation odds after shooting down UFO | (4%) +4% \\* difficultyCoefficient\n*   Odds of shootdown-triggered retaliation targeting xcom base region or not | (50%) +6% \\* difficultyCoefficient\n*   Chance of aliens facing in the direction of the xcom craft at a start of a mission | 20% \\* difficultyCoefficient\n*   Various AI decisions (in Battlescape)\n    *   judging explosive efficacy\n    *   limiting number of waypoints for blasters\n    *   deciding whether to spend extra TU to attack from behind in melee (OXCE only)\n    *   odds of making USE action on psi-amps (OXCE only)\n*   Together with **statGrowthMultipliers** affects how alien stats change with difficulty level | + (statGrowthMultipliers/100) \\* difficultyCoefficient\n*   Does not affect aimAndArmorMultipliers, aimMultipliers and armorMultipliers.",
+      "description": "Difficulty coefficients (per 5 game difficulty levels) affecting various game mechanics, for example:\n\n*   Monthly rating threshold for losing the game (together with **defeatScore**) | (defeatScore) +100 points \\* difficultyCoefficient\n*   UFO firing rate during dogfight | -2 gs \\* difficultyCoefficient\n*   UFO escape countdown during dogfight | (100-200%) -30 gs \\* difficultyCoefficient\n*   Retaliation odds after shooting down UFO | (4%) +4% \\* difficultyCoefficient\n*   Odds of shootdown-triggered retaliation targeting xcom base region or not | (50%) +6% \\* difficultyCoefficient\n*   Chance of aliens facing in the direction of the xcom craft at a start of a mission | 20% \\* difficultyCoefficient\n*   Various AI decisions (in Battlescape)\n    *   judging explosive efficacy\n    *   limiting number of waypoints for blasters\n    *   deciding whether to spend extra TU to attack from behind in melee (OXCE only)\n    *   odds of making USE action on psi-amps (OXCE only)\n*   Together with **statGrowthMultipliers** affects how alien stats change with difficulty level | + (statGrowthMultipliers/100) \\* difficultyCoefficient\n*   Does not affect aimAndArmorMultipliers, aimMultipliers and armorMultipliers.\n*   OXCE: Does not affect statGrowthMultipliersAbs and armorMultipliersAbs.",
       "default": "[0, 1, 2, 3, 4]"
     },
     "difficultyCoefficientOverrides": {
@@ -5648,8 +5728,16 @@
       "description": "Affects armor values of aliens for different difficulty levels.",
       "default": "[0.5, 1.0, 1.0, 1.0, 1.0]"
     },
+    "armorMultipliersAbs": {
+      "description": "Affects armor values of aliens for different difficulty levels. These are absolute values, not percentages.",
+      "default": "[0, 0, 0, 0, 0]"
+    },
     "statGrowthMultipliers": {
       "description": "Affects unit stats of aliens for different difficulty levels.",
+      "default": "-"
+    },
+    "statGrowthMultipliersAbs": {
+      "description": "Affects unit stats of aliens for different difficulty levels. These are absolute values, not percentages.\n\nMore info: [https://openxcom.org/forum/index.php/topic,11462.0.html](https://openxcom.org/forum/index.php/topic,11462.0.html)",
       "default": "-"
     },
     "defeatScore": {
