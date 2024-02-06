@@ -144,7 +144,7 @@ export class RulesetRecursiveKeyRetriever {
                     item.value,
                     lookupAll,
                     newPathForChild,
-                    { ...namesByPath },
+                    namesByPath,
                     depth,
                     isRoot && isScalar(item.value),
                     node,

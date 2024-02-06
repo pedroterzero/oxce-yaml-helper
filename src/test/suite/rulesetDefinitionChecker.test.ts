@@ -52,7 +52,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 113;
+const expectedNumberOfDiagnostics = 117;
 
 const originalSettingFindDuplicateDefinitions = workspace
     .getConfiguration('oxcYamlHelper')
@@ -519,7 +519,7 @@ describe('rulesetDefinitionChecker', () => {
     it('finds a diagnostic for an alienMission.raceWeights with invalid race', () => {
         const diagnostic = findDiagnostic(
             'alienMissions.rul',
-            `"STR_DUMMY_RACE" does not exist (alienMissions.raceWeights.0)`,
+            `"STR_DUMMY_RACE" does not exist (alienMissions.raceWeights.0) for STR_ALIEN_MISSION_KEY_REFERENCE_CHECK`,
         );
         assert.notStrictEqual(diagnostic, undefined);
     });
