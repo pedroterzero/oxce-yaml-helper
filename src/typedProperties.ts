@@ -44,11 +44,7 @@ type KeyReferenceOptions = {
 };
 
 export class typedProperties {
-    public static isExtraFilesRule(
-        path: string,
-        key: string | undefined,
-        name: string | undefined,
-    ): boolean {
+    public static isExtraFilesRule(path: string, key: string | undefined, name: string | undefined): boolean {
         if (!key || !name) {
             return false;
         }
@@ -211,15 +207,12 @@ export class typedProperties {
         'items.hitAnimation': typedProperties.hitAnimationLogic,
     };
 
-    private static logicOverrides: logicOverrides = Object.assign(
-        {},
-        typedProperties.metadataLogicOverrides,
-        {
-            'crafts.sprite': typedProperties.typeLinksLogic,
-            'craftWeapons.sprite': typedProperties.typeLinksLogic,
-            'items.bulletSprite': typedProperties.typeLinksLogic,
-        },
-    );
+    private static logicOverrides: logicOverrides = {
+        ...typedProperties.metadataLogicOverrides,
+        'crafts.sprite': typedProperties.typeLinksLogic,
+        'craftWeapons.sprite': typedProperties.typeLinksLogic,
+        'items.bulletSprite': typedProperties.typeLinksLogic,
+    };
 
     private static metadataFields: metadataFields = {
         items: ['damageType', 'blastRadius', 'damageAlter.FixRadius'],
@@ -307,10 +300,7 @@ export class typedProperties {
      * @param sourceRuleType
      * @param ruleType
      */
-    public static isTargetForSourceRule(
-        sourceRuleType: RuleType | undefined,
-        ruleType: string,
-    ): boolean {
+    public static isTargetForSourceRule(sourceRuleType: RuleType | undefined, ruleType: string): boolean {
         if (!sourceRuleType) {
             return true;
         }
@@ -365,14 +355,8 @@ export class typedProperties {
     }
 
     public static checkForLogicOverrides(reference: Match, dummy?: undefined): LogicOverride[];
-    public static checkForLogicOverrides(
-        key: string,
-        sourceRuleType: RuleType | undefined,
-    ): LogicOverride[];
-    public static checkForLogicOverrides(
-        param: string | Match,
-        sourceRuleType: RuleType | undefined,
-    ): LogicOverride[] {
+    public static checkForLogicOverrides(key: string, sourceRuleType: RuleType | undefined): LogicOverride[];
+    public static checkForLogicOverrides(param: string | Match, sourceRuleType: RuleType | undefined): LogicOverride[] {
         if (typeof param === 'object') {
             // reference
             return this.getLogicOverrides(param.key, param.path, param);
@@ -384,18 +368,10 @@ export class typedProperties {
             return [this.getBaseOverride(key)];
         }
 
-        return this.getLogicOverrides(
-            key,
-            sourceRuleType.type + '.' + sourceRuleType.key,
-            sourceRuleType,
-        );
+        return this.getLogicOverrides(key, sourceRuleType.type + '.' + sourceRuleType.key, sourceRuleType);
     }
 
-    private static getLogicOverrides(
-        key: string,
-        path: string,
-        reference: Match | RuleType,
-    ): LogicOverride[] {
+    private static getLogicOverrides(key: string, path: string, reference: Match | RuleType): LogicOverride[] {
         if (!(path in this.logicOverrides)) {
             return [this.getBaseOverride(key)];
         }
@@ -427,9 +403,7 @@ export class typedProperties {
      */
     private static typeLinksLogic(key: string, path: string): LogicOverride[] {
         const targets = typeLinks[path];
-        const keys = typeLinksPossibleKeys[path](key).filter(
-            (key) => !['_all_', '_any_'].includes(key),
-        );
+        const keys = typeLinksPossibleKeys[path](key).filter((key) => !['_all_', '_any_'].includes(key));
 
         const overrides: LogicOverride[] = [];
         for (const key in targets) {
@@ -442,11 +416,7 @@ export class typedProperties {
         return overrides;
     }
 
-    private static hitAnimationLogic(
-        key: string,
-        _path: string,
-        ruleType: RuleType | Match,
-    ): LogicOverride[] {
+    private static hitAnimationLogic(key: string, _path: string, ruleType: RuleType | Match): LogicOverride[] {
         const override = typedProperties.getBaseOverride(key);
 
         if (!ruleType?.metadata) {
@@ -462,10 +432,7 @@ export class typedProperties {
                     if ((ruleType.metadata['damageAlter.FixRadius'] as number) === 0) {
                         ignore = true;
                     }
-                } else if (
-                    'blastRadius' in ruleType.metadata &&
-                    (ruleType.metadata['blastRadius'] as number) === 0
-                ) {
+                } else if ('blastRadius' in ruleType.metadata && (ruleType.metadata['blastRadius'] as number) === 0) {
                     ignore = true;
                 }
 
@@ -478,10 +445,7 @@ export class typedProperties {
         return [override];
     }
 
-    public static getMetadataFieldsForType(
-        ruleType: string,
-        rule: any,
-    ): { [key: string]: string } | undefined {
+    public static getMetadataFieldsForType(ruleType: string, rule: any): { [key: string]: string } | undefined {
         const typeKey = this.getTypeKey(rule, ruleType);
         const metadataFields: { [key: string]: string } = {};
         if (typeKey) {

@@ -1,5 +1,6 @@
-import { getAdditionalBuiltinTypes } from "../utilities";
+import { getAdditionalBuiltinTypes } from '../utilities';
 
+// prettier-ignore
 const builtinBackgrounds = [
     'BACK01.SCR', 'BACK02.SCR', 'BACK03.SCR', 'BACK04.SCR', 'BACK05.SCR',
     'BACK06.SCR', 'BACK07.SCR', 'BACK08.SCR', 'BACK09.SCR', 'BACK10.SCR',
@@ -7,6 +8,7 @@ const builtinBackgrounds = [
     'BACK16.SCR', 'BACK17.SCR',
 ];
 
+// prettier-ignore
 const builtinUfopaediaImages = [
     'UP001.SPK', 'UP002.SPK', 'UP003.SPK', 'UP004.SPK', 'UP005.SPK',
     'UP006.SPK', 'UP007.SPK', 'UP008.SPK', 'UP009.SPK', 'UP010.SPK',
@@ -19,6 +21,7 @@ const builtinUfopaediaImages = [
     'UP041.SPK', 'UP042.SPK',
 ];
 
+// prettier-ignore
 const builtinArmorSprites = [
     'MAN_0F0', 'MAN_0F1', 'MAN_0F2', 'MAN_0F3', 'MAN_0M0',
     'MAN_0M1', 'MAN_0M2', 'MAN_0M3', 'MAN_1F0', 'MAN_1F1',
@@ -26,6 +29,7 @@ const builtinArmorSprites = [
     'MAN_1M3', 'MAN_0', 'MAN_1', 'MAN_2', 'MAN_3'
 ];
 
+// prettier-ignore
 const builtinPalettes = [
     'BACKPALS.DAT', 'PAL_BASESCAPE', 'PAL_BATTLEPEDIA', 'PAL_BATTLESCAPE', 'PAL_GEOSCAPE', 'PAL_GRAPHS', 'PAL_UFOPAEDIA'
 ];
@@ -40,9 +44,9 @@ const soundIds: idRange = [-1, 54];
 const smokeIds: idRange = [-1, 55];
 const bigSpriteIds: idRange = [-1, 56];
 const floorSpriteIds: idRange = [-1, 72];
-const handSpriteIds:idRange = [-1, 127];
+const handSpriteIds: idRange = [-1, 127];
 
-export const builtinResourceIds: {[key: string]: idRange} = {
+export const builtinResourceIds: { [key: string]: idRange } = {
     'crafts.sprite': intIconIds,
     'craftWeapons.sprite': intIconIds,
     'facilities.spriteFacility': basebitsIds,
@@ -64,11 +68,13 @@ export const builtinResourceIds: {[key: string]: idRange} = {
     'units.moveSound': soundIds,
 };
 
+// prettier-ignore
 export const builtinTypes: {[key: string]: string[]} = {
     'alienDeployments.alertBackground': builtinBackgrounds,
     'alienDeployments.briefing.background': builtinBackgrounds,
-    'alienMissions.waves[].ufo': ['dummy'],
+    // 'alienMissions.waves[].ufo': ['dummy'],
     'armors.spriteInv': builtinArmorSprites,
+    // prettier-ignore
     'armors.spriteSheet': [
         'CELATID.PCK', 'CIVF.PCK', 'CIVM.PCK', 'CHRYS.PCK', 'CYBER.PCK', 'FLOATER.PCK', 'ETHEREAL.PCK', 'MUTON.PCK',
         'SECTOID.PCK', 'SILACOID.PCK', 'SNAKEMAN.PCK', 'TANKS.PCK', 'X_REAP.PCK', 'X_ROB.PCK',

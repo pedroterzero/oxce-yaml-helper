@@ -52,7 +52,7 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 117;
+const expectedNumberOfDiagnostics = 121;
 
 const originalSettingFindDuplicateDefinitions = workspace
     .getConfiguration('oxcYamlHelper')
@@ -520,6 +520,24 @@ describe('rulesetDefinitionChecker', () => {
         const diagnostic = findDiagnostic(
             'alienMissions.rul',
             `"STR_DUMMY_RACE" does not exist (alienMissions.raceWeights.0) for STR_ALIEN_MISSION_KEY_REFERENCE_CHECK`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    // failed in the past because of it's also a logic field
+    it('finds a diagnostic for an alienMission with a wave with reference to missing UFO', () => {
+        const diagnostic = findDiagnostic(
+            'alienMissions.rul',
+            `"STR_DUMMY_NON_EXISTING_REFERENCE" does not exist (alienMissions.waves[].ufo)`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    // failed in the past because of it's also a logic field
+    it("finds a diagnostic for an alienMission with a wave with reference to UFO that's not an UFO", () => {
+        const diagnostic = findDiagnostic(
+            'alienMissions.rul',
+            `"STR_DUMMY_ITEM" is an incorrect type for alienMissions.waves[].ufo. Expected "ufos", found: "items"`,
         );
         assert.notStrictEqual(diagnostic, undefined);
     });

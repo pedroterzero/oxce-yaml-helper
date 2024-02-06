@@ -1,5 +1,5 @@
-import { typedProperties } from "./typedProperties";
-import { Definition, Match } from "./rulesetTree";
+import { typedProperties } from './typedProperties';
+import { Definition, Match } from './rulesetTree';
 // import { logger } from "./logger";
 
 export class RulesetDefinitionFinder {
@@ -90,14 +90,12 @@ export class RulesetDefinitionFinder {
             xLoops = width / subX;
         }
 
-        for (let i = 1; i < (xLoops * yLoops); i++) {
-            const newRef = Object.assign({}, ref, {
-                key: ref.key + (i * multiplier)
-            });
+        for (let i = 1; i < xLoops * yLoops; i++) {
+            const newRef = { ...ref, key: ref.key + i * multiplier };
 
             // prevent infinite loop, remove subX/subY from copied metadata
             if (newRef.metadata) {
-                ['width', 'height', 'subX', 'subY'].forEach(key => {
+                ['width', 'height', 'subX', 'subY'].forEach((key) => {
                     if (newRef.metadata && newRef.metadata[key]) {
                         // newRef.metadata[`_${key}`] = newRef.metadata[key];
                         delete newRef.metadata[key];

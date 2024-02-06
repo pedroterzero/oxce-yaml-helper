@@ -175,7 +175,9 @@ export class RulesetDefinitionChecker {
             if (ref.path in typeLinks && typeLinks[ref.path].includes('_dummy_')) {
                 // dummy field indicates custom logic, so don't process the rest of this function
                 this.logicHandler.storeRelationLogicReference(ref, file);
-                continue;
+                if (typeLinks[ref.path].length === 1) {
+                    continue;
+                }
             }
 
             if (isCheckableTranslation) {
@@ -409,10 +411,18 @@ export class RulesetDefinitionChecker {
         return;
     }
 
-    private checkForTypeLinkMatch(rawTypeLinks: string[], possibleKeys: string[], lookup: TypeLookup): TypeMatchResult {
+    private checkForTypeLinkMatch(
+        rawTypeLinksArg: string[],
+        possibleKeys: string[],
+        lookup: TypeLookup,
+    ): TypeMatchResult {
+        let rawTypeLinks = [...rawTypeLinksArg];
         if (rawTypeLinks.includes('_dummy_')) {
             // shortcut for dummy (custom logic)
-            return { match: false, expected: [], found: [] };
+            if (rawTypeLinks.length === 1) {
+                return { match: false, expected: [], found: [] };
+            }
+            rawTypeLinks = rawTypeLinks.filter((link) => link !== '_dummy_');
         }
 
         const { matchType, typeValues: typeLinks } = this.processTypeLinks(rawTypeLinks, possibleKeys);
