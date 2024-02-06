@@ -1,6 +1,6 @@
-import { DiagnosticSeverity } from "vscode";
-import { LogicDataEntry } from "../rulesetTree";
-import { BaseLogic } from "./baseLogic";
+import { DiagnosticSeverity } from 'vscode';
+import { LogicDataEntry } from '../rulesetTree';
+import { BaseLogic } from './baseLogic';
 
 type Entry = {
     [key: string]: number | string;
@@ -9,7 +9,7 @@ type Entry = {
 type AlienDeployment = {
     data: Entry;
     // raceWeights: Entry;
-}
+};
 
 export class AlienDeploymentsLogic extends BaseLogic {
     // we need these additional fields to do our check
@@ -35,19 +35,25 @@ export class AlienDeploymentsLogic extends BaseLogic {
         'alienDeployments.data[].extraQty': this.checkForRequiredDataFields,
         'alienDeployments.data[].extraRandomItems': this.checkForRequiredDataFields,
         // '/^alienDeployments\\.data\\[\\]\\.(alienRank|customUnitType|dQty|extraQty|extraRandomItems)$/': this.checkForRequiredDataFields,
-    }
+    };
 
-    private requiredDataFields = ['lowQty', 'highQty'/*, 'percentageOutsideUfo'*/, 'itemSets'];
+    private requiredDataFields = ['lowQty', 'highQty' /*, 'percentageOutsideUfo'*/, 'itemSets'];
 
     protected numericFields = ([] as string[]).concat(this.additionalNumericFields);
 
-    private data: {[key: string]: {[key: string]: number | string | Entry | AlienDeployment, data: Entry, refNode: AlienDeployment}} = {};
+    private data: {
+        [key: string]: {
+            [key: string]: number | string | Entry | AlienDeployment;
+            data: Entry;
+            refNode: AlienDeployment;
+        };
+    } = {};
 
     private state = this.getDefaultState();
 
-    private getDefaultState () {
+    private getDefaultState() {
         return {
-            'dataError': {} as {[key: string]: boolean}
+            dataError: {} as { [key: string]: boolean },
         };
     }
 
@@ -60,11 +66,16 @@ export class AlienDeploymentsLogic extends BaseLogic {
     }
 
     protected generic(entries: LogicDataEntry[]) {
-        this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('alienDeployments.')), this.data, true);
+        this.collectGenericData(
+            entries,
+            this.additionalFields.filter((name) => name.startsWith('alienDeployments.')),
+            this.data,
+            true,
+        );
         // this.collectGenericData(entries, this.additionalFields.filter(name => name.startsWith('soldiers.')), this.itemData);
     }
 
-    private checkForRequiredFields (key: string) {
+    private checkForRequiredFields(key: string) {
         if (!(key in this.referencesToCheck)) {
             return;
         }
@@ -79,13 +90,13 @@ export class AlienDeploymentsLogic extends BaseLogic {
                 this.addDiagnosticForReference(
                     ref,
                     `'${name}' does not have data: set. This can lead to crashes in-game.`,
-                    DiagnosticSeverity.Error
+                    DiagnosticSeverity.Error,
                 );
             }
         }
     }
 
-    private checkForRequiredDataFields (key: string) {
+    private checkForRequiredDataFields(key: string) {
         if (!(key in this.referencesToCheck)) {
             return;
         }
@@ -118,7 +129,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
                     this.addDiagnosticForReference(
                         ref,
                         `data entry '${field}' not set. This can lead to crashes in-game.`,
-                        DiagnosticSeverity.Error
+                        DiagnosticSeverity.Error,
                     );
                 }
             }

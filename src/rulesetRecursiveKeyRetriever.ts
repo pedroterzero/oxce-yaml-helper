@@ -108,12 +108,23 @@ export class RulesetRecursiveKeyRetriever {
                 }
 
                 if (typedProperties.isKeyReferencePath(newPath)) {
-                    results.push(this.getReferencePathResult(key, item.key.range, newPath, item, parentNode));
+                    results.push(
+                        this.getReferencePathResult(key, item.key.range, newPath, item, parentNode, namesByPath),
+                    );
                     return;
                 }
 
                 if (typedProperties.isKeyValueReferencePath(newPath)) {
-                    results.push(this.getReferencePathResult(key, item.key.range, `${newPath}.key`, item, parentNode));
+                    results.push(
+                        this.getReferencePathResult(
+                            key,
+                            item.key.range,
+                            `${newPath}.key`,
+                            item,
+                            parentNode,
+                            namesByPath,
+                        ),
+                    );
                     results.push(
                         this.getReferencePathResult(
                             item.value.value,
@@ -121,15 +132,13 @@ export class RulesetRecursiveKeyRetriever {
                             `${newPath}.value`,
                             item,
                             parentNode,
+                            namesByPath,
                         ),
                     );
                     return;
                 }
 
-                const metadata = {
-                    ...this.getMetadata(node, newPath),
-                    ...(namesByPath ? { _names: namesByPath } : {}),
-                };
+                const metadata = this.getMetadata(node, newPath, namesByPath);
                 const newPathForChild = this.buildNewPathForChild(path, key, typeValue, newPath);
                 const [childResults, childLogicData] = this.traverseNode(
                     item.value,
@@ -212,8 +221,9 @@ export class RulesetRecursiveKeyRetriever {
         newPath: string,
         item: any,
         parentNode: Node | null,
+        namesByPath: { [key: string]: string },
     ): NodeInfo {
-        const metadata = this.getParentMetadata(parentNode, newPath, item);
+        const metadata = this.getParentMetadata(parentNode, newPath, item, namesByPath);
 
         return {
             value: key,
@@ -230,10 +240,14 @@ export class RulesetRecursiveKeyRetriever {
         return path.concat(key);
     }
 
-    private getMetadata(node: Node | null, path: string): { [key: string]: string | number } {
+    private getMetadata(
+        node: Node | null,
+        path: string,
+        namesByPath: { [key: string]: string },
+    ): { [key: string]: string | number | object } {
         const nodeJson = node?.toJSON();
         const fields = typedProperties.getMetadataFieldsForType(path, nodeJson);
-        const metadata: { [key: string]: string | number } = {};
+        const metadata: { [key: string]: string | number | object } = {};
 
         // Add comment to metadata
         if (node?.comment) {
@@ -249,11 +263,20 @@ export class RulesetRecursiveKeyRetriever {
             });
         }
 
+        if (Object.keys(namesByPath).length > 0) {
+            metadata._names = namesByPath;
+        }
+
         return metadata;
     }
 
-    private getParentMetadata(parentNode: Node | null, path: string, item: any): { [key: string]: string | number } {
-        const metadata = this.getMetadata(parentNode, path.split('.').slice(0, -1).join('.'));
+    private getParentMetadata(
+        parentNode: Node | null,
+        path: string,
+        item: any,
+        namesByPath: { [key: string]: string },
+    ): { [key: string]: string | number | object } {
+        const metadata = this.getMetadata(parentNode, path.split('.').slice(0, -1).join('.'), namesByPath);
 
         // Add _name manually
         metadata._name = item.value.value;
