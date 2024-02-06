@@ -1,8 +1,8 @@
+import { get } from 'lodash';
 import { Node, Scalar, isMap, isScalar, isSeq } from 'yaml2';
 import { YAMLDocument } from './rulesetParser';
 import { LogicDataEntry, Match, RuleType } from './rulesetTree';
 import { typedProperties } from './typedProperties';
-import { get } from 'lodash';
 
 interface NodeInfo {
     value: any;
@@ -50,11 +50,10 @@ export class RulesetRecursiveKeyRetriever {
         lookupAll: boolean,
     ): [Match[], LogicDataEntry[]] {
         // const matches: Match[] = [];
-        const logicData: LogicDataEntry[] = [];
 
         // console.log(yamlDocument.contents);
 
-        const nodes = this.traverseNode(yamlDocument.contents!, lookupAll);
+        const [nodes, logicData] = this.traverseNode(yamlDocument.contents!, lookupAll);
 
         // console.log(nodes.length, JSON.stringify(nodes, null, 2));
         const matches: Match[] = nodes.map((node) => {
@@ -75,11 +74,13 @@ export class RulesetRecursiveKeyRetriever {
         node: Node,
         lookupAll: boolean,
         path: string[] = [],
+        namesByPath: { [key: string]: string } = {},
         depth: number = 0,
         isRoot: boolean = true,
         parentNode: Node | null = null,
-    ): NodeInfo[] {
+    ): [NodeInfo[], LogicDataEntry[]] {
         const results: NodeInfo[] = [];
+        const logicData: LogicDataEntry[] = [];
         const newPath = path
             .filter((item, index) => index !== 1 || item !== '[]')
             .join('.')
@@ -87,13 +88,19 @@ export class RulesetRecursiveKeyRetriever {
 
         const specialPathResult = this.handleSpecialPaths(newPath, results);
         if (specialPathResult !== null) {
-            return specialPathResult;
+            return [specialPathResult, logicData];
         }
+
+        // Check for additional logic path
+        logicData.push(...this.checkForAdditionalLogicPath(newPath, node, namesByPath));
 
         if (isMap(node)) {
             let typeValue = '';
             node.items.forEach((item: any) => {
                 const key = item.key.value;
+
+                // namesByPath[newPath] = key;
+                this.checkForDefinitionName(newPath, item, namesByPath);
 
                 // Handle extraSprites
                 if (typedProperties.isExtraFilesRule(newPath, key, item.value.value)) {
@@ -107,23 +114,32 @@ export class RulesetRecursiveKeyRetriever {
 
                 if (typedProperties.isKeyValueReferencePath(newPath)) {
                     results.push(this.getReferencePathResult(key, item.key.range, `${newPath}.key`, item, parentNode));
-                    // prettier-ignore
-                    results.push(this.getReferencePathResult(item.value.value, item.value.range, `${newPath}.value`, item, parentNode));
+                    results.push(
+                        this.getReferencePathResult(
+                            item.value.value,
+                            item.value.range,
+                            `${newPath}.value`,
+                            item,
+                            parentNode,
+                        ),
+                    );
                     return;
                 }
 
                 const metadata = this.getMetadata(node, newPath);
                 const newPathForChild = this.buildNewPathForChild(path, key, typeValue, newPath);
-                results.push(
-                    ...this.traverseNode(
-                        item.value,
-                        lookupAll,
-                        newPathForChild,
-                        depth,
-                        isRoot && isScalar(item.value),
-                        node,
-                    ),
+                const [childResults, childLogicData] = this.traverseNode(
+                    item.value,
+                    lookupAll,
+                    newPathForChild,
+                    { ...namesByPath },
+                    depth,
+                    isRoot && isScalar(item.value),
+                    node,
                 );
+
+                results.push(...childResults);
+                logicData.push(...childLogicData);
 
                 // Add metadata to the last result
                 if (Object.keys(metadata).length > 0 && results.length > 0) {
@@ -135,13 +151,23 @@ export class RulesetRecursiveKeyRetriever {
             });
         } else if (isSeq(node)) {
             node.items.forEach((item: any, _index: number) => {
-                results.push(...this.traverseNode(item, lookupAll, path.concat('[]'), depth + 1, false, node));
+                const [childResults, childLogicData] = this.traverseNode(
+                    item,
+                    lookupAll,
+                    path.concat('[]'),
+                    { ...namesByPath },
+                    depth + 1,
+                    false,
+                    node,
+                );
+                results.push(...childResults);
+                logicData.push(...childLogicData);
             });
         } else if (isScalar(node)) {
             results.push(...this.handleScalar(node, isRoot, newPath, lookupAll));
         }
 
-        return results;
+        return [results, logicData];
     }
 
     private handleScalar(node: Scalar, isRoot: boolean, newPath: string, lookupAll: boolean) {
@@ -253,6 +279,23 @@ export class RulesetRecursiveKeyRetriever {
         return Number(n) === n && n % 1 !== 0;
     }
 
+    private checkForAdditionalLogicPath(
+        path: string,
+        entry: Node,
+        namesByPath: { [key: string]: string },
+    ): LogicDataEntry[] {
+        if (typedProperties.isAdditionalLogicPath(path)) {
+            return [
+                {
+                    path,
+                    data: entry.toJSON(),
+                    range: entry.range ? [entry.range[0], entry.range[1]] : [0, 0],
+                    names: namesByPath,
+                },
+            ];
+        }
+        return [];
+    }
     /*    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): [Match[], LogicDataEntry[]] {
             // logger.debug('findKeyInformationInYamlDocument');
 
@@ -538,15 +581,15 @@ range: entry.range || [0, 0],
 names: namesByPath
 });
 }
-}
+}*/
 
-/**
-* Check if this path contains a definition and stores it
-* @param path
-* @param ruleProperty
-* @param namesByPath
-*/ /*
-    private checkForDefinitionName(path: string, ruleProperty: any, namesByPath: { [key: string]: string; }) {
+    /**
+     * Check if this path contains a definition and stores it
+     * @param path
+     * @param ruleProperty
+     * @param namesByPath
+     */
+    private checkForDefinitionName(path: string, ruleProperty: any, namesByPath: { [key: string]: string }) {
         for (const key of typedProperties.getPossibleTypeKeys(path)) {
             if (ruleProperty.key?.value === key) {
                 namesByPath[path] = ruleProperty.value.value;
@@ -554,7 +597,7 @@ names: namesByPath
         }
     }
 
-    private getRulePropertyType(ruleProperty: any, path: string, lookupAll: boolean) {
+    /*    private getRulePropertyType(ruleProperty: any, path: string, lookupAll: boolean) {
         let value = ruleProperty.value;
         let range = ruleProperty.range;
 
