@@ -2,3 +2,4 @@ units:
   - type: STR_DUMMY_UNIT1
   - type: STR_DUMMY_UNIT2
     rank: STR_LIVE_COMMANDER
+  - type: STR_DUMMY_UNIT_ALIEN_RACE_TEST

@@ -21,6 +21,11 @@ alienMissions:
     raceWeights:
       0:
         STR_DUMMY_RACE: 100
+  - type: STR_ALIEN_MISSION_KEY_REFERENCE_TYPE_CHECK
+    waves: {}
+    raceWeights:
+      0:
+        STR_DUMMY_ITEM: 100
   # test that alienMissions.waves[].ufo reports a problem when UFO points to an non existing (this failed in the past because it was a logic field)
   - type: STR_TEST_WAVES_UFO_MISSING_TYPE
     raceWeights: {}
@@ -32,4 +37,20 @@ alienMissions:
     raceWeights: {}
     waves:
       - ufo: STR_DUMMY_ITEM
+        trajectory: P0
+  # test that alienMissions.regionWeights region points to a missing type
+  - type: STR_TEST_WAVES_UFO_REGION_WEIGHT_MISSING_TYPE
+    regionWeights:
+      0: STR_DUMMY_NON_EXISTING_REFERENCE
+    raceWeights: {}
+    waves:
+      - ufo: STR_ABDUCTOR
+        trajectory: P0
+  # test that alienMissions.regionWeights region points to an incorrect type
+  - type: STR_TEST_WAVES_UFO_REGION_WEIGHT_INCORRECT_TYPE
+    regionWeights:
+      0: STR_DUMMY_ITEM
+    raceWeights: {}
+    waves:
+      - ufo: STR_ABDUCTOR
         trajectory: P0

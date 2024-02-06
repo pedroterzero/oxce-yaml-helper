@@ -52,7 +52,8 @@ const getNumberOfDiagnostics = () => {
     return number;
 };
 
-const expectedNumberOfDiagnostics = 121;
+// this is useful because it gives a general idea if diagnostics are correctly generated without explicitly checking each one
+const expectedNumberOfDiagnostics = 139;
 
 const originalSettingFindDuplicateDefinitions = workspace
     .getConfiguration('oxcYamlHelper')
@@ -143,7 +144,10 @@ describe('rulesetDefinitionChecker', () => {
             .update('findDuplicateDefinitions', originalSettingFindDuplicateDefinitions);
     });
 
+    let definitionsCountBeforeDisablingDuplicateDefinitions = 0;
     it('does not find a diagnostic for duplicate type if setting is disabled', async () => {
+        definitionsCountBeforeDisablingDuplicateDefinitions = getNumberOfDiagnostics();
+
         await workspace.getConfiguration('oxcYamlHelper').update('findDuplicateDefinitions', false);
         // await waitForRefresh(rulesetResolver);
 
@@ -152,8 +156,12 @@ describe('rulesetDefinitionChecker', () => {
             'items STR_DUPLICATE_CHECK is duplicate, also exists in (add # ignoreDuplicate after this to ignore this entry):\n\titems.rul line 40',
         );
         assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('has the correct amount of diagnostics after disabling findDuplicateDefinitions', async () => {
         // we should have two less diagnostics now
-        assert.strictEqual(getNumberOfDiagnostics(), expectedNumberOfDiagnostics - 2);
+        // assert.strictEqual(getNumberOfDiagnostics(), expectedNumberOfDiagnostics - 2);
+        assert.strictEqual(getNumberOfDiagnostics(), definitionsCountBeforeDisablingDuplicateDefinitions - 2);
 
         // should do it here too, so it's correct for next test
         await workspace
@@ -179,7 +187,10 @@ describe('rulesetDefinitionChecker', () => {
             .update('validateCategories', originalSettingValidateCategories);
     });
 
+    let definitionsCountBeforeDisablingCategoryValidation = 0;
     it('does not find a diagnostic for an invalid category if setting is disabled', async () => {
+        definitionsCountBeforeDisablingCategoryValidation = getNumberOfDiagnostics();
+
         await workspace.getConfiguration('oxcYamlHelper').update('validateCategories', 'no');
         // await waitForRefresh(rulesetResolver);
 
@@ -188,9 +199,12 @@ describe('rulesetDefinitionChecker', () => {
             '"STR_DUMMY_CATEGORY" does not exist (items.categories[]) for STR_CATEGORY_TEST',
         );
         assert.strictEqual(diagnostic, undefined);
+    });
 
+    it('has the correct amount of diagnostics after disabling validateCategories', async () => {
         // we should have one less diagnostic now
-        assert.strictEqual(getNumberOfDiagnostics(), expectedNumberOfDiagnostics - 1);
+        // assert.strictEqual(getNumberOfDiagnostics(), expectedNumberOfDiagnostics - 1);
+        assert.strictEqual(getNumberOfDiagnostics(), definitionsCountBeforeDisablingCategoryValidation - 1);
         // await waitForValidate(rulesetResolver);
 
         // should do it here too, so it's correct for next test
@@ -516,10 +530,42 @@ describe('rulesetDefinitionChecker', () => {
         assert.notStrictEqual(diagnostic, undefined);
     });
 
-    it('finds a diagnostic for an alienMission.raceWeights with invalid race', () => {
+    it('finds a diagnostic for an alienMission.raceWeights with missing race', () => {
         const diagnostic = findDiagnostic(
             'alienMissions.rul',
             `"STR_DUMMY_RACE" does not exist (alienMissions.raceWeights.0) for STR_ALIEN_MISSION_KEY_REFERENCE_CHECK`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it("finds a diagnostic for an alienMission.raceWeights with race that's not an alienRace", () => {
+        const diagnostic = findDiagnostic(
+            'alienMissions.rul',
+            `"STR_DUMMY_ITEM" is an incorrect type for alienMissions.raceWeights.0. Expected "alienRaces", found: "items"`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for existing alienRaces.members[] reference (unit)', () => {
+        const diagnostic = findDiagnostic(
+            'alienRaces.rul',
+            '"STR_DUMMY_UNIT_ALIEN_RACE_TEST" does not exist (alienRaces.members[])',
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for a missing alienRace.members[]', () => {
+        const diagnostic = findDiagnostic(
+            'alienRaces.rul',
+            '"STR_DUMMY_NON_EXISTING_REFERENCE" does not exist (alienRaces.members[])',
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it("finds a diagnostic for an alienRace.members[] that's not an alienRace", () => {
+        const diagnostic = findDiagnostic(
+            'alienRaces.rul',
+            '"STR_DUMMY_ITEM" is an incorrect type for alienRaces.members[]. Expected "units", found: "items"',
         );
         assert.notStrictEqual(diagnostic, undefined);
     });
@@ -538,6 +584,22 @@ describe('rulesetDefinitionChecker', () => {
         const diagnostic = findDiagnostic(
             'alienMissions.rul',
             `"STR_DUMMY_ITEM" is an incorrect type for alienMissions.waves[].ufo. Expected "ufos", found: "items"`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an alienMission with a regionWeight with reference to missing region', () => {
+        const diagnostic = findDiagnostic(
+            'alienMissions.rul',
+            `"STR_DUMMY_NON_EXISTING_REFERENCE" does not exist (alienMissions.regionWeights.0) for STR_TEST_WAVES_UFO_REGION_WEIGHT_MISSING_TYPE`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it("finds a diagnostic for an alienMission with a regionWeight with reference that's not a region", () => {
+        const diagnostic = findDiagnostic(
+            'alienMissions.rul',
+            `"STR_DUMMY_ITEM" is an incorrect type for alienMissions.regionWeights.0. Expected "regions", found: "items"`,
         );
         assert.notStrictEqual(diagnostic, undefined);
     });
