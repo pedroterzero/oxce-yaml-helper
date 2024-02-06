@@ -104,6 +104,7 @@ export const builtinTypes: {[key: string]: string[]} = {
         'STR_LIVE_NAVIGATOR', 'STR_LIVE_SOLDIER', 'STR_LIVE_TERRORIST',
         'STR_CIVILIAN' /* OXCE */
     ],
+    // also update in typeLinks.ts
     '/^startingBase(Beginner|Experienced|Veteran|Genius|Superhuman)?\\.crafts\\[\\]\\.status$/': ['STR_READY', 'STR_REPAIRS'],
     'startingConditions.allowedItems': ['STR_NONE'],
     'startingConditions.allowedVehicles': ['STR_NONE'],

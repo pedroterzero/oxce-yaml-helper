@@ -1,20 +1,22 @@
 import {
     CompletionItem,
+    CompletionItemKind,
     CompletionItemProvider,
+    MarkdownString,
     Position,
     ProviderResult,
     TextDocument,
-    CompletionItemKind,
-    workspace,
     WorkspaceFolder,
-    MarkdownString,
+    workspace,
 } from 'vscode';
 import { KeyDetector } from './keyDetector';
 // import { i18nResolver } from './extension';
+import { builtinTypes } from './definitions/builtinTypes';
 import { logger } from './logger';
 import { rulesetTree } from './rulesetTree';
 import { typedProperties } from './typedProperties';
 import { DefinitionCompletion, DefinitionCompletions } from './workspaceFolderRuleset';
+import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 // import { i18nTree } from './i18nTree';
 
 export class RulesetCompletionProvider implements CompletionItemProvider {
@@ -38,6 +40,8 @@ export class RulesetCompletionProvider implements CompletionItemProvider {
             return;
         }
 
+        logger.debug(`path is ${path}`);
+
         const target = typedProperties.getDefinitionTypeForReference(path);
         if (!target) {
             return;
@@ -52,7 +56,7 @@ export class RulesetCompletionProvider implements CompletionItemProvider {
         // if (KeyDetector.isRelativeKey(i18nKey)) {
         //     keyPrefix += KeyDetector.getRelativeKeyPart(document.fileName);
         // }
-        const list = this.buildCompletionItemList(target, key?.key, folder);
+        const list = this.buildCompletionItemList(target, key?.key, folder, path);
 
         return list;
 
@@ -79,14 +83,35 @@ export class RulesetCompletionProvider implements CompletionItemProvider {
         target: string,
         key: string | undefined,
         workspaceFolder: WorkspaceFolder,
+        path: string,
     ): CompletionItem[] | undefined {
-        const filteredKeys = rulesetTree.getKeysContaining(key, target, workspaceFolder);
-        if (!filteredKeys || Object.keys(filteredKeys).length === 0) {
+        const filteredKeys = {
+            ...rulesetTree.getKeysContaining(key, target, workspaceFolder),
+            ...this.getBuiltinKeys(path),
+        };
+
+        if (Object.keys(filteredKeys).length === 0) {
             return;
         }
 
         logger.debug(`buildCompletionItemList filteredKeys: ${Object.keys(filteredKeys).length}`);
         return this.transformFilterResultIntoCompletionItemList(filteredKeys); //, keyPrefix, i18nKey, workspaceFolder);
+    }
+
+    private getBuiltinKeys(path: string): Record<string, { detail: string }> {
+        const builtinKeys: Record<string, { detail: string }> = {};
+        if (path in builtinTypes) {
+            builtinTypes[path].forEach((key: string) => {
+                builtinKeys[key] = { detail: 'builtin' };
+            });
+        } else {
+            const values = rulesetDefinitionChecker.matchesBuiltinTypePathRegex(path);
+            values?.length &&
+                values.forEach((key: string) => {
+                    builtinKeys[key] = { detail: 'builtin' };
+                });
+        }
+        return builtinKeys;
     }
 
     private transformFilterResultIntoCompletionItemList(

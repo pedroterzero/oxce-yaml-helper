@@ -621,6 +621,15 @@ export class RulesetDefinitionChecker {
         return false;
     }
 
+    public matchesBuiltinTypePathRegex(path: string) {
+        for (const item of this.builtinTypeRegexes) {
+            if (item.regex.exec(path)) {
+                return item.values;
+            }
+        }
+        return;
+    }
+
     private matchesBuiltinTypeRegex(path: string, key: string): boolean {
         for (const item of this.builtinTypeRegexes) {
             if (item.regex.exec(path) && item.values.includes(key)) {

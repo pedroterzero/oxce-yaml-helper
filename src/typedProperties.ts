@@ -158,6 +158,8 @@ export class typedProperties {
         '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': {},
         '/^alienMissions\\.raceWeights\\.\\d+$/': {},
         '/^alienMissions\\.regionWeights\\.\\d+$/': {},
+        '/^alienRaces\\.retaliationMissionWeights\\.\\d+$/': {},
+        'armors.tags': {},
         'enviroEffects.environmentalConditions': {},
         'events.everyMultiItemList': {},
         'events.weightedItemList': {},
