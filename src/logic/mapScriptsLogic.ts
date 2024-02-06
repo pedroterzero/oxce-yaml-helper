@@ -100,7 +100,7 @@ export class MapScriptsLogic extends BaseLogic {
         for (const entry of entries) {
             const data = entry.data;
 
-            if (!data.mapBlocks || (!data.script && !data.name)) {
+            if (!data.mapBlocks || 'source' in data.mapBlocks || (!data.script && !data.name)) {
                 continue;
             }
 

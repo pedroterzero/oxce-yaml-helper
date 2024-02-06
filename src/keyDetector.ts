@@ -137,6 +137,11 @@ export class KeyDetector {
 
         // Traverse the remaining lines to find and include their parents
         for (const line of lines.slice(1)) {
+            // Skip lines starting with '#'
+            if (line.trim().startsWith('#')) {
+                continue;
+            }
+
             // Skip the first line since it's already included
             const lineIndentation = line.match(/^(\s*)/)?.[1].length ?? 0;
 
