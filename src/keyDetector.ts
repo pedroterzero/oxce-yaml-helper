@@ -137,8 +137,8 @@ export class KeyDetector {
 
         // Traverse the remaining lines to find and include their parents
         for (const line of lines.slice(1)) {
-            // Skip lines starting with '#'
-            if (line.trim().startsWith('#')) {
+            // Skip lines starting with '#' or empty lines
+            if (line.trim().startsWith('#') || line.trim().length === 0) {
                 continue;
             }
 
