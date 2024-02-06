@@ -1,6 +1,7 @@
 import { Position, Range, TextDocument } from 'vscode';
 import { logger } from './logger';
 import { parseDocument } from 'yaml2';
+import { typedProperties } from './typedProperties';
 
 export type KeyMatch = {
     key: string;
@@ -171,6 +172,7 @@ export class KeyDetector {
         // Reverse the hierarchy lines back to their original order and join them into a string
         return hierarchyLines.reverse().join('\n');
     }
+
     private static generatePathFromDocument(yamlStr: string): string {
         const doc = parseDocument(yamlStr);
         let path: string[] = [];
@@ -186,13 +188,23 @@ export class KeyDetector {
                     if (item.key && item.value) {
                         // Map item
                         const key = typeof item.key.value === 'string' ? item.key.value : item.key;
-                        traverse(item.value, [...currentPath, key]);
+                        const newPath = [...currentPath, key];
+                        if (typedProperties.isKeyValueReferencePath(currentPath.join('.'))) {
+                            path = [...newPath.slice(0, -1), 'value']; // Update the path and stop traversing
+                            return;
+                        }
+
+                        traverse(item.value, newPath);
                     } else {
                         // Seq item
                         traverse(item, [...currentPath, ...(currentPath.length > 1 ? ['[]'] : [])]);
                     }
                 });
             } else if (node.value) {
+                if (typedProperties.isKeyValueReferencePath(currentPath.join('.'))) {
+                    currentPath = [...currentPath, 'key']; // Update the path and stop traversing
+                }
+
                 // Scalar value
                 path = currentPath; // Reached a leaf node, update the path
             }
