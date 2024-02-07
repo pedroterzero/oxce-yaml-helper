@@ -17,3 +17,17 @@ craftWeapons:
 
   - type: STR_LAUNCHER_WRONG_TYPE_TEST
     launcher: STR_DUMMY_MANUFACTURE
+
+  - type: STR_CRAFT_WEAPON_CLIP_TEST
+    clip: STR_DUMMY_ITEM
+    launcher: STR_DUMMY_LAUNCHER
+  # missing type
+  - type: STR_CRAFT_WEAPON_CLIP_TEST_MISSING
+    clip: STR_DUMMY_NON_EXISTING_REFERENCE
+    launcher: STR_DUMMY_LAUNCHER
+  # incorrect type
+  - type: STR_CRAFT_WEAPON_CLIP_TEST_INCORRECT
+    clip: STR_DUMMY_RESEARCH
+    launcher: STR_DUMMY_LAUNCHER
+
+  # not doing launcher because it's already checked by logic checker

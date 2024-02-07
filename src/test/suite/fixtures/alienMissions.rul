@@ -38,7 +38,7 @@ alienMissions:
     waves:
       - ufo: STR_DUMMY_ITEM
         trajectory: P0
-  # test that alienMissions.regionWeights region points to a missing type
+  # test that alienMissions.regionWeights reports a problem when it points to a missing type
   - type: STR_TEST_WAVES_UFO_REGION_WEIGHT_MISSING_TYPE
     regionWeights:
       0: STR_DUMMY_NON_EXISTING_REFERENCE
@@ -46,7 +46,7 @@ alienMissions:
     waves:
       - ufo: STR_ABDUCTOR
         trajectory: P0
-  # test that alienMissions.regionWeights region points to an incorrect type
+  # test that alienMissions.regionWeights reports a problem when it points to an incorrect type
   - type: STR_TEST_WAVES_UFO_REGION_WEIGHT_INCORRECT_TYPE
     regionWeights:
       0: STR_DUMMY_ITEM

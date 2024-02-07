@@ -11,3 +11,13 @@ missionScripts:
     raceWeights:
       0:
         STR_SECTOID: 100
+
+  - type: testAlienMissionRegionsWeights1
+    regionWeights:
+        STR_SECTOIASDSD: 100
+
+  # - type: testAlienMissionRegionsWeights1
+  #   regionWeights:
+  #       STR_SECTOIASDSD: 100
+
+

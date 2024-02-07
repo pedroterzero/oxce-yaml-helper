@@ -1,0 +1,107 @@
+armors:
+  - type: STR_DUMMY_ARMOR
+
+  - type: STR_ARMOR_BUILTIN_WEAPON_TEST
+    builtInWeapons:
+      - STR_DUMMY_ITEM
+  - type: STR_ARMOR_BUILTIN_WEAPON_TEST2
+    builtInWeapons: [
+      STR_DUMMY_ITEM
+    ]
+  - type: STR_ARMOR_BUILTIN_WEAPON_TEST3
+    builtInWeapons: [STR_DUMMY_ITEM]
+  # missing type
+  - type: STR_ARMOR_BUILTIN_WEAPON_TEST_MISSING
+    builtInWeapons:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ARMOR_BUILTIN_WEAPON_TEST_INCORRECT
+    builtInWeapons:
+      - STR_DUMMY_RESEARCH
+
+  - type: STR_ARMOR_CORPSE_BATTLE_TEST
+    corpseBattle:
+      - STR_DUMMY_ITEM
+  # missing type
+  - type: STR_ARMOR_CORPSE_BATTLE_TEST_MISSING
+    corpseBattle:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ARMOR_CORPSE_BATTLE_TEST_INCORRECT
+    corpseBattle:
+      - STR_DUMMY_RESEARCH
+
+  - type: STR_ARMOR_CORPSE_GEO_TEST
+    corpseGeo: STR_DUMMY_ITEM
+  # missing type
+  - type: STR_ARMOR_CORPSE_GEO_TEST_MISSING
+    corpseGeo: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ARMOR_CORPSE_GEO_TEST_INCORRECT
+    corpseGeo: STR_DUMMY_RESEARCH
+
+  - type: STR_ARMOR_REQUIRES_TEST
+    requires: STR_DUMMY_RESEARCH
+  # missing type
+  - type: STR_ARMOR_REQUIRES_TEST_MISSING
+    requires: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ARMOR_REQUIRES_TEST_INCORRECT
+    requires: STR_DUMMY_ITEM
+
+  - type: STR_ARMOR_SPECIAL_WEAPON_TEST
+    specialWeapon: STR_DUMMY_ITEM
+  # missing type
+  - type: STR_ARMOR_SPECIAL_WEAPON_TEST_MISSING
+    specialWeapon: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ARMOR_SPECIAL_WEAPON_TEST_INCORRECT
+    specialWeapon: STR_DUMMY_RESEARCH
+
+  - type: STR_ARMOR_STORE_ITEM_TEST
+    storeItem: STR_DUMMY_ITEM
+  # missing type
+  - type: STR_ARMOR_STORE_ITEM_TEST_MISSING
+    storeItem: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ARMOR_STORE_ITEM_TEST_INCORRECT
+    storeItem: STR_DUMMY_RESEARCH
+
+  - type: STR_ARMOR_SPRITE_INV_TEST
+    spriteInv: X1.PCK
+  # missing type
+  - type: STR_ARMOR_SPRITE_INV_TEST_MISSING
+    spriteInv: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ARMOR_SPRITE_INV_TEST_INCORRECT
+    spriteInv: STR_DUMMY_RESEARCH
+
+  - type: STR_ARMOR_TAG_TEST
+    tags:
+      ARMOR_TAG_TEST: 1
+  # missing type
+  - type: STR_ARMOR_TAG_TEST_MISSING
+    tags:
+      STR_DUMMY_NON_EXISTING_REFERENCE: 1
+  # incorrect type
+  - type: STR_ARMOR_TAG_TEST_INCORRECT
+    tags:
+      STR_DUMMY_ITEM: 1
+
+  - type: STR_ARMOR_UNIT_TEST
+    units:
+      - STR_DUMMY_SOLDIER
+  # missing type
+  - type: STR_ARMOR_UNIT_TEST_MISSING
+    units:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ARMOR_UNIT_TEST_INCORRECT
+    units:
+      - STR_DUMMY_ITEM
+
+extended:
+  tags:
+    RuleArmor:
+      ARMOR_TAG_TEST: int
+

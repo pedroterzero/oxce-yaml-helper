@@ -32,3 +32,14 @@ alienRaces:
   - id: STR_ALIEN_RACE_MEMBERS_RANDOM_MISSING_TEST
     membersRandom:
       - [STR_DUMMY_NON_EXISTING_REFERENCE]
+
+  # test that alienRaces.retaliationMission reports a problem when it points to a missing type
+  - id: STR_ALIEN_RACE_RETALIATION_MISSION_MISSING_TYPE
+    retaliationMissionWeights:
+      0:
+        STR_DUMMY_NON_EXISTING_REFERENCE: 10
+  # test that alienRaces.retaliationMission reports a problem when it points to an incorrect type
+  - id: STR_ALIEN_RACE_RETALIATION_MISSION_INCORRECT_TYPE
+    retaliationMissionWeights:
+      0:
+        STR_DUMMY_ITEM: 10

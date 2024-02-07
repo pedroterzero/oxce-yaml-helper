@@ -1,0 +1,110 @@
+events:
+  - name: STR_EVENTS_EVERY_ITEM_LIST_TEST
+    everyItemList:
+      - STR_DUMMY_ITEM
+  # missing type
+  - name: STR_EVENTS_EVERY_ITEM_LIST_TEST_MISSING
+    everyItemList:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_EVENTS_EVERY_ITEM_LIST_TEST_INCORRECT
+    everyItemList:
+      - STR_DUMMY_RESEARCH
+
+  - name: STR_EVENTS_EVERY_MULTI_ITEM_LIST_TEST
+    everyMultiItemList:
+      STR_DUMMY_ITEM: 1
+  # missing type
+  - name: STR_EVENTS_EVERY_MULTI_ITEM_LIST_TEST_MISSING
+    everyMultiItemList:
+      STR_DUMMY_NON_EXISTING_REFERENCE: 1
+  # incorrect type
+  - name: STR_EVENTS_EVERY_MULTI_ITEM_LIST_TEST_INCORRECT
+    everyMultiItemList:
+      STR_DUMMY_RESEARCH: 1
+
+  - name: STR_EVENTS_INTERRUPT_RESEARCH_TEST
+    interruptResearch: STR_DUMMY_RESEARCH
+  # missing type
+  - name: STR_EVENTS_INTERRUPT_RESEARCH_TEST_MISSING
+    interruptResearch: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_EVENTS_INTERRUPT_RESEARCH_TEST_INCORRECT
+    interruptResearch: STR_DUMMY_ITEM
+
+  - name: STR_EVENTS_RANDOM_ITEM_LIST_TEST
+    randomItemList:
+      - STR_DUMMY_ITEM
+  # missing type
+  - name: STR_EVENTS_RANDOM_ITEM_LIST_TEST_MISSING
+    randomItemList:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_EVENTS_RANDOM_ITEM_LIST_TEST_INCORRECT
+    randomItemList:
+      - STR_DUMMY_RESEARCH
+
+  - name: STR_EVENTS_REGION_LIST_TEST
+    regionList:
+      - STR_DUMMY_REGION
+  # missing type
+  - name: STR_EVENTS_REGION_LIST_TEST_MISSING
+    regionList:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_EVENTS_REGION_LIST_TEST_INCORRECT
+    regionList:
+      - STR_DUMMY_ITEM
+
+  - name: STR_EVENTS_RESEARCH_LIST_TEST
+    researchList:
+      - STR_DUMMY_RESEARCH
+  # missing type
+  - name: STR_EVENTS_RESEARCH_LIST_TEST_MISSING
+    researchList:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_EVENTS_RESEARCH_LIST_TEST_INCORRECT
+    researchList:
+      - STR_DUMMY_ITEM
+
+  - name: STR_EVENTS_SPAWNED_PERSON_TYPE_TEST
+    spawnedPersonType: STR_DUMMY_SOLDIER
+  # missing type
+  - name: STR_EVENTS_SPAWNED_PERSON_TYPE_TEST_MISSING
+    spawnedPersonType: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_EVENTS_SPAWNED_PERSON_TYPE_TEST_INCORRECT
+    spawnedPersonType: STR_DUMMY_ITEM
+
+  - name: STR_EVENTS_WEIGHTED_ITEM_LIST_TEST
+    weightedItemList:
+      STR_DUMMY_ITEM: 1
+  # missing type
+  - name: STR_EVENTS_WEIGHTED_ITEM_LIST_TEST_MISSING
+    weightedItemList:
+      STR_DUMMY_NON_EXISTING_REFERENCE: 1
+  # incorrect type
+  - name: STR_EVENTS_WEIGHTED_ITEM_LIST_TEST_INCORRECT
+    weightedItemList:
+      STR_DUMMY_RESEARCH: 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,25 @@
+crafts:
+  - type: STR_DUMMY_CRAFT_REFUEL_ITEM_TEST
+    refuelItem: STR_DUMMY_ITEM
+  # missing type
+  - type: STR_DUMMY_CRAFT_REFUEL_ITEM_TEST_MISSING
+    refuelItem: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_DUMMY_CRAFT_REFUEL_ITEM_TEST_INCORRECT
+    refuelItem: STR_DUMMY_RESEARCH
+
+  - type: STR_DUMMY_CRAFT_REQUIRES_TEST
+    requires:
+    - STR_DUMMY_RESEARCH
+  # missing type
+  - type: STR_DUMMY_CRAFT_REQUIRES_TEST_MISSING
+    requires:
+    - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_DUMMY_CRAFT_REQUIRES_TEST_INCORRECT
+    requires:
+    - STR_DUMMY_ITEM
+
+
+
+

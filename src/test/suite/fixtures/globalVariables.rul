@@ -2,6 +2,8 @@ ftaGame: true
 
 newBaseUnlockResearch: STR_DUMMY_NON_EXISTING_RESEARCH
 
+psiUnlockResearch: STR_DUMMY_ITEM
+
 startingBase:
   crafts:
     - type: STR_DUMMY_CRAFT
@@ -12,3 +14,11 @@ startingBase:
 globe:
   # should not throw an error (yet, ignoreType currently)
   data: DUMMY_NON_EXISTING
+
+# fakeUnderwaterBaseUnlockResearch: STR_DUMMY_RESEARCH
+# fakeUnderwaterBaseUnlockResearch: STR_DUMMY_NON_EXISTING_REFERENCE # missing type
+fakeUnderwaterBaseUnlockResearch: STR_DUMMY_ITEM # incorrect type
+
+mana:
+  # unlockResearch: STR_DUMMY_RESEARCH
+  unlockResearch: STR_DUMMY_ITEM

@@ -1,6 +1,6 @@
 import { Position, Range, TextDocument } from 'vscode';
+import { Scalar, parseDocument } from 'yaml2';
 import { logger } from './logger';
-import { parseDocument } from 'yaml2';
 import { typedProperties } from './typedProperties';
 
 export type KeyMatch = {
@@ -188,8 +188,12 @@ export class KeyDetector {
                     if (item.key && item.value) {
                         // Map item
                         const key = typeof item.key.value === 'string' ? item.key.value : item.key;
-                        const newPath = [...currentPath, key];
-                        if (typedProperties.isKeyValueReferencePath(currentPath.join('.'))) {
+                        const newPath =
+                            currentPath.length === 0 && item.value instanceof Scalar /* ||
+                            (currentPath.length === 1 && item instanceof Pair)*/
+                                ? ['globalVariables', ...currentPath, key]
+                                : [...currentPath, key];
+                        if (typedProperties.isKeyValueReferencePath(newPath.join('.'))) {
                             path = [...newPath.slice(0, -1), 'value']; // Update the path and stop traversing
                             return;
                         }

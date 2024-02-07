@@ -3,3 +3,21 @@ units:
   - type: STR_DUMMY_UNIT2
     rank: STR_LIVE_COMMANDER
   - type: STR_DUMMY_UNIT_ALIEN_RACE_TEST
+
+  - type: STR_UNIT_BUILTIN_WEAPON_SET_TEST
+    builtInWeaponSets:
+      -
+        - STR_DUMMY_ITEM
+   # missing type
+  - type: STR_UNIT_BUILTIN_WEAPON_SET_TEST_MISSING
+    builtInWeaponSets:
+      -
+        - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_UNIT_BUILTIN_WEAPON_SET_TEST_INCORRECT
+    builtInWeaponSets:
+      -
+        - STR_DUMMY_RESEARCH
+
+
+
