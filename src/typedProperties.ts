@@ -61,7 +61,7 @@ export class typedProperties {
         alienRaces: ['id'],
         extraSprites: ['type', 'typeSingle'],
         events: ['name'],
-        facilities: ['type', 'provideBaseFunc'],
+        facilities: ['type', 'provideBaseFunc[]'],
         invs: ['id'],
         manufacture: ['name'],
         manufactureShortcut: ['name'],
@@ -199,7 +199,7 @@ export class typedProperties {
         'items.zombieUnitByArmorMale',
     ];
 
-    private static arrayDefinitionTypes: string[] = ['facilities.provideBaseFunc'];
+    private static arrayDefinitionTypes: string[] = ['facilities.provideBaseFunc[]'];
 
     // fully built from typeLinks now
     private static typeProperties: typeProperties = {};

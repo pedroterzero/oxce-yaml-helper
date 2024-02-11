@@ -1,4 +1,4 @@
-import { getAdditionalIgnoreStringTypes, getAdditionalStringTypes } from "../utilities";
+import { getAdditionalIgnoreStringTypes, getAdditionalStringTypes } from '../utilities';
 
 export const stringTypes = [
     'alienDeployments.alert',
@@ -45,7 +45,7 @@ export const stringTypes = [
     // not sure
     // 'items.categories',
     'manufacture.category',
-    ...getAdditionalStringTypes()
+    ...getAdditionalStringTypes(),
 ];
 
 export const ignoreStringTypes = [
@@ -75,7 +75,7 @@ export const ignoreStringTypes = [
     'extraSounds.type',
     'extraSounds.BATTLE.CAT.files',
     'extraSounds.GEO.CAT.files',
-    'facilities.provideBaseFunc',
+    // 'facilities.provideBaseFunc',
     'interfaces.type',
     'mapScripts.type',
     'MCDPatches.type',
@@ -85,5 +85,5 @@ export const ignoreStringTypes = [
     'terrains.mapBlocks[].name',
     'terrains.name',
     'ufoTrajectories.id',
-    ...getAdditionalIgnoreStringTypes()
+    ...getAdditionalIgnoreStringTypes(),
 ];

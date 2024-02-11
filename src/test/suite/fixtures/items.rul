@@ -113,3 +113,122 @@ items:
 
   - type: STR_LINKER_YML_BUILTIN_TEST
     builtInTest: STR_BUILTIN_TEST_BAD
+
+  ######### many tests follow to test whether typeLinks are correct and working ##
+
+  - type: STR_ITEM_CATEGORY_TEST
+    categories:
+      - STR_ITEM_CATEGORY_REPLACEBY_TEST
+  # missing type
+  - type: STR_ITEM_CATEGORY_TEST_MISSING
+    categories:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ITEM_CATEGORY_TEST_INCORRECT
+    categories:
+      - STR_DUMMY_RESEARCH
+
+  - type: STR_ITEM_COMPATIBLE_AMMO_TEST
+    compatibleAmmo:
+      - STR_DUMMY_ITEM
+  # missing type
+  - type: STR_ITEM_COMPATIBLE_AMMO_TEST_MISSING
+    compatibleAmmo:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ITEM_COMPATIBLE_AMMO_TEST_INCORRECT
+    compatibleAmmo:
+      - STR_DUMMY_RESEARCH
+
+  - type: STR_ITEM_AMMO_COMPATIBLE_AMMO_TEST
+    ammo:
+      0:
+        compatibleAmmo:
+          - STR_DUMMY_ITEM
+  # missing type
+  - type: STR_ITEM_AMMO_COMPATIBLE_AMMO_TEST_MISSING
+    ammo:
+      0:
+        compatibleAmmo:
+          - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ITEM_AMMO_COMPATIBLE_AMMO_TEST_INCORRECT
+    ammo:
+      0:
+        compatibleAmmo:
+          - STR_DUMMY_RESEARCH
+
+  - type: STR_ITEM_DEFAULT_INVENTORY_SLOT_TEST
+    defaultInventorySlot: STR_BACK_PACK
+  # missing type
+  - type: STR_ITEM_DEFAULT_INVENTORY_SLOT_TEST_MISSING
+    defaultInventorySlot: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ITEM_DEFAULT_INVENTORY_SLOT_TEST_INCORRECT
+    defaultInventorySlot: STR_DUMMY_ITEM
+
+  - type: STR_ITEM_REQUIRES_TEST
+    requires:
+      - STR_DUMMY_RESEARCH
+  # missing type
+  - type: STR_ITEM_REQUIRES_TEST_MISSING
+    requires: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - type: STR_ITEM_REQUIRES_TEST_INCORRECT
+    requires: [STR_DUMMY_ITEM]
+
+  - type: STR_ITEM_REQUIRES_BUY_TEST
+    requiresBuy: [STR_DUMMY_RESEARCH]
+  # missing type
+  - type: STR_ITEM_REQUIRES_BUY_TEST_MISSING
+    requiresBuy: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - type: STR_ITEM_REQUIRES_BUY_TEST_INCORRECT
+    requiresBuy: [STR_DUMMY_ITEM]
+
+    # 'items.requiresBuyBaseFunc': ['facilities.provideBaseFunc'],
+    # 'items.spawnUnit': ['units'],
+    # 'items.supportedInventorySections': ['invs'],
+    # 'items.tags': ['extended.tags.RuleItem'],
+    # 'items.zombieUnit': ['units'],
+    # 'items.zombieUnitByArmorFemale.key': ['armors'],
+    # 'items.zombieUnitByArmorFemale.value': ['units'],
+    # 'items.zombieUnitByArmorMale.key': ['armors'],
+    # 'items.zombieUnitByArmorMale.value': ['units'],
+    # 'items.zombieUnitByType.key': ['_any_', 'soldiers', 'units'], // match any of these
+    # 'items.zombieUnitByType.value': ['units'],
+
+  - type: STR_ITEM_REQUIRES_BUY_BASE_FUNC_TEST
+    requiresBuyBaseFunc: [ STR_DUMMY_BASE_FUNC ]
+  # missing type
+  - type: STR_ITEM_REQUIRES_BUY_BASE_FUNC_TEST_MISSING
+    requiresBuyBaseFunc: [ STR_DUMMY_NON_EXISTING_REFERENCE ]
+  # incorrect type
+  - type: STR_ITEM_REQUIRES_BUY_BASE_FUNC_TEST_INCORRECT
+    requiresBuyBaseFunc: [ STR_DUMMY_ITEM ]
+
+  - type: STR_ITEM_SPAWN_UNIT_TEST
+    spawnUnit: STR_DUMMY_UNIT1
+  # missing type
+  - type: STR_ITEM_SPAWN_UNIT_TEST_MISSING
+    spawnUnit: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ITEM_SPAWN_UNIT_TEST_INCORRECT
+    spawnUnit: STR_DUMMY_RESEARCH
+
+  - type: STR_ITEM_SUPPORTED_INVENTORY_SECTIONS_TEST
+    supportedInventorySections: [ STR_BACK_PACK ]
+  # missing type
+  - type: STR_ITEM_SUPPORTED_INVENTORY_SECTIONS_TEST_MISSING
+    supportedInventorySections: [ STR_DUMMY_NON_EXISTING_REFERENCE ]
+  # incorrect type
+  - type: STR_ITEM_SUPPORTED_INVENTORY_SECTIONS_TEST_INCORRECT
+    supportedInventorySections: [ STR_DUMMY_ITEM ]
+
+
+
+
+
+
+
+

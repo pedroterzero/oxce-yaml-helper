@@ -1,10 +1,8 @@
-    # 'facilities.buildCostItems': ['items'],
-    # 'facilities.buildOverFacilities': ['facilities'],
-    # 'facilities.destroyedFacility': ['facilities'],
-    # 'facilities.mapName': ['terrains.mapBlocks[]'],
-    # 'facilities.requires[]': ['research'],
-
 facilities:
+  - type: STR_DUMMY_FACILITY_PROVIDE_BASE_FUNC
+    provideBaseFunc:
+      - STR_DUMMY_BASE_FUNC
+
   - type: STR_TEST_FACILITY_BUILD_COST_ITEMS
     buildCostItems:
       STR_DUMMY_ITEM:

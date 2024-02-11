@@ -37,7 +37,7 @@ export class RulesetDefinitionChecker {
     private ignoreDefinitionRegexes: RegExp[] = [
         /^extraSprites\.files\.\d+$/,
         /^extended\.tags\.([a-zA-Z]+)$/,
-        /^facilities\.provideBaseFunc$/,
+        // /^facilities\.provideBaseFunc$/,
         /^terrains\.mapBlocks\[\]$/,
     ];
 
