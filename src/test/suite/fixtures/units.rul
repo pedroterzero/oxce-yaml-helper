@@ -4,6 +4,9 @@ units:
     rank: STR_LIVE_COMMANDER
   - type: STR_DUMMY_UNIT_ALIEN_RACE_TEST
 
+  - type: STR_DUMMY_UNIT_TEST1
+  - type: STR_DUMMY_UNIT_TEST2
+
   - type: STR_UNIT_BUILTIN_WEAPON_SET_TEST
     builtInWeaponSets:
       -

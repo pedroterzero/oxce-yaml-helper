@@ -119,14 +119,14 @@ items:
   - type: STR_ITEM_CATEGORY_TEST
     categories:
       - STR_ITEM_CATEGORY_REPLACEBY_TEST
-  # missing type
-  - type: STR_ITEM_CATEGORY_TEST_MISSING
-    categories:
-      - STR_DUMMY_NON_EXISTING_REFERENCE
-  # incorrect type
-  - type: STR_ITEM_CATEGORY_TEST_INCORRECT
-    categories:
-      - STR_DUMMY_RESEARCH
+  # missing type (disabled because we're already checking it)
+  # - type: STR_ITEM_CATEGORY_TEST_MISSING
+  #   categories:
+  #     - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type (disabled because we're already checking it)
+  # - type: STR_ITEM_CATEGORY_TEST_INCORRECT
+  #   categories:
+  #     - STR_DUMMY_RESEARCH
 
   - type: STR_ITEM_COMPATIBLE_AMMO_TEST
     compatibleAmmo:
@@ -269,7 +269,7 @@ items:
 
   - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_UNIT_TEST
     zombieUnitByType:
-      STR_DUMMY_UNIT1: STR_DUMMY_UNIT2
+      STR_DUMMY_UNIT_TEST1: STR_DUMMY_UNIT2
   - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_SOLDIER_TEST
     zombieUnitByType:
       STR_DUMMY_SOLDIER: STR_DUMMY_UNIT2
@@ -279,14 +279,14 @@ items:
       STR_DUMMY_NON_EXISTING_REFERENCE: STR_DUMMY_UNIT2
   - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_TEST_MISSING_VALUE
     zombieUnitByType:
-      STR_DUMMY_UNIT1: STR_DUMMY_NON_EXISTING_REFERENCE
+      STR_DUMMY_UNIT_TEST1: STR_DUMMY_NON_EXISTING_REFERENCE
   # incorrect type
   - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_TEST_INCORRECT_KEY
     zombieUnitByType:
       STR_DUMMY_ITEM: STR_DUMMY_UNIT2
   - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_TEST_INCORRECT_VALUE
     zombieUnitByType:
-      STR_DUMMY_UNIT1: STR_DUMMY_ITEM
+      STR_DUMMY_UNIT_TEST1: STR_DUMMY_ITEM
 
 extended:
   tags:
