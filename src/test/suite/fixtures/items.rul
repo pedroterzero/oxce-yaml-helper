@@ -186,18 +186,6 @@ items:
   - type: STR_ITEM_REQUIRES_BUY_TEST_INCORRECT
     requiresBuy: [STR_DUMMY_ITEM]
 
-    # 'items.requiresBuyBaseFunc': ['facilities.provideBaseFunc'],
-    # 'items.spawnUnit': ['units'],
-    # 'items.supportedInventorySections': ['invs'],
-    # 'items.tags': ['extended.tags.RuleItem'],
-    # 'items.zombieUnit': ['units'],
-    # 'items.zombieUnitByArmorFemale.key': ['armors'],
-    # 'items.zombieUnitByArmorFemale.value': ['units'],
-    # 'items.zombieUnitByArmorMale.key': ['armors'],
-    # 'items.zombieUnitByArmorMale.value': ['units'],
-    # 'items.zombieUnitByType.key': ['_any_', 'soldiers', 'units'], // match any of these
-    # 'items.zombieUnitByType.value': ['units'],
-
   - type: STR_ITEM_REQUIRES_BUY_BASE_FUNC_TEST
     requiresBuyBaseFunc: [ STR_DUMMY_BASE_FUNC ]
   # missing type
@@ -224,6 +212,86 @@ items:
   # incorrect type
   - type: STR_ITEM_SUPPORTED_INVENTORY_SECTIONS_TEST_INCORRECT
     supportedInventorySections: [ STR_DUMMY_ITEM ]
+
+  - type: STR_ITEM_RULE_ITEM_TAGS_TEST
+    tags: {TAG_TEST: 1}
+  # missing type
+  - type: STR_ITEM_RULE_ITEM_TAGS_TEST_MISSING
+    tags: {TAG_NON_EXISTING: 1}
+  # incorrect type
+  - type: STR_ITEM_RULE_ITEM_TAGS_TEST_INCORRECT
+    tags: {STR_ITEM_RULE_ITEM_TAGS_TEST: 1}
+
+  - type: STR_ITEM_ZOMBIE_UNIT_TEST
+    zombieUnit: STR_DUMMY_UNIT1
+  # missing type
+  - type: STR_ITEM_ZOMBIE_UNIT_TEST_MISSING
+    zombieUnit: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ITEM_ZOMBIE_UNIT_TEST_INCORRECT
+    zombieUnit: STR_DUMMY_RESEARCH
+
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_FEMALE_TEST
+    zombieUnitByArmorFemale:
+      STR_DUMMY_ARMOR: STR_DUMMY_UNIT1
+  # missing type
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_FEMALE_TEST_MISSING_KEY
+    zombieUnitByArmorFemale:
+      STR_DUMMY_NON_EXISTING_REFERENCE: STR_DUMMY_UNIT1
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_FEMALE_TEST_MISSING_VALUE
+    zombieUnitByArmorFemale:
+      STR_DUMMY_ARMOR: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_FEMALE_TEST_INCORRECT_KEY
+    zombieUnitByArmorFemale:
+      STR_DUMMY_ITEM: STR_DUMMY_UNIT1
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_FEMALE_TEST_INCORRECT_VALUE
+    zombieUnitByArmorFemale:
+      STR_DUMMY_ARMOR: STR_DUMMY_ITEM
+
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_MALE_TEST
+    zombieUnitByArmorMale:
+      STR_DUMMY_ARMOR: STR_DUMMY_UNIT1
+  # missing type
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_MALE_TEST_MISSING_KEY
+    zombieUnitByArmorMale:
+      STR_DUMMY_NON_EXISTING_REFERENCE: STR_DUMMY_UNIT1
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_MALE_TEST_MISSING_VALUE
+    zombieUnitByArmorMale:
+      STR_DUMMY_ARMOR: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_MALE_TEST_INCORRECT_KEY
+    zombieUnitByArmorMale:
+      STR_DUMMY_ITEM: STR_DUMMY_UNIT1
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_ARMOR_MALE_TEST_INCORRECT_VALUE
+    zombieUnitByArmorMale:
+      STR_DUMMY_ARMOR: STR_DUMMY_ITEM
+
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_UNIT_TEST
+    zombieUnitByType:
+      STR_DUMMY_UNIT1: STR_DUMMY_UNIT2
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_SOLDIER_TEST
+    zombieUnitByType:
+      STR_DUMMY_SOLDIER: STR_DUMMY_UNIT2
+  # missing type
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_TEST_MISSING_KEY
+    zombieUnitByType:
+      STR_DUMMY_NON_EXISTING_REFERENCE: STR_DUMMY_UNIT2
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_TEST_MISSING_VALUE
+    zombieUnitByType:
+      STR_DUMMY_UNIT1: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_TEST_INCORRECT_KEY
+    zombieUnitByType:
+      STR_DUMMY_ITEM: STR_DUMMY_UNIT2
+  - type: STR_ITEM_ZOMBIE_UNIT_BY_TYPE_TEST_INCORRECT_VALUE
+    zombieUnitByType:
+      STR_DUMMY_UNIT1: STR_DUMMY_ITEM
+
+extended:
+  tags:
+    RuleItem:
+      TAG_TEST: int
 
 
 

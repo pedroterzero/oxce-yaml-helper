@@ -1,2 +1,110 @@
 research:
   - name: STR_DUMMY_RESEARCH
+
+  # type validations
+  - name: STR_RESEARCH_CUTSCENE_TEST
+    cutscene: STR_DUMMY_CUTSCENE
+  # missing type
+  - name: STR_RESEARCH_CUTSCENE_TEST_MISSING
+    cutscene: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_RESEARCH_CUTSCENE_TEST_INCORRECT
+    cutscene: STR_DUMMY_ITEM
+
+  - name: STR_RESEARCH_DEPENDENCIES_TEST
+    dependencies: [STR_DUMMY_RESEARCH]
+  # missing type
+  - name: STR_RESEARCH_DEPENDENCIES_TEST_MISSING
+    dependencies: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - name: STR_RESEARCH_DEPENDENCIES_TEST_INCORRECT
+    dependencies: [STR_DUMMY_ITEM]
+
+  - name: STR_RESEARCH_DISABLES_TEST
+    disables: [STR_DUMMY_RESEARCH]
+  # missing type
+  - name: STR_RESEARCH_DISABLES_TEST_MISSING
+    disables: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - name: STR_RESEARCH_DISABLES_TEST_INCORRECT
+    disables: [STR_DUMMY_ITEM]
+
+  - name: STR_RESEARCH_GET_ONE_FREE_TEST
+    getOneFree: [STR_DUMMY_RESEARCH]
+  # missing type
+  - name: STR_RESEARCH_GET_ONE_FREE_TEST_MISSING
+    getOneFree: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - name: STR_RESEARCH_GET_ONE_FREE_TEST_INCORRECT
+    getOneFree: [STR_DUMMY_ITEM]
+
+  - name: STR_RESEARCH_GET_ONE_FREE_PROTECTED_TEST
+    getOneFreeProtected: {STR_DUMMY_RESEARCH: [STR_DUMMY_RESEARCH]}
+  # missing type
+  - name: STR_RESEARCH_GET_ONE_FREE_PROTECTED_TEST_MISSING
+    getOneFreeProtected: {STR_DUMMY_NON_EXISTING_REFERENCE: [STR_DUMMY_RESEARCH]}
+  - name: STR_RESEARCH_GET_ONE_FREE_PROTECTED_TEST_MISSING2
+    getOneFreeProtected: {STR_DUMMY_RESEARCH: [ STR_DUMMY_NON_EXISTING_REFERENCE ]}
+  # incorrect type
+  - name: STR_RESEARCH_GET_ONE_FREE_PROTECTED_TEST_INCORRECT
+    getOneFreeProtected: {STR_DUMMY_ITEM: [STR_DUMMY_RESEARCH]}
+  - name: STR_RESEARCH_GET_ONE_FREE_PROTECTED_TEST_INCORRECT2
+    getOneFreeProtected: {STR_DUMMY_RESEARCH: [ STR_DUMMY_ITEM ]}
+
+
+
+
+
+  - name: STR_RESEARCH_LOOKUP_TEST
+    lookup: STR_DUMMY_RESEARCH
+  # missing type
+  - name: STR_RESEARCH_LOOKUP_TEST_MISSING
+    lookup: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_RESEARCH_LOOKUP_TEST_INCORRECT
+    lookup: STR_DUMMY_ITEM
+
+  - name: STR_RESEARCH_REQUIRES_TEST
+    requires: [STR_DUMMY_RESEARCH]
+  # missing type
+  - name: STR_RESEARCH_REQUIRES_TEST_MISSING
+    requires: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - name: STR_RESEARCH_REQUIRES_TEST_INCORRECT
+    requires: [STR_DUMMY_ITEM]
+
+  - name: STR_RESEARCH_REQUIRES_BASE_FUNC_TEST
+    requiresBaseFunc: [STR_DUMMY_BASE_FUNC]
+  # missing type
+  - name: STR_RESEARCH_REQUIRES_BASE_FUNC_TEST_MISSING
+    requiresBaseFunc: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - name: STR_RESEARCH_REQUIRES_BASE_FUNC_TEST_INCORRECT
+    requiresBaseFunc: [STR_DUMMY_ITEM]
+
+  - name: STR_RESEARCH_SPAWNED_EVENT_TEST
+    spawnedEvent: STR_DUMMY_EVENT
+  # missing type
+  - name: STR_RESEARCH_SPAWNED_EVENT_TEST_MISSING
+    spawnedEvent: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_RESEARCH_SPAWNED_EVENT_TEST_INCORRECT
+    spawnedEvent: STR_DUMMY_ITEM
+
+  - name: STR_RESEARCH_SPAWNED_ITEM_TEST
+    spawnedItem: STR_DUMMY_ITEM
+  # missing type
+  - name: STR_RESEARCH_SPAWNED_ITEM_TEST_MISSING
+    spawnedItem: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_RESEARCH_SPAWNED_ITEM_TEST_INCORRECT
+    spawnedItem: STR_DUMMY_RESEARCH
+
+  - name: STR_RESEARCH_UNLOCKS_TEST
+    unlocks: [STR_DUMMY_RESEARCH]
+  # missing type
+  - name: STR_RESEARCH_UNLOCKS_TEST_MISSING
+    unlocks: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - name: STR_RESEARCH_UNLOCKS_TEST_INCORRECT
+    unlocks: [STR_DUMMY_ITEM]

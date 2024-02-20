@@ -21,4 +21,5 @@ fakeUnderwaterBaseUnlockResearch: STR_DUMMY_ITEM # incorrect type
 
 mana:
   # unlockResearch: STR_DUMMY_RESEARCH
-  unlockResearch: STR_DUMMY_ITEM
+  unlockResearch: STR_DUMMY_ITEM # incorrect type
+  # unlockResearch: STR_DUMMY_NON_EXISTING_REFERENCE # missing type

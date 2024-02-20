@@ -28,3 +28,50 @@ mapScripts:
       terrain: TEST_GOOD_MAPSCRIPT_BY_TERRAIN
       verticalGroup: 1
       direction: vertical
+
+  # type link validations
+
+  - type: STR_MAPSCRIPTS_COMMANDS_CRAFTNAME_TEST
+    commands: [{type: addCraft, craftName: STR_DUMMY_CRAFT}]
+  # missing type
+  - type: STR_MAPSCRIPTS_COMMANDS_CRAFTNAME_TEST_MISSING
+    commands: [{type: addCraft, craftName: STR_DUMMY_NON_EXISTING_REFERENCE}]
+  # incorrect type
+  - type: STR_MAPSCRIPTS_COMMANDS_CRAFTNAME_TEST_INCORRECT
+    commands: [{type: addCraft, craftName: STR_DUMMY_RESEARCH}]
+
+  - type: STR_MAPSCRIPTS_COMMANDS_RANDOMTERRAIN_TEST
+    commands: [{type: addBlock, randomTerrain: [ DESERT ]}]
+  # missing type
+  - type: STR_MAPSCRIPTS_COMMANDS_RANDOMTERRAIN_TEST_MISSING
+    commands: [{type: addBlock, randomTerrain: [ STR_DUMMY_NON_EXISTING_REFERENCE ]}]
+  # incorrect type
+  - type: STR_MAPSCRIPTS_COMMANDS_RANDOMTERRAIN_TEST_INCORRECT
+    commands: [{type: addBlock, randomTerrain: [ STR_DUMMY_RESEARCH ]}]
+
+  - type: STR_MAPSCRIPTS_COMMANDS_TERRAIN_TEST
+    commands: [{type: addBlock, terrain: DESERT}]
+  # missing type
+  - type: STR_MAPSCRIPTS_COMMANDS_TERRAIN_TEST_MISSING
+    commands: [{type: addBlock, terrain: STR_DUMMY_NON_EXISTING_REFERENCE}]
+  # incorrect type
+  - type: STR_MAPSCRIPTS_COMMANDS_TERRAIN_TEST_INCORRECT
+    commands: [{type: addBlock, terrain: STR_DUMMY_RESEARCH}]
+
+  - type: STR_MAPSCRIPTS_COMMANDS_UFONAME_TEST
+    commands: [{type: addUFO, UFOName: STR_ABDUCTOR }]
+  # missing type
+  - type: STR_MAPSCRIPTS_COMMANDS_UFONAME_TEST_MISSING
+    commands: [{type: addUFO, UFOName: STR_DUMMY_NON_EXISTING_REFERENCE }]
+  # incorrect type
+  - type: STR_MAPSCRIPTS_COMMANDS_UFONAME_TEST_INCORRECT
+    commands: [{type: addUFO, UFOName: STR_DUMMY_RESEARCH }]
+
+  - type: STR_MAPSCRIPTS_COMMANDS_VERTICALLEVELS_TERRAIN_TEST
+    commands: [{type: addLine, verticalLevels: [{terrain: DESERT}], direction: vertical}]
+  # missing type
+  - type: STR_MAPSCRIPTS_COMMANDS_VERTICALLEVELS_TERRAIN_TEST_MISSING
+    commands: [{type: addLine, verticalLevels: [{terrain: STR_DUMMY_NON_EXISTING_REFERENCE}], direction: vertical}]
+  # incorrect type
+  - type: STR_MAPSCRIPTS_COMMANDS_VERTICALLEVELS_TERRAIN_TEST_INCORRECT
+    commands: [{type: addLine, verticalLevels: [{terrain: STR_DUMMY_RESEARCH}], direction: vertical}]

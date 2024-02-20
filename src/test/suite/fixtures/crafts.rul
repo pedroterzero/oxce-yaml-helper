@@ -1,4 +1,5 @@
 crafts:
+  - type: STR_DUMMY_CRAFT
   - type: STR_DUMMY_CRAFT_REFUEL_ITEM_TEST
     refuelItem: STR_DUMMY_ITEM
   # missing type

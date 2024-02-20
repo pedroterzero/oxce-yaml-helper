@@ -111,7 +111,8 @@ export class RulesetRecursiveKeyRetriever {
                     results.push(
                         this.getReferencePathResult(key, item.key.range, newPath, item, parentNode, namesByPath),
                     );
-                    return;
+                    // should not return, there might be more to process -- example is research.getOneFreeProtected (which has an array of strings as value)
+                    // return;
                 }
 
                 if (typedProperties.isKeyValueReferencePath(newPath)) {

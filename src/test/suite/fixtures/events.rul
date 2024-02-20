@@ -1,4 +1,6 @@
 events:
+  - name: STR_DUMMY_EVENT
+
   - name: STR_EVENTS_EVERY_ITEM_LIST_TEST
     everyItemList:
       - STR_DUMMY_ITEM
