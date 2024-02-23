@@ -907,11 +907,11 @@
       "default": "-1"
     },
     "bulletSpeed": {
-      "description": "How much faster (or slower, if you use a negative number) is a projectile fired from this weapon compared to the default. Defined as a whole number that will be added to the default speed, e.g. 0 provides 0 additional speed; 1 will provide 1 additional speed; etc.",
+      "description": "How much faster (or slower, if you use a negative number) is a projectile fired from this weapon compared to the default. Defined as a whole number that will be added to the user set bullet speed (1-20).",
       "default": "0"
     },
     "explosionSpeed": {
-      "description": "How much faster (or slower, if you use a negative number) is an explosion (hitAnimation) of this item animated compared to the default. Defined as a whole number that will be multiplied by 10 and the difference from the default speed will be your additional speed, e.g. 0 provides 0\\*10 = 0 additional speed; 1 will provide (1\\*10) - {default} = additional speed; etc.",
+      "description": "How much faster (or slower, if you use a negative number) is an explosion (hitAnimation) of this item animated compared to the default (50). Defined as a whole number.\n\nNote: The actual formula is as follows: (default - (10 \\* explosionSpeed)) = result smaller than default (50) means faster animation and vise-versa; can't go bellow 1.",
       "default": "0"
     },
     "turretType": {
