@@ -903,11 +903,11 @@
       "default": "120"
     },
     "bulletSprite": {
-      "description": "Sprite ID from _BulletSprites.png_ used to draw this weapon's projectile on the Battlescape:\n\n*   0 - [Rocket Launcher](https://www.ufopaedia.org/index.php/Rocket_Launcher)\n*   1 - [Pistol](https://www.ufopaedia.org/index.php/Pistol)\n*   2 - [Rifle](https://www.ufopaedia.org/index.php/Rifle)\n*   3 - [Auto Cannon](https://www.ufopaedia.org/index.php/Auto_Cannon)\n*   4 - [Heavy Cannon](https://www.ufopaedia.org/index.php/Heavy_Cannon)\n*   5 - [Laser Pistol](https://www.ufopaedia.org/index.php/Laser_Pistol)\n*   6 - [Laser Rifle](https://www.ufopaedia.org/index.php/Laser_Rifle)\n*   7 - [Heavy Laser](https://www.ufopaedia.org/index.php/Heavy_Laser)\n*   8 - [Plasma](https://www.ufopaedia.org/index.php/Plasma_Rifle)\n*   9 - [Small Launcher](https://www.ufopaedia.org/index.php/Small_Launcher)\n*   10 - [Blaster Launcher](https://www.ufopaedia.org/index.php/Blaster_Launcher)\n\nfor modders: the bulletsprite needs to be put into the extraSprites type \"Projectiles\" the bulletsprite can contain up to 35 3x3 images. The corresponding file id is 35\\*\\[bulletSprite\\]\n\nTip: You can specify bulletSprite on both weapon and its clip item. If both are specified, clip's bulletSprite overrides weapon's.",
+      "description": "Sprite ID from _BulletSprites.png_ used to draw this weapon's/ammo's projectile on the Battlescape, with ammo's value overriding weapon's:\n\n*   0 - [Rocket Launcher](https://www.ufopaedia.org/index.php/Rocket_Launcher)\n*   1 - [Pistol](https://www.ufopaedia.org/index.php/Pistol)\n*   2 - [Rifle](https://www.ufopaedia.org/index.php/Rifle)\n*   3 - [Auto Cannon](https://www.ufopaedia.org/index.php/Auto_Cannon)\n*   4 - [Heavy Cannon](https://www.ufopaedia.org/index.php/Heavy_Cannon)\n*   5 - [Laser Pistol](https://www.ufopaedia.org/index.php/Laser_Pistol)\n*   6 - [Laser Rifle](https://www.ufopaedia.org/index.php/Laser_Rifle)\n*   7 - [Heavy Laser](https://www.ufopaedia.org/index.php/Heavy_Laser)\n*   8 - [Plasma](https://www.ufopaedia.org/index.php/Plasma_Rifle)\n*   9 - [Small Launcher](https://www.ufopaedia.org/index.php/Small_Launcher)\n*   10 - [Blaster Launcher](https://www.ufopaedia.org/index.php/Blaster_Launcher)\n\nfor modders: the bulletsprite needs to be put into the extraSprites type \"Projectiles\" the bulletsprite can contain up to 35 3x3 images. The corresponding file id is 35\\*\\[bulletSprite\\]",
       "default": "-1"
     },
     "bulletSpeed": {
-      "description": "How much faster (or slower, if you use a negative number) is a projectile fired from this weapon compared to the default. Defined as a whole number that will be added to the user set bullet speed (1-20).",
+      "description": "How much faster (or slower, if you use a negative number) is a projectile fired from this weapon/ammo compared to the default, with ammo values overriding weapon's. Defined as a whole number that will be added to the user set bullet speed (1-20).",
       "default": "0"
     },
     "explosionSpeed": {
@@ -919,7 +919,7 @@
       "default": "-1"
     },
     "vaporColor": {
-      "description": "The color offset (0-3 in TFTD) to use for the vapor trail.",
+      "description": "The color offset (0-3 in TFTD) to use for the vapor trail of projectiles fired from this weapon/ammo.\n\nNote: If used on ammo, overrides weapon's values. This is also the case for other vapor values.",
       "default": "-1"
     },
     "vaporDensity": {
@@ -947,7 +947,7 @@
       "default": "-"
     },
     "reloadSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this ammo/weapon is reloaded. Can be a list with multiple options. If not specified, default reload sound is used.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this ammo/weapon is reloaded, with ammo's value overriding weapon's. Can be a list with multiple options. If not specified, default reload sound is used.",
       "default": "-"
     },
     "primeSound": {
@@ -959,7 +959,7 @@
       "default": "-"
     },
     "fireSound": {
-      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon fires. In OXCE, can be a list with multiple options.",
+      "description": "Sound ID from [BATTLE.CAT](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Extra_Sounds) played when this weapon/ammo is fired, with ammo's value overriding weapon's. In OXCE, can be a list with multiple options.",
       "default": "-1"
     },
     "hitSound": {
