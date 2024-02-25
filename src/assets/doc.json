@@ -380,6 +380,14 @@
       "description": "Specifies the ammo item needed for this facility during base defense. More info: [https://openxcom.org/forum/index.php/topic,7651.msg133495.html#msg133495](https://openxcom.org/forum/index.php/topic,7651.msg133495.html#msg133495)",
       "default": "-"
     },
+    "ammoMax": {
+      "description": "Specifies the maximum amount of ammo that can be loaded into this air defense system.\n\nMore info: [https://openxcom.org/forum/index.php/topic,11760.0.html](https://openxcom.org/forum/index.php/topic,11760.0.html)",
+      "default": "0"
+    },
+    "rearmRate": {
+      "description": "Specifies how much ammunition will be loaded into this air defense system per game hour.",
+      "default": "1"
+    },
     "ammoNeeded": {
       "description": "Specifies the amount of ammo spent when firing once.",
       "default": "1"
@@ -2189,6 +2197,10 @@
     "groups": {
       "description": "Defines what types of map blocks can be used within this command. Can be defined as a list or as a single value.",
       "default": "0"
+    },
+    "craftGroups": {
+      "description": "This command will only be executed if a craft with a corresponding craft group was deployed already.",
+      "default": "-"
     },
     "horizontalGroup": {
       "description": "Allows to override group used in addLine command.",
@@ -4376,6 +4388,10 @@
       "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to unlock this article. If none are specified, this article is unlocked from the start.\n\nIf using lootable weapons ('alien' weapons that can be used without research) needing a research to fully unlock, make sure to define it on both the weapon and ammo. Otherwise the damage reading is visible on the inventory screen using \\[ALT\\] on a clip.",
       "default": "-"
     },
+    "disabledBy": {
+      "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to disable this article. If none are specified, this article is never disabled.",
+      "default": "-"
+    },
     "image_id": {
       "description": "Filename of the [background image](https://www.ufopaedia.org/index.php/UP001.SPK-UP042.SPK) displayed on this article, if applicable.\n\nIn OXCE:\n\n*   This attribute can be used also for _Vehicle_ articles\n*   If the name contains a **\"\\_CPAL\" suffix**, its (custom) palette will be used instead of the default one. Relevant for _Craft, CraftWeapon, TextImage and Vehicle (HWP)_ articles. More info here: [https://openxcom.org/forum/index.php/topic,4957.0.html](https://openxcom.org/forum/index.php/topic,4957.0.html)",
       "default": "-"
@@ -4401,7 +4417,7 @@
       "default": "-"
     },
     "weapon": {
-      "description": "String ID of the weapon, only applicable to _Vehicle_ (HWP/SWS) articles.",
+      "description": "String ID of the weapon, only applicable to _Vehicle_ (HWP/SWS) articles.\n\nIn OXCE:\n\n*   This attribute can be used also for _Equipment_ articles",
       "default": "-"
     },
     "pages": {
@@ -4543,7 +4559,7 @@
       "default": "-"
     },
     "raceWeights": {
-      "description": "List of alien races likely to carry out this mission, and the % chance of them being allocated to this mission, listed by \"number of months after game beginning\".",
+      "description": "List of alien races to carry out this mission, and their weights (i.e. not percentages) of how likely they will be selected for this mission, listed by \"number of months after game beginning\".\n\nNote: If multiple rulesets define the same mission raceWeights, then they'll be merged, not replaced (so if you're making a new race mod, you only need to specify their weights). Weights for new races will be added to the list, while weights for existing races will replace old ones. The only way to \"remove\" old races is to explicitly set them to 0.",
       "default": "required"
     },
     "operationType": {
