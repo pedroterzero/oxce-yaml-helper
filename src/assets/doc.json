@@ -514,6 +514,14 @@
       "description": "Amount of units (soldiers and vehicles) this craft can carry.",
       "default": "0"
     },
+    "allowedSoldierGroups": {
+      "description": "List of soldier type groups allowed onboard. If empty, no restriction.",
+      "default": "-"
+    },
+    "onlyOneSoldierGroupAllowed": {
+      "description": "Whether only one soldier type group (can consist of multiple soldier types) is allowed onboard.",
+      "default": "false"
+    },
     "maxUnitsLimit": {
       "description": "Amount of units (soldiers and vehicles) this craft can carry, INCLUDING all potential extensions provided by craft weapons/modules.",
       "default": "same as soldiers"
@@ -617,6 +625,10 @@
     "mapVisible": {
       "description": "Should the craft map be visible at the beginning of the battle? Used for some funky effects (see W40k mod for examples).",
       "default": "true"
+    },
+    "groups": {
+      "description": "Tags the craft for purpose of map scripting.\n\nMore info: [https://openxcom.org/forum/index.php/topic,10713.msg161170.html#msg161170](https://openxcom.org/forum/index.php/topic,10713.msg161170.html#msg161170)",
+      "default": "-"
     },
     "deployment": {
       "description": "Custom positions for the unit deployment in the craft, listed as: _\\[x, y, z, facing\\]_\n\nIf not specified, units are placed on empty spots from top-left to bottom-right facing top-right.",
@@ -1622,6 +1634,10 @@
       "description": "Says what targets are allowed for an item. It is a composite attribute (a bit map), individual parts:\n\n*   1 = friendly\n*   2 = hostile\n*   4 = neutral\n\nSo, for example:\n\n*   0 = cannot use on anyone\n*   1 = can use only on friendlies\n*   6 (2+4) = can use only on hostiles and neutrals\n*   etc.\n\nCurrently works only for **psi-amps** (default 6) and for **death traps** (default 7).\n\nNote: Mind-controlling friendlies is never possible, hardcoded. Panicking friendlies is possible.",
       "default": "6 or 7"
     },
+    "convertToCivilian": {
+      "description": "Mind control a hostile unit into a civilian unit?",
+      "default": "false"
+    },
     "manaRequired": {
       "description": "Does using this item require mana research unlocked?",
       "default": "false"
@@ -1654,6 +1670,10 @@
     },
     "replaceBy": {
       "description": "Defines mapping between item categories.\n\nNote: this is useful when you are still experimenting with the item categorization. If you defined too many categories for example, you can group them together easily here, instead of having to redefine all the items. And if you change your mind later, you can easily ungroup them again.",
+      "default": "-"
+    },
+    "invOrder": {
+      "description": "Ordered list of inventory slots to be used for auto-equip/quick-equip preferences.\n\nMore info here: [https://openxcom.org/forum/index.php?topic=7868.msg161832#msg161832](https://openxcom.org/forum/index.php?topic=7868.msg161832#msg161832)",
       "default": "-"
     }
   },
@@ -2637,6 +2657,10 @@
     "type": {
       "description": "String ID of the soldier type.",
       "default": "required"
+    },
+    "group": {
+      "description": "Allows grouping of soldier types. Used in craft restrictions.\n\nMore info: [https://openxcom.org/forum/index.php?topic=10678.msg161784#msg161784](https://openxcom.org/forum/index.php?topic=10678.msg161784#msg161784)",
+      "default": "0"
     },
     "requires": {
       "description": "List of [topics](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Research) (string IDs) that must be researched to unlock this soldier type. If none are specified, this soldier type is unlocked from the start.",
@@ -4940,6 +4964,10 @@
       "description": "How much money is awarded to xcom when this event pops up.",
       "default": "0"
     },
+    "spawnedCraftType": {
+      "description": "Allows to \"hire\" craft.\n\nMore info here: [https://openxcom.org/forum/index.php?topic=11201.msg161177#msg161177](https://openxcom.org/forum/index.php?topic=11201.msg161177#msg161177)",
+      "default": "-"
+    },
     "spawnedPersons": {
       "description": "Number of spawned persons.",
       "default": "0"
@@ -5796,6 +5824,10 @@
       "description": "If set to true, the item reload cost equals to \"cost of moving ammo to hand\" + \"cost of reload\".",
       "default": "false"
     },
+    "extendedInventorySlotSorting": {
+      "description": "Allows to choose between algorithm (B3) and (A2). For details see: [https://openxcom.org/forum/index.php?topic=7868.msg161833#msg161833](https://openxcom.org/forum/index.php?topic=7868.msg161833#msg161833)",
+      "default": "false"
+    },
     "extendedRunningCost": {
       "description": "If set to true, running soldiers will ignore mutual surprise (i.e. will not stop running when spotting a new enemy).",
       "default": "false"
@@ -5819,6 +5851,10 @@
     "extendedExperienceAwardSystem": {
       "description": "Allows to switch between OXC and OXCE experience award system.\n\n*   false = use OXC system\n*   true = use OXCE system\n\nMore info: [https://openxcom.org/forum/index.php/topic,4230.msg154823.html#msg154823](https://openxcom.org/forum/index.php/topic,4230.msg154823.html#msg154823)",
       "default": "true"
+    },
+    "extendedPediaFacilityParams": {
+      "description": "Parameters used for ufopedia facility preview display. More info: [https://openxcom.org/forum/index.php?topic=11819.msg161957#msg161957](https://openxcom.org/forum/index.php?topic=11819.msg161957#msg161957)",
+      "default": "[2,2,0,0]"
     },
     "doorSound": {
       "description": "Sound of normal doors opening.",
