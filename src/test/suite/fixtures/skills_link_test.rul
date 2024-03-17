@@ -1,0 +1,11 @@
+skills:
+  - type: STR_DUMMY_SKILL
+
+  - type: STR_SKILL_REQUIREDBONUSES_TEST
+    requiredBonuses: [STR_DUMMY_BONUS]
+  # missing type
+  - type: STR_SKILL_REQUIREDBONUSES_TEST_MISSING
+    requiredBonuses: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - type: STR_SKILL_REQUIREDBONUSES_TEST_INCORRECT
+    requiredBonuses: [STR_DUMMY_RESEARCH]

@@ -1,0 +1,102 @@
+startingBase:
+  crafts:
+    - type: STR_DUMMY_CRAFT
+      weapons:
+        - type: STR_DUMMY_CRAFT_WEAPON
+      status: STR_READY
+    # missing type
+    - type: STR_DUMMY_NON_EXISTING_REFERENCE
+      weapons:
+        - type: STR_DUMMY_CRAFT_WEAPON
+    # incorrect type
+    - type: STR_DUMMY_RESEARCH
+      weapons:
+        - type: STR_DUMMY_CRAFT_WEAPON
+    # missing weapon
+    - type: STR_DUMMY_CRAFT
+      weapons:
+        - type: STR_DUMMY_NON_EXISTING_REFERENCE
+    # incorrect weapon
+    - type: STR_DUMMY_CRAFT
+      weapons:
+        - type: STR_DUMMY_RESEARCH
+    # incorrect status
+    - type: STR_DUMMY_CRAFT
+      weapons:
+        - type: STR_DUMMY_CRAFT_WEAPON
+      status: STR_NON_EXISTING_REFERENCE
+  facilities:
+    - type: STR_ACCESS_LIFT
+    # missing type
+    - type: STR_DUMMY_NON_EXISTING_REFERENCE
+    # incorrect type
+    - type: STR_DUMMY_ITEM
+  items:
+    - type: STR_DUMMY_ITEM
+    # missing type
+    - type: STR_DUMMY_NON_EXISTING_REFERENCE
+    # incorrect type
+    - type: STR_DUMMY_RESEARCH
+  randomSoldiers:
+    STR_DUMMY_SOLDIER: 1
+    # missing type
+    STR_DUMMY_NON_EXISTING_REFERENCE: 1
+    # incorrect type
+    STR_DUMMY_RESEARCH: 1
+
+
+
+
+
+
+
+
+# startingBaseBeginner:
+# startingBaseExperienced:
+# startingBaseVeteran:
+# startingBaseSuperhuman:
+startingBaseGenius:
+  crafts:
+    - type: STR_DUMMY_CRAFT
+      weapons:
+        - type: STR_DUMMY_CRAFT_WEAPON
+      status: STR_READY
+    # missing type
+    - type: STR_DUMMY_NON_EXISTING_REFERENCE
+      weapons:
+        - type: STR_DUMMY_CRAFT_WEAPON
+    # incorrect type
+    - type: STR_DUMMY_RESEARCH
+      weapons:
+        - type: STR_DUMMY_CRAFT_WEAPON
+    # missing weapon
+    - type: STR_DUMMY_CRAFT
+      weapons:
+        - type: STR_DUMMY_NON_EXISTING_REFERENCE
+    # incorrect weapon
+    - type: STR_DUMMY_CRAFT
+      weapons:
+        - type: STR_DUMMY_RESEARCH
+    # incorrect status
+    - type: STR_DUMMY_CRAFT
+      weapons:
+        - type: STR_DUMMY_CRAFT_WEAPON
+      status: STR_NON_EXISTING_REFERENCE
+  facilities:
+    - type: STR_ACCESS_LIFT
+    # missing type
+    - type: STR_DUMMY_NON_EXISTING_REFERENCE
+    # incorrect type
+    - type: STR_DUMMY_ITEM
+  items:
+    - type: STR_DUMMY_ITEM
+    # missing type
+    - type: STR_DUMMY_NON_EXISTING_REFERENCE
+    # incorrect type
+    - type: STR_DUMMY_RESEARCH
+  randomSoldiers:
+    STR_DUMMY_SOLDIER: 1
+    # missing type
+    STR_DUMMY_NON_EXISTING_REFERENCE: 1
+    # incorrect type
+    STR_DUMMY_RESEARCH: 1
