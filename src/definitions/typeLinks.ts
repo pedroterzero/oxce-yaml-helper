@@ -134,7 +134,7 @@ export const typeLinks: TypeLinks = {
     '/^items\\.ammo\\.[0-3]\\.compatibleAmmo\\[\\]$/': ['items'],
     'items.defaultInventorySlot': ['invs'],
     'items.requires[]': ['research'],
-    'items.requiresBuy': ['research'],
+    'items.requiresBuy[]': ['research'],
     'items.requiresBuyBaseFunc[]': ['facilities.provideBaseFunc[]'],
     'items.spawnUnit': ['units'],
     'items.supportedInventorySections[]': ['invs'],

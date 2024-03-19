@@ -34,8 +34,8 @@ export const stringTypes = [
     'items.unprimeActionName',
     '/^globalVariables\\.missionRatings\\.-?\\d+$/',
     '/^globalVariables\\.monthlyRatings\\.-?\\d+$/',
-    'regions.missionZones[][]',
-    'soldiers.rankStrings',
+    'regions.missionZones[][][]',
+    'soldiers.rankStrings[]',
     'ufopaedia.section', // should probably check that the string exists
     'ufopaedia.text',
     'ufopaedia.pages[].text',

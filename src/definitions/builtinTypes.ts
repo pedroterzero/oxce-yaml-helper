@@ -72,7 +72,7 @@ export const builtinResourceIds: { [key: string]: idRange } = {
 export const builtinTypes: {[key: string]: string[]} = {
     'alienDeployments.alertBackground': builtinBackgrounds,
     'alienDeployments.briefing.background': builtinBackgrounds,
-    // 'alienMissions.waves[].ufo': ['dummy'],
+    'alienMissions.waves[].ufo': ['dummy'],
     'armors.spriteInv': builtinArmorSprites,
     // prettier-ignore
     'armors.spriteSheet': [

@@ -1,5 +1,5 @@
-import { typedProperties } from "../typedProperties";
-import { getAdditionalIgnoreTypes } from "../utilities";
+import { typedProperties } from '../typedProperties';
+import { getAdditionalIgnoreTypes } from '../utilities';
 
 /**
  * Prevent the following types being checked as references
@@ -19,7 +19,7 @@ export const ignoreTypes = [
     '/^armors\\.layersSpecificPrefix\\.\\d+$/',
     'alienDeployments.music', // not sure about this one (check that files exist? stock? GMTACTIC6?)
     'crafts.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
-    'crafts.battlescapeTerrainData.mapDataSets', // may want to check that the files exist
+    'crafts.battlescapeTerrainData.mapDataSets[]', // may want to check that the files exist
     'crafts.battlescapeTerrainData.name', // may want to check that the files exist
     'cutscenes.videos', // may want to check that the files exist
     'cutscenes.slideshow.slides[].imagePath', // may want to check that the files exist
@@ -30,8 +30,13 @@ export const ignoreTypes = [
     // 'extended.tags.RuleArmor',
     // 'extended.tags.RuleItem',
     // 'extended.tags.RuleSoldierBonus',
+    '/^extraSounds\\.(BATTLE|GEO|)\\.CAT\\.files\\.\\d+/', // may want to check that the files exist
     'extraSprites.fileSingle', // may want to check that the files exist
+    'extraStrings',
     // TODO CHECK THIS (this was not here, then it was extraSprites.files.0, then regexed)
+    '/^extraSprites\\.((BASEBITS|BIGOBS|FLOOROB|HANDOB|INTICON|HIT|SMOKE|X1)\\.PCK|Projectiles|SPICONS\\.DAT)\\.files\\.\\d+/', // may want to check that the files exist
+    // 'extraSounds.BATTLE.CAT.files': { recurse: false },
+    // 'extraSounds.GEO.CAT.files': { recurse: false },
     '/^extraSprites\\.files\\.\\d+/', // may want to check that the files exist
     // 'facilities.mapName', // may want to check that the files exist
     'interfaces.elements[].id', // could type check this, but the validator probably catches these
@@ -51,11 +56,11 @@ export const ignoreTypes = [
     'mapScripts.commands[].tunnelData.MCDReplacements[].type',
     'mapScripts.commands[].verticalLevels[].type', // validator should get it
     'missionScripts.varName', // seems it can be ignored (according to Finnik)
-    'soldiers.soldierNames', // may want to check that the files exist
+    'soldiers.soldierNames[]', // may want to check that the files exist
     // 'terrains.mapBlocks[].name', // check that the mapblock files exist
-    'terrains.mapDataSets', // check that the terrains exist
+    'terrains.mapDataSets[]', // check that the terrains exist
     'ufos.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
-    'ufos.battlescapeTerrainData.mapDataSets', // may want to check that the files exist
+    'ufos.battlescapeTerrainData.mapDataSets[]', // may want to check that the files exist
     'ufos.battlescapeTerrainData.name', // may want to check that the files exist
     'ufos.scripts.detectUfoFromBase',
     'ufos.scripts.detectUfoFromCraft',
