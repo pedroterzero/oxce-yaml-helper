@@ -1,24 +1,31 @@
-import { ExtensionContext, extensions, Uri, workspace } from "vscode";
-import { create } from "flat-cache";
-import { ParsedRuleset } from "./rulesetResolver";
-import { createHash } from "crypto";
-import { rulesetResolver } from "./extension";
+import { ExtensionContext, extensions, Uri, workspace } from 'vscode';
+import { create } from 'flat-cache';
+import { ParsedRuleset } from './rulesetResolver';
+import { createHash } from 'crypto';
+import { rulesetResolver } from './extension';
 import { promises as fsp } from 'fs';
 // import { mkdir, readFile, stat } from "fs/promises";
 
 // remove in node 14
-const {readFile, stat, mkdir} = fsp;
+const { readFile, stat, mkdir } = fsp;
 
 export class RulesetFileCacheManager {
     private CACHE_DIR = 'oxchelper';
     private context?: ExtensionContext;
-    private version = extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version;
+    // private version = extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version;
 
     public setExtensionContent(context: ExtensionContext): void {
         this.context = context;
         this.init();
     }
+
+    private get version() {
+        return extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version;
+    }
+
     private async init() {
+        console.log(`version: ${extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version}`);
+
         if (!this.context) {
             return;
         }
@@ -35,7 +42,7 @@ export class RulesetFileCacheManager {
         }
     }
 
-    private getCachePath (): string {
+    private getCachePath(): string {
         if (!this.context) {
             throw new Error('No extension context');
         }
@@ -50,10 +57,12 @@ export class RulesetFileCacheManager {
 
         const path = file.fsPath;
         const fileContents = await readFile(path);
-        const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
+        const hash = createHash('md5')
+            .update(fileContents.toString() + this.version)
+            .digest('hex');
 
         const cache = this.getCache(file);
-        cache.setKey('metadata', {hash});
+        cache.setKey('metadata', { hash });
         cache.setKey('data', JSON.parse(JSON.stringify(data)));
         cache.save();
     }
@@ -73,7 +82,9 @@ export class RulesetFileCacheManager {
 
         const path = file.fsPath;
         const fileContents = await readFile(path);
-        const hash = createHash('md5').update(fileContents.toString() + this.version).digest('hex');
+        const hash = createHash('md5')
+            .update(fileContents.toString() + this.version)
+            .digest('hex');
 
         const cache = this.getCache(file);
         const result = cache.all();
@@ -84,7 +95,7 @@ export class RulesetFileCacheManager {
             const ret: ParsedRuleset = {
                 translations: 'translations' in parsed ? parsed.translations : [],
             };
-            (['definitions', 'references', 'variables', 'logicData']).forEach(key => {
+            ['definitions', 'references', 'variables', 'logicData'].forEach((key) => {
                 const mykey = key as keyof ParsedRuleset;
                 if (mykey in parsed) {
                     ret[mykey] = parsed[key];
