@@ -59,6 +59,7 @@ export const typeLinks: TypeLinks = {
     'alienDeployments.nextStage': ['alienDeployments'],
     'alienDeployments.race': ['alienRaces'],
     'alienDeployments.randomRace[]': ['alienRaces'],
+    'alienDeployments.reinforcements[].spawnBlocks[]': ['builtinsOnly'],
     'alienDeployments.script': ['mapScripts'],
     'alienDeployments.startingCondition': ['startingConditions'],
     'alienDeployments.terrains[]': ['terrains'],

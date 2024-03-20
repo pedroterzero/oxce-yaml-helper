@@ -109,4 +109,8 @@ export const ignoreTypes = [
     'soldiers.rankSprite.mod',
     'soldiers.rankBattleSprite.mod',
     'soldiers.rankTinySprite.mod',
+    'operationNamesFirst',
+    'operationNamesLast',
+    'baseNamesFirst',
+    'baseNamesLast',
 ].concat(typedProperties.getStoreVariables(), getAdditionalIgnoreTypes());

@@ -72,6 +72,7 @@ export const builtinResourceIds: { [key: string]: idRange } = {
 export const builtinTypes: {[key: string]: string[]} = {
     'alienDeployments.alertBackground': builtinBackgrounds,
     'alienDeployments.briefing.background': builtinBackgrounds,
+    'alienDeployments.reinforcements[].spawnBlocks[]': ['EDGES', 'NORTH', 'WEST', 'SOUTH', 'EAST', 'NW', 'NE', 'SW', 'SE'],
     'alienMissions.waves[].ufo': ['dummy'],
     'armors.spriteInv': builtinArmorSprites,
     // prettier-ignore
