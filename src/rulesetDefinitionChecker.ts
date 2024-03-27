@@ -13,6 +13,7 @@ import { typeHintMessages } from './definitions/typeHintMessages';
 import { typedProperties } from './typedProperties';
 import { WorkspaceFolderRulesetHierarchy } from './workspaceFolderRulesetHierarchy';
 import { pathStartsWith } from './utilities';
+import { FileNotInWorkspaceError } from './rulesetResolver';
 
 type Duplicates = {
     [key: string]: DefinitionLookup[];
@@ -222,20 +223,19 @@ export class RulesetDefinitionChecker {
 
     private checkForValidTranslationReference(ref: Match, file: Uri, diagnostics: Diagnostic[]) {
         // console.log(`checking translation ${ref.path} => ${ref.key}`);
-        const translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
-        /*      let translation;
+        // const translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
+        let translation;
         try {
             translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
-        }
-        catch (error) {
+        } catch (error) {
             if (error instanceof FileNotInWorkspaceError) {
-                // file not in workspace, just ignore it
-                console.log('File not in workspace');
+                // file not in workspace, just ignore it (it will spam like crazy, so don't log)
+                // logger.debug(`File not in workspace (ignoring): ${file.path}`);
                 // return;
             } else {
                 throw error;
             }
-        }*/
+        }
 
         if (translation === undefined) {
             this.addReferenceDiagnostic(

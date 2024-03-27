@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { Node, Scalar, isMap, isScalar, isSeq } from 'yaml2';
+import { Node, Scalar, isAlias, isMap, isScalar, isSeq } from 'yaml2';
 import { YAMLDocument } from './rulesetParser';
 import { LogicDataEntry, Match, RuleType } from './rulesetTree';
 import { typedProperties } from './typedProperties';
@@ -78,6 +78,7 @@ export class RulesetRecursiveKeyRetriever {
         depth: number = 0,
         isRoot: boolean = true,
         parentNode: Node | null = null,
+        anchors: { [key: string]: Node } = {},
     ): [NodeInfo[], LogicDataEntry[]] {
         const results: NodeInfo[] = [];
         const logicData: LogicDataEntry[] = [];
@@ -92,7 +93,11 @@ export class RulesetRecursiveKeyRetriever {
         }
 
         // Check for additional logic path
-        logicData.push(...this.checkForAdditionalLogicPath(newPath, node, namesByPath));
+        logicData.push(...this.checkForAdditionalLogicPath(newPath, node, namesByPath, anchors));
+
+        if (node.anchor) {
+            anchors[node.anchor] = node;
+        }
 
         if (isMap(node)) {
             let typeValue = '';
@@ -149,6 +154,7 @@ export class RulesetRecursiveKeyRetriever {
                     depth,
                     isRoot && isScalar(item.value),
                     node,
+                    anchors,
                 );
 
                 results.push(...childResults);
@@ -176,6 +182,7 @@ export class RulesetRecursiveKeyRetriever {
                     depth + 1,
                     false,
                     node,
+                    anchors,
                 );
                 results.push(...childResults);
                 logicData.push(...childLogicData);
@@ -314,12 +321,23 @@ export class RulesetRecursiveKeyRetriever {
         path: string,
         entry: Node,
         namesByPath: { [key: string]: string },
+        anchors: { [key: string]: Node },
     ): LogicDataEntry[] {
         if (typedProperties.isAdditionalLogicPath(path)) {
+            let data = entry.toJSON();
+
+            // If the entry is an alias, get its value from the anchors
+            if (isAlias(entry)) {
+                const anchor = anchors[entry.source];
+                if (anchor) {
+                    data = anchor.toJSON();
+                }
+            }
+
             return [
                 {
                     path,
-                    data: entry.toJSON(),
+                    data,
                     range: entry.range ? [entry.range[0], entry.range[1]] : [0, 0],
                     names: namesByPath,
                 },

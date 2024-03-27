@@ -3,11 +3,7 @@ import { create } from 'flat-cache';
 import { ParsedRuleset } from './rulesetResolver';
 import { createHash } from 'crypto';
 import { rulesetResolver } from './extension';
-import { promises as fsp } from 'fs';
-// import { mkdir, readFile, stat } from "fs/promises";
-
-// remove in node 14
-const { readFile, stat, mkdir } = fsp;
+import { mkdir, readFile, stat } from 'fs/promises';
 
 export class RulesetFileCacheManager {
     private CACHE_DIR = 'oxchelper';
@@ -31,6 +27,7 @@ export class RulesetFileCacheManager {
         }
 
         // check if cache dir exists, otherwise create it
+        console.debug(`Checking if cache dir exists: ${this.getCachePath()}`);
         try {
             await stat(this.getCachePath());
         } catch (error: any) {
@@ -72,7 +69,9 @@ export class RulesetFileCacheManager {
     }
 
     private getCache(file: Uri) {
-        return create(file.path.replace(/\//g, '_'), this.getCachePath());
+        const cacheId = file.path.replace(/[/:]/g, '_');
+        // console.log(`getting cache object for ${file.path}, cacheId: ${cacheId}`);
+        return create(cacheId, this.getCachePath());
     }
 
     public async retrieve(file: Uri) {
