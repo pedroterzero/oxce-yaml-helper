@@ -21,7 +21,7 @@ export const ignoreTypes = [
     'crafts.battlescapeTerrainData.mapBlocks[].name', // may want to check that the files exist
     'crafts.battlescapeTerrainData.mapDataSets[]', // may want to check that the files exist
     'crafts.battlescapeTerrainData.name', // may want to check that the files exist
-    'cutscenes.videos', // may want to check that the files exist
+    'cutscenes.videos[]', // may want to check that the files exist
     'cutscenes.slideshow.slides[].imagePath', // may want to check that the files exist
     'customPalettes.file', // may want to check that the files exist
     // 'extended.scripts',
@@ -30,6 +30,7 @@ export const ignoreTypes = [
     // 'extended.tags.RuleArmor',
     // 'extended.tags.RuleItem',
     // 'extended.tags.RuleSoldierBonus',
+    'extended.tagsFile', // may want to check that the files exist
     '/^extraSounds\\.(BATTLE|GEO|)\\.CAT\\.files\\.\\d+/', // may want to check that the files exist
     'extraSprites.fileSingle', // may want to check that the files exist
     'extraStrings',
@@ -47,6 +48,7 @@ export const ignoreTypes = [
     'items.scripts.inventorySpriteOverlay[].new',
     'items.scripts.inventorySpriteOverlay[].offset',
     'items.scripts.newTurnItem',
+    'items.scripts.reactionWeaponAction',
     'items.scripts.recolorItemSprite',
     'items.scripts.selectItemSprite',
     'globalVariables.fontName', // may want to check that the files exist
@@ -80,6 +82,8 @@ export const ignoreTypes = [
     'armors.selectWeaponMale[].mod',
     'armors.startMovingFemale[].mod',
     'armors.startMovingMale[].mod',
+    'crafts.selectSound[].mod',
+    'crafts.takeoffSound.mod',
     'facilities.spriteShape.mod',
     'items.bulletSprite.mod',
     'items.bigSprite.mod',
@@ -104,11 +108,13 @@ export const ignoreTypes = [
     'units.deathSound[].mod',
     'units.aggroSound.mod',
     'units.moveSound.mod',
+    'selectBaseSound.mod',
     'soldiers.deathFemale[].mod',
     'soldiers.deathMale[].mod',
     'soldiers.rankSprite.mod',
     'soldiers.rankBattleSprite.mod',
     'soldiers.rankTinySprite.mod',
+    'startDogfightSound.mod',
     'operationNamesFirst',
     'operationNamesLast',
     'baseNamesFirst',
