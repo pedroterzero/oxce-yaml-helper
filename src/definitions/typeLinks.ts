@@ -68,7 +68,7 @@ export const typeLinks: TypeLinks = {
     'alienMissions.interruptResearch': ['research'],
     'alienMissions.operationBaseType': ['alienDeployments'],
     'alienMissions.waves[].trajectory': ['ufoTrajectories'],
-    'alienMissions.waves[].ufo': ['ufos'],
+    'alienMissions.waves[].ufo': ['_any_', 'alienDeployments', 'ufos'],
     '/^alienMissions\\.raceWeights\\.\\d+$/': ['alienRaces'],
     '/^alienMissions\\.regionWeights\\.\\d+$/': ['regions'],
     'alienMissions.siteType': ['alienDeployments'],

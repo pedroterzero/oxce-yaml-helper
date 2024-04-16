@@ -39,7 +39,7 @@ export class SoldierTransformationLogic extends BaseLogic {
                 continue;
             }
 
-            if (!(name in this.transformationData) || !('allowedSoldierTypes' in this.transformationData[name])) {
+            if (!(name in this.transformationData) || !('allowedSoldierTypes[]' in this.transformationData[name])) {
                 this.addDiagnosticForReference(
                     ref,
                     `'${name}' does not have allowedSoldierTypes: set. Without it, it can never be used in-game.`,

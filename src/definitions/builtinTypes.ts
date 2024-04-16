@@ -73,6 +73,7 @@ export const builtinTypes: {[key: string]: string[]} = {
     'alienDeployments.alertBackground': builtinBackgrounds,
     'alienDeployments.briefing.background': builtinBackgrounds,
     'alienDeployments.reinforcements[].spawnBlocks[]': ['EDGES', 'NORTH', 'WEST', 'SOUTH', 'EAST', 'NW', 'NE', 'SW', 'SE'],
+    'alienDeployments.type': ['STR_CRAFT_DEPLOYMENT_PREVIEW'],
     'alienMissions.waves[].ufo': ['dummy'],
     'armors.spriteInv': builtinArmorSprites,
     // prettier-ignore
@@ -100,6 +101,7 @@ export const builtinTypes: {[key: string]: string[]} = {
     // ],
     'manufacture.spawnedPersonType': ['STR_ENGINEER', 'STR_SCIENTIST'],
     'mapScripts.commands[].terrain': ['baseTerrain', 'globeTerrain'],
+    'mapScripts.commands[].verticalLevels[].terrain': ['baseTerrain', 'globeTerrain'],
     'units.rank': [
         'STR_LIVE_COMMANDER', 'STR_LIVE_ENGINEER', 'STR_LIVE_LEADER', 'STR_LIVE_MEDIC',
         'STR_LIVE_NAVIGATOR', 'STR_LIVE_SOLDIER', 'STR_LIVE_TERRORIST',

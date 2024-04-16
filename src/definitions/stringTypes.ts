@@ -6,6 +6,8 @@ export const stringTypes = [
     'alienDeployments.briefing.desc',
     'alienDeployments.briefing.title',
     'alienDeployments.markerName',
+    'alienDeployments.missionCompleteText',
+    'alienDeployments.missionFailedText',
     'alienDeployments.objectiveComplete[]',
     'alienDeployments.objectiveFailed[]',
     'alienDeployments.objectivePopup',
@@ -38,6 +40,7 @@ export const stringTypes = [
     '/^monthlyRatings\\.-?\\d+$/',
     'regions.missionZones[][][]',
     'soldiers.rankStrings[]',
+    'startingBase.name',
     'ufopaedia.section', // should probably check that the string exists
     'ufopaedia.text',
     'ufopaedia.pages[].text',

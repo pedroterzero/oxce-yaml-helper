@@ -583,7 +583,7 @@ describe('rulesetDefinitionChecker', () => {
     it("finds a diagnostic for an alienMission with a wave with reference to UFO that's not an UFO", () => {
         const diagnostic = findDiagnostic(
             'alienMissions.rul',
-            `"STR_DUMMY_ITEM" is an incorrect type for alienMissions.waves[].ufo. Expected "ufos", found: "items"`,
+            `"STR_DUMMY_ITEM" is an incorrect type for alienMissions.waves[].ufo. Expected one of "alienDeployments", "ufos", found: "items"`,
         );
         assert.notStrictEqual(diagnostic, undefined);
     });

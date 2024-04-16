@@ -95,7 +95,9 @@ export class RulesetRecursiveKeyRetriever {
         // Check for additional logic path
         logicData.push(...this.checkForAdditionalLogicPath(newPath, node, namesByPath, anchors));
 
-        if (node.anchor) {
+        if (!node) {
+            console.error(`Node is null at ${newPath}, position: ${parentNode?.range ?? 'unknown'}`);
+        } else if (node.anchor) {
             anchors[node.anchor] = node;
         }
 
@@ -107,8 +109,8 @@ export class RulesetRecursiveKeyRetriever {
                 // namesByPath[newPath] = key;
                 this.checkForDefinitionName(newPath, item, namesByPath);
 
-                // Handle extraSprites
-                if (typedProperties.isExtraFilesRule(newPath, key, item.value.value)) {
+                // Handle extraSprites (need to check, it might be a map of maps)
+                if (item.value?.value && typedProperties.isExtraFilesRule(newPath, key, item.value.value)) {
                     typeValue = item.value.value;
                 }
 
