@@ -210,7 +210,7 @@ export class RulesetParser {
             logger.error('could not parse yaml document', { error });
         }
 
-        if (!doc) {
+        if (!doc || !doc.contents) {
             throw new Error('Could not parse yaml document');
         }
 

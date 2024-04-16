@@ -52,7 +52,7 @@ export class RulesetResolver implements Disposable {
         rulesetFileCacheManager.setExtensionContent(context);
     }
 
-    public async load(progress: Progress<{ message?: string; increment?: number }>): Promise<void> {
+    public async load(progress: Progress<{ message?: string; increment?: number }>) {
         this.init();
         const start = new Date();
 
@@ -137,7 +137,7 @@ export class RulesetResolver implements Disposable {
         this.onDidRefreshEmitter.emit('didRefresh');
     }
 
-    private async loadYamlFiles(): Promise<undefined | void[][]> {
+    private async loadYamlFiles() {
         if (!workspace.workspaceFolders) {
             return;
         }
@@ -349,7 +349,16 @@ export class RulesetResolver implements Disposable {
         if (parsed) {
             logger.debug(`Retrieved ${file.path} from cache`);
         } else {
-            parsed = await this.parseDocument(file, workspaceFolder);
+            try {
+                parsed = await this.parseDocument(file, workspaceFolder);
+            } catch (error) {
+                window.showErrorMessage(
+                    `Failed to parse: ${workspace.asRelativePath(
+                        file.path,
+                    )}, look for any errors or contact the extension author`,
+                    'Dismiss',
+                );
+            }
         }
         if (!parsed) {
             reporter.sendTelemetryErrorEvent(`Could not parse/retrieve from cache ${file.path}`);
@@ -400,7 +409,26 @@ export class RulesetResolver implements Disposable {
                 translations = rulesetParser.getTranslationsFromLanguageFile(docObject, this.getLocale());
                 parsed = { translations };
             } else {
-                const doc = rulesetParser.parseDocument(document.getText());
+                const text = document.getText();
+
+                const lines = text.split('\n');
+                let anyLines = false;
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+                    if (trimmedLine !== '' && !trimmedLine.startsWith('#')) {
+                        // Found a line that is not a comment or blank
+                        anyLines = true;
+                        break;
+                    }
+                }
+
+                if (!anyLines) {
+                    // empty file
+                    console.debug('Document contains only comments or blank lines. Skipping...');
+                    return;
+                }
+
+                const doc = rulesetParser.parseDocument(text);
 
                 // console.log(file.path);
                 const [references, logicData] = rulesetParser.getReferencesRecursively(doc.parsed);
@@ -473,7 +501,7 @@ export class RulesetResolver implements Disposable {
 
         const folder = workspace.getWorkspaceFolder(sourceUri);
         if (!folder) {
-            // file is most likely not in the workspace folder, so ignore it
+            // file is most likely not in the workspace folder (probably an asset), so ignore it
             // logger.debug(`getTranslationForKey: ${sourceUri.path} is not in the workspace`);
             throw new FileNotInWorkspaceError();
         }
