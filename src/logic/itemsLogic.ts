@@ -1,5 +1,5 @@
-import { LogicDataEntry } from "../rulesetTree";
-import { BaseLogic } from "./baseLogic";
+import { LogicDataEntry } from '../rulesetTree';
+import { BaseLogic } from './baseLogic';
 
 export class ItemsLogic extends BaseLogic {
     // we need these additional fields to do our check
@@ -20,9 +20,10 @@ export class ItemsLogic extends BaseLogic {
         'items.accuracyMelee',
     ];
 
-    private additionalFields = ([
+    private additionalFields = [
         // 'craftWeapons.clip', // we need to know whether a clip is used, and if so, which
-    ] as string[]).concat(this.additionalNumericFields);
+        ...this.additionalNumericFields,
+    ];
 
     // this is the field we will be checking
     protected relatedFieldLogicMethods = {
@@ -45,17 +46,17 @@ export class ItemsLogic extends BaseLogic {
     // and then not handled as regular references but only by this logic
     protected numericFields = Object.keys(this.relatedFieldLogicMethods).concat(this.additionalNumericFields);
 
-    private data: {[key: string]: {[key: string]: number}} = {};
+    private data: { [key: string]: { [key: string]: number } } = {};
 
     public getFields(): string[] {
-        return Object.keys(this.fields).concat(this.additionalFields);
+        return [...Object.keys(this.fields), ...this.additionalFields];
     }
 
     protected generic(entries: LogicDataEntry[]) {
         this.collectGenericData(entries, this.numericFields, this.data);
     }
 
-    private checkCostAndAccuracy (key: string) {
+    private checkCostAndAccuracy(key: string) {
         const matches = key.match(/^items\.(cost|tu|accuracy)(Aimed|Snap|Auto|Melee)(?:\.time)?$/);
         if (!matches) {
             return;
@@ -81,36 +82,45 @@ export class ItemsLogic extends BaseLogic {
             // 'items.costAimed.time': this.checkCostAndAccuracy,
             // 'items.tuAimed': this.checkCostAndAccuracy,
             // 'items.accuracyAimed': this.checkCostAndAccuracy,
-            const hasTimeunitCost = (costTimeKey in data && data[costTimeKey] > 0) || (tuKey in data && data[tuKey] > 0);
-            const accuracy = (accuracyKey in data && data[accuracyKey] > 0) ? data[accuracyKey] : undefined;
+            const hasTimeunitCost =
+                (costTimeKey in data && data[costTimeKey] > 0) || (tuKey in data && data[tuKey] > 0);
+            const accuracy = accuracyKey in data && data[accuracyKey] > 0 ? data[accuracyKey] : undefined;
 
             if (source !== 'accuracy' && costTimeKey in data && tuKey in data) {
                 this.addDiagnosticForReference(ref, `cost${variant}.time and tu${variant} should not both be set!`);
             }
             // could be an else
             if (hasTimeunitCost && !accuracy) {
-                this.addDiagnosticForReference(ref, `if there's a TU cost for ${variant}, there should be an accuracy setting!`);
+                this.addDiagnosticForReference(
+                    ref,
+                    `if there's a TU cost for ${variant}, there should be an accuracy setting!`,
+                );
             }
             if (source == 'accuracy' && accuracy && !hasTimeunitCost) {
-                this.addDiagnosticForReference(ref, `if accuracy is set, there should be a TU cost (cost${variant}.time or tu${variant})!`);
+                this.addDiagnosticForReference(
+                    ref,
+                    `if accuracy is set, there should be a TU cost (cost${variant}.time or tu${variant})!`,
+                );
             }
-       }
+        }
     }
-    private checkAutoShots (key: string) {
+
+    private checkAutoShots(key: string) {
         if (!(key in this.referencesToCheck)) {
             return;
         }
 
         for (const ref of this.referencesToCheck[key]) {
             const name = this.getNameFromMetadata(ref.ref, 'items');
-            if (!name || !(name in this.data) || !('confAuto.shots' in this.data[name] && 'autoShots' in this.data[name])) {
+            if (
+                !name ||
+                !(name in this.data) ||
+                !('confAuto.shots' in this.data[name] && 'autoShots' in this.data[name])
+            ) {
                 continue;
             }
 
-            this.addDiagnosticForReference(
-                ref,
-                `autoShots and confAuto.shots should not both be set!`,
-            );
-       }
+            this.addDiagnosticForReference(ref, `autoShots and confAuto.shots should not both be set!`);
+        }
     }
 }

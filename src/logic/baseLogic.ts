@@ -1,12 +1,13 @@
-import { merge } from "merge-anything";
-import { Diagnostic, DiagnosticSeverity, Range, Uri } from "vscode";
-import { LogicDataEntry, Match } from "../rulesetTree";
-import { ReferenceFile } from "../workspaceFolderRuleset";
-import { WorkspaceFolderRulesetHierarchy } from "../workspaceFolderRulesetHierarchy";
-import { FilesWithDiagnostics } from "./logicHandler";
+import { merge } from 'merge-anything';
+import { Diagnostic, DiagnosticSeverity, Range, Uri } from 'vscode';
+import { LogicDataEntry, Match } from '../rulesetTree';
+import { ReferenceFile } from '../workspaceFolderRuleset';
+import { WorkspaceFolderRulesetHierarchy } from '../workspaceFolderRulesetHierarchy';
+import { FilesWithDiagnostics } from './logicHandler';
+import { addRefNodeToPaths } from '../utilities';
 
-export type LogicEntries = { [key: string]: LogicDataEntry[]; };
-export type LogicCheckMethods = {[key: string]: [(data: any) => void]}
+export type LogicEntries = { [key: string]: LogicDataEntry[] };
+export type LogicCheckMethods = { [key: string]: [(data: any) => void] };
 
 export interface LogicInterface {
     getDiagnosticsPerFile(): FilesWithDiagnostics;
@@ -21,9 +22,13 @@ type EntryValue = {
     [key: string]: number | string;
 };
 
-type Entry = number | string | EntryValue[] | {
-    [key: string]: Entry;
-};
+type Entry =
+    | number
+    | string
+    | EntryValue[]
+    | {
+          [key: string]: Entry;
+      };
 
 type EntryData = {
     [key: string]: {
@@ -40,13 +45,13 @@ export class BaseLogic implements LogicInterface {
      */
     protected numericFields: string[] = [];
     protected additionalMetadataFields: string[] = [];
-    protected relatedFieldLogicMethods: {[key: string]: (key: string) => void} = {};
+    protected relatedFieldLogicMethods: { [key: string]: (key: string) => void } = {};
     protected diagnostics?: Diagnostic[];
-    protected diagnosticsPerFile: {[key: string]: Diagnostic[]} = {};
+    protected diagnosticsPerFile: { [key: string]: Diagnostic[] } = {};
     protected file?: Uri;
     protected hierarchy?: WorkspaceFolderRulesetHierarchy;
 
-    protected referencesToCheck: {[key: string]: {ref: Match, file: Uri}[]} = {};
+    protected referencesToCheck: { [key: string]: { ref: Match; file: Uri }[] } = {};
 
     // public constructor () {
     // }
@@ -83,7 +88,7 @@ export class BaseLogic implements LogicInterface {
         this.diagnostics = diagnostics;
         this.file = file;
         this.hierarchy = hierarchy;
-        const fields = this.getFields();
+        const fields = addRefNodeToPaths(this.getFields());
         this.reset();
 
         for (const key in data) {
@@ -114,7 +119,7 @@ export class BaseLogic implements LogicInterface {
 
         this.referencesToCheck[ref.path].push({
             ref,
-            file: file.file
+            file: file.file,
         });
     }
 
@@ -131,7 +136,11 @@ export class BaseLogic implements LogicInterface {
         this.diagnostics.push(new Diagnostic(range, message, DiagnosticSeverity.Warning));
     }
 
-    protected addDiagnosticForReference(ref: { ref: Match; file: Uri; }, message: string, severity: DiagnosticSeverity = DiagnosticSeverity.Warning) {
+    protected addDiagnosticForReference(
+        ref: { ref: Match; file: Uri },
+        message: string,
+        severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
+    ) {
         if (!ref.ref.rangePosition) {
             throw new Error('rangePosition missing');
         }
@@ -148,8 +157,11 @@ export class BaseLogic implements LogicInterface {
         this.diagnosticsPerFile[ref.file.path].push(new Diagnostic(range, message, severity));
     }
 
-    protected getFieldData<T extends string | number>(entries: LogicDataEntry[], path: string): {[key: string]: T} | undefined {
-        const ret: {[key: string]: T} = {};
+    protected getFieldData<T extends string | number>(
+        entries: LogicDataEntry[],
+        path: string,
+    ): { [key: string]: T } | undefined {
+        const ret: { [key: string]: T } = {};
         const nameKey = path.split('.')[0];
 
         for (const entry of entries) {
@@ -163,8 +175,13 @@ export class BaseLogic implements LogicInterface {
         return Object.keys(ret).length > 0 ? ret : undefined;
     }
 
-    protected collectGenericData(entries: LogicDataEntry[], fields: string[], data: EntryData, mergeDuplicates = false) {
-        for (const field of fields) {
+    protected collectGenericData(
+        entries: LogicDataEntry[],
+        fields: string[],
+        data: EntryData,
+        mergeDuplicates = false,
+    ) {
+        for (const field of addRefNodeToPaths(fields)) {
             const fieldData = this.getFieldData(entries, field);
             if (fieldData) {
                 const subFieldName = field.split('.').slice(1).join('.');
@@ -174,7 +191,12 @@ export class BaseLogic implements LogicInterface {
                         data[key] = {};
                     }
 
-                    if (mergeDuplicates && subFieldName in data[key]) {
+                    if (subFieldName.split('.')[0] === 'refNode') {
+                        const subFieldName = field.split('.').slice(2).join('.');
+                        if (!(subFieldName in data[key])) {
+                            data[key][subFieldName] = fieldData[key];
+                        }
+                    } else if (mergeDuplicates && subFieldName in data[key]) {
                         // if data already exists, merge it (exact same rule in multiple files, for example)
                         this.mergeDuplicates(data, key, subFieldName, fieldData);
                     } else {
@@ -185,7 +207,12 @@ export class BaseLogic implements LogicInterface {
         }
     }
 
-    private mergeDuplicates(data: EntryData, key: string, subFieldName: string, fieldData: { [key: string]: string | number; }) {
+    private mergeDuplicates(
+        data: EntryData,
+        key: string,
+        subFieldName: string,
+        fieldData: { [key: string]: string | number },
+    ) {
         let merged;
 
         if (Array.isArray(data[key][subFieldName]) && Array.isArray(fieldData[key])) {
@@ -196,7 +223,6 @@ export class BaseLogic implements LogicInterface {
                 large = small;
                 small = tmp;
             }
-
 
             for (const index in small) {
                 large[index] = merge(large[index], small[index]);
@@ -209,8 +235,8 @@ export class BaseLogic implements LogicInterface {
         data[key][subFieldName] = merged;
     }
 
-    protected getNameFromMetadata (ref: Match, type: string) {
-        const names = ref.metadata?._names as {[key: string]: string};
+    protected getNameFromMetadata(ref: Match, type: string) {
+        const names = ref.metadata?._names as { [key: string]: string };
         if (names && type in names) {
             return names[type];
         }

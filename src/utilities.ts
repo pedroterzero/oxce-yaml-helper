@@ -1,6 +1,6 @@
-import { existsSync, readFileSync } from "fs";
-import { env, Uri, window, workspace } from "vscode";
-import { parse } from "yaml";
+import { existsSync, readFileSync } from 'fs';
+import { env, Uri, window, workspace } from 'vscode';
+import { parse } from 'yaml';
 
 type LinkerConfig = {
     builtinTypes?: {
@@ -15,7 +15,7 @@ type LinkerConfig = {
         [key: string]: string[];
     };
     keyReferenceTypes?: string[];
-    definitionNameKeys?: {[key: string]: string[]};
+    definitionNameKeys?: { [key: string]: string[] };
 };
 
 let config: LinkerConfig;
@@ -35,15 +35,23 @@ const getLinkerConfig = () => {
             try {
                 parsed = parse(configFile.toString());
             } catch (error) {
-                console.error('error parsing linker.yml, ignoring it'/*, error*/);
+                console.error('error parsing linker.yml, ignoring it' /*, error*/);
                 if (!errorShown) {
-                    window.showErrorMessage('Error: could not parse linker.yml, syntax error?', {
-                       modal: true
-                    }, 'Show documentation').then(result => {
-                        if (result === 'Show documentation') {
-                            env.openExternal(Uri.parse('https://github.com/pedroterzero/oxce-yaml-helper/wiki/linker.yml'));
-                        }
-                    });
+                    window
+                        .showErrorMessage(
+                            'Error: could not parse linker.yml, syntax error?',
+                            {
+                                modal: true,
+                            },
+                            'Show documentation',
+                        )
+                        .then((result) => {
+                            if (result === 'Show documentation') {
+                                env.openExternal(
+                                    Uri.parse('https://github.com/pedroterzero/oxce-yaml-helper/wiki/linker.yml'),
+                                );
+                            }
+                        });
                     errorShown = true;
                 }
             }
@@ -80,7 +88,7 @@ export const getAdditionalIgnoreTypes = () => {
 };
 
 export const getAdditionalKeyReferenceTypes = () => {
-    return (getLinkerConfig()?.keyReferenceTypes ?? []).reduce((a, v) => ({ ...a, [v]: {}}), {});
+    return (getLinkerConfig()?.keyReferenceTypes ?? []).reduce((a, v) => ({ ...a, [v]: {} }), {});
 };
 
 export const getAdditionalVetoTypes = () => {
@@ -105,4 +113,19 @@ export const pathStartsWith = (file1: Uri, file2: Uri) => {
     }
 
     return file1path.startsWith(file2path);
+};
+
+export const addRefNodeToPaths = (inPaths: string[]) => {
+    const paths = [];
+    for (const field of inPaths) {
+        paths.push(field);
+        if (field.includes('.')) {
+            const parts = field.split('.');
+            parts.splice(1, 0, 'refNode');
+            const refNodePath = parts.join('.');
+            paths.push(refNodePath);
+        }
+    }
+
+    return paths;
 };

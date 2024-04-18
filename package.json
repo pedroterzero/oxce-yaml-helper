@@ -76,6 +76,19 @@
                     "default": "**/*.rul",
                     "description": "Rules files location (i.e. Rulesets/**/*.rul)"
                 },
+                "oxcYamlHelper.baseGame": {
+                    "type": "string",
+                    "enum": [
+                        "oxc",
+                        "oxce"
+                    ],
+                    "enumDescriptions": [
+                        "OpenXcom",
+                        "OpenXcom Extended"
+                    ],
+                    "default": "oxce",
+                    "description": "Controls the version used for validating rulesets."
+                },
                 "oxcYamlHelper.translationLocale": {
                     "type": "string",
                     "default": "en-US",

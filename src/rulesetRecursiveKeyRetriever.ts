@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { Node, Scalar, isAlias, isMap, isScalar, isSeq } from 'yaml2';
+import { Node, Scalar, isAlias, isMap, isPair, isScalar, isSeq } from 'yaml2';
 import { YAMLDocument } from './rulesetParser';
 import { LogicDataEntry, Match, RuleType } from './rulesetTree';
 import { typedProperties } from './typedProperties';
@@ -77,7 +77,7 @@ export class RulesetRecursiveKeyRetriever {
         namesByPath: { [key: string]: string } = {},
         depth: number = 0,
         isRoot: boolean = true,
-        parentNode: Node | null = null,
+        parentNodes: Node[] = [],
         anchors: { [key: string]: Node } = {},
     ): [NodeInfo[], LogicDataEntry[]] {
         const results: NodeInfo[] = [];
@@ -90,6 +90,22 @@ export class RulesetRecursiveKeyRetriever {
         const specialPathResult = this.handleSpecialPaths(newPath, results);
         if (specialPathResult !== null) {
             return [specialPathResult, logicData];
+        }
+
+        const parentNode = parentNodes[parentNodes.length - 1]; // Get the last node from parentNodes
+
+        // if this node is a map, and has a pair with a key of refNode, we need to process that too
+        if (isMap(node)) {
+            const refNodeItem = node.items.find(
+                (item) => isPair(item) && isScalar(item.key) && item.key.value === 'refNode' && isAlias(item.value),
+            );
+
+            if (refNodeItem && isAlias(refNodeItem.value)) {
+                const anchor = anchors[refNodeItem.value.source];
+                if (anchor) {
+                    refNodeItem.value = anchor;
+                }
+            }
         }
 
         // Check for additional logic path
@@ -155,7 +171,7 @@ export class RulesetRecursiveKeyRetriever {
                     namesByPath,
                     depth,
                     isRoot && isScalar(item.value),
-                    node,
+                    [...parentNodes, node], // Add the current node to the list of parent nodes
                     anchors,
                 );
 
@@ -183,7 +199,7 @@ export class RulesetRecursiveKeyRetriever {
                     { ...namesByPath },
                     depth + 1,
                     false,
-                    node,
+                    [...parentNodes, node], // Add the current node to the list of parent nodes
                     anchors,
                 );
                 results.push(...childResults);
