@@ -20,6 +20,7 @@ export const stringTypes = [
     'enviroEffects.environmentalConditions.STR_HOSTILE.message',
     'enviroEffects.environmentalConditions.STR_NEUTRAL.message',
     'events.description',
+    'events.spawnedPersonName',
     'items.confAimed.name',
     'items.confAimed.shortName',
     'items.confAuto.name',
@@ -43,6 +44,7 @@ export const stringTypes = [
     'startingBase.name',
     'ufopaedia.section', // should probably check that the string exists
     'ufopaedia.text',
+    'ufopaedia.title',
     'ufopaedia.pages[].text',
     'ufopaedia.pages[].title',
     'ufopaedia.weapon',

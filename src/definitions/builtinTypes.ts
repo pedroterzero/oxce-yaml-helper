@@ -73,7 +73,8 @@ export const builtinTypes: {[key: string]: string[]} = {
     'alienDeployments.alertBackground': builtinBackgrounds,
     'alienDeployments.briefing.background': builtinBackgrounds,
     'alienDeployments.reinforcements[].spawnBlocks[]': ['EDGES', 'NORTH', 'WEST', 'SOUTH', 'EAST', 'NW', 'NE', 'SW', 'SE'],
-    'alienDeployments.type': ['STR_CRAFT_DEPLOYMENT_PREVIEW'],
+    // in assets now
+    // 'alienDeployments.type': ['STR_CRAFT_DEPLOYMENT_PREVIEW'],
     'alienMissions.waves[].ufo': ['dummy'],
     'armors.spriteInv': builtinArmorSprites,
     // prettier-ignore
@@ -91,6 +92,7 @@ export const builtinTypes: {[key: string]: string[]} = {
     'enviroEffects.paletteTransformations.value': ['PAL_BATTLESCAPE_1', 'PAL_BATTLESCAPE_2', 'PAL_BATTLESCAPE_3'],
     'enviroEffects.environmentalConditions': factions,
     'events.background': builtinBackgrounds,
+    'events.spawnedPersonType': ['STR_ENGINEER', 'STR_SCIENTIST'],
     '/^extended\\.tags\\.(Rule(Armor|Item|Skill|Soldier|SoldierBonus|Ufo)|Battle(Item|Game|Unit))\\.[a-zA-Z0-9_]+$/': ['int'],
     'facilities.verticalLevels[].type': ['ceiling', 'ground', 'middle'], // could also let this be caught by the regular validator
     'facilities.verticalLevels[].terrain': ['baseTerrain'],
