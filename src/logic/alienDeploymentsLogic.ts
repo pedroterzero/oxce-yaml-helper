@@ -22,7 +22,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
 
     private additionalFields = [
         'alienDeployments.data',
-        'alienDeployments.refNode',
+        // 'alienDeployments.refNode',
         // 'alienDeployments.lowQty',
     ];
 
@@ -45,7 +45,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
         [key: string]: {
             [key: string]: number | string | Entry | AlienDeployment;
             data: Entry;
-            refNode: AlienDeployment;
+            // refNode: AlienDeployment;
         };
     } = {};
 
@@ -86,7 +86,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
                 continue;
             }
 
-            if (!(name in this.data) || (!('data' in this.data[name]) && !('data' in this.data[name].refNode))) {
+            if (!(name in this.data) || !('data' in this.data[name]) /* && !('data' in this.data[name].refNode)*/) {
                 this.addDiagnosticForReference(
                     ref,
                     `'${name}' does not have data: set. This can lead to crashes in-game.`,
