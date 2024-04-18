@@ -82,7 +82,7 @@ export class AlienDeploymentsLogic extends BaseLogic {
 
         for (const ref of this.referencesToCheck[key]) {
             const name = this.getNameFromMetadata(ref.ref, 'alienDeployments');
-            if (!name) {
+            if (!name || name === 'STR_CRAFT_DEPLOYMENT_PREVIEW') {
                 continue;
             }
 
