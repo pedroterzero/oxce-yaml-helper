@@ -53,7 +53,7 @@ const getNumberOfDiagnostics = () => {
 };
 
 // this is useful because it gives a general idea if diagnostics are correctly generated without explicitly checking each one
-const expectedNumberOfDiagnostics = 694;
+const expectedNumberOfDiagnostics = 693;
 
 const originalSettingFindDuplicateDefinitions = workspace
     .getConfiguration('oxcYamlHelper')

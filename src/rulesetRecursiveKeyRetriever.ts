@@ -1,9 +1,8 @@
 import { get } from 'lodash';
-import { Node, Scalar, isAlias, isMap, isPair, isScalar, isSeq } from 'yaml2';
+import { Node, Scalar, YAMLMap, isAlias, isMap, isPair, isScalar, isSeq } from 'yaml2';
 import { YAMLDocument } from './rulesetParser';
 import { LogicDataEntry, Match, RuleType } from './rulesetTree';
 import { typedProperties } from './typedProperties';
-import { createNode } from 'yaml';
 
 interface NodeInfo {
     value: any;
@@ -95,20 +94,8 @@ export class RulesetRecursiveKeyRetriever {
 
         const parentNode = parentNodes[parentNodes.length - 1]; // Get the last node from parentNodes
 
-        // if this node is a map, and has a pair with a key of refNode, we need to process that too
-        if (isMap(node)) {
-            const refNodeItem = node.items.find(
-                (item) => isPair(item) && isScalar(item.key) && item.key.value === 'refNode' && isAlias(item.value),
-            );
-
-            if (refNodeItem && isAlias(refNodeItem.value)) {
-                const anchor = anchors[refNodeItem.value.source];
-                if (anchor) {
-                    // make a deep clone of the node to prevent weird issues with paths getting overwritten
-                    refNodeItem.value = createNode(node.toJSON());
-                }
-            }
-        }
+        // copy data from anchor into refNode, if needed
+        this.processRefNode(node, anchors);
 
         // Check for additional logic path
         logicData.push(...this.checkForAdditionalLogicPath(newPath, node, namesByPath, anchors));
@@ -177,7 +164,10 @@ export class RulesetRecursiveKeyRetriever {
                     anchors,
                 );
 
-                results.push(...childResults);
+                // do not store any results for refNode
+                if (path[2] !== 'refNode') {
+                    results.push(...childResults);
+                }
                 logicData.push(...childLogicData);
 
                 // Add metadata to the last result
@@ -263,6 +253,31 @@ export class RulesetRecursiveKeyRetriever {
             range: range ? [range[0], range[1]] : [0, 0],
             ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
         };
+    }
+
+    private processRefNode(node: Node, anchors: { [key: string]: Node }): void {
+        // if this node is a map, and has a pair with a key of refNode, we need to process that too
+        if (isMap(node)) {
+            const refNodeItem = node.items.find(
+                (item) => isPair(item) && isScalar(item.key) && item.key.value === 'refNode' && isAlias(item.value),
+            );
+
+            if (refNodeItem && isAlias(refNodeItem.value)) {
+                const anchor = anchors[refNodeItem.value.source];
+                if (anchor) {
+                    // make a clone of the node to prevent weird issues with paths getting overwritten
+                    refNodeItem.value = anchor.clone();
+                    // refNodeItem.value = new YAMLMap();
+                    // if (isMap(refNodeItem.value) && isMap(anchor)) {
+                    //     for (const pair of anchor.items) {
+                    //         refNodeItem.value.set(pair.key, pair.value);
+                    //     }
+                    // }
+                }
+            }
+        } else {
+            // console.error('refNode is not a map!', node);
+        }
     }
 
     private buildNewPathForChild(path: string[], key: string, typeValue: string, newPath: string) {

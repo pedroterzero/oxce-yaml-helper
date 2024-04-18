@@ -591,9 +591,12 @@ export class RulesetResolver implements Disposable {
             throw new Error("Couldn't get extension context");
         }
 
-        let path = 'out/assets/xcom1';
-        if (existsSync(Uri.joinPath(this.context.extensionUri, '/src/assets/xcom1').fsPath)) {
-            path = 'src/assets/xcom1';
+        const baseGame = workspace.getConfiguration('oxcYamlHelper').get('baseGame');
+        const game = `xcom1${baseGame === 'oxce' ? '-oxce' : ''}`;
+
+        let path = `out/assets/${game}`;
+        if (existsSync(Uri.joinPath(this.context.extensionUri, `/src/assets/${game}`).fsPath)) {
+            path = `src/assets/${game}`;
         }
 
         return Uri.joinPath(this.context.extensionUri, '/' + path);
