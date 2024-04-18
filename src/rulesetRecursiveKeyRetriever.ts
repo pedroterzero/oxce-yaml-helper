@@ -3,6 +3,7 @@ import { Node, Scalar, isAlias, isMap, isPair, isScalar, isSeq } from 'yaml2';
 import { YAMLDocument } from './rulesetParser';
 import { LogicDataEntry, Match, RuleType } from './rulesetTree';
 import { typedProperties } from './typedProperties';
+import { createNode } from 'yaml';
 
 interface NodeInfo {
     value: any;
@@ -103,7 +104,8 @@ export class RulesetRecursiveKeyRetriever {
             if (refNodeItem && isAlias(refNodeItem.value)) {
                 const anchor = anchors[refNodeItem.value.source];
                 if (anchor) {
-                    refNodeItem.value = anchor;
+                    // make a deep clone of the node to prevent weird issues with paths getting overwritten
+                    refNodeItem.value = createNode(node.toJSON());
                 }
             }
         }

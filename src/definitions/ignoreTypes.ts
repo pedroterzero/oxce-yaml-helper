@@ -8,7 +8,7 @@ import { getAdditionalIgnoreTypes } from '../utilities';
  */
 export const ignoreTypes = [
     // @TODO: actually improve the refNode in the recursive retriever not to process these types?
-    '/^[a-zA-Z0-9]\\.refNode\\.',
+    // '/^[a-zA-Z0-9]\\.refNode\\.',
     'armors.layersDefaultPrefix',
     'armors.scripts.damageSpecialUnit',
     'armors.scripts.damageUnit',
