@@ -7,6 +7,8 @@ import { getAdditionalIgnoreTypes } from '../utilities';
  * ATTENTION: a lot of these are in here not because they have unknowable values, but because the json schema validator is already catching them
  */
 export const ignoreTypes = [
+    // @TODO: actually improve the refNode in the recursive retriever not to process these types?
+    '/^[a-zA-Z0-9]\\.refNode\\.',
     'armors.layersDefaultPrefix',
     'armors.scripts.damageSpecialUnit',
     'armors.scripts.damageUnit',
