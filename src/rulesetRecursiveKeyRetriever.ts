@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { Node, Scalar, YAMLMap, isAlias, isMap, isPair, isScalar, isSeq } from 'yaml2';
+import { Node, Scalar, isAlias, isMap, isPair, isScalar, isSeq } from 'yaml2';
 import { YAMLDocument } from './rulesetParser';
 import { LogicDataEntry, Match, RuleType } from './rulesetTree';
 import { typedProperties } from './typedProperties';
