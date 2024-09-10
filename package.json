@@ -13,7 +13,7 @@
         "url": "https://github.com/pedroterzero/oxce-yaml-helper.git"
     },
     "engines": {
-        "vscode": "^1.86.0"
+        "vscode": "^1.93.0"
     },
     "categories": [
         "Other"
@@ -223,31 +223,31 @@
         "@types/flat-cache": "^2.0.2",
         "@types/fs-extra": "^11.0.4",
         "@types/glob": "^8.1.0",
-        "@types/lodash": "^4.17.0",
-        "@types/mocha": "^10.0.6",
-        "@types/node": "^20.12.7",
+        "@types/lodash": "^4.17.7",
+        "@types/mocha": "^10.0.7",
+        "@types/node": "^20.16.5",
         "@types/papaparse": "^5.3.14",
-        "@types/vscode": "^1.86.0",
-        "@typescript-eslint/eslint-plugin": "^7.7.0",
-        "@typescript-eslint/parser": "^7.7.0",
-        "@vscode/test-electron": "^2.3.9",
-        "esbuild": "^0.20.2",
-        "eslint": "^8.57.0",
+        "@types/vscode": "^1.93.0",
+        "@typescript-eslint/eslint-plugin": "^8.5.0",
+        "@typescript-eslint/parser": "^8.5.0",
+        "@vscode/test-electron": "^2.4.1",
+        "esbuild": "^0.23.1",
+        "eslint": "^9.10.0",
         "fs-extra": "^11.2.0",
-        "mocha": "^10.4.0",
-        "nyc": "^15.1.0",
-        "typescript": "^5.4.5"
+        "mocha": "^10.7.3",
+        "nyc": "^17.0.0",
+        "typescript": "^5.6.2"
     },
     "dependencies": {
-        "@vscode/extension-telemetry": "^0.9.6",
-        "dot-object": "^2.1.4",
-        "flat-cache": "^4.0.1",
+        "@vscode/extension-telemetry": "^0.9.7",
+        "dot-object": "^2.1.5",
+        "flat-cache": "^5.0.0",
         "lodash": "^4.17.21",
-        "marked": "^12.0.1",
+        "marked": "^14.1.2",
         "merge-anything": "^5.1.7",
         "papaparse": "^5.4.1",
         "tiny-clean-object": "^1.4.0",
         "yaml": "^1.10.2",
-        "yaml2": "npm:yaml@^2.4.1"
+        "yaml2": "npm:yaml@^2.5.1"
     }
 }
