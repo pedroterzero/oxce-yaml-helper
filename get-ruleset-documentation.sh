@@ -1,0 +1,23 @@
+curl 'https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)' \
+    -o ruleset.html \
+    -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
+    -H 'accept-language: en-GB,en;q=0.9,en-US;q=0.8' \
+    -H 'cache-control: no-cache' \
+    -H 'cookie: cf_clearance=.DqEi2PBv7cdZXFqUXOntkiEOl.ppkTrVfdZzgZL_rE-1725972650-1.2.1.1-hDaPdtlkBOwU24r8VEoDvQmmeUTCTIyeiPBhTySL.s79QtYnXqbLE9N0AjDPUcVZe1HIHyy.F8X1fXotaVgCY1vTiDzrHsn9EoIJd_sh12Y_CZLrqoMtdUR79k1Bqk2s5F1b1IdCCgRPgYr7RP5M35bacCVheAHbOLCuUQ5GZkoEd3iIxaS_Vaoie4bW0qQVPD8RkTLONtyUwC9diaoo2OxO.NwCw5caghUpTpMkSfV5DahykGitc4dBCkgP__XIjNILh73qQcvW_dMMhZIh_ZuFU5WZb3_npQ_7SG6vVnMT0i63zqVbMYbSQU_S1SIqqA8FPAA.JDXM6hgMQiMFlUw7TEOikWJ5BMLBrFFutlU8pUW8ZqLCrfWDRClUlOLO8yCH6.B0jUdiiyKPzdsS5QU5iEs5MLSkiBd00TXhESDeq_AaPr8WRv7aJcJBnKxJ' \
+    -H 'pragma: no-cache' \
+    -H 'priority: u=0, i' \
+    -H 'sec-ch-ua: "Not/A)Brand";v="8", "Chromium";v="126", "Microsoft Edge";v="126"' \
+    -H 'sec-ch-ua-arch: "x86"' \
+    -H 'sec-ch-ua-bitness: "64"' \
+    -H 'sec-ch-ua-full-version: "126.0.2592.68"' \
+    -H 'sec-ch-ua-full-version-list: "Not/A)Brand";v="8.0.0.0", "Chromium";v="126.0.6478.114", "Microsoft Edge";v="126.0.2592.68"' \
+    -H 'sec-ch-ua-mobile: ?0' \
+    -H 'sec-ch-ua-model: ""' \
+    -H 'sec-ch-ua-platform: "Linux"' \
+    -H 'sec-ch-ua-platform-version: "6.5.0"' \
+    -H 'sec-fetch-dest: document' \
+    -H 'sec-fetch-mode: navigate' \
+    -H 'sec-fetch-site: none' \
+    -H 'sec-fetch-user: ?1' \
+    -H 'upgrade-insecure-requests: 1' \
+    -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'

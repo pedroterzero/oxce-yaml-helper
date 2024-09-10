@@ -3,46 +3,49 @@ name: Update documentation
 
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
   workflow_dispatch:
+    inputs:
+      use_local_ruleset_file:
+        description: "Use local ruleset.html? (default: false)"
+        required: false
+        default: "false"
 
 #  push:
 #    branches:
 #      - master
-
 
 # simple job that checks out a repo
 jobs:
   update-doc:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           repository: pedroterzero/oxce-ruleset-scraper
           # https://github.com/settings/tokens?type=beta
           token: ${{ secrets.GIT_SCRAPER_TOKEN }}
-      -
-        name: Install Node.js
-        uses: actions/setup-node@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
-      -
-        run: npm install
-      -
-        name: Retrieve wiki page
+          node-version: 20
+
+      - run: npm install
+
+      - name: Retrieve wiki page
         run: |
           URL='https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)'
           wget --timeout=30 --tries=3 -O ruleset.html "$URL" || curl -Lf -o ruleset.html "https://web.archive.org/$URL"
+        if: ${{ github.event.inputs.use_local_ruleset_file != 'false' }}
 
-      -
-        name: Parse the wiki page
+      - name: Parse the wiki page
         run: npm run start
 
       # store doc.json as artifact
       - name: Store artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: doc.json
           path: doc.json
@@ -51,21 +54,19 @@ jobs:
     needs: update-doc
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-      -
-        name: Download artifact
-        uses: actions/download-artifact@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           name: doc.json
           path: src/assets
-      -
-        name: Commit changes
+
+      - name: Commit changes
         run: |
           git config --local user.email "pedro@pedro"
           git config --local user.name "Github Actions"
           git add src/assets/doc.json
           git commit -m "Update doc.json" -a || echo "No changes to commit"
           git push
-
