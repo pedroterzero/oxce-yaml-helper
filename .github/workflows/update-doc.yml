@@ -38,7 +38,7 @@ jobs:
         run: |
           URL='https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)'
           wget --timeout=30 --tries=3 -O ruleset.html "$URL" || curl -Lf -o ruleset.html "https://web.archive.org/$URL"
-        if: ${{ github.event.inputs.use_local_ruleset_file }} != 'false'
+        if: ${{ github.event.inputs.use_local_ruleset_file }} == 'false'
 
       - name: Parse the wiki page
         run: npm run start
