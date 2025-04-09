@@ -71,7 +71,10 @@ export class RulesetFileCacheManager {
     private getCache(file: Uri) {
         const cacheId = file.path.replace(/[/:]/g, '_');
         // console.log(`getting cache object for ${file.path}, cacheId: ${cacheId}`);
-        return create(cacheId, this.getCachePath());
+        return create({
+            cacheId,
+            cacheDir: this.getCachePath(),
+        });
     }
 
     public async retrieve(file: Uri) {
