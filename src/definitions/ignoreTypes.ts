@@ -45,6 +45,7 @@ export const ignoreTypes = [
     'interfaces.elements[].id', // could type check this, but the validator probably catches these
     'interfaces.palette', // could type check this, but the validator probably catches these
     'items.accuracyMultiplier',
+    'items.scripts.accuracyMultiplier',
     'items.scripts.createItem',
     'items.scripts.inventorySpriteOverlay[].code',
     'items.scripts.inventorySpriteOverlay[].new',
@@ -53,6 +54,7 @@ export const ignoreTypes = [
     'items.scripts.reactionWeaponAction',
     'items.scripts.recolorItemSprite',
     'items.scripts.selectItemSprite',
+    'items.scripts.vaporParticleAmmo',
     'globalVariables.fontName', // may want to check that the files exist
     'globe.data', // may want to check that the files exist
     'mapScripts.commands[].type',
