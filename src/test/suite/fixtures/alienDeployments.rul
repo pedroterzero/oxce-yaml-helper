@@ -10,3 +10,27 @@ alienDeployments:
         # percentageOutsideUfo: 50
         # itemSets: [[]]
       - alienRank: 2
+
+  - &WORKING_DEPLOYMENT_TEST
+    type: STR_TEST_ALIEN_DEPLOYMENT_WORKING
+    data:
+      - alienRank: 1
+        dQty: 1
+        lowQty: 1
+        highQty: 2
+        # percentageOutsideUfo: 50
+        itemSets: [[]]
+
+  # this should not trigger an error because it gets the data from the refNode
+  - type: STR_TEST_ALIEN_DEPLOYMENT_WORKING_WITH_REFNODE
+    refNode: *WORKING_DEPLOYMENT_TEST
+    # refNode:
+    #   type: STR_TEST_ALIEN_DEPLOYMENT_WORKING!
+    #   data:
+    #     - alienRank: 1
+    #       dQty: 1
+    #       lowQty: 1
+    #       highQty: 2
+    #       # percentageOutsideUfo: 50
+    #       itemSets: [[]]
+    # data:

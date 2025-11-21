@@ -1,0 +1,12 @@
+ufopaedia:
+  ######### many tests follow to test whether typeLinks are correct and working ##
+
+  - id: STR_DUMMY_UFOPEDIA_REQUIRES_TEST
+    requires: [STR_DUMMY_RESEARCH]
+  # missing type
+  - id: STR_DUMMY_UFOPEDIA_REQUIRES_TEST_MISSING
+    requires: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - id: STR_DUMMY_UFOPEDIA_REQUIRES_TEST_INCORRECT
+    requires: [STR_DUMMY_ITEM]
+

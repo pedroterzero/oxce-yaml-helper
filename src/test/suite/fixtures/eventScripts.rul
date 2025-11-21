@@ -1,0 +1,83 @@
+eventScripts:
+
+  - type: STR_TEST_EVENT_SCRIPT_EVENT_WEIGHTS_TEST
+    eventWeights:
+      0:
+        STR_EVENTS_EVERY_ITEM_LIST_TEST: 10
+  # missing type
+  - type: STR_TEST_EVENT_SCRIPT_EVENT_WEIGHTS_TEST_MISSING
+    eventWeights:
+      0:
+        STR_DUMMY_NON_EXISTING_REFERENCE: 10
+  # incorrect type
+  - type: STR_TEST_EVENT_SCRIPT_EVENT_WEIGHTS_TEST_INCORRECT
+    eventWeights:
+      0:
+        STR_DUMMY_RESEARCH: 10
+
+  - type: STR_TEST_EVENT_SCRIPT_FACILITY_TRIGGERS_TEST
+    facilityTriggers:
+      STR_ACCESS_LIFT: true
+  # missing type
+  - type: STR_TEST_EVENT_SCRIPT_FACILITY_TRIGGERS_TEST_MISSING
+    facilityTriggers:
+      STR_DUMMY_NON_EXISTING_REFERENCE: true
+  # incorrect type
+  - type: STR_TEST_EVENT_SCRIPT_FACILITY_TRIGGERS_TEST_INCORRECT
+    facilityTriggers:
+      STR_DUMMY_RESEARCH: true
+
+  - type: STR_TEST_EVENT_SCRIPT_ITEM_TRIGGERS_TEST
+    itemTriggers:
+      STR_DUMMY_ITEM: true
+  # missing type
+  - type: STR_TEST_EVENT_SCRIPT_ITEM_TRIGGERS_TEST_MISSING
+    itemTriggers:
+      STR_DUMMY_NON_EXISTING_REFERENCE: true
+  # incorrect type
+  - type: STR_TEST_EVENT_SCRIPT_ITEM_TRIGGERS_TEST_INCORRECT
+    itemTriggers:
+      STR_DUMMY_RESEARCH: true
+
+  - type: STR_TEST_EVENT_SCRIPT_ONE_TIME_RANDOM_EVENTS_TEST
+    oneTimeRandomEvents:
+      STR_EVENTS_EVERY_ITEM_LIST_TEST: 1
+  # missing type
+  - type: STR_TEST_EVENT_SCRIPT_ONE_TIME_RANDOM_EVENTS_TEST_MISSING
+    oneTimeRandomEvents:
+      STR_DUMMY_NON_EXISTING_REFERENCE: 1
+  # incorrect type
+  - type: STR_TEST_EVENT_SCRIPT_ONE_TIME_RANDOM_EVENTS_TEST_INCORRECT
+    oneTimeRandomEvents:
+      STR_DUMMY_RESEARCH: 1
+
+  - type: STR_TEST_EVENT_SCRIPT_ONE_TIME_SEQUENTIAL_EVENTS_TEST
+    oneTimeSequentialEvents:
+      - STR_EVENTS_EVERY_ITEM_LIST_TEST
+  # missing type
+  - type: STR_TEST_EVENT_SCRIPT_ONE_TIME_SEQUENTIAL_EVENTS_TEST_MISSING
+    oneTimeSequentialEvents:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_TEST_EVENT_SCRIPT_ONE_TIME_SEQUENTIAL_EVENTS_TEST_INCORRECT
+    oneTimeSequentialEvents:
+      - STR_DUMMY_RESEARCH
+
+  - type: STR_TEST_EVENT_SCRIPT_RESEARCH_TRIGGERS_TEST
+    researchTriggers:
+      STR_DUMMY_RESEARCH: true
+  # missing type
+  - type: STR_TEST_EVENT_SCRIPT_RESEARCH_TRIGGERS_TEST_MISSING
+    researchTriggers:
+      STR_DUMMY_NON_EXISTING_REFERENCE: true
+  # incorrect type
+  - type: STR_TEST_EVENT_SCRIPT_RESEARCH_TRIGGERS_TEST_INCORRECT
+    researchTriggers:
+      STR_DUMMY_ITEM: true
+
+
+
+
+
+
+

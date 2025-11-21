@@ -1,0 +1,61 @@
+terrains:
+  ######### many tests follow to test whether typeLinks are correct and working ##
+
+  - name: STR_DUMMY_TERRAINS_CIVILIANTYPES_TEST
+    civilianTypes: [STR_DUMMY_UNIT1]
+  # missing type
+  - name: STR_DUMMY_TERRAINS_CIVILIANTYPES_TEST_MISSING
+    civilianTypes: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - name: STR_DUMMY_TERRAINS_CIVILIANTYPES_TEST_INCORRECT
+    civilianTypes: [STR_DUMMY_RESEARCH]
+
+  - name: STR_DUMMY_TERRAINS_ENVIROEFFECTS_TEST
+    enviroEffects: STR_ENVIRO_EFFECTS_ARMOR_TRANSFORMATION_TEST
+  # missing type
+  - name: STR_DUMMY_TERRAINS_ENVIROEFFECTS_TEST_MISSING
+    enviroEffects: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_DUMMY_TERRAINS_ENVIROEFFECTS_TEST_INCORRECT
+    enviroEffects: STR_DUMMY_RESEARCH
+
+  - name: STR_DUMMY_TERRAINS_MAPBLOCKS_ITEMS_TEST
+    mapBlocks:
+      - name: BLOCK1
+        items: {STR_DUMMY_ITEM: [[1, 2, 3]]}
+  # missing type
+  - name: STR_DUMMY_TERRAINS_MAPBLOCKS_ITEMS_TEST_MISSING
+    mapBlocks:
+      - name: BLOCK1
+        items: {STR_DUMMY_NON_EXISTING_REFERENCE: [[1, 2, 3]]}
+  # incorrect type
+  - name: STR_DUMMY_TERRAINS_MAPBLOCKS_ITEMS_TEST_INCORRECT
+    mapBlocks:
+      - name: BLOCK1
+        items: {STR_DUMMY_RESEARCH: [[1, 2, 3]]}
+
+  - name: STR_DUMMY_TERRAINS_MAPBLOCKS_RANDOMIZEDITEMS_ITEMLIST_TEST
+    mapBlocks:
+      - {name: BLOCK1, randomizedItems: [itemList: [STR_DUMMY_ITEM]]}
+  # missing type
+  - name: STR_DUMMY_TERRAINS_MAPBLOCKS_RANDOMIZEDITEMS_ITEMLIST_TEST_MISSING
+    mapBlocks:
+      - {name: BLOCK1, randomizedItems: [itemList: [STR_DUMMY_NON_EXISTING_REFERENCE]]}
+  # incorrect type
+  - name: STR_DUMMY_TERRAINS_MAPBLOCKS_RANDOMIZEDITEMS_ITEMLIST_TEST_INCORRECT
+    mapBlocks:
+      - {name: BLOCK1, randomizedItems: [itemList: [STR_DUMMY_RESEARCH]]}
+
+  - name: STR_DUMMY_TERRAINS_SCRIPT_TEST
+    script: TEST_GOOD_MAPSCRIPT
+  # missing type
+  - name: STR_DUMMY_TERRAINS_SCRIPT_TEST_MISSING
+    script: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - name: STR_DUMMY_TERRAINS_SCRIPT_TEST_INCORRECT
+    script: STR_DUMMY_RESEARCH
+
+
+
+
+

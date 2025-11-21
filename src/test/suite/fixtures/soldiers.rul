@@ -1,0 +1,45 @@
+soldiers:
+  - type: STR_DUMMY_SOLDIER
+
+  - type: STR_SOLDIER_ARMOR_TEST
+    armor: STR_DUMMY_ARMOR
+  # missing type
+  - type: STR_SOLDIER_ARMOR_TEST_MISSING
+    armor: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_SOLDIER_ARMOR_TEST_INCORRECT
+    armor: STR_DUMMY_RESEARCH
+
+  - type: STR_SOLDIER_REQUIRES_TEST
+    requires: [STR_DUMMY_RESEARCH]
+  # missing type
+  - type: STR_SOLDIER_REQUIRES_TEST_MISSING
+    requires: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - type: STR_SOLDIER_REQUIRES_TEST_INCORRECT
+    requires: [STR_DUMMY_ARMOR]
+
+  - type: STR_SOLDIER_SKILLS_TEST
+    skills: [STR_DUMMY_SKILL]
+  # missing type
+  - type: STR_SOLDIER_SKILLS_TEST_MISSING
+    skills: [STR_DUMMY_NON_EXISTING_REFERENCE]
+  # incorrect type
+  - type: STR_SOLDIER_SKILLS_TEST_INCORRECT
+    skills: [STR_DUMMY_ARMOR]
+
+  - type: STR_SOLDIER_SPECIALWEAPON_TEST
+    specialWeapon: STR_DUMMY_ITEM
+  # missing type
+  - type: STR_SOLDIER_SPECIALWEAPON_TEST_MISSING
+    specialWeapon: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_SOLDIER_SPECIALWEAPON_TEST_INCORRECT
+    specialWeapon: STR_DUMMY_ARMOR
+
+
+
+
+
+
+

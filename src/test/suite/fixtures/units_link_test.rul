@@ -1,0 +1,47 @@
+units:
+ ######### many tests follow to test whether typeLinks are correct and working ##
+
+    # 'units.armor': ['armors'],
+    # 'units.builtInWeaponSets[][]': ['items'],
+    # 'units.psiWeapon': ['items'],
+    # 'units.spawnUnit': ['units'],
+
+  - type: STR_DUMMY_UNIT_ARMOR_TEST
+    armor: STR_DUMMY_ARMOR
+  # missing type
+  - type: STR_DUMMY_UNIT_ARMOR_TEST_MISSING
+    armor: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_DUMMY_UNIT_ARMOR_TEST_INCORRECT
+    armor: STR_DUMMY_ITEM
+
+  - type: STR_UNIT_BUILTIN_WEAPON_SET_TEST
+    builtInWeaponSets: [[STR_DUMMY_ITEM]]
+   # missing type
+  - type: STR_UNIT_BUILTIN_WEAPON_SET_TEST_MISSING
+    builtInWeaponSets: [[STR_DUMMY_NON_EXISTING_REFERENCE]]
+  # incorrect type
+  - type: STR_UNIT_BUILTIN_WEAPON_SET_TEST_INCORRECT
+    builtInWeaponSets: [[STR_DUMMY_RESEARCH]]
+
+  - type: STR_UNIT_PSI_WEAPON_TEST
+    psiWeapon: STR_DUMMY_ITEM
+  # missing type
+  - type: STR_UNIT_PSI_WEAPON_TEST_MISSING
+    psiWeapon: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_UNIT_PSI_WEAPON_TEST_INCORRECT
+    psiWeapon: STR_DUMMY_RESEARCH
+
+  - type: STR_UNIT_SPAWN_UNIT_TEST
+    spawnUnit: STR_DUMMY_UNIT1
+  # missing type
+  - type: STR_UNIT_SPAWN_UNIT_TEST_MISSING
+    spawnUnit: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_UNIT_SPAWN_UNIT_TEST_INCORRECT
+    spawnUnit: STR_DUMMY_RESEARCH
+
+
+
+

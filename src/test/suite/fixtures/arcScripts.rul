@@ -1,0 +1,60 @@
+arcScripts:
+  - type: STR_ARCSCRIPT_FACILITY_TRIGGER_TEST
+    facilityTriggers:
+      STR_ACCESS_LIFT: true
+  # missing type
+  - type: STR_ARCSCRIPT_FACILITY_TRIGGER_TEST_MISSING
+    facilityTriggers:
+      STR_DUMMY_NON_EXISTING_REFERENCE: true
+  # incorrect type
+  - type: STR_ARCSCRIPT_FACILITY_TRIGGER_TEST_INCORRECT
+    facilityTriggers:
+      STR_DUMMY_ITEM: true
+
+  - type: STR_ARCSCRIPT_ITEM_TRIGGER_TEST
+    itemTriggers:
+      STR_DUMMY_ITEM: true
+  # missing type
+  - type: STR_ARCSCRIPT_ITEM_TRIGGER_TEST_MISSING
+    itemTriggers:
+      STR_DUMMY_NON_EXISTING_REFERENCE: true
+  # incorrect type
+  - type: STR_ARCSCRIPT_ITEM_TRIGGER_TEST_INCORRECT
+    itemTriggers:
+      STR_DUMMY_MANUFACTURE: true
+
+  - type: STR_ARCSCRIPT_RANDOM_ARC_TEST
+    randomArcs:
+      STR_DUMMY_RESEARCH: 50
+  # missing type
+  - type: STR_ARCSCRIPT_RANDOM_ARC_TEST_MISSING
+    randomArcs:
+      STR_DUMMY_NON_EXISTING_REFERENCE: 50
+  # incorrect type
+  - type: STR_ARCSCRIPT_RANDOM_ARC_TEST_INCORRECT
+    randomArcs:
+      STR_DUMMY_ITEM: 50
+
+  - type: STR_ARCSCRIPT_RESEARCH_TRIGGER_TEST
+    researchTriggers:
+      STR_DUMMY_RESEARCH: true
+  # missing type
+  - type: STR_ARCSCRIPT_RESEARCH_TRIGGER_TEST_MISSING
+    researchTriggers:
+      STR_DUMMY_NON_EXISTING_REFERENCE: true
+  # incorrect type
+  - type: STR_ARCSCRIPT_RESEARCH_TRIGGER_TEST_INCORRECT
+    researchTriggers:
+      STR_DUMMY_MANUFACTURE: true
+
+  - type: STR_ARCSCRIPT_SEQUENTIAL_ARC_TEST
+    sequentialArcs:
+      - STR_DUMMY_RESEARCH
+  # missing type
+  - type: STR_ARCSCRIPT_SEQUENTIAL_ARC_TEST_MISSING
+    sequentialArcs:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_ARCSCRIPT_SEQUENTIAL_ARC_TEST_INCORRECT
+    sequentialArcs:
+      - STR_DUMMY_ITEM

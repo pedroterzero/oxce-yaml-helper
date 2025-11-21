@@ -1,5 +1,7 @@
 import { Position, Range, TextDocument } from 'vscode';
+import { Scalar, parseDocument } from 'yaml2';
 import { logger } from './logger';
+import { typedProperties } from './typedProperties';
 
 export type KeyMatch = {
     key: string;
@@ -16,7 +18,7 @@ export class KeyDetector {
      * @param key key to validate
      */
     public static isValidKey(key: string): boolean {
-        return typeof key === "string";
+        return typeof key === 'string';
     }
 
     /**
@@ -24,7 +26,11 @@ export class KeyDetector {
      * @param position position to look for the key
      * @param document current document
      */
-    public static getRangeOfKeyAtPosition(position: Position, document: TextDocument, includeSemicolon: boolean): Range | undefined {
+    public static getRangeOfKeyAtPosition(
+        position: Position,
+        document: TextDocument,
+        includeSemicolon: boolean,
+    ): Range | undefined {
         // const stringRegex = /\*[A-Za-z0-9_]+|(\*?[A-Z0-9_]+(\.(PCK|SPK|SCR))?)/g;
         let stringRegex;
         if (includeSemicolon) {
@@ -69,7 +75,11 @@ export class KeyDetector {
         return document.getText(range);
     }
 
-    public static getAbsoluteKeyFromPositionInDocument(position: Position, document: TextDocument, includeSemicolon: boolean): { key: string, range: Range } | undefined {
+    public static getAbsoluteKeyFromPositionInDocument(
+        position: Position,
+        document: TextDocument,
+        includeSemicolon: boolean,
+    ): { key: string; range: Range } | undefined {
         const range = KeyDetector.getRangeOfKeyAtPosition(position, document, includeSemicolon);
         if (!range) {
             return;
@@ -91,7 +101,7 @@ export class KeyDetector {
 
         const text = document.getText().slice(0, document.offsetAt(range.start));
 
-        for (const line of text.split("\n").reverse()) {
+        for (const line of text.split('\n').reverse()) {
             if (line.trimEnd().match(/^[a-zA-Z]+:$/)) {
                 return line.trimEnd().slice(0, -1);
             }
@@ -103,52 +113,108 @@ export class KeyDetector {
     public static findRulePath(position: Position, document: TextDocument): string {
         const text = document.getText().slice(0, document.offsetAt(position));
 
-        // handle CRLF also
-        const lines = text.split(/\r?\n/).reverse();
-        const editLine = lines.shift();
-        const matches = editLine?.match(/^(\s+)(?:-\s)?([a-zA-Z0-9-]+)(:(?:\s*\[\s*\[)?)?/);
-        const path = [];
+        // return this.generatePathFromDocument(text);
 
-        let indent = 2;
-        if (matches) {
-            indent = matches[1].length;
-            if (matches[3] === ':') {
-                path.push(matches[2]);
-            } else if (matches[3]?.match(/:\s*\[\s*\[/)) {
-                path.push(matches[2] + '[]');
+        const simplified = this.getSimplifiedDocument(text);
+
+        return this.generatePathFromDocument(simplified);
+    }
+
+    private static getSimplifiedDocument(yamlStr: string): string {
+        // Split the YAML into lines and reverse them
+        const lines = yamlStr.trim().split('\n').reverse();
+
+        // Placeholder for the reversed hierarchy lines
+        const hierarchyLines: string[] = [];
+        let currentItemIndentation = Infinity; // Use Infinity to ensure the first line (the target) is always included
+
+        // The last line is our target, so we start from there
+        const targetLine = lines[0];
+        hierarchyLines.push(targetLine);
+
+        // Extract the indentation level of the target line
+        const match = targetLine.match(/^(\s*)/);
+        currentItemIndentation = match ? match[1].length : 0;
+
+        // Check if the last line starts with '-'
+        let previousLineWasListItem = targetLine.trim().startsWith('-');
+
+        // Iterate over the rest of the lines
+        for (const line of lines.slice(1)) {
+            // Skip lines starting with '#' or empty lines
+            if (line.trim().startsWith('#') || line.trim().length === 0) {
+                continue;
+            }
+
+            // Determine the indentation of the current line
+            const lineIndentation = line.match(/^(\s*)/)?.[1].length ?? 0;
+            // Check if the current line starts with '-'
+            const currentLineIsListItem = line.trim().startsWith('-');
+
+            // If the current line has less indentation than the previous one, or if both are list items with the same indentation, add it to the hierarchy
+            if (
+                lineIndentation < currentItemIndentation ||
+                (previousLineWasListItem && !currentLineIsListItem && lineIndentation === currentItemIndentation)
+            ) {
+                hierarchyLines.push(line);
+                currentItemIndentation = lineIndentation;
+            }
+
+            // Update the flag for the next iteration
+            previousLineWasListItem = currentLineIsListItem;
+
+            // Once we reach the top level (no indentation), stop the search
+            if (currentItemIndentation === 0) {
+                break;
             }
         }
 
-        // get the first line too, in case that started an array entry
-        let prevLine = editLine || '';
-        for (const line of lines) {
-            const parentRegex = new RegExp(`^(\\s{1,${indent - 1}})([a-zA-Z]+|[0-9]+):(\\s*&[a-zA-Z0-9]+|\\s*\\[)?$`); // could be a trailing & reference
+        // Reverse the hierarchy lines back to their original order and join them into a string
+        return hierarchyLines.reverse().join('\n');
+    }
 
-            let matches;
-            if (line.trimEnd().match(/^[a-zA-Z]+:$/)) {
-                path.push(line.trimEnd().slice(0, -1));
-                break;
-            } else if ((matches = parentRegex.exec(line.trimEnd()))) {
-                indent = matches[1].length;
+    private static generatePathFromDocument(yamlStr: string): string {
+        const doc = parseDocument(yamlStr);
+        let path: string[] = [];
 
-                // is this parent followed by an array or was previous line an array?
-                let isArray = matches[3]?.trim() === '[';
-                // let prevLineMatches;
-                if (!isArray && (/*prevLineMatches = */new RegExp(`^\\s{${indent + 1},}-([^:]+:[^:]+)?$`).exec(prevLine))) {
-                    // if the previous line started with - and it had a : after that, it's an (unnamed) array
-                    isArray = true;
+        const traverse = (node: any, currentPath: string[] = []): void => {
+            if (!node) {
+                return;
+            }
+
+            if (node.items) {
+                // This node is a Map or Seq
+                node.items.forEach((item: any) => {
+                    if (item.key && item.value) {
+                        // Map item
+                        const key = typeof item.key.value === 'string' ? item.key.value : item.key;
+                        const newPath =
+                            currentPath.length === 0 && item.value instanceof Scalar /* ||
+                            (currentPath.length === 1 && item instanceof Pair)*/
+                                ? ['globalVariables', ...currentPath, key]
+                                : [...currentPath, key];
+                        if (typedProperties.isKeyValueReferencePath(newPath.join('.'))) {
+                            path = [...newPath.slice(0, -1), 'value']; // Update the path and stop traversing
+                            return;
+                        }
+
+                        traverse(item.value, newPath);
+                    } else {
+                        // Seq item
+                        traverse(item, [...currentPath, ...(currentPath.length > 1 ? ['[]'] : [])]);
+                    }
+                });
+            } else if (node.value) {
+                if (typedProperties.isKeyValueReferencePath(currentPath.join('.'))) {
+                    currentPath = [...currentPath, 'key']; // Update the path and stop traversing
                 }
 
-                path.push(matches[2] + (isArray ? '[]' : ''));
+                // Scalar value
+                path = currentPath; // Reached a leaf node, update the path
             }
+        };
 
-            prevLine = line;
-        }
-
-        const foundPath = path.reverse().join('.');
-
-        logger.debug(`Found path: ${foundPath}`);
-
-        return foundPath;
+        traverse(doc.contents);
+        return path.join('.').replaceAll('.[]', '[]'); // Format the path, merging sequence indicators
     }
 }

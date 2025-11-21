@@ -1,28 +1,26 @@
-import { DiagnosticSeverity, Uri } from "vscode";
-import { LogicDataEntry, Match } from "../rulesetTree";
-import { BaseLogic } from "./baseLogic";
+import { DiagnosticSeverity, Uri } from 'vscode';
+import { LogicDataEntry, Match } from '../rulesetTree';
+import { BaseLogic } from './baseLogic';
 
 export class MapScriptsLogic extends BaseLogic {
     private additionalFields = [
         // 'terrains.mapBlocks[].groups' // need terrains.script too
-        'terrains' // we need to know the terrain data to find existing groups
+        'terrains', // we need to know the terrain data to find existing groups
     ];
 
-    protected additionalMetadataFields = [
-        'mapScripts.commands[].terrain',
-    ];
+    protected additionalMetadataFields = ['mapScripts.commands[].terrain'];
 
     protected relatedFieldLogicMethods = {
         'mapScripts.commands[].verticalGroup': this.checkGroupReferences,
         'mapScripts.commands[].crossingGroup': this.checkGroupReferences,
-        'mapScripts.commands[].groups': this.checkGroupReferences,
+        'mapScripts.commands[].groups[]': this.checkGroupReferences,
     };
 
     // numeric fields makes sure numeric references get picked up by the recursive retriever
     protected numericFields = Object.keys(this.relatedFieldLogicMethods);
 
-    private mapBlockGroups: {[key: string]: number[]} = {};
-    private mapBlockGroupsByTerrain: {[key: string]: number[]} = {};
+    private mapBlockGroups: { [key: string]: number[] } = {};
+    private mapBlockGroupsByTerrain: { [key: string]: number[] } = {};
 
     public getFields(): string[] {
         return Object.keys(this.fields).concat(this.additionalFields);
@@ -32,7 +30,7 @@ export class MapScriptsLogic extends BaseLogic {
         this.storeMapblockGroups(entries);
     }
 
-    private checkGroupReferences (key: string) {
+    private checkGroupReferences(key: string) {
         if (!(key in this.referencesToCheck)) {
             return;
         }
@@ -81,18 +79,19 @@ export class MapScriptsLogic extends BaseLogic {
         }
     }
 
-    private addDiagnostic(ref: {ref: Match; file: Uri}, name: string) {
+    private addDiagnostic(ref: { ref: Match; file: Uri }, name: string) {
         if (ref.ref.metadata?.type === 'addBlock') {
             this.addDiagnosticForReference(
                 ref,
                 `'Group '${ref.ref.key}' does not exist in terrain for ${name}. This will cause this block to be ignored.`,
-                DiagnosticSeverity.Warning
+                DiagnosticSeverity.Warning,
             );
-        } else { // i.e. addLine
+        } else {
+            // i.e. addLine
             this.addDiagnosticForReference(
                 ref,
                 `'Group '${ref.ref.key}' does not exist in terrain for ${name}. This will cause a segmentation fault when loading the map!`,
-                DiagnosticSeverity.Error
+                DiagnosticSeverity.Error,
             );
         }
     }
@@ -101,11 +100,11 @@ export class MapScriptsLogic extends BaseLogic {
         for (const entry of entries) {
             const data = entry.data;
 
-            if (!data.mapBlocks || (!data.script && !data.name)) {
+            if (!data.mapBlocks || 'source' in data.mapBlocks || (!data.script && !data.name)) {
                 continue;
             }
 
-            const groups: {[key: string]: number} = {};
+            const groups: { [key: string]: number } = {};
             for (const block of data.mapBlocks) {
                 if ('groups' in block) {
                     if (typeof block.groups === 'number') {
@@ -118,7 +117,7 @@ export class MapScriptsLogic extends BaseLogic {
                 }
             }
 
-            const uniqueGroups = Object.keys(groups).map(group => parseInt(group));
+            const uniqueGroups = Object.keys(groups).map((group) => parseInt(group));
             if (uniqueGroups.length > 0) {
                 if (data.script) {
                     this.mapBlockGroups[data.script] = uniqueGroups;

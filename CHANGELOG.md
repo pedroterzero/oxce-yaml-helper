@@ -1,3 +1,6 @@
+# v1.3.0
+- Rewritten parser to be faster, numerous outher changes
+
 # v1.2.7
 - Updated ruleset documentation
 - Bump package versions

@@ -1,18 +1,19 @@
-import { Diagnostic, Uri } from "vscode";
-import { LogicDataEntry, Match } from "../rulesetTree";
-import { ReferenceFile } from "../workspaceFolderRuleset";
-import { mergeAndConcat } from "merge-anything";
-import { LogicInterface } from "./baseLogic";
-import { MapScriptsLogic } from "./mapScriptsLogic";
-import { RegionsLogic } from "./regionsLogic";
-import { CraftWeaponsLogic } from "./craftWeaponsLogic";
-import { UfopaediaLogic } from "./ufopaediaLogic";
-import { ItemsLogic } from "./itemsLogic";
-import { SoldierTransformationLogic } from "./soldierTransformationLogic";
-import { AlienDeploymentsLogic } from "./alienDeploymentsLogic";
-import { ManufactureShortcutLogic } from "./manufactureShortcutLogic";
-import { AlienMissionsLogic } from "./alienMissionsLogic";
-import { WorkspaceFolderRulesetHierarchy } from "../workspaceFolderRulesetHierarchy";
+import { Diagnostic, Uri } from 'vscode';
+import { LogicDataEntry, Match } from '../rulesetTree';
+import { ReferenceFile } from '../workspaceFolderRuleset';
+import { mergeAndConcat } from 'merge-anything';
+import { LogicInterface } from './baseLogic';
+import { MapScriptsLogic } from './mapScriptsLogic';
+import { RegionsLogic } from './regionsLogic';
+import { CraftWeaponsLogic } from './craftWeaponsLogic';
+import { UfopaediaLogic } from './ufopaediaLogic';
+import { ItemsLogic } from './itemsLogic';
+import { SoldierTransformationLogic } from './soldierTransformationLogic';
+import { AlienDeploymentsLogic } from './alienDeploymentsLogic';
+import { ManufactureShortcutLogic } from './manufactureShortcutLogic';
+import { AlienMissionsLogic } from './alienMissionsLogic';
+import { WorkspaceFolderRulesetHierarchy } from '../workspaceFolderRulesetHierarchy';
+import { addRefNodeToPaths } from '../utilities';
 
 const handlers = [
     AlienDeploymentsLogic,
@@ -23,16 +24,16 @@ const handlers = [
     MapScriptsLogic,
     RegionsLogic,
     SoldierTransformationLogic,
-    UfopaediaLogic
+    UfopaediaLogic,
 ];
 
-export type FilesWithDiagnostics = {[key: string]: Diagnostic[]};
+export type FilesWithDiagnostics = { [key: string]: Diagnostic[] };
 
 export class LogicHandler {
-    private instances: {[key: string]: LogicInterface} = {};
-    private relatedLogicFields: {[key: string]: LogicInterface} = {};
+    private instances: { [key: string]: LogicInterface } = {};
+    private relatedLogicFields: { [key: string]: LogicInterface } = {};
 
-    public constructor () {
+    public constructor() {
         // this.instances = {};
         for (const handler of handlers) {
             const handlerObject = new handler();
@@ -44,7 +45,12 @@ export class LogicHandler {
         }
     }
 
-    public check(file: Uri, diagnostics: Diagnostic[], data: { [key: string]: LogicDataEntry[]; }, hierarchy: WorkspaceFolderRulesetHierarchy) {
+    public check(
+        file: Uri,
+        diagnostics: Diagnostic[],
+        data: { [key: string]: LogicDataEntry[] },
+        hierarchy: WorkspaceFolderRulesetHierarchy,
+    ) {
         for (const handler of Object.values(this.instances)) {
             // this.instances[handler.toString()] = new handler();
             handler.check(data, file, diagnostics, hierarchy);
@@ -77,23 +83,24 @@ export class LogicHandler {
 
         this.relatedLogicFields[ref.path].storeRelationLogicReference(ref, file);
         // for (const handler of Object.values(this.instances)) {
-            // this.instances[handler.toString()] = new handler();
-            // handler.check(data, file, diagnostics);
+        // this.instances[handler.toString()] = new handler();
+        // handler.check(data, file, diagnostics);
         // }
     }
 
     public getPaths(): string[] {
-        let paths: string[] = [];
+        const paths: string[] = [];
         for (const handler of handlers) {
             const handlerObject = new handler();
-            paths = paths.concat(handlerObject.getFields());
+            const fields = handlerObject.getFields();
+            paths.push(...addRefNodeToPaths(fields));
         }
 
         return paths;
     }
 
     public getNumericFields(): string[] {
-        const fields: {[key: string]: boolean} = {};
+        const fields: { [key: string]: boolean } = {};
         for (const handler of handlers) {
             const handlerObject = new handler();
             for (const field of handlerObject.getNumericFields()) {
@@ -105,7 +112,7 @@ export class LogicHandler {
     }
 
     public getAdditionalMetadataFields(): string[] {
-        const fields: {[key: string]: boolean} = {};
+        const fields: { [key: string]: boolean } = {};
         for (const handler of handlers) {
             const handlerObject = new handler();
             for (const field of handlerObject.getAdditionalMetadataFields()) {

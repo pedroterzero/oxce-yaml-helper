@@ -1,6 +1,6 @@
-import { typedProperties } from "./typedProperties";
-import { Definition, Match } from "./rulesetTree";
-import { logger } from "./logger";
+import { typedProperties } from './typedProperties';
+import { Definition, Match } from './rulesetTree';
+// import { logger } from "./logger";
 
 export class RulesetDefinitionFinder {
     public getDefinitionsFromReferences(references: Match[] | undefined): Definition[] {
@@ -58,7 +58,7 @@ export class RulesetDefinitionFinder {
         return definitions;
     }
 
-    private addSpritesheetIndexes(ref: Match, references: Match[], description: string, multiplier = 1) {
+    private addSpritesheetIndexes(ref: Match, references: Match[], _description: string, multiplier = 1) {
         if (!('metadata' in ref) || !ref.metadata) {
             return;
         }
@@ -90,14 +90,12 @@ export class RulesetDefinitionFinder {
             xLoops = width / subX;
         }
 
-        for (let i = 1; i < (xLoops * yLoops); i++) {
-            const newRef = Object.assign({}, ref, {
-                key: ref.key + (i * multiplier)
-            });
+        for (let i = 1; i < xLoops * yLoops; i++) {
+            const newRef = { ...ref, key: ref.key + i * multiplier };
 
             // prevent infinite loop, remove subX/subY from copied metadata
             if (newRef.metadata) {
-                ['width', 'height', 'subX', 'subY'].forEach(key => {
+                ['width', 'height', 'subX', 'subY'].forEach((key) => {
                     if (newRef.metadata && newRef.metadata[key]) {
                         // newRef.metadata[`_${key}`] = newRef.metadata[key];
                         delete newRef.metadata[key];
@@ -106,7 +104,7 @@ export class RulesetDefinitionFinder {
 
                 newRef.metadata.spriteSize = yLoops * xLoops;
             }
-            logger.debug(`adding ${description} ref key ${newRef.key}`);
+            // logger.debug(`adding ${description} ref key ${newRef.key}`);
 
             references.push(newRef);
         }

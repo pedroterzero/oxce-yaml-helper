@@ -1,0 +1,70 @@
+facilities:
+  - type: STR_DUMMY_FACILITY_PROVIDE_BASE_FUNC
+    provideBaseFunc:
+      - STR_DUMMY_BASE_FUNC
+
+  - type: STR_TEST_FACILITY_BUILD_COST_ITEMS
+    buildCostItems:
+      STR_DUMMY_ITEM:
+        build: 100
+  # missing type
+  - type: STR_TEST_FACILITY_BUILD_COST_ITEMS_MISSING
+    buildCostItems:
+      STR_DUMMY_NON_EXISTING_REFERENCE:
+        build: 100
+  # incorrect type
+  - type: STR_TEST_FACILITY_BUILD_COST_ITEMS_INCORRECT
+    buildCostItems:
+      STR_DUMMY_RESEARCH:
+        build: 100
+
+  - type: STR_TEST_FACILITY_BUILD_OVER_FACILITIES
+    buildOverFacilities:
+      - STR_ACCESS_LIFT
+  # missing type
+  - type: STR_TEST_FACILITY_BUILD_OVER_FACILITIES_MISSING
+    buildOverFacilities:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_TEST_FACILITY_BUILD_OVER_FACILITIES_INCORRECT
+    buildOverFacilities:
+      - STR_DUMMY_RESEARCH
+
+  - type: STR_TEST_FACILITY_DESTROYED_FACILITY
+    destroyedFacility: STR_ACCESS_LIFT
+  # missing type
+  - type: STR_TEST_FACILITY_DESTROYED_FACILITY_MISSING
+    destroyedFacility: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_TEST_FACILITY_DESTROYED_FACILITY_INCORRECT
+    destroyedFacility: STR_DUMMY_RESEARCH
+
+  - type: STR_TEST_FACILITY_MAP_NAME
+    mapName: DESERT00
+  # missing type
+  - type: STR_TEST_FACILITY_MAP_NAME_MISSING
+    mapName: STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_TEST_FACILITY_MAP_NAME_INCORRECT
+    mapName: STR_DUMMY_RESEARCH
+
+  - type: STR_TEST_FACILITY_REQUIRES
+    requires:
+      - STR_DUMMY_RESEARCH
+  # missing type
+  - type: STR_TEST_FACILITY_REQUIRES_MISSING
+    requires:
+      - STR_DUMMY_NON_EXISTING_REFERENCE
+  # incorrect type
+  - type: STR_TEST_FACILITY_REQUIRES_INCORRECT
+    requires:
+      - STR_DUMMY_ITEM
+
+
+
+
+
+
+
+
+

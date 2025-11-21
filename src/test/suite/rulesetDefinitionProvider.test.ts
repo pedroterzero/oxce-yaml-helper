@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import { readFile, remove, writeFile } from 'fs-extra';
 import { resolve } from 'path';
-import { EndOfLine, Location, Position, Uri, window, workspace } from 'vscode';
+import { EndOfLine, Location, Position, TextDocument, TextEditor, Uri, window, workspace } from 'vscode';
 import { rulesetResolver } from '../../extension';
 import { RulesetDefinitionProvider } from '../../rulesetDefinitionProvider';
 import { RulesetResolver } from '../../rulesetResolver';
@@ -10,7 +10,9 @@ import { waitForExtensionLoad, waitForRefresh } from './tools';
 const rulesetDefinitionProvider = new RulesetDefinitionProvider();
 const fixturePath = resolve(__dirname, '../../../src/test/suite/fixtures');
 const itemsPath = resolve(fixturePath, 'items.rul');
+const itemsDeletePath = resolve(fixturePath, 'items-delete-test.rul');
 const itemsUri = Uri.file(itemsPath);
+const itemsDeleteUri = Uri.file(itemsDeletePath);
 const extraSpritesPath = resolve(fixturePath, 'extraSprites.rul');
 const extraSpritesUri = Uri.file(extraSpritesPath);
 const manufacturePath = resolve(fixturePath, 'manufacture.rul');
@@ -39,7 +41,16 @@ const getDefinitions = async (sourcePath: string, sourceLine: number, sourceChar
     return definitions;
 };
 
-const checkDefinitionSingle = async (sourcePath: string, sourceLine: number, sourceChar: number, uri?: Uri, startLine?: number, startChar?: number, endLine?: number, endChar?: number) => {
+const checkDefinitionSingle = async (
+    sourcePath: string,
+    sourceLine: number,
+    sourceChar: number,
+    uri?: Uri,
+    startLine?: number,
+    startChar?: number,
+    endLine?: number,
+    endChar?: number,
+) => {
     const definitions = await getDefinitions(sourcePath, sourceLine, sourceChar, uri);
 
     if (!definitions) {
@@ -60,7 +71,14 @@ const checkDefinitionSingle = async (sourcePath: string, sourceLine: number, sou
     checkDefinitionTarget(definitions[0], uri, startLine, startChar, endLine, endChar);
 };
 
-const checkDefinitionTarget = (definition: Location, uri: Uri, startLine: number, startChar: number, endLine: number, endChar: number) => {
+const checkDefinitionTarget = (
+    definition: Location,
+    uri: Uri,
+    startLine: number,
+    startChar: number,
+    endLine: number,
+    endChar: number,
+) => {
     assert.strictEqual(definition.uri.path, uri.path);
     assert.strictEqual(definition.range.start.line, startLine);
     assert.strictEqual(definition.range.start.character, startChar);
@@ -71,15 +89,12 @@ const checkDefinitionTarget = (definition: Location, uri: Uri, startLine: number
 const deleteTestFile = async (path: string, resolver: RulesetResolver) => {
     const contents = await readFile(path);
 
-    await Promise.all([
-        waitForRefresh(resolver),
-        remove(path)
-    ]);
+    await Promise.all([waitForRefresh(resolver), remove(path)]);
 
     return contents;
 };
 
-describe("Definition Provider", () => {
+describe('Definition Provider', () => {
     before(async () => {
         return waitForExtensionLoad(rulesetResolver);
     });
@@ -98,37 +113,55 @@ describe("Definition Provider", () => {
         });
 
         it('finds definition for a key with a comment', async () => {
-            await checkDefinitionSingle(itemsPath, 32, 14, itemsUri, 32, 10, 32, 40);
+            await checkDefinitionSingle(itemsPath, 32, 14, itemsUri, 32, 10, 32, 26);
         });
 
-        it('finds definition in correct place for CRLF files', async () => {
-            const document = await workspace.openTextDocument(itemsPath);
-            const editor = await window.showTextDocument(document);
+        describe('Definition finding tests (CRLF)', () => {
+            let document: TextDocument;
+            let editor: TextEditor;
 
-            await editor.edit(builder => { builder.setEndOfLine(EndOfLine.CRLF); });
-            // save and wait for refresh so we check both CRLF=>LF and vice versa
-            await document.save();
-            await waitForRefresh(rulesetResolver);
+            before(async () => {
+                document = await workspace.openTextDocument(itemsPath);
+                editor = await window.showTextDocument(document);
 
-            // same as above
-            await checkDefinitionSingle(itemsPath, 1, 18, itemsUri, 1, 10, 1, 24);
-            await checkDefinitionSingle(itemsPath, 12, 19, extraSpritesUri, 7, 6, 7, 9);
-            await checkDefinitionSingle(itemsPath, 15, 19, extraSpritesUri, 14, 6, 14, 9);
+                await editor.edit((builder) => {
+                    builder.setEndOfLine(EndOfLine.CRLF);
+                });
+                // save and wait for refresh so we check both CRLF=>LF and vice versa
+                await document.save();
+                await waitForRefresh(rulesetResolver);
+            });
 
-            // restore
-            await editor.edit(builder => { builder.setEndOfLine(EndOfLine.LF); });
-            await document.save();
-            await waitForRefresh(rulesetResolver);
+            it('finds definition in correct place for CRLF files - test 1', async () => {
+                await checkDefinitionSingle(itemsPath, 1, 18, itemsUri, 1, 10, 1, 24);
+            });
+
+            it('finds definition in correct place for CRLF files - test 2', async () => {
+                await checkDefinitionSingle(itemsPath, 12, 19, extraSpritesUri, 7, 6, 7, 9);
+            });
+
+            it('finds definition in correct place for CRLF files - test 3', async () => {
+                await checkDefinitionSingle(itemsPath, 15, 19, extraSpritesUri, 14, 6, 14, 9);
+            });
+
+            after(async () => {
+                // restore
+                await editor.edit((builder) => {
+                    builder.setEndOfLine(EndOfLine.LF);
+                });
+                await document.save();
+                await waitForRefresh(rulesetResolver);
+            });
         });
 
         it('does not find deleted definitions', async () => {
-            await checkDefinitionSingle(manufacturePath, 3, 8, itemsUri, 1, 10, 1, 24);
+            await checkDefinitionSingle(manufacturePath, 3, 8, itemsDeleteUri, 1, 10, 1, 30);
 
-            const contents = await deleteTestFile(itemsPath, rulesetResolver);
+            const contents = await deleteTestFile(itemsDeletePath, rulesetResolver);
             await checkDefinitionSingle(manufacturePath, 3, 8);
 
             // restore file
-            await writeFile(itemsPath, contents);
+            await writeFile(itemsDeletePath, contents);
         });
 
         it('does not find a undefinable numeric property', async () => {
@@ -165,7 +198,13 @@ describe("Definition Provider", () => {
         });
 
         it('finds definitions for a craftWeapons.sprite key', async () => {
-            const definitions = await getDefinitions(resolve(fixturePath, 'craftWeapons.rul'), 2, 13, extraSpritesUri, true);
+            const definitions = await getDefinitions(
+                resolve(fixturePath, 'craftWeapons.rul'),
+                2,
+                13,
+                extraSpritesUri,
+                true,
+            );
 
             if (!definitions || !('length' in definitions)) {
                 assert.fail('Did not get definitions');
@@ -174,8 +213,6 @@ describe("Definition Provider", () => {
             assert.strictEqual(definitions.length, 2);
             checkDefinitionTarget(definitions[0], extraSpritesUri, 37, 6, 37, 9);
             checkDefinitionTarget(definitions[1], extraSpritesUri, 40, 6, 40, 9);
-
-
         });
 
         it('finds refnode definition', async () => {
@@ -192,19 +229,25 @@ describe("Definition Provider", () => {
                 return;
             }
 
-            checkDefinitionTarget(definition, itemsUri, 2, 10, 2, 28);
+            /// yaml2 no longer includes the anchor in the range
+            // checkDefinitionTarget(definition, itemsUri, 2, 10, 2, 28);
+            checkDefinitionTarget(definition, itemsUri, 2, 25, 2, 28);
         });
     });
 
-/*     describe('getDefinitions', () => {
-        // /** @private @deprecated only for testing, do not use (we can't mock TextDocument) *//*
+    /*     describe('getDefinitions', () => {
+        // /** @private @deprecated only for testing, do not use (we can't mock TextDocument) */
+    /*
         // public _testGetDefinitions(value: { key: string; range: Range; }, folder: WorkspaceFolder) {
         //     return this.getDefinitions(value, folder);
         // }
 
         it('returns the correct range', () => {
             const uri = itemsUri;
-            const definitions = rulesetDefinitionProvider._testGetDefinitions({key: 'STR_DUMMY_ITEM', range: new Range(0, 0, 0, 0)}, workspaceFolder);
+            const definitions = rulesetDefinitionProvider._testGetDefinitions(
+                { key: 'STR_DUMMY_ITEM', range: new Range(0, 0, 0, 0) },
+                workspaceFolder,
+            );
             assert.strictEqual(definitions.length, 1);
             assert.strictEqual(definitions[0].uri.path, uri.path);
             assert.strictEqual(definitions[0].range.start.line, 1);

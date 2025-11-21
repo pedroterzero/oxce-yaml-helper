@@ -1,0 +1,46 @@
+ufos:
+  ######### many tests follow to test whether typeLinks are correct and working ##
+
+  - type: STR_DUMMY_UFO_RACE_BONUS_TEST
+    raceBonus:
+      STR_ETHEREAL:
+        craftCustomDeploy: STR_TERROR_MISSION
+        missionCustomDeploy: STR_TERROR_MISSION
+  # missing type
+  - type: STR_DUMMY_UFO_RACE_BONUS_TEST_MISSING
+    raceBonus:
+      STR_DUMMY_NON_EXISTING_REFERENCE:
+        craftCustomDeploy: STR_TERROR_MISSION
+        missionCustomDeploy: STR_TERROR_MISSION
+  # incorrect type
+  - type: STR_DUMMY_UFO_RACE_BONUS_TEST_INCORRECT
+    raceBonus:
+      STR_DUMMY_ITEM:
+        craftCustomDeploy: STR_TERROR_MISSION
+        missionCustomDeploy: STR_TERROR_MISSION
+
+  - type: STR_DUMMY_UFO_RACE_BONUS_CRAFT_CUSTOM_DEPLOY_TEST
+    raceBonus:
+      STR_ETHEREAL: {craftCustomDeploy: STR_TERROR_MISSION}
+  # missing type
+  - type: STR_DUMMY_UFO_RACE_BONUS_CRAFT_CUSTOM_DEPLOY_TEST_MISSING
+    raceBonus:
+      STR_ETHEREAL: {craftCustomDeploy: STR_DUMMY_NON_EXISTING_REFERENCE}
+  # incorrect type
+  - type: STR_DUMMY_UFO_RACE_BONUS_CRAFT_CUSTOM_DEPLOY_TEST_INCORRECT
+    raceBonus:
+      STR_ETHEREAL: {craftCustomDeploy: STR_DUMMY_ITEM}
+
+  - type: STR_DUMMY_UFO_RACE_BONUS_MISSION_CUSTOM_DEPLOY_TEST
+    raceBonus:
+      STR_ETHEREAL: {missionCustomDeploy: STR_TERROR_MISSION}
+  # missing type
+  - type: STR_DUMMY_UFO_RACE_BONUS_MISSION_CUSTOM_DEPLOY_TEST_MISSING
+    raceBonus:
+      STR_ETHEREAL: {missionCustomDeploy: STR_DUMMY_NON_EXISTING_REFERENCE}
+  # incorrect type
+  - type: STR_DUMMY_UFO_RACE_BONUS_MISSION_CUSTOM_DEPLOY_TEST_INCORRECT
+    raceBonus:
+      STR_ETHEREAL: {missionCustomDeploy: STR_DUMMY_ITEM}
+
+

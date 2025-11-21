@@ -1,15 +1,18 @@
-import { logger } from "./logger";
-import { LogicDataEntry, Match, RuleType } from "./rulesetTree";
-import { Scalar, YAMLMap, YAMLSeq } from "yaml/types";
-import { YAMLDocument, YAMLDocumentItem } from "./rulesetParser";
-import { typedProperties } from "./typedProperties";
-import { LogicHandler } from "./logic/logicHandler";
-import { get, has } from "dot-prop";
+import { get } from 'lodash';
+import { Node, Scalar, isAlias, isMap, isPair, isScalar, isSeq } from 'yaml2';
+import { YAMLDocument } from './rulesetParser';
+import { LogicDataEntry, Match, RuleType } from './rulesetTree';
+import { typedProperties } from './typedProperties';
 
-type Entry = YAMLSeq | YAMLDocumentItem | string | Scalar;
+interface NodeInfo {
+    value: any;
+    path: string;
+    range: [number, number];
+    metadata?: any;
+}
 
 export class RulesetRecursiveKeyRetriever {
-    private logicHandler = new LogicHandler();
+    // private logicHandler = new LogicHandler();
 
     public getKeyInformationFromYAML(doc: YAMLDocument, key: string, range: number[]): RuleType | undefined {
         const [references] = this.findAllReferencesInYamlDocument(doc, true);
@@ -21,7 +24,7 @@ export class RulesetRecursiveKeyRetriever {
             if ((ref.key === key || ref.key.toString() === key) && this.checkForRangeMatch(range, ref.range)) {
                 const ruleMatch: RuleType = {
                     type: ref.path.split('.').slice(0, -1).join('.'),
-                    key: ref.path.split('.').slice(-1).join('.')
+                    key: ref.path.split('.').slice(-1).join('.'),
                 };
 
                 if (ref.metadata) {
@@ -36,295 +39,633 @@ export class RulesetRecursiveKeyRetriever {
     }
 
     public findAllReferencesInYamlDocument(doc: YAMLDocument, lookupAll = false): [Match[], LogicDataEntry[]] {
-        return this.findKeyInformationInYamlDocument(doc, lookupAll);
+        const ret = this.findKeyInformationInYamlDocument(doc, lookupAll);
+        // console.log(JSON.stringify(ret, null, 2));
+        return ret;
+        // return this.findKeyInformationInYamlDocument(doc, lookupAll);
     }
 
-    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): [Match[], LogicDataEntry[]] {
-        // logger.debug('findKeyInformationInYamlDocument');
+    private findKeyInformationInYamlDocument(
+        yamlDocument: YAMLDocument,
+        lookupAll: boolean,
+    ): [Match[], LogicDataEntry[]] {
+        // const matches: Match[] = [];
 
-        const yamlPairs = yamlDocument.contents.items;
-        if (!yamlPairs) {
-            logger.warn('yamlDocument does not have any items');
-            return [[], []];
-        }
+        // console.log(yamlDocument.contents);
 
-        // loop through each entry in this document
-        return this.findRecursiveMatch(yamlPairs, lookupAll) || undefined;
-    }
+        const [nodes, logicData] = this.traverseNode(yamlDocument.contents!, lookupAll);
 
-    private findRecursiveMatch(yamlPairs: YAMLDocumentItem[], lookupAll: boolean): [Match[], LogicDataEntry[]] {
-        const matches: Match[] = [];
-        const logicData: LogicDataEntry[] = [];
-        yamlPairs.forEach((ruleType) => {
-            if (ruleType.value.type === 'PLAIN') {
-                // globalVariables does this
-                this.processItems(ruleType, 'globalVariables', matches, logicData, {}, {}, lookupAll);
-            } else {
-                ruleType.value.items.forEach((ruleProperties: YAMLSeq) => {
-                    let path = ruleType.key.value;
-                    if (typedProperties.isGlobalVariablePath(path)) {
-                        path = `globalVariables.${path}`;
-                    }
+        // console.log(nodes.length, JSON.stringify(nodes, null, 2));
+        const matches: Match[] = nodes.map((node) => {
+            const match: Match = {
+                key: node.value,
+                path: node.path,
+                range: node.range,
+                ...(node.metadata ? { metadata: node.metadata } : {}),
+            };
 
-                    this.processItems(ruleProperties, path, matches, logicData, {}, {}, lookupAll);
-                });
-            }
+            return match;
         });
 
         return [matches, logicData];
     }
 
-    private processItems(entry: Entry, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, metadataByPath: {[key: string]: Record<string, unknown>}, lookupAll: boolean, parent?: YAMLSeq): Match | undefined {
-        this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
+    private traverseNode(
+        node: Node,
+        lookupAll: boolean,
+        path: string[] = [],
+        namesByPath: { [key: string]: string } = {},
+        depth: number = 0,
+        isRoot: boolean = true,
+        parentNodes: Node[] = [],
+        anchors: { [key: string]: Node } = {},
+    ): [NodeInfo[], LogicDataEntry[]] {
+        const results: NodeInfo[] = [];
+        const logicData: LogicDataEntry[] = [];
+        const newPath = path
+            .filter((item, index) => index !== 1 || item !== '[]')
+            .join('.')
+            .replaceAll('.[]', '[]');
 
-        let keyReferencePath;
-        if ((keyReferencePath = typedProperties.isKeyReferencePath(path)) !== undefined) {
-            // do this separately, because the values for the keys could yield yet more references (see research.getOneFreeProtected)
-            this.processKeyReferencePath(entry, path, matches, parent);
-
-            if ('recurse' in keyReferencePath && keyReferencePath.recurse === false) {
-                // console.log(`not recursing ${path}`);
-                return;
-            }
+        const specialPathResult = this.handleSpecialPaths(newPath, results);
+        if (specialPathResult !== null) {
+            return [specialPathResult, logicData];
         }
 
-        if (entry === null) {
-            // this should actually not happen, but happens if there are parse errors in yaml (like missing values)
-            logger.error(`found a null value at ${path} -- ignoring`);
-        // } else if (typedProperties.isKeyReferencePath(path)) {
-        //     this.processKeyReferencePath(entry, path, matches);
-        } else if (typedProperties.isKeyValueReferencePath(path)) {
-            this.processKeyValueReferencePath(entry, path, matches);
-        } else if (typeof entry === 'string' || typeof entry === 'number') {
-            return;
-        } else if (entry.type === 'PAIR') {
-            // i.e. startingbase
-            // console.log('looping PAIR', path + '.' + entry.key.value);
-            const ret = this.processItems(entry.value, path + '.' + entry.key.value, matches, logicData, namesByPath, metadataByPath, lookupAll);
-            if (ret) {
-                matches.push(ret);
-            }
-        } else if ('items' in entry) {
-            if (entry.items.length > 0) {
-                this.loopEntry(entry, path, matches, logicData, namesByPath, metadataByPath, lookupAll);
-            }
-        } else {
-            entry = entry as Scalar;
-            const value = entry.value;
-            //  tags: ~ (null), ignore it, null is also an object
-            const range = (typeof value === 'object' && value !== null && 'range' in value) ? value.range : entry.range;
-            if ('type' in entry && ['QUOTE_DOUBLE', 'QUOTE_SINGLE', 'ALIAS'].indexOf(entry.type as string) !== -1) {
-                // ignore regular strings, also ALIAS for now?
-                return;
-            }
+        const parentNode = parentNodes[parentNodes.length - 1]; // Get the last node from parentNodes
 
-            if (this.isBoolean(value, path) || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
-                // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
-                return;
-            }
+        // copy data from anchor into refNode, if needed
+        this.processRefNode(node, anchors);
 
-            const ret: Match = {
-                key: value,
-                path,
-                range,
-            };
+        // Check for additional logic path
+        logicData.push(...this.checkForAdditionalLogicPath(newPath, node, namesByPath, anchors));
 
-            if (entry.comment) {
-                ret.metadata = {_comment: entry.comment.trim()};
-            }
-
-            this.addNamesForRelatedLogicChecks(ret, namesByPath);
-
-            return ret;
+        if (!node) {
+            console.error(`Node is null at ${newPath}, position: ${parentNode?.range ?? 'unknown'}`);
+        } else if (node.anchor) {
+            anchors[node.anchor] = node;
         }
 
-        return;
-    }
+        if (isMap(node)) {
+            let typeValue = '';
+            node.items.forEach((item: any) => {
+                const key = item.key.value;
 
-    /**
-     * If there's any metadata from a parent path, add it in. This is used for the logic checks. It's not really possible to do it specifically
-     * for every property, such as mapScripts.commands[].groups, because it can also be mapScripts.commands[].groups[] which is handled differently
-     * @param match
-     * @param metadataByPath
-     */
-    private addMetadataForLogicChecks(match: Match, metadataByPath: {[key: string]: Record<string, unknown>}) {
-        if (this.logicHandler.isRelatedLogicField(match.path)) {
-            for (const metadata of Object.values(metadataByPath)) {
-                match.metadata = {...match.metadata || {}, ...metadata};
-            }
-        }
-    }
+                // namesByPath[newPath] = key;
+                this.checkForDefinitionName(newPath, item, namesByPath);
 
-    private addNamesForRelatedLogicChecks(match: Match, namesByPath: { [key: string]: string; }) {
-        if (this.logicHandler.isRelatedLogicField(match.path)) {
-            if (!('metadata' in match) || typeof match.metadata !== 'object') {
-                match.metadata = {};
-            }
-
-            match.metadata._names = namesByPath;
-        }
-    }
-
-    private processKeyReferencePath(entry: Entry, path: string, matches: Match[], parent: YAMLSeq | undefined) {
-        if (typeof entry !== 'object' || !('items' in entry)) {
-            return;
-        }
-
-        const map = entry as YAMLMap;
-
-        for (const item of map.items) {
-            // @TODO check if we can just use _names and revert
-            const match: Match = {
-                key: item.key.value,
-                path,
-                range: item.key.range,
-            };
-
-            let metadata: typeof match.metadata = {};
-            if (parent) {
-                // get any metadata from parent
-                metadata = this.addMetadata(path.split('.').slice(0, -1).join('.'), parent) || {};
-            }
-
-            if (item.value?.type === 'PLAIN') {
-                metadata._name = item.value.value;
-            }
-
-            if (item.value?.comment) {
-                metadata._comment = item.value.comment.trim();
-            }
-
-            if (Object.keys(metadata).length > 0) {
-                match.metadata = metadata;
-            }
-
-            matches.push(match);
-        }
-    }
-
-    private processKeyValueReferencePath(entry: Entry, path: string, matches: Match[]) {
-        if (typeof entry !== 'object' || !('items' in entry)) {
-            return;
-        }
-
-        const map = entry as YAMLMap;
-
-        for (const item of map.items) {
-            matches.push({
-                key: item.key.value,
-                path: path + '.key',
-                range: item.key.range,
-            });
-
-            matches.push({
-                key: item.value.value,
-                path: path + '.value',
-                range: item.value.range,
-            });
-        }
-    }
-
-    private loopEntry(entry: YAMLSeq, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, metadataByPath: {[key: string]: Record<string, unknown>}, lookupAll: boolean) {
-        this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
-
-        let index = -1;
-        entry.items.forEach((ruleProperty) => {
-            index++;
-
-            if ('items' in ruleProperty) {
-                let newNamesByPath = {} as typeof namesByPath;
-                if (Object.keys(namesByPath).length > 0) {
-
-                    // store the index so we can refer to it later (mostly for logic checks)
-                    newNamesByPath = Object.assign({}, namesByPath);
-                    newNamesByPath[`${path}[]`] = index.toString();
+                // Handle extraSprites (need to check, it might be a map of maps)
+                if (item.value?.value && typedProperties.isExtraFilesRule(newPath, key, item.value.value)) {
+                    typeValue = item.value.value;
                 }
-                // console.log(`looping ${ruleProperty} path ${path}[]`);
-                if (typedProperties.isKeyReferencePath(path + '[]') !== undefined) {
-                    // this is quite unfortunate, but needed for things like manufacture.randomProducedItems[][]
-                    this.processItems(ruleProperty, path + '[]', matches, logicData, newNamesByPath, metadataByPath, lookupAll);
-                } else {
-                    this.loopEntry(ruleProperty, path + '[]', matches, logicData, newNamesByPath, metadataByPath, lookupAll);
+
+                if (typedProperties.isKeyReferencePath(newPath)) {
+                    results.push(
+                        this.getReferencePathResult(key, item.key.range, newPath, item, parentNode, namesByPath),
+                    );
+                    // should not return, there might be more to process -- example is research.getOneFreeProtected (which has an array of strings as value)
+                    // return;
                 }
-            } else {
-                if (['ALIAS'].includes(ruleProperty.type)) {
-                    // ignore ALIAS (refNode)
+
+                if (typedProperties.isKeyValueReferencePath(newPath)) {
+                    results.push(
+                        this.getReferencePathResult(
+                            key,
+                            item.key.range,
+                            `${newPath}.key`,
+                            item,
+                            parentNode,
+                            namesByPath,
+                        ),
+                    );
+                    results.push(
+                        this.getReferencePathResult(
+                            item.value.value,
+                            item.value.range,
+                            `${newPath}.value`,
+                            item,
+                            parentNode,
+                            namesByPath,
+                        ),
+                    );
                     return;
                 }
 
-                this.checkForDefinitionName(path, ruleProperty, namesByPath);
+                const metadata = this.getMetadata(node, newPath, namesByPath);
+                const newPathForChild = this.buildNewPathForChild(path, key, typeValue, newPath);
+                const [childResults, childLogicData] = this.traverseNode(
+                    item.value,
+                    lookupAll,
+                    newPathForChild,
+                    namesByPath,
+                    depth,
+                    isRoot && isScalar(item.value),
+                    [...parentNodes, node], // Add the current node to the list of parent nodes
+                    anchors,
+                );
 
-                let newPath = path;
-                if (['PLAIN', 'QUOTE_DOUBLE', 'QUOTE_SINGLE'].indexOf(ruleProperty.type) !== -1) {
-                    newPath += '[]';
-                } else {
-                    if (typedProperties.isExtraFilesRule(path, ruleProperty?.key?.value, entry.items[0].value.value)) {
-                        // TODO figure out it shouldn't already be working like this? or refactor the rest to work like this?
-                        // logger.debug(`isExtraFilesRule ${path} ${ruleProperty?.key?.value} ${entry.items[0].value.value}`);
-                        newPath += '.' + entry.items[0].value.value;
-                    }
-
-                    newPath += '.' + ruleProperty?.key?.value;
+                // do not store any results for refNode
+                if (path[2] !== 'refNode') {
+                    results.push(...childResults);
                 }
+                logicData.push(...childLogicData);
 
-                const result = this.processItems(ruleProperty.value, newPath, matches, logicData, namesByPath, metadataByPath, lookupAll, entry);
-
-                const metadata = this.addMetadata(path, entry);
-                if (metadata) {
-                    metadataByPath[path] = metadata;
-                }
-
-                if (result) {
-                    const metadata = this.addMetadata(path, entry);
-                    if (metadata) {
-                        result.metadata = Object.assign(metadata, result.metadata ?? {});
-                    }
-                    matches.push(result);
-                } else {
-                    const parsed = this.getRulePropertyType(ruleProperty, path, lookupAll);
-                    if (parsed.stop) {
-                        return;
-                    }
-                    if (parsed.loop) {
-                        // already done by processitems above?
-                        // this.loopEntry(parsed.value, newPath, matches, lookupAll);
-                        return;
-                    }
-                    const match: Match = {
-                        key: parsed.value,
-                        path,
-                        range: parsed.range,
+                // Add metadata to the last result
+                if (Object.keys(metadata).length > 0 && results.length > 0) {
+                    results[results.length - 1].metadata = {
+                        ...results[results.length - 1].metadata,
+                        ...metadata,
                     };
-
-                    const metadata = this.addMetadata(path, entry);
-                    if (metadata) {
-                        match.metadata = metadata;
-                    }
-
-                    this.addNamesForRelatedLogicChecks(match, namesByPath);
-                    this.addMetadataForLogicChecks(match, metadataByPath);
-
-                    // console.log(`range1 ${range[0]}:${range[1]}`);
-                    matches.push(match);
                 }
-            }
-        });
+            });
+        } else if (isSeq(node)) {
+            node.items.forEach((item: any, index: number) => {
+                if (typedProperties.isAdditionalLogicPath(newPath)) {
+                    namesByPath[`${newPath}[]`] = index.toString();
+                }
+
+                const [childResults, childLogicData] = this.traverseNode(
+                    item,
+                    lookupAll,
+                    path.concat('[]'),
+                    { ...namesByPath },
+                    depth + 1,
+                    false,
+                    [...parentNodes, node], // Add the current node to the list of parent nodes
+                    anchors,
+                );
+                results.push(...childResults);
+                logicData.push(...childLogicData);
+            });
+        } else if (isScalar(node)) {
+            results.push(...this.handleScalar(node, isRoot, newPath, lookupAll));
+        }
+
+        return [results, logicData];
     }
 
-    private checkForAdditionalLogicPath(path: string, logicData: LogicDataEntry[], entry: Entry, namesByPath: {[key: string]: string}) {
-        if (typedProperties.isAdditionalLogicPath(path)) {
-            if (typeof entry !== 'object' || !('toJSON' in entry) || !('range' in entry)) {
-                return;
+    private handleScalar(node: Scalar, isRoot: boolean, newPath: string, lookupAll: boolean) {
+        const { value } = node;
+        const isFloat = typeof value === 'number' && this.isFloat(value);
+        const finalPath = isRoot ? `globalVariables.${newPath}` : newPath;
+        const isStoreVariable = typedProperties.isStoreVariable(finalPath);
+        const isUndefinableNumeric = this.isUndefinableNumericProperty(finalPath, value);
+        const isQuotedString = ['QUOTE_DOUBLE', 'QUOTE_SINGLE'].includes(node.type as string);
+
+        const isValidValue =
+            (typeof value !== 'boolean' && !isFloat && !isQuotedString && !isUndefinableNumeric) || lookupAll;
+        if (isValidValue || isStoreVariable) {
+            const range: [number, number] = node.range ? [node.range[0], node.range[1]] : [0, 0];
+
+            const metadata: { [key: string]: string | number } = {};
+
+            // Add comment to metadata
+            if (node.comment) {
+                metadata._comment = node.comment.trim();
             }
 
-            logicData.push({
-                path,
-                data: entry.toJSON(),
-                range: entry.range || [0, 0],
-                names: namesByPath
-            });
+            return [
+                {
+                    value,
+                    path: finalPath,
+                    range,
+                    ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
+                },
+            ];
+        }
+
+        return [];
+    }
+
+    private getReferencePathResult(
+        key: string,
+        range: number[],
+        newPath: string,
+        item: any,
+        parentNode: Node | null,
+        namesByPath: { [key: string]: string },
+    ): NodeInfo {
+        const metadata = this.getParentMetadata(parentNode, newPath, item, namesByPath);
+
+        return {
+            value: key,
+            path: newPath,
+            range: range ? [range[0], range[1]] : [0, 0],
+            ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
+        };
+    }
+
+    private processRefNode(node: Node, anchors: { [key: string]: Node }): void {
+        // if this node is a map, and has a pair with a key of refNode, we need to process that too
+        if (isMap(node)) {
+            const refNodeItem = node.items.find(
+                (item) => isPair(item) && isScalar(item.key) && item.key.value === 'refNode' && isAlias(item.value),
+            );
+
+            if (refNodeItem && isAlias(refNodeItem.value)) {
+                const anchor = anchors[refNodeItem.value.source];
+                if (anchor) {
+                    // make a clone of the node to prevent weird issues with paths getting overwritten
+                    refNodeItem.value = anchor.clone();
+                    // refNodeItem.value = new YAMLMap();
+                    // if (isMap(refNodeItem.value) && isMap(anchor)) {
+                    //     for (const pair of anchor.items) {
+                    //         refNodeItem.value.set(pair.key, pair.value);
+                    //     }
+                    // }
+                }
+            }
+        } else {
+            // console.error('refNode is not a map!', node);
         }
     }
+
+    private buildNewPathForChild(path: string[], key: string, typeValue: string, newPath: string) {
+        if (typeValue && key !== 'type' && newPath !== 'extraSprites.files') {
+            return path.concat(typeValue, key);
+        }
+        return path.concat(key);
+    }
+
+    private getMetadata(
+        node: Node | null,
+        path: string,
+        namesByPath: { [key: string]: string },
+    ): { [key: string]: string | number | object } {
+        const nodeJson = node?.toJSON();
+        const fields = typedProperties.getMetadataFieldsForType(path, nodeJson);
+        const metadata: { [key: string]: string | number | object } = {};
+
+        // Add comment to metadata
+        if (node?.comment) {
+            metadata._comment = node.comment.trim();
+        }
+
+        if (fields && nodeJson) {
+            Object.values(fields).forEach((field: string) => {
+                const value = get(nodeJson, field); // Use lodash's get function to access nested properties
+                if (value !== undefined) {
+                    metadata[field] = value;
+                }
+            });
+        }
+
+        if (Object.keys(namesByPath).length > 0) {
+            metadata._names = namesByPath;
+        }
+
+        return metadata;
+    }
+
+    private getParentMetadata(
+        parentNode: Node | null,
+        path: string,
+        item: any,
+        namesByPath: { [key: string]: string },
+    ): { [key: string]: string | number | object } {
+        const metadata = this.getMetadata(parentNode, path.split('.').slice(0, -1).join('.'), namesByPath);
+
+        // Add _name manually
+        metadata._name = item.value.value;
+
+        return metadata;
+    }
+
+    private handleSpecialPaths(newPath: string, results: NodeInfo[]): NodeInfo[] | null {
+        if (newPath === 'armors.layersDefinition') {
+            // short circuit for performance reasons
+            return results;
+        }
+        if (newPath === 'extraStrings') {
+            // don't process/store any of the extraStrings, just make a note they exist
+            results.push({
+                value: 'extraStrings',
+                path: newPath,
+                range: [0, 0],
+            });
+            return results;
+        }
+        return null;
+    }
+
+    private isFloat(n: number): boolean {
+        return Number(n) === n && n % 1 !== 0;
+    }
+
+    private checkForAdditionalLogicPath(
+        path: string,
+        entry: Node,
+        namesByPath: { [key: string]: string },
+        anchors: { [key: string]: Node },
+    ): LogicDataEntry[] {
+        if (typedProperties.isAdditionalLogicPath(path)) {
+            let data = entry.toJSON();
+
+            // If the entry is an alias, get its value from the anchors
+            if (isAlias(entry)) {
+                const anchor = anchors[entry.source];
+                if (anchor) {
+                    data = anchor.toJSON();
+                }
+            }
+
+            return [
+                {
+                    path,
+                    data,
+                    range: entry.range ? [entry.range[0], entry.range[1]] : [0, 0],
+                    names: namesByPath,
+                },
+            ];
+        }
+        return [];
+    }
+    /*    private findKeyInformationInYamlDocument(yamlDocument: YAMLDocument, lookupAll: boolean): [Match[], LogicDataEntry[]] {
+            // logger.debug('findKeyInformationInYamlDocument');
+
+            const yamlPairs = yamlDocument.contents && 'items' in yamlDocument.contents ? yamlDocument.contents.items : null;
+            if (!yamlPairs) {
+                logger.warn('yamlDocument does not have any items');
+                return [[], []];
+            }
+
+            // loop through each entry in this document
+            return this.findRecursiveMatch(yamlPairs, lookupAll) || undefined;
+        }
+
+        private findRecursiveMatch(yamlPairs: YAMLDocumentItem[], lookupAll: boolean): [Match[], LogicDataEntry[]] {
+            const matches: Match[] = [];
+            const logicData: LogicDataEntry[] = [];
+            yamlPairs.forEach((ruleType) => {
+                if (ruleType.value.type === 'PLAIN') {
+                    // globalVariables does this
+                    this.processItems(ruleType, 'globalVariables', matches, logicData, {}, {}, lookupAll);
+                } else {
+                    ruleType.value.items.forEach((ruleProperties: YAMLSeq) => {
+                        let path = ruleType.key.value;
+                        if (typedProperties.isGlobalVariablePath(path)) {
+                            path = `globalVariables.${path}`;
+                        }
+
+                        this.processItems(ruleProperties, path, matches, logicData, {}, {}, lookupAll);
+                    });
+                }
+            });
+
+            return [matches, logicData];
+        }
+
+        private processItems(entry: Entry, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, metadataByPath: {[key: string]: Record<string, unknown>}, lookupAll: boolean, parent?: YAMLSeq): Match | undefined {
+            this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
+
+            let keyReferencePath;
+            if ((keyReferencePath = typedProperties.isKeyReferencePath(path)) !== undefined) {
+                // do this separately, because the values for the keys could yield yet more references (see research.getOneFreeProtected)
+                this.processKeyReferencePath(entry, path, matches, parent);
+
+                if ('recurse' in keyReferencePath && keyReferencePath.recurse === false) {
+                    // console.log(`not recursing ${path}`);
+                    return;
+                }
+            }
+
+            if (entry === null) {
+                // this should actually not happen, but happens if there are parse errors in yaml (like missing values)
+                logger.error(`found a null value at ${path} -- ignoring`);
+            // } else if (typedProperties.isKeyReferencePath(path)) {
+            //     this.processKeyReferencePath(entry, path, matches);
+            } else if (typedProperties.isKeyValueReferencePath(path)) {
+                this.processKeyValueReferencePath(entry, path, matches);
+            } else if (typeof entry === 'string' || typeof entry === 'number') {
+                return;
+            } else if (entry.type === 'PAIR') {
+                // i.e. startingbase
+                // console.log('looping PAIR', path + '.' + entry.key.value);
+                const ret = this.processItems(entry.value, path + '.' + entry.key.value, matches, logicData, namesByPath, metadataByPath, lookupAll);
+                if (ret) {
+                    matches.push(ret);
+                }
+            } else if ('items' in entry) {
+                if (entry.items.length > 0) {
+                    this.loopEntry(entry, path, matches, logicData, namesByPath, metadataByPath, lookupAll);
+                }
+            } else {
+                entry = entry as Scalar;
+                const value = entry.value;
+                //  tags: ~ (null), ignore it, null is also an object
+                const range = (typeof value === 'object' && value !== null && 'range' in value) ? value.range : entry.range;
+                if ('type' in entry && ['QUOTE_DOUBLE', 'QUOTE_SINGLE', 'ALIAS'].indexOf(entry.type as string) !== -1) {
+                    // ignore regular strings, also ALIAS for now?
+                    return;
+                }
+
+                if (this.isBoolean(value, path) || this.isFloat(value) || (!lookupAll && this.isUndefinableNumericProperty(path, value))) {
+                    // ignore floats/bools/ints-that-are-not-a-property, they are never a reference
+                    return;
+                }
+
+                const ret: Match = {
+                    key: value,
+                    path,
+                    range,
+                };
+
+                if (entry.comment) {
+                    ret.metadata = {_comment: entry.comment.trim()};
+                }
+
+                this.addNamesForRelatedLogicChecks(ret, namesByPath);
+
+                return ret;
+            }
+
+            return;
+        }
+
+        /**
+         * If there's any metadata from a parent path, add it in. This is used for the logic checks. It's not really possible to do it specifically
+         * for every property, such as mapScripts.commands[].groups, because it can also be mapScripts.commands[].groups[] which is handled differently
+         * @param match
+         * @param metadataByPath
+         */ /*
+private addMetadataForLogicChecks(match: Match, metadataByPath: {[key: string]: Record<string, unknown>}) {
+if (this.logicHandler.isRelatedLogicField(match.path)) {
+for (const metadata of Object.values(metadataByPath)) {
+match.metadata = {...match.metadata || {}, ...metadata};
+}
+}
+}
+
+private addNamesForRelatedLogicChecks(match: Match, namesByPath: { [key: string]: string; }) {
+if (this.logicHandler.isRelatedLogicField(match.path)) {
+if (!('metadata' in match) || typeof match.metadata !== 'object') {
+match.metadata = {};
+}
+
+match.metadata._names = namesByPath;
+}
+}
+
+private processKeyReferencePath(entry: Entry, path: string, matches: Match[], parent: YAMLSeq | undefined) {
+if (typeof entry !== 'object' || !('items' in entry)) {
+return;
+}
+
+const map = entry as YAMLMap;
+
+for (const item of map.items) {
+// @TODO check if we can just use _names and revert
+const match: Match = {
+key: item.key.value,
+path,
+range: item.key.range,
+};
+
+let metadata: typeof match.metadata = {};
+if (parent) {
+// get any metadata from parent
+metadata = this.addMetadata(path.split('.').slice(0, -1).join('.'), parent) || {};
+}
+
+if (item.value?.type === 'PLAIN') {
+metadata._name = item.value.value;
+}
+
+if (item.value?.comment) {
+metadata._comment = item.value.comment.trim();
+}
+
+if (Object.keys(metadata).length > 0) {
+match.metadata = metadata;
+}
+
+matches.push(match);
+}
+}
+
+private processKeyValueReferencePath(entry: Entry, path: string, matches: Match[]) {
+if (typeof entry !== 'object' || !('items' in entry)) {
+return;
+}
+
+const map = entry as YAMLMap;
+
+for (const item of map.items) {
+matches.push({
+key: item.key.value,
+path: path + '.key',
+range: item.key.range,
+});
+
+matches.push({
+key: item.value.value,
+path: path + '.value',
+range: item.value.range,
+});
+}
+}
+
+private loopEntry(entry: YAMLSeq, path: string, matches: Match[], logicData: LogicDataEntry[], namesByPath: {[key: string]: string}, metadataByPath: {[key: string]: Record<string, unknown>}, lookupAll: boolean) {
+this.checkForAdditionalLogicPath(path, logicData, entry, namesByPath);
+
+let index = -1;
+entry.items.forEach((ruleProperty) => {
+index++;
+
+if ('items' in ruleProperty) {
+let newNamesByPath = {} as typeof namesByPath;
+if (Object.keys(namesByPath).length > 0) {
+
+// store the index so we can refer to it later (mostly for logic checks)
+newNamesByPath = Object.assign({}, namesByPath);
+newNamesByPath[`${path}[]`] = index.toString();
+}
+// console.log(`looping ${ruleProperty} path ${path}[]`);
+if (typedProperties.isKeyReferencePath(path + '[]') !== undefined) {
+// this is quite unfortunate, but needed for things like manufacture.randomProducedItems[][]
+this.processItems(ruleProperty, path + '[]', matches, logicData, newNamesByPath, metadataByPath, lookupAll);
+} else {
+this.loopEntry(ruleProperty, path + '[]', matches, logicData, newNamesByPath, metadataByPath, lookupAll);
+}
+} else {
+if (['ALIAS'].includes(ruleProperty.type)) {
+// ignore ALIAS (refNode)
+return;
+}
+
+this.checkForDefinitionName(path, ruleProperty, namesByPath);
+
+let newPath = path;
+if (['PLAIN', 'QUOTE_DOUBLE', 'QUOTE_SINGLE'].indexOf(ruleProperty.type) !== -1) {
+newPath += '[]';
+} else {
+if (typedProperties.isExtraFilesRule(path, ruleProperty?.key?.value, entry.items[0].value.value)) {
+// TODO figure out it shouldn't already be working like this? or refactor the rest to work like this?
+// logger.debug(`isExtraFilesRule ${path} ${ruleProperty?.key?.value} ${entry.items[0].value.value}`);
+newPath += '.' + entry.items[0].value.value;
+}
+
+newPath += '.' + ruleProperty?.key?.value;
+}
+
+const result = this.processItems(ruleProperty.value, newPath, matches, logicData, namesByPath, metadataByPath, lookupAll, entry);
+
+const metadata = this.addMetadata(path, entry);
+if (metadata) {
+metadataByPath[path] = metadata;
+}
+
+if (result) {
+const metadata = this.addMetadata(path, entry);
+if (metadata) {
+result.metadata = Object.assign(metadata, result.metadata ?? {});
+}
+matches.push(result);
+} else {
+const parsed = this.getRulePropertyType(ruleProperty, path, lookupAll);
+if (parsed.stop) {
+return;
+}
+if (parsed.loop) {
+// already done by processitems above?
+// this.loopEntry(parsed.value, newPath, matches, lookupAll);
+return;
+}
+const match: Match = {
+key: parsed.value,
+path,
+range: parsed.range,
+};
+
+const metadata = this.addMetadata(path, entry);
+if (metadata) {
+match.metadata = metadata;
+}
+
+this.addNamesForRelatedLogicChecks(match, namesByPath);
+this.addMetadataForLogicChecks(match, metadataByPath);
+
+// console.log(`range1 ${range[0]}:${range[1]}`);
+matches.push(match);
+}
+}
+});
+}
+
+private checkForAdditionalLogicPath(path: string, logicData: LogicDataEntry[], entry: Entry, namesByPath: {[key: string]: string}) {
+if (typedProperties.isAdditionalLogicPath(path)) {
+if (typeof entry !== 'object' || !('toJSON' in entry) || !('range' in entry)) {
+return;
+}
+
+logicData.push({
+path,
+data: entry.toJSON(),
+range: entry.range || [0, 0],
+names: namesByPath
+});
+}
+}*/
 
     /**
      * Check if this path contains a definition and stores it
@@ -332,7 +673,7 @@ export class RulesetRecursiveKeyRetriever {
      * @param ruleProperty
      * @param namesByPath
      */
-    private checkForDefinitionName(path: string, ruleProperty: any, namesByPath: { [key: string]: string; }) {
+    private checkForDefinitionName(path: string, ruleProperty: any, namesByPath: { [key: string]: string }) {
         for (const key of typedProperties.getPossibleTypeKeys(path)) {
             if (ruleProperty.key?.value === key) {
                 namesByPath[path] = ruleProperty.value.value;
@@ -340,7 +681,7 @@ export class RulesetRecursiveKeyRetriever {
         }
     }
 
-    private getRulePropertyType(ruleProperty: any, path: string, lookupAll: boolean) {
+    /*    private getRulePropertyType(ruleProperty: any, path: string, lookupAll: boolean) {
         let value = ruleProperty.value;
         let range = ruleProperty.range;
 
@@ -389,7 +730,7 @@ export class RulesetRecursiveKeyRetriever {
 
     private isBoolean(value: any, path: string) {
         return typeof value === 'boolean' && !typedProperties.isStoreVariable(path);
-    }
+    }*/
 
     private isUndefinableNumericProperty(path: string, value: any): boolean {
         if (parseInt(value) !== value) {
@@ -402,24 +743,24 @@ export class RulesetRecursiveKeyRetriever {
         return !typedProperties.isNumericProperty(type, key);
     }
 
-    private addMetadata(path: string, entry: YAMLSeq): Record<string, unknown> | undefined {
-        // TODO we seem to come here too many times, check with one item (properties.type === 'STR_12GAUGE_NON_LETHAL_X8')
-        const fields = typedProperties.getMetadataFieldsForType(path, entry.toJSON());
-        if (!fields) {
-            return;
-        }
-
-        const properties = entry.toJSON() as {[key: string]: any};
-        const metadata: Record<string, unknown> = {};
-        for (const fieldKey in fields) {
-            const fieldName = fields[fieldKey];
-            if (properties && has(properties, fieldName)) {
-                metadata[fieldKey] = get(properties, fieldName);
+    /*    private addMetadata(path: string, entry: YAMLSeq): Record<string, unknown> | undefined {
+            // TODO we seem to come here too many times, check with one item (properties.type === 'STR_12GAUGE_NON_LETHAL_X8')
+            const fields = typedProperties.getMetadataFieldsForType(path, entry.toJSON());
+            if (!fields) {
+                return;
             }
-        }
 
-        return metadata;
-    }
+            const properties = entry.toJSON() as {[key: string]: any};
+            const metadata: Record<string, unknown> = {};
+            for (const fieldKey in fields) {
+                const fieldName = fields[fieldKey];
+                if (properties && has(properties, fieldName)) {
+                    metadata[fieldKey] = get(properties, fieldName);
+                }
+            }
+
+            return metadata;
+        }*/
 
     private checkForRangeMatch(range1: number[], range2: number[]): boolean {
         return range1[0] === range2[0] && range1[1] === range2[1];

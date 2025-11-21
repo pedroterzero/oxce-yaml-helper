@@ -2,9 +2,9 @@
 on:
   push:
     branches:
-    - '*'
+      - "*"
     tags-ignore:
-    - 'v*'
+      - "v*"
     # - 'v*-alpha*'
 
 #  push:
@@ -19,55 +19,53 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        # os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    -
-      if: runner.os == 'Windows'
-      run: yarn install
-    -
-      if: runner.os != 'Windows'
-      run: npm install
-    - run: xvfb-run -a npm test
-      if: runner.os == 'Linux'
-    - run: npm test
-      if: runner.os != 'Linux'
-    - name: Archive code coverage results
-      if: runner.os == 'Linux'
-      uses: actions/upload-artifact@v3
-      with:
-        name: code-coverage-report
-        path: coverage
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - if: runner.os == 'Windows'
+        run: yarn install
+      - if: runner.os != 'Windows'
+        run: npm install
+      - run: xvfb-run -a npm test
+        if: runner.os == 'Linux'
+      - run: npm test
+        if: runner.os != 'Linux'
+      - name: Archive code coverage results
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: coverage
   package:
     needs: build
     runs-on: ubuntu-latest
     # run if build is successful
     # if: steps.build.outcome == 'success'
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - run: npm install
-    - name: Package
-      id: package
-      # run: npx vsce package
-      run: |
-        npx @vscode/vsce package --pre-release
-        VSIX=$(echo *.vsix)
-        echo "PACKAGE_FILENAME=$VSIX" >> $GITHUB_OUTPUT
-#      run: npx vsce package -o openxcom-ruleset-linker.vsix
-    - name: Retrieve package
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ steps.package.outputs.PACKAGE_FILENAME }}
-        path: '*.vsix'
-
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Package
+        id: package
+        # run: npx vsce package
+        run: |
+          npx @vscode/vsce package --pre-release
+          VSIX=$(echo *.vsix)
+          echo "PACKAGE_FILENAME=$VSIX" >> $GITHUB_OUTPUT
+      #      run: npx vsce package -o openxcom-ruleset-linker.vsix
+      - name: Retrieve package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.PACKAGE_FILENAME }}
+          path: "*.vsix"

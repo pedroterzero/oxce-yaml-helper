@@ -11,3 +11,67 @@ missionScripts:
     raceWeights:
       0:
         STR_SECTOID: 100
+
+  - type: testAlienMissionRegionsWeights1
+    regionWeights:
+        STR_SECTOIASDSD: 100
+
+  # - type: testAlienMissionRegionsWeights1
+  #   regionWeights:
+  #       STR_SECTOIASDSD: 100
+
+  # type link validations
+
+  - type: STR_MISSIONSCRIPTS_FACILITYTRIGGERS_TEST
+    facilityTriggers: {STR_DUMMY_FACILITY_PROVIDE_BASE_FUNC: true}
+  # missing type
+  - type: STR_MISSIONSCRIPTS_FACILITYTRIGGERS_TEST_MISSING
+    facilityTriggers: {STR_DUMMY_NON_EXISTING_REFERENCE: true}
+  # incorrect type
+  - type: STR_MISSIONSCRIPTS_FACILITYTRIGGERS_TEST_INCORRECT
+    facilityTriggers: {STR_DUMMY_RESEARCH: true}
+
+  - type: STR_MISSIONSCRIPTS_ITEMTRIGGERS_TEST
+    itemTriggers: {STR_DUMMY_ITEM: true}
+  # missing type
+  - type: STR_MISSIONSCRIPTS_ITEMTRIGGERS_TEST_MISSING
+    itemTriggers: {STR_DUMMY_NON_EXISTING_REFERENCE: true}
+  # incorrect type
+  - type: STR_MISSIONSCRIPTS_ITEMTRIGGERS_TEST_INCORRECT
+    itemTriggers: {STR_DUMMY_RESEARCH: true}
+
+  - type: STR_MISSIONSCRIPTS_MISSIONWEIGHTS_TEST
+    missionWeights: {0: {STR_ALIEN_MISSION_IN_MISSIONSCRIPT: 100}}
+  # missing type
+  - type: STR_MISSIONSCRIPTS_MISSIONWEIGHTS_TEST_MISSING
+    missionWeights: {0: {STR_DUMMY_NON_EXISTING_REFERENCE: 100}}
+  # incorrect type
+  - type: STR_MISSIONSCRIPTS_MISSIONWEIGHTS_TEST_INCORRECT
+    missionWeights: {0: {STR_DUMMY_RESEARCH: 100}}
+
+  - type: STR_MISSIONSCRIPTS_RACEWEIGHTS_TEST
+    raceWeights: {0: {STR_SECTOID: 100}}
+  # missing type
+  - type: STR_MISSIONSCRIPTS_RACEWEIGHTS_TEST_MISSING
+    raceWeights: {0: {STR_DUMMY_NON_EXISTING_REFERENCE: 100}}
+  # incorrect type
+  - type: STR_MISSIONSCRIPTS_RACEWEIGHTS_TEST_INCORRECT
+    raceWeights: {0: {STR_DUMMY_RESEARCH: 100}}
+
+  - type: STR_MISSIONSCRIPTS_REGIONWEIGHTS_TEST
+    regionWeights: {0: {STR_DUMMY_REGION: 100}}
+  # missing type
+  - type: STR_MISSIONSCRIPTS_REGIONWEIGHTS_TEST_MISSING
+    regionWeights: {0: {STR_DUMMY_NON_EXISTING_REFERENCE: 100}}
+  # incorrect type
+  - type: STR_MISSIONSCRIPTS_REGIONWEIGHTS_TEST_INCORRECT
+    regionWeights: {0: {STR_DUMMY_RESEARCH: 100}}
+
+  - type: STR_MISSIONSCRIPTS_RESEARCHTRIGGERS_TEST
+    researchTriggers: {STR_DUMMY_RESEARCH: true}
+  # missing type
+  - type: STR_MISSIONSCRIPTS_RESEARCHTRIGGERS_TEST_MISSING
+    researchTriggers: {STR_DUMMY_NON_EXISTING_REFERENCE: true}
+  # incorrect type
+  - type: STR_MISSIONSCRIPTS_RESEARCHTRIGGERS_TEST_INCORRECT
+    researchTriggers: {STR_DUMMY_ITEM: true}

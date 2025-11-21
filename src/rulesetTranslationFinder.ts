@@ -1,14 +1,14 @@
-import { JsonObject } from "./rulesetParser";
-import { Translation } from "./rulesetTree";
+import { JsonObject } from './rulesetParser';
+import { Translation } from './rulesetTree';
 
 type ExtraStrings = {
-    type: string,
-    strings: Record<string, string>
-}
+    type: string;
+    strings: Record<string, string>;
+};
 
 export class RulesetTranslationFinder {
     public findAllVariablesInYamlDocument(doc: any): Translation[] {
-        if (!('extraStrings' in doc) || typeof doc.extraStrings !== 'object'){
+        if (!('extraStrings' in doc) || typeof doc.extraStrings !== 'object') {
             return [];
         }
 
@@ -32,11 +32,15 @@ export class RulesetTranslationFinder {
         return translations;
     }
 
-    public findAllTranslationsInTranslationFile(doc: any): Translation[] {
+    public findAllTranslationsInTranslationFile(doc: any, currentLocale: string): Translation[] {
         const translations: Translation[] = [];
 
         for (const locale in doc) {
-            const entries = doc[locale] as {[key: string]: string};
+            if (locale !== currentLocale) {
+                continue;
+            }
+
+            const entries = doc[locale] as { [key: string]: string };
             for (const key in entries) {
                 translations.push({
                     language: locale,
@@ -64,7 +68,7 @@ export class RulesetTranslationFinder {
 
         return {
             type: entry.type,
-            strings: entry.strings as Record<string, string>
+            strings: entry.strings as Record<string, string>,
         };
     }
 }
