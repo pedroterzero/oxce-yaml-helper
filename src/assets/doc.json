@@ -207,7 +207,7 @@
       "default": "-"
     },
     "missionZones": {
-      "description": "List of mission zones. Mission zones are used for generating waypoints for UFO trajectories, and also for spawning mission sites and alien bases. Each mission zone itself is a list of \"mission areas\", where each mission area is defined by:\n\n*   a \"rectangle\" (_\\[lon1, lon2, lat1, lat2\\]_) defining a relevant section of the globe (does not need to be within the region itself); or a single point (a city) on the globe\n\nZones used for mission site spawning additionally have:\n\n*   a texture ID (from globe ruleset, this should be the alienDeployment-based texture, usually the ID is a negative number)\n*   and optionally a city string ID (will be displayed on the globe if defined)\n\nExample: (_\\[lon1, lon2, lat1, lat2, textureID, STR\\_CITY\\_NAME\\]_).\n\n**Important:** Crossing the prime meridian in **missionZones** requires a different syntax! (_lon2_ cannot be smaller than _lon1_)\n\nWrong example:\n\n```\n [350,   8, 20, 30]\n\n```\n\nCorrect example:\n\n```\n [350, 368, 20, 30]  # 368 (=8+360) also represents 8 degrees, and satisfies the _lon2 >= lon1_ condition\n\n```\n\nPS: This syntax exception does not apply to **areas**.",
+      "description": "List of mission zones. Mission zones are used for generating waypoints for UFO trajectories, and also for spawning mission sites and alien bases.\n\nEach mission zone itself is a list of **mission areas**, where each area is defined by:\n\n*   a \"rectangle\" (_\\[lon1, lon2, lat1, lat2\\]_) defining a relevant section of the globe (does not need to be within the region itself)\n*   or a single point (_\\[lon1, lon1, lat1, lat1\\]_) (a city) on the globe\n\nExample:\n\n```\nmissionZones:\n  - - [326, 353, -85, -81]\n    - [132, 173, -79, -76]\n  - - [302, 323, -80, -78]\n    - [62, 66, -76, -75]\n\n```\n\nAreas used for mission site spawning additionally have:\n\n*   a texture ID (from globe ruleset, this should be the alienDeployment-based texture, usually the ID is a negative number)\n*   and optionally a city string ID (will be displayed on the globe if defined)\n\nExample:\n\n```\nmissionZones:\n  - - [326, 353, -85, -81, textureID, STR_CITY_NAME]\n    - [132, 173, -79, -76, textureID, STR_CITY_NAME]\n\n```\n\n**Important:** Crossing the prime meridian in **missionZones** requires a different syntax - _lon2_ cannot be smaller than _lon1_! This syntax exception does not apply to region **areas**.\n\nExample:\n\n```\n\\# Wrong crossing:\n[350, 8, 20, 30]\n# Correct crossing:\n[350, 368, 20, 30]  # 368 (=8+360) also represents 8 degrees, and satisfies the _lon2 >= lon1_ condition\n\n```",
       "default": "-"
     },
     "missionRegion": {
@@ -380,6 +380,14 @@
       "description": "Chance (0-100) of the base defense hitting an attacking UFO.",
       "default": "0"
     },
+    "unifiedDamageFormula": {
+      "description": "Should unified damage formula/approach be used?\n\nMore info: [https://openxcom.org/forum/index.php?topic=12315.0](https://openxcom.org/forum/index.php?topic=12315.0)",
+      "default": "false"
+    },
+    "shieldDamageModifier": {
+      "description": "Defines the percent of power that a weapon does to shields (during base defense).",
+      "default": "100"
+    },
     "ammoItem": {
       "description": "Specifies the ammo item needed for this facility during base defense. More info: [https://openxcom.org/forum/index.php/topic,7651.msg133495.html#msg133495](https://openxcom.org/forum/index.php/topic,7651.msg133495.html#msg133495)",
       "default": "-"
@@ -446,6 +454,10 @@
     },
     "canBeBuiltOver": {
       "description": "Can this facility be built over?",
+      "default": "false"
+    },
+    "upgradeOnly": {
+      "description": "False = a normal facility; true = cannot be built from scratch, can only be upgraded to.",
       "default": "false"
     },
     "buildOverFacilities": {
@@ -522,6 +534,10 @@
       "description": "List of soldier type groups allowed onboard. If empty, no restriction.",
       "default": "-"
     },
+    "allowedArmorGroups": {
+      "description": "List of armor groups allowed onboard. If empty, no restriction.",
+      "default": "-"
+    },
     "onlyOneSoldierGroupAllowed": {
       "description": "Whether only one soldier type group (can consist of multiple soldier types) is allowed onboard.",
       "default": "false"
@@ -541,6 +557,14 @@
     "pilots": {
       "description": "How many pilots are required to pilot this craft.\n\nNotes:\n\n*   pilots are also soldiers and will be fighting in the Battlescape\n*   pilots give bonuses/penalties to the craft performance in the Dogfights (based on their skills)\n*   pilots gain experience via Dogfights\n*   you can manually assign pilots to the craft; if you don't want to, they can be assigned automatically",
       "default": "0"
+    },
+    "pilotMinStatsRequired": {
+      "description": "Minimum stats a soldier needs to be eligible for piloting this craft.",
+      "default": "-"
+    },
+    "pilotSoldierBonusesRequired": {
+      "description": "A list of soldier bonuses a soldier needs to be eligible for piloting this craft.",
+      "default": "-"
     },
     "allowLanding": {
       "description": "Should this craft be able to start a Battlescape mission?\n\nNote: you may want to set _false_ to your manned/piloted interceptors.",
@@ -719,7 +743,11 @@
       "default": "0"
     },
     "avoidBonus": {
-      "description": "Flat bonus percentage to dodge chances against enemy fire.",
+      "description": "Flat bonus percentage to dodge chances against enemy fire (during dogfight).",
+      "default": "0"
+    },
+    "avoidBonus2": {
+      "description": "Flat bonus percentage to dodge chances against enemy fire (during xcom base defense). Not used/relevant.",
       "default": "0"
     },
     "powerBonus": {
@@ -783,6 +811,10 @@
     "damage": {
       "description": "Amount of damage this weapon does to enemy UFOs.",
       "default": "0"
+    },
+    "unifiedDamageFormula": {
+      "description": "Should unified damage formula/approach be used?\n\nMore info: [https://openxcom.org/forum/index.php?topic=12315.0](https://openxcom.org/forum/index.php?topic=12315.0)",
+      "default": "false"
     },
     "shieldDamageModifier": {
       "description": "Defines the percent of power that a weapon does to shields.",
@@ -1251,7 +1283,7 @@
       "default": "0"
     },
     "dropoff": {
-      "description": "The value by which the accuracy lowers for each tile after (or before) the thresholds above.",
+      "description": "The value by which the accuracy lowers for each tile after (or before) the thresholds above. The default for BT\\_PSIAMP is 1.",
       "default": "2"
     },
     "powerRangeThreshold": {
@@ -1264,11 +1296,23 @@
     },
     "throwRange": {
       "description": "Maximum land/surface throwing range (can of course be less if you're weak).\n\nMore info: [https://openxcom.org/forum/index.php/topic,8273.msg132698.html#msg132698](https://openxcom.org/forum/index.php/topic,8273.msg132698.html#msg132698)",
-      "default": "0"
+      "default": "200"
     },
     "underwaterThrowRange": {
       "description": "Maximum underwater throwing range (can of course be less if you're weak).",
-      "default": "0"
+      "default": "200"
+    },
+    "throwDropoffRange": {
+      "description": "Maximum effective throw range before which range-based dropoff occurs. (ufoextender accuracy only)\n\nMore info: [https://openxcom.org/forum/index.php?topic=12203.msg171640#msg171640](https://openxcom.org/forum/index.php?topic=12203.msg171640#msg171640)",
+      "default": "99"
+    },
+    "underwaterThrowDropoffRange": {
+      "description": "Maximum effective underwater throw range before which range-based dropoff occurs. (ufoextender accuracy only)",
+      "default": "99"
+    },
+    "throwDropoff": {
+      "description": "The value by which the throwing accuracy lowers for each tile after the thresholds above.",
+      "default": "5"
     },
     "vehicleFixedAmmoSlot": {
       "description": "Allows to define a HWP without fixed ammo. Possible values: 0 and -1.\n\nMore info: [https://openxcom.org/forum/index.php?topic=11843.msg165667#msg165667](https://openxcom.org/forum/index.php?topic=11843.msg165667#msg165667)",
@@ -1631,8 +1675,12 @@
       "default": "100"
     },
     "isExplodingInHands": {
-      "description": "Does the item explode also when still in a unit's inventory?",
+      "description": "_Deprecated:_ use **explodeInventory** instead.\n\nWill be completely removed in 2026.",
       "default": "false"
+    },
+    "explodeInventory": {
+      "description": "How should primed items in the inventory behave?\n\n*   \\-1 = use global setting **explodeInventoryGlobal** (default)\n*   0 = doesn't explode in inventory\n*   1 = explodes in inventory, except in hands\n*   2 = explodes in inventory\n\nMore info: [https://openxcom.org/forum/index.php?topic=12421.msg171340#msg171340](https://openxcom.org/forum/index.php?topic=12421.msg171340#msg171340)",
+      "default": "-1"
     },
     "hiddenOnMinimap": {
       "description": "Is the item visible on the minimap?\n\nTip: use for example for mines hidden underground",
@@ -1795,11 +1843,11 @@
       "default": "true"
     },
     "ToWound": {
-      "description": "Determines how many fatal wounds should be inflicted. Default settings equal to vanilla calculations. Formula is quite hard to describe in words, so here's the code:```\n if (damage > 0) {\n   if (RandomWound) {\n     if (RNG::generate(0, 10) < int(damage \\* ToWound)) {\n       return RNG::generate(1,3);\n     }\n   } else {\n     return (int)std::round(damage \\* ToWound);\n   }\n }\n\n```",
+      "description": "How much of the primary damage is applied as fatal wounds.",
       "default": "1.0"
     },
     "RandomWound": {
-      "description": "Determines how many fatal wounds should be inflicted. Default settings equal to vanilla calculations. Formula is quite hard to describe in words, so here's the code:```\n if (damage > 0) {\n   if (RandomWound) {\n     if (RNG::generate(0, 10) < int(damage \\* ToWound)) {\n       return RNG::generate(1,3);\n     }\n   } else {\n     return (int)std::round(damage \\* ToWound);\n   }\n }\n\n```",
+      "description": "Alters the above calculation. Default settings equal to vanilla calculations. Formula is quite hard to describe in words, so here's the code:```\n if (damage > 0) {\n   if (RandomWound) {\n     if (RNG::generate(0, 10) < int(damage \\* ToWound)) {\n       return RNG::generate(1,3);\n     }\n   } else {\n     return (int)std::round(damage \\* ToWound);\n   }\n }\n\n```",
       "default": "true"
     },
     "ToTime": {
@@ -2013,7 +2061,11 @@
       "default": "0"
     },
     "avoidBonus": {
-      "description": "Flat bonus percentage to dodge chances against enemy fire.",
+      "description": "Flat bonus percentage to dodge chances against enemy fire (during dogfight).",
+      "default": "0"
+    },
+    "avoidBonus2": {
+      "description": "Flat bonus percentage to dodge chances against enemy fire (during xcom base defense).",
       "default": "0"
     },
     "powerBonus": {
@@ -2081,7 +2133,7 @@
       "default": "-"
     },
     "mapBlocks": {
-      "description": "List of map blocks (see below) that are used for generating a map.",
+      "description": "List of map blocks (see below [Map Blocks](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Map_Blocks)) that are used for generating a map.",
       "default": "-"
     },
     "addOnly": {
@@ -2162,6 +2214,10 @@
     },
     "extendedItems": {
       "description": "A list of additional items to add to this mapblock, using a more generic approach. Supports pre-priming of items and spawning weapons with ammo.\n\nExample:\n\n```\n extendedItems:\n   - type: STR_RIFLE\n     pos:\n       - [6, 2, 0]\n     ammoDef: [ [STR_RIFLE_CLIP, 0] ]  # list of loaded ammo with quantity (quantity 0 = maximum), example: [[type1, qty1],[type2, qty2],[type3, qty3],[type4, qty4]]\n   - type: STR_GRENADE\n     pos:\n       - [7, 2, 0]\n       - [7, 3, 0]\n     fuseTimerMin: 0  # default is -1 = not used\n     fuseTimerMax: 0  # default is -1 = not used\n\n```",
+      "default": "-"
+    },
+    "craftInventoryTile": {
+      "description": "Coordinates \\[x, y, z\\] of the \"craft\" inventory tile (weapon's pile) in the terrain map block.\n\nMore info: [https://openxcom.org/forum/index.php?topic=12597.msg171356#msg171356](https://openxcom.org/forum/index.php?topic=12597.msg171356#msg171356)",
       "default": "-"
     },
     "type": {
@@ -2344,8 +2400,24 @@
       "description": "String ID of alternate ufopedia article for this armor (when accessed via middle-button click).\n\nMore info: [https://openxcom.org/forum/index.php/topic,8707.msg133338.html#msg133338](https://openxcom.org/forum/index.php/topic,8707.msg133338.html#msg133338)",
       "default": "-"
     },
+    "group": {
+      "description": "Armor group (integer number) used in **allowedArmorGroups** in craft ruleset.\n\nMore info: [https://openxcom.org/forum/index.php?topic=12626.msg171747#msg171747](https://openxcom.org/forum/index.php?topic=12626.msg171747#msg171747)",
+      "default": "0"
+    },
     "requires": {
       "description": "The research required to equip this armor.\n\nModding hint: it is possible to equip one \"store item\" as several different armors, e.g. as armor with or without a helmet. This option allows you to limit some of those options by a research topic. You could use this also for example to define different armor variants for each game difficulty level, e.g. make armor stronger for beginners and weaker for veterans.",
+      "default": "-"
+    },
+    "requiresAward": {
+      "description": "A commendation required to equip this armor.",
+      "default": "-"
+    },
+    "requiresBonus": {
+      "description": "A soldier bonus required to equip this armor.",
+      "default": "-"
+    },
+    "ranks": {
+      "description": "Soldier rank(s) required to equip this armor.\n\nMore info: [https://openxcom.org/forum/index.php?topic=12731.0](https://openxcom.org/forum/index.php?topic=12731.0)",
       "default": "-"
     },
     "spriteSheet": {
@@ -2429,7 +2501,7 @@
       "default": "0"
     },
     "moveCost": {
-      "description": "Detailed configs for custom move costs. Defaults:```\n   moveCost:\n     #first level of multipliers\n     basePercent: [100, 100] #overall move cost\n   \n     #second level of multipliers\n     baseNormalPercent: [100, 100] #move cost for ground\n     baseFlyPercent: [100, 100] #move cost for flying\n     baseClimbPercent: [100, 100] #move cost for climbing ladders\n   \n     #third level of multipliers\n     walkPercent: [100, 50] #cost of normal move type\n     runPercent: [75, 75] #cost of run aka with \\`ctrl\\`\n     strafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside\n     sneakPercent: [100, 50] #cost move type with \\`alt\\`, force unit to move on ground\n   \n     flyWalkPercent: [100, 50] #cost of normal move type in air\n     flyRunPercent: [75, 75] #cost of run aka with \\`ctrl\\` in air\n     flyStrafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside in air\n     flyUpPercent: [100, 0] #cost of flying up\n     flyDownPercent: [100, 0] #cost of flying down\n     climbUpPercent: [100, 50] #cost of climbing up\n     climbDownPercent: [100, 50] #cost of climbing down\n     gravLiftPercent: [100, 0] #cost for using gravLift\n\n```",
+      "description": "Detailed configs for custom move costs. Defaults:```\n   moveCost:\n     #first level of multipliers\n     basePercent: [100, 100] #overall move cost\n\n     #second level of multipliers\n     baseNormalPercent: [100, 100] #move cost for ground\n     baseFlyPercent: [100, 100] #move cost for flying\n     baseClimbPercent: [100, 100] #move cost for climbing ladders\n\n     #third level of multipliers\n     walkPercent: [100, 50] #cost of normal move type\n     runPercent: [75, 75] #cost of run aka with \\`ctrl\\`\n     strafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside\n     sneakPercent: [100, 50] #cost move type with \\`alt\\`, force unit to move on ground\n\n     flyWalkPercent: [100, 50] #cost of normal move type in air\n     flyRunPercent: [75, 75] #cost of run aka with \\`ctrl\\` in air\n     flyStrafePercent: [100, 50] #cost of strafe when \\`ctrl\\` and only one tile aside in air\n     flyUpPercent: [100, 0] #cost of flying up\n     flyDownPercent: [100, 0] #cost of flying down\n     climbUpPercent: [100, 50] #cost of climbing up\n     climbDownPercent: [100, 50] #cost of climbing down\n     gravLiftPercent: [100, 0] #cost for using gravLift\n\n```",
       "default": ""
     },
     "turnBeforeFirstStep": {
@@ -2511,6 +2583,10 @@
     "heatVision": {
       "description": "Allows seeing better through smoke. Percentage (0-100%) value defining how much smoke is ignored.",
       "default": "0"
+    },
+    "visibilityThroughFire": {
+      "description": "Allows seeing worse through fire. Percentage (0-100%) value defining how much fire is ignored.",
+      "default": "100"
     },
     "psiVision": {
       "description": "Allow \"seeing\" through walls. Units with this armor can sense enemies that are 'psiVision' tiles (or less) away.\n\nNote: cannot sense enemies that are **fearImmune**.",
@@ -2671,6 +2747,22 @@
     "meleeDodgeBackPenalty": {
       "description": "Defines the penalty to unit's melee dodge ability (see **meleeDodge**) when attacked from behind. Defined as percentage, e.g. 0.7 = 70%.\n\nNote: The full penalty applies from behind, from sides the penalty is adjusted accordingly. There is no penalty for frontal assault.",
       "default": "0.0"
+    },
+    "ai.targetWeightAsHostile": {
+      "description": "More info: [https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202](https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202)```\n ai:\n   targetWeightAsHostile: ~ # use global value\n   targetWeightAsHostileCivilians: 50\n   targetWeightAsFriendly: ~ # use global value\n   targetWeightAsNeutral: -100\n\n```",
+      "default": "~"
+    },
+    "ai.targetWeightAsHostileCivilians": {
+      "description": "More info: [https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202](https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202)```\n ai:\n   targetWeightAsHostile: ~ # use global value\n   targetWeightAsHostileCivilians: 50\n   targetWeightAsFriendly: ~ # use global value\n   targetWeightAsNeutral: -100\n\n```",
+      "default": "~"
+    },
+    "ai.targetWeightAsFriendly": {
+      "description": "More info: [https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202](https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202)```\n ai:\n   targetWeightAsHostile: ~ # use global value\n   targetWeightAsHostileCivilians: 50\n   targetWeightAsFriendly: ~ # use global value\n   targetWeightAsNeutral: -100\n\n```",
+      "default": "~"
+    },
+    "ai.targetWeightAsNeutral": {
+      "description": "More info: [https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202](https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202)```\n ai:\n   targetWeightAsHostile: ~ # use global value\n   targetWeightAsHostileCivilians: 50\n   targetWeightAsFriendly: ~ # use global value\n   targetWeightAsNeutral: -100\n\n```",
+      "default": "~"
     },
     "psiDefence": {
       "description": "Formulae for psi defense value.",
@@ -3080,6 +3172,10 @@
       "description": "Determines how strictly to apply **upperBoundAtMaxStats** and **upperBoundAtStatCaps**. Possible values:\n\n*   0 = dynamic (i.e. soft when not changing the soldier type; hard when changing the soldier type)\n*   1 = soft (if the soldier is already above the maximum before the transformation, don't reduce his overflown stats)\n*   2 = hard (always reduce if above the maximum)",
       "default": "0"
     },
+    "removeTransformations": {
+      "description": "A list of (potential) previous soldier transformations to remove when undergoing this project.\n\nMore info: [https://openxcom.org/forum/index.php?topic=12749.0](https://openxcom.org/forum/index.php?topic=12749.0)",
+      "default": "-"
+    },
     "reset": {
       "description": "The reset flag can be used to clear the bonuses gained by previous transformations. It also clears the list of previously performed transformations.\n\nFor example: 1. you train karate and gain a bonus 2. then you transform the guy into a MEC and want to lose all the previous bonuses (since MECs can't benefit from karate training... I hope)\n\nNote: stats gained by \"classic\" transformations (i.e. those that are NOT bonuses) will NOT be reset; only bonuses can be reset",
       "default": "false"
@@ -3111,7 +3207,11 @@
       "default": "0"
     },
     "heatVision": {
-      "description": "Defines the bonus to heat vision.",
+      "description": "Defines the bonus to visibility through smoke (also called heat vision).",
+      "default": "0"
+    },
+    "visibilityThroughFire": {
+      "description": "Defines the bonus to visibility through fire.",
       "default": "0"
     },
     "frontArmor": {
@@ -3194,6 +3294,14 @@
       "description": "This is a string containing the description of the commendation.",
       "default": "-"
     },
+    "requires": {
+      "description": "Commendation's research requirements.",
+      "default": "-"
+    },
+    "units": {
+      "description": "A list of soldier types, which can be awarded this commendation.",
+      "default": "-"
+    },
     "sprite": {
       "description": "This is an int corresponding to the sprite of the commendation. If the integer does not correspond to a sprite, the game will crash.",
       "default": "-"
@@ -3211,11 +3319,11 @@
       "default": "-"
     },
     "criteria": {
-      "description": "Commendation criteria are controlled by SoldierDiary.cpp, and function by iterating over the game's record of every takedown a soldier has performed. There are three kinds of crieria: Scalar Criteria, Noun Criteria, and Kill Criteria. If the criteria is a Kill Criteria, there needs to be more details added via killCriteria.\n\nThe vector of integers cannot exceed 10 in length, unless more decoration sprites are added. The list may be shorter, if the commendation does not have as many decorations. The integers can also repeat, in order to skip decorations.\n\nFirst intger corresponds to an award, with no decoration. Second correponds to 1 bronze star. Third correponds to 2 bronze stars. Fourth correponds to 3 bronze stars. Fifth correponds to 1 silver star. Sixth correponds to 2 silver stars. Seventh correponds to 3 silver stars. Eigth correponds to 1 gold star. Ninth correponds to 2 gold stars. Tenth correponds to 3 gold stars.\n\nExample: This criteria has 3 decoration levels: 1 bronze star, 2 silver stars, 3 gold stars.\n\n```\n   criteria:\n       totalAllAliensKilled: [1, 1, 2, 2, 2, 2, 3, 3, 3, 3]\n\n```",
+      "description": "Commendation criteria are controlled by SoldierDiary.cpp, and function by iterating over the game's record of every takedown a soldier has performed. There are three kinds of criteria: Scalar Criteria, Noun Criteria, and Kill Criteria. If the criteria is a Kill Criteria, there needs to be more details added via killCriteria.\n\nThe vector of integers cannot exceed 10 in length, unless more decoration sprites are added. The list may be shorter, if the commendation does not have as many decorations. The integers can also repeat, in order to skip decorations.\n\nFirst integer corresponds to an award, with no decoration. Second corresponds to 1 bronze star. Third corresponds to 2 bronze stars. Fourth corresponds to 3 bronze stars. Fifth corresponds to 1 silver star. Sixth corresponds to 2 silver stars. Seventh corresponds to 3 silver stars. Eighth corresponds to 1 gold star. Ninth corresponds to 2 gold stars. Tenth corresponds to 3 gold stars.\n\nExample: This criteria has 3 decoration levels: 1 bronze star, 2 silver stars, 3 gold stars.\n\n```\n   criteria:\n       totalAllAliensKilled: [1, 1, 2, 2, 2, 2, 3, 3, 3, 3]\n\n```",
       "default": "-"
     },
     "killCriteria": {
-      "description": "This is the extra detail required by killsWithCriteriaCareer, killsWithCriteriaMission, or killsWithCriteriaTurn. The valid details are listed in the table under _Kill Criteria_.\n\nExample: This killCriteria can be awarded for two reasons: if the soldier kills one sectopod terrorist with a grenade OR if the soldier kills one cyberdisc terrorist with a grenade.\n\n```\n   killCriteria:\n       -\n           1: [\"STR_SECTOPOD_TERRORIST\", \"STR_LIVE_TERRORIST\", \"STATUS_DEAD\", \"BT_GRENADE\"]\n       - \n           1: [\"STR_CYBERDISC_TERRORIST\", \"STR_LIVE_TERRORIST\", \"STATUS_DEAD\", \"BT_GRENADE\"]\n\n```\n\nExample: This killCriteria is awarded for one reason: if the soldier has killed one hostile cyberdisc terrorist AND if the soldier has killed one hostile reaper terrorist.\n\n```\n   killCriteria:\n       -\n           1: [\"STR_CYBERDISC\", \"STR_LIVE_TERRORIST\", \"FACTION_HOSTILE\", \"STATUS_DEAD\"]\n           1: [\"STR_REAPER\", \"STR_LIVE_TERRORIST\", \"FACTION_HOSTILE\", \"STATUS_DEAD\"]\n\n```",
+      "description": "This is the extra detail required by killsWithCriteriaCareer, killsWithCriteriaMission, or killsWithCriteriaTurn. The valid details are listed in the table under _Kill Criteria_.\n\nExample: This killCriteria can be awarded for two reasons: if the soldier kills one sectopod terrorist with a grenade OR if the soldier kills one cyberdisc terrorist with a grenade.\n\n```\n   killCriteria:\n       -\n           1: [\"STR_SECTOPOD_TERRORIST\", \"STR_LIVE_TERRORIST\", \"STATUS_DEAD\", \"BT_GRENADE\"]\n       -\n           1: [\"STR_CYBERDISC_TERRORIST\", \"STR_LIVE_TERRORIST\", \"STATUS_DEAD\", \"BT_GRENADE\"]\n\n```\n\nExample: This killCriteria is awarded for one reason: if the soldier has killed one hostile cyberdisc terrorist AND if the soldier has killed one hostile reaper terrorist.\n\n```\n   killCriteria:\n       -\n           1: [\"STR_CYBERDISC\", \"STR_LIVE_TERRORIST\", \"FACTION_HOSTILE\", \"STATUS_DEAD\"]\n           1: [\"STR_REAPER\", \"STR_LIVE_TERRORIST\", \"FACTION_HOSTILE\", \"STATUS_DEAD\"]\n\n```",
       "default": "-"
     },
     "totalKills": {
@@ -3454,7 +3562,7 @@
     },
     "armor": {
       "description": "String ID of the [armor](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Armor) this unit uses by default.",
-      "default": "-"
+      "default": "required"
     },
     "standHeight": {
       "description": "Height of this unit when standing.",
@@ -3685,11 +3793,11 @@
       "default": "-"
     },
     "data": {
-      "description": "List of deployment data for each alien rank in this reinforcements wave (see above).",
+      "description": "List of deployment data for each alien rank in this reinforcements wave (see above [Deployment Data](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Deployment_Data)).",
       "default": "-"
     },
     "reinforcements": {
-      "description": "List of scripted reinforcement waves (see below).",
+      "description": "List of scripted reinforcement waves (see below [Reinforcements Script](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Reinforcements_Script)).",
       "default": "-"
     },
     "width": {
@@ -3789,7 +3897,7 @@
       "default": "-1"
     },
     "briefing": {
-      "description": "Data for the reinforcements briefing (see above).",
+      "description": "Data for the reinforcements briefing (see above [Briefing Data](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Briefing_Data)).",
       "default": "-"
     },
     "markerName": {
@@ -3948,6 +4056,10 @@
       "description": "Defines the new race for an alien base after an upgrade (into this type). Note: when upgrading from type A to type B, the flag is read from **type B**.",
       "default": "-"
     },
+    "alienRaceEvolution": {
+      "description": "Defines the alien race evolution rules.\n\nMore info: [https://openxcom.org/forum/index.php?topic=12677.0](https://openxcom.org/forum/index.php?topic=12677.0)",
+      "default": "-"
+    },
     "fakeUnderwaterSpawnChance": {
       "description": "Chance (in percent) for the alien base to spawn on \"fake underwater\" globe texture.",
       "default": "0"
@@ -4021,7 +4133,7 @@
       "default": "false"
     },
     "alienRank": {
-      "description": "[Rank](https://www.ufopaedia.org/index.php?title=Alien_Rank) associated with this deployment data, as defined by the order of the race in question (see above)",
+      "description": "[Rank](https://www.ufopaedia.org/index.php?title=Alien_Rank) associated with this deployment data, as defined by the order of the race in question (see above [Alien Races](https://www.ufopaedia.org/index.php/Ruleset_Reference_Nightly_(OpenXcom)#Alien_Races))",
       "default": "required"
     },
     "customUnitType": {
@@ -4549,7 +4661,7 @@
       "default": "-"
     },
     "pages": {
-      "description": "Configuration of additional pages for an article.\n\n*   Each page can have its own title and text description.\n*   Additionally, you can define which **ammoSlot** will be used to limit the display of supported attack types and compatible ammo.\n*   If multiple pages have same value of **ammoSlot**, then each page will show successive group of 3 ammo items available for this slot.\n\nExample:\n\n```\n - id: STR_PISTOL\n   pages:\n     - title: STR_PISTOL\n       text: STR_PISTOL_UFOPEDIA\n       ammoSlot: 0                  # default for all pages\n     - title: STR_PISTOL\n       text: STR_PISTOL_UFOPEDIA_2\n       ammoSlot: 1                  # ammo and attack types relevant for the second ammo slot (0 = first slot)\n     - title: STR_PISTOL_UFOPEDIA_TITLE_3\n       text: STR_PISTOL_UFOPEDIA_3\n       \n\n```",
+      "description": "Configuration of additional pages for an article.\n\n*   Each page can have its own title and text description.\n*   Additionally, you can define which **ammoSlot** will be used to limit the display of supported attack types and compatible ammo.\n*   If multiple pages have same value of **ammoSlot**, then each page will show successive group of 3 ammo items available for this slot.\n\nExample:\n\n```\n - id: STR_PISTOL\n   pages:\n     - title: STR_PISTOL\n       text: STR_PISTOL_UFOPEDIA\n       ammoSlot: 0                  # default for all pages\n     - title: STR_PISTOL\n       text: STR_PISTOL_UFOPEDIA_2\n       ammoSlot: 1                  # ammo and attack types relevant for the second ammo slot (0 = first slot)\n     - title: STR_PISTOL_UFOPEDIA_TITLE_3\n       text: STR_PISTOL_UFOPEDIA_3\n\n\n```",
       "default": "Only one page using standard title and text."
     }
   },
@@ -4674,6 +4786,10 @@
       "description": "Should the attacking retaliation UFO ignore xcom base defenses?",
       "default": "false"
     },
+    "instaHyper": {
+      "description": "Display hyper-wave decoder info at base defense even if the UFO was not detected yet? [https://openxcom.org/forum/index.php?topic=12524.msg172045#msg172045](https://openxcom.org/forum/index.php?topic=12524.msg172045#msg172045)",
+      "default": "false"
+    },
     "despawnEvenIfTargeted": {
       "description": "Should a mission site expire/despawn even if it is targeted by an xcom craft or not?",
       "default": "false"
@@ -4734,6 +4850,10 @@
     },
     "conditionals": {
       "description": "Defines the conditions that allows the execution of this command. For example, \\[1, -4\\] means it will be executed if command with **label** 1 was a success and command with **label 4** failed.\n\nCommands that are not yet executed are always in failed state.",
+      "default": "-"
+    },
+    "adhocMissionScriptTags": {
+      "description": "Tags the adhoc mission script commands. So that geoscape events can execute only certain tagged commands.\n\nOnly relevant for **adhocScripts**, not relevant for **missionScripts**.\n\nMore info: [https://openxcom.org/forum/index.php?topic=12338.msg171478#msg171478](https://openxcom.org/forum/index.php?topic=12338.msg171478#msg171478)",
       "default": "-"
     },
     "missionWeights": {
@@ -4814,6 +4934,14 @@
     },
     "facilityTriggers": {
       "description": "A list of base facilities that can influence the execution of this script. Similar to research triggers; checks the presence of a facility (in any xcom base).",
+      "default": "-"
+    },
+    "soldierTypeTriggers": {
+      "description": "A list of soldier types that can influence the execution of this script. Similar to research triggers; checks the presence of a soldier type (in any xcom base).",
+      "default": "-"
+    },
+    "pactCountryTriggers": {
+      "description": "A list of countries that can influence the execution of this script. Similar to research triggers; checks if the country has (or hasn't) signed a pact with aliens.",
       "default": "-"
     },
     "xcomBaseInRegionTriggers": {
@@ -4922,6 +5050,14 @@
       "description": "A list of base facilities that can influence the execution of this script. Similar to research triggers; checks the presence of a facility (in any xcom base).",
       "default": "-"
     },
+    "soldierTypeTriggers": {
+      "description": "A list of soldier types that can influence the execution of this script. Similar to research triggers; checks the presence of a soldier type (in any xcom base).",
+      "default": "-"
+    },
+    "pactCountryTriggers": {
+      "description": "A list of countries that can influence the execution of this script. Similar to research triggers; checks if the country has (or hasn't) signed a pact with aliens.",
+      "default": "-"
+    },
     "xcomBaseInRegionTriggers": {
       "description": "A list of regions that can influence the execution of this script. Similar to research triggers; checks the presence (or absence) of an xcom base in a given region.",
       "default": "-"
@@ -5024,6 +5160,10 @@
       "description": "A list of soldier types that can influence the execution of this script. Similar to research triggers; checks the presence of a soldier type (in any xcom base).",
       "default": "-"
     },
+    "pactCountryTriggers": {
+      "description": "A list of countries that can influence the execution of this script. Similar to research triggers; checks if the country has (or hasn't) signed a pact with aliens.",
+      "default": "-"
+    },
     "xcomBaseInRegionTriggers": {
       "description": "A list of regions that can influence the execution of this script. Similar to research triggers; checks the presence (or absence) of an xcom base in a given region.",
       "default": "-"
@@ -5039,6 +5179,10 @@
     "name": {
       "description": "String ID of the event name. Use {0} placeholder (in the actual translation) for region/city name.",
       "default": "required"
+    },
+    "adhocMissionScriptTags": {
+      "description": "Tags to be considered during the adhoc mission script command execution.\n\nMore info: [https://openxcom.org/forum/index.php?topic=12338.msg171478#msg171478](https://openxcom.org/forum/index.php?topic=12338.msg171478#msg171478)",
+      "default": "-"
     },
     "description": {
       "description": "String ID of the event description. Use {0} placeholder (in the actual translation) for region/city name.",
@@ -5135,6 +5279,14 @@
     "invert": {
       "description": "If enabled, the event will remove items instead of generating new items.",
       "default": "false"
+    },
+    "everyMultiSoldierList": {
+      "description": "A list of soldier type IDs and their quantities. When this event pops up they are all transferred to the HQ (within 1 hour).\n\nMore info: [https://openxcom.org/forum/index.php?topic=12646.msg172046#msg172046](https://openxcom.org/forum/index.php?topic=12646.msg172046#msg172046)",
+      "default": "-"
+    },
+    "randomMultiSoldierList": {
+      "description": "A list of \"lists of soldier type IDs and their quantities\". When this event pops up one of the lists is selected randomly and everything in that list is transferred to the HQ (within 1 hour).",
+      "default": "-"
     }
   },
   "extraSprites": {
@@ -5240,6 +5392,10 @@
     },
     "altBackgroundImage": {
       "description": "Alternative background image for the corresponding screen (in battlescape theme). Used for UIs that can be displayed both in geoscape and battlescape mode.",
+      "default": "-"
+    },
+    "upgBackgroundImage": {
+      "description": "Background image upgrades, by research.\n\nMore info: [https://openxcom.org/forum/index.php?topic=12711.0](https://openxcom.org/forum/index.php?topic=12711.0)",
       "default": "-"
     },
     "elements": {
@@ -5449,7 +5605,7 @@
       "default": "-"
     },
     "startingTime": {
-      "description": "Specifies the date and time at the beginning of the game.",
+      "description": "Specifies the date and time at the beginning of the game.\n\nExample:\n\n```\n startingTime:\n   second: 0\n   minute: 0\n   hour: 12\n   weekday: 6      # 1 = Sunday, 7 = Saturday\n   day: 1\n   month: 1\n   year: 1999\n\n```",
       "default": "Friday 1.1.1999 12:00:00"
     },
     "initialFunding": {
@@ -5499,6 +5655,10 @@
     "chanceToStopRetaliation": {
       "description": "If an XCOM base is found and a battleship sent to attack it is shot down by base defense facilities, aliens will keep sending new battleships potentially for a long time. This setting defines a chance that they reconsider their decision (after each failed attack) and stop sending more battleships.",
       "default": "0"
+    },
+    "chanceToDetectAlienBaseEachMonth": {
+      "description": "Chance to detect an alien base by Xcom Operatives at the end of month.",
+      "default": "20"
     },
     "lessAliensDuringBaseDefense": {
       "description": "If enabled, less aliens will spawn in base defense missions, roughly proportional to damage dealt to the invading UFO. At least one alien of each rank is guaranteed to spawn.",
@@ -5704,6 +5864,10 @@
       "description": "The threshold of shade/darkness for LoS calculation. Shade ranges (for value set to 9):\n\n*   0 = no shade: Daylight, full visibility.\n*   1-9 = partial shade: Dusk/Dawn, also full visibility.\n*   10-15 = full shade: Night, decreased visibility for XCOM.",
       "default": "9"
     },
+    "explodeInventoryGlobal": {
+      "description": "A global default value for item attribute **explodeInventory**. Can be overridden per item.\n\n*   0 = doesn't explode in inventory (default, vanilla)\n*   1 = explodes in inventory, except in hands\n*   2 = explodes in inventory",
+      "default": "0"
+    },
     "noLOSAccuracyPenaltyGlobal": {
       "description": "A global default value for accuracy penalty (in percent), when shooting at a unit or tile outside of LoS (line of sight). Can be overridden per weapon.",
       "default": "-1"
@@ -5781,7 +5945,15 @@
       "default": "see example"
     },
     "minReactionAccuracy": {
-      "description": "Minimum firing accuracy for reaction fire. Used to prevent AI making shots that are unlikely to hit, which only makes them waste ammo and TUs. Instead they could wait until the target comes closer or shoot at another target.",
+      "description": "_Deprecated:_ use **reactionFireThreshold** and **reactionFireThresholdCiv** instead.",
+      "default": "-"
+    },
+    "ai.reactionFireThreshold": {
+      "description": "AI-controlled hostile units will not reaction fire, if their accuracy (for a given target) is below this threshold.\n\nUsed to prevent AI making shots that are unlikely to hit, which only makes them waste ammo and TUs. Instead they could wait until the target comes closer or shoot at another target.",
+      "default": "0"
+    },
+    "ai.reactionFireThresholdCiv": {
+      "description": "AI-controlled neutral units will not reaction fire, if their accuracy (for a given target) is below this threshold.",
       "default": "0"
     },
     "turnAIUseGrenade": {
@@ -5806,6 +5978,10 @@
     },
     "ai.aiUseDelayProxy": {
       "description": "Defines a turn, from which the aliens are allowed to use proxy grenades.",
+      "default": "999"
+    },
+    "ai.useDelayMedikit": {
+      "description": "Defines a turn, from which the aliens are allowed to use medikits.",
       "default": "999"
     },
     "ai.useDelayMelee": {
@@ -5843,6 +6019,26 @@
     "ai.pickUpWeaponsMoreActivelyCiv": {
       "description": "More info here: [https://openxcom.org/forum/index.php/topic,6882.0.html](https://openxcom.org/forum/index.php/topic,6882.0.html)",
       "default": "false"
+    },
+    "ai.targetWeightThreatThreshold": {
+      "description": "More info: [https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202](https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202)```\n ai:\n   targetWeightThreatThreshold: 50\n   targetWeightAsHostile: 100\n   targetWeightAsHostileCivilians: 50\n   targetWeightAsFriendly: -200\n   targetWeightAsNeutral: -100\n\n```",
+      "default": "50"
+    },
+    "ai.targetWeightAsHostile": {
+      "description": "More info: [https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202](https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202)```\n ai:\n   targetWeightThreatThreshold: 50\n   targetWeightAsHostile: 100\n   targetWeightAsHostileCivilians: 50\n   targetWeightAsFriendly: -200\n   targetWeightAsNeutral: -100\n\n```",
+      "default": "100"
+    },
+    "ai.targetWeightAsHostileCivilians": {
+      "description": "More info: [https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202](https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202)```\n ai:\n   targetWeightThreatThreshold: 50\n   targetWeightAsHostile: 100\n   targetWeightAsHostileCivilians: 50\n   targetWeightAsFriendly: -200\n   targetWeightAsNeutral: -100\n\n```",
+      "default": "50"
+    },
+    "ai.targetWeightAsFriendly": {
+      "description": "More info: [https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202](https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202)```\n ai:\n   targetWeightThreatThreshold: 50\n   targetWeightAsHostile: 100\n   targetWeightAsHostileCivilians: 50\n   targetWeightAsFriendly: -200\n   targetWeightAsNeutral: -100\n\n```",
+      "default": "-200"
+    },
+    "ai.targetWeightAsNeutral": {
+      "description": "More info: [https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202](https://openxcom.org/forum/index.php?topic=6586.msg171202#msg171202)```\n ai:\n   targetWeightThreatThreshold: 50\n   targetWeightAsHostile: 100\n   targetWeightAsHostileCivilians: 50\n   targetWeightAsFriendly: -200\n   targetWeightAsNeutral: -100\n\n```",
+      "default": "-100"
     },
     "surrenderMode": {
       "description": "Allows enemies to surrender (they will be taken as prisoners). Possible options:\n\n*   0 = no surrender\n*   1 = if all remaining standing enemies can surrender; and they want to surrender at this very moment (their current status is panicking or berserking)... end the battle\n*   2 = if all remaining standing enemies can surrender; and they have panicked/berserked at least once or have been stunned at least once... end the battle\n*   3 = same as option 2, but enemies must also have empty hands\n\nIn all 3 cases, enemies marked as \"auto surrender\" are not checked and count as surrendered.",
