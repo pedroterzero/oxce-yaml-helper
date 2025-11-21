@@ -1,7 +1,7 @@
 'use strict';
 
 import { commands, ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
-import TelemetryReporter from '@vscode/extension-telemetry';
+import { TelemetryReporter } from '@vscode/extension-telemetry';
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
 import { ExtensionRecommender } from './extensionRecommender';

@@ -208,16 +208,11 @@ export class RulesetResolver implements Disposable {
                     logger.debug(`Adding in parent mod ${parentMod}`);
                     this.rulesetHierarchy[`parent${parentMod}`] = Uri.joinPath(workspaceFolder.uri, `../${parentMod}`);
 
-                    await new Promise<void>((resolve) => {
-                        glob(
-                            Uri.joinPath(this.rulesetHierarchy[`parent${parentMod}`], '**/*.rul').fsPath,
-                            {},
-                            (_er, foundFiles) => {
-                                files = files.concat(...foundFiles.map((path) => Uri.file(path)));
-                                resolve();
-                            },
-                        );
-                    });
+                    const foundFiles = await glob(
+                        Uri.joinPath(this.rulesetHierarchy[`parent${parentMod}`], '**/*.rul').fsPath,
+                        {},
+                    );
+                    files = files.concat(...foundFiles.map((path) => Uri.file(path)));
                 } else {
                     missingMods.push(parentMod);
                 }
