@@ -1,9 +1,9 @@
 on:
   push:
     tags:
-      - 'v*'
-      - '!v*-alpha*'
-      - '!v*-rc*'
+      - "v*"
+      - "!v*-alpha*"
+      - "!v*-rc*"
 
 name: Upload Release Asset
 
@@ -17,7 +17,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
       - run: npm install
       - name: Build & package project
         id: create_package
