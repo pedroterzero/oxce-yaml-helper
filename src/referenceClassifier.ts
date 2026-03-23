@@ -4,7 +4,6 @@ import { builtinResourceIds, builtinTypes } from './definitions/builtinTypes';
 import { ignoreTypes } from './definitions/ignoreTypes';
 import { ignoreStringTypes, stringTypes } from './definitions/stringTypes';
 import { typedProperties } from './typedProperties';
-import { perfTimer } from './performanceTimer';
 
 export class ReferenceClassifier {
     private builtinTypeRegexes: { regex: RegExp; values: Set<string> }[] = [];
@@ -28,45 +27,36 @@ export class ReferenceClassifier {
      * Returns true if the reference should be checked (i.e. is NOT a known skip case).
      */
     public typeExists(ref: Match): boolean {
-        perfTimer.start('checker.typeExists');
         let isDelete = this.deletePatternCache.get(ref.path);
         if (isDelete === undefined) {
             isDelete = /^[a-z]+\.delete$/i.test(ref.path);
             this.deletePatternCache.set(ref.path, isDelete);
         }
         if (isDelete) {
-            perfTimer.stop('checker.typeExists');
             return false;
         }
         if (ref.path.startsWith('extraStrings.') || ref.path.startsWith('extended.scripts.')) {
-            perfTimer.stop('checker.typeExists');
             return false;
         }
         if (this.checkForIgnoredType(ref.path)) {
-            perfTimer.stop('checker.typeExists');
             return false;
         }
         if (!cachedConfig.findMissingTranslations && this.isExtraStringType(ref.path)) {
-            perfTimer.stop('checker.typeExists');
             return false;
         }
         if (ref.path in builtinTypes && builtinTypes[ref.path].indexOf(ref.key) !== -1) {
-            perfTimer.stop('checker.typeExists');
             return false;
         } else if (this.matchesBuiltinTypeRegex(ref.path, ref.key)) {
-            perfTimer.stop('checker.typeExists');
             return false;
         }
 
         if (ref.path in builtinResourceIds) {
             const [min, max] = builtinResourceIds[ref.path];
             if (parseInt(ref.key) >= min && parseInt(ref.key) <= max) {
-                perfTimer.stop('checker.typeExists');
                 return false;
             }
         }
 
-        perfTimer.stop('checker.typeExists');
         return true;
     }
 
