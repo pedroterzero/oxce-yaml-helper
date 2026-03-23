@@ -1,9 +1,10 @@
 import { Stats } from 'fs';
+import { mkdir, readFile, stat, writeFile, unlink } from 'fs/promises';
+import { serialize, deserialize } from 'v8';
 import { ExtensionContext, extensions, Uri } from 'vscode';
 import { cachedConfig } from './cachedConfiguration';
 import { ParsedRuleset } from './rulesetResolver';
 import { rulesetResolver } from './extension';
-import { mkdir, readFile, stat, writeFile, unlink } from 'fs/promises';
 
 const cacheAssetsStrategies = new Set(['all', 'only cache languages, assets', 'only cache assets']);
 const cacheLanguagesStrategies = new Set(['all', 'only cache languages', 'only cache languages, assets']);
@@ -107,7 +108,7 @@ export class RulesetFileCacheManager {
         }
         const cacheId = this.getCacheId(file);
 
-        await writeFile(this.getDataPath(cacheId), JSON.stringify(data));
+        await writeFile(this.getDataPath(cacheId), serialize(data));
 
         this.metadataIndex.set(cacheId, {
             mtimeMs: fileStat.mtimeMs,
@@ -149,22 +150,10 @@ export class RulesetFileCacheManager {
 
         // Metadata matches — read data file (async, not blocking event loop)
         try {
-            const data = await readFile(this.getDataPath(cacheId), 'utf8');
-            const parsed = JSON.parse(data);
-
-            const ret: ParsedRuleset = {
-                translations: 'translations' in parsed ? parsed.translations : [],
-            };
-            ['definitions', 'references', 'variables', 'logicData'].forEach((key) => {
-                const mykey = key as keyof ParsedRuleset;
-                if (mykey in parsed) {
-                    ret[mykey] = parsed[key];
-                }
-            });
-
-            return ret;
+            const buf = await readFile(this.getDataPath(cacheId));
+            return deserialize(buf) as ParsedRuleset;
         } catch {
-            // Data file missing or corrupt
+            // Data file missing or corrupt (includes old JSON format after upgrade)
             this.metadataIndex.delete(cacheId);
             return;
         }
