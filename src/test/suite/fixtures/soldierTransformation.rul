@@ -3,6 +3,11 @@ soldierTransformation:
     # allowedSoldierTypes:
     #   - STR_FOOBAR
 
+  # positive case: transformation WITH allowedSoldierTypes (should NOT warn)
+  - name: STR_TRANSFORMATION_WITH_SOLDIER_TYPES
+    allowedSoldierTypes:
+      - YOURTYPE
+
   - name: STR_TRANSFORMATION_SOLDIERBONUSTYPE_TEST
     soldierBonusType: STR_DUMMY_BONUS
   # missing

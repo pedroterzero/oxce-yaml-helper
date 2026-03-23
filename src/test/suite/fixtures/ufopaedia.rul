@@ -18,3 +18,17 @@ ufopaedia:
   - id: STR_CRAFT_ARTICLE_WITHOUT_RECT_TEXT
     type_id: 1
     image_id: UP001.SPK # should exist!
+
+  # type_id that requires image but has STR_NOT_AVAILABLE section (should NOT warn)
+  - id: STR_ARTICLE_NOT_AVAILABLE_SECTION
+    type_id: 2
+    section: STR_NOT_AVAILABLE
+
+  # type_id 7 requires image (should warn)
+  - id: STR_ARTICLE_TYPE_7_NO_IMAGE
+    type_id: 7
+
+  # type_id 7 with image (should NOT warn)
+  - id: STR_ARTICLE_TYPE_7_WITH_IMAGE
+    type_id: 7
+    image_id: UP001.SPK

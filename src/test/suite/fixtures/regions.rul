@@ -4,3 +4,9 @@ regions:
       -
         - [1, 2, 3, -4]
         - [2, 1, 3, -4]
+
+  # positive case: lon1 < lon2 (should NOT warn about prime meridian)
+  - type: STR_REGION_VALID_COORDINATES
+    missionZones:
+      -
+        - [1, 2, 3, 4]

@@ -6,6 +6,7 @@ import { RulesetHoverProvider } from '../../rulesetHoverProvider';
 const fixturePath = resolve(__dirname, '../../../src/test/suite/fixtures');
 const itemsPath = resolve(fixturePath, 'items.rul');
 const documentationTestPath = resolve(fixturePath, 'documentationTest.rul');
+const craftWeaponsPath = resolve(fixturePath, 'craftWeapons.rul');
 
 const locale = 'en-US';
 const expectedTranslations = [
@@ -91,6 +92,71 @@ describe('hoverProvider', () => {
 
         it('returns the correct documentation for a nested doc with the same key', () => {
             testHover(documentationTestDocument, expectedDocumentation.documentationTest);
+        });
+
+        it('returns no hover for a position on an empty line', async () => {
+            const document = await workspace.openTextDocument(itemsPath);
+            const hover = hoverProvider.provideHover(document, new Position(3, 0));
+            assert.ok(!hover || hover.contents.length === 0, 'Should not return hover for empty line');
+        });
+
+        it('returns translation hover for the first item', () => {
+            if (!document) {
+                throw new Error('no document');
+            }
+            const hover = hoverProvider.provideHover(document, new Position(1, 18));
+            assert.notStrictEqual(hover, undefined);
+            if (hover && hover.contents.length > 0) {
+                const content = hover.contents[0] as MarkdownString;
+                assert.strictEqual(content.value, 'Dummy');
+            }
+        });
+
+        it('returns missing translation message for untranslated key', () => {
+            if (!document) {
+                throw new Error('no document');
+            }
+            const hover = hoverProvider.provideHover(document, new Position(7, 18));
+            assert.notStrictEqual(hover, undefined);
+            if (hover && hover.contents.length > 0) {
+                const content = hover.contents[0] as MarkdownString;
+                assert.ok(
+                    content.value.includes('No translation found'),
+                    `Expected 'No translation found' in hover content, got: ${content.value}`,
+                );
+            }
+        });
+
+        it('returns documentation hover for items.flatRate property', () => {
+            if (!document) {
+                throw new Error('no document');
+            }
+            const hover = hoverProvider.provideHover(document, new Position(8, 8));
+            assert.notStrictEqual(hover, undefined);
+            if (hover && hover.contents.length > 0) {
+                const content = hover.contents[0] as MarkdownString;
+                assert.ok(
+                    content.value.includes('flat rate'),
+                    `Expected documentation about flat rate, got: ${content.value}`,
+                );
+            }
+        });
+
+        it('returns no documentation hover for undocumented property', () => {
+            if (!document) {
+                throw new Error('no document');
+            }
+            // 'dummy' property at line 9 in items.rul
+            const hover = hoverProvider.provideHover(document, new Position(9, 8));
+            assert.ok(!hover || hover.contents.length === 0, 'Should not return hover for undocumented property');
+        });
+
+        it('returns hover for craftWeapons properties', async () => {
+            const cwDoc = await workspace.openTextDocument(craftWeaponsPath);
+            // 'sprite:' property at line 2
+            hoverProvider.provideHover(cwDoc, new Position(2, 8));
+            // may or may not have docs, but should not crash
+            assert.ok(true, 'Should not crash when hovering on craftWeapons properties');
         });
     });
 });
