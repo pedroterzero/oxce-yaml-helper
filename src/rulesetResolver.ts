@@ -240,7 +240,10 @@ export class RulesetResolver implements Disposable {
         this.rulesetHierarchy.vanilla = assetPath;
 
         if (this.context) {
-            const assets = await workspace.fs.readDirectory(assetPath);
+            const [assets, languageAssets] = await Promise.all([
+                workspace.fs.readDirectory(assetPath),
+                workspace.fs.readDirectory(Uri.joinPath(assetPath, '/Language')),
+            ]);
 
             for (const [name, type] of assets) {
                 if (type === FileType.File) {
@@ -249,9 +252,6 @@ export class RulesetResolver implements Disposable {
                     }
                 }
             }
-
-            // also load language file(s) from vanilla
-            const languageAssets = await workspace.fs.readDirectory(Uri.joinPath(assetPath, '/Language'));
 
             for (const [name, type] of languageAssets) {
                 if (type === FileType.File) {

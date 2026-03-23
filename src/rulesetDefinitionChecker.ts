@@ -109,7 +109,7 @@ export class RulesetDefinitionChecker {
                 continue;
             }
             const possibleKeys = this.getPossibleKeys(ref);
-            if (possibleKeys.filter((key) => key in lookup).length === 0) {
+            if (!possibleKeys.some((key) => key in lookup)) {
                 // can never match because the key simply does not exist for any type
                 this.addReferenceDiagnostic(ref, diagnostics, this.nonexistantDefinitionMessage);
             } else {
