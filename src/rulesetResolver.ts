@@ -55,6 +55,7 @@ export class RulesetResolver implements Disposable {
 
     public async load(progress: Progress<{ message?: string; increment?: number }>) {
         this.init();
+        this.onDidLoadEmitter.removeAllListeners('didLoadRulesheet');
         perfTimer.reset();
         perfTimer.start('total.load');
         perfTimer.start('phase.loadYamlFiles');

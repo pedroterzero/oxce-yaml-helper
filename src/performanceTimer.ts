@@ -3,7 +3,7 @@ import { logger } from './logger';
 
 interface TimingEntry {
     label: string;
-    startTime: number;
+    startTimes: number[];
     elapsed?: number;
     count: number;
     totalElapsed: number;
@@ -14,30 +14,35 @@ export class PerformanceTimer {
     private enabled = true;
 
     start(label: string): void {
-        if (!this.enabled) { return; }
+        if (!this.enabled) {
+            return;
+        }
 
         let entry = this.timings.get(label);
         if (!entry) {
-            entry = { label, startTime: 0, count: 0, totalElapsed: 0 };
+            entry = { label, startTimes: [], count: 0, totalElapsed: 0 };
             this.timings.set(label, entry);
         }
-        entry.startTime = performance.now();
+
+        entry.startTimes.push(performance.now());
     }
 
     stop(label: string): number {
-        if (!this.enabled) { return 0; }
+        if (!this.enabled) {
+            return 0;
+        }
 
         const entry = this.timings.get(label);
-        if (!entry || entry.startTime === 0) {
+        const startTime = entry?.startTimes.pop();
+        if (!entry || startTime === undefined) {
             logger.warn(`PerformanceTimer: no start for label "${label}"`);
             return 0;
         }
 
-        const elapsed = performance.now() - entry.startTime;
+        const elapsed = performance.now() - startTime;
         entry.elapsed = elapsed;
         entry.count++;
         entry.totalElapsed += elapsed;
-        entry.startTime = 0;
         return elapsed;
     }
 
