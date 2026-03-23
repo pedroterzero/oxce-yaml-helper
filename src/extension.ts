@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, ExtensionContext, languages, Progress, ProgressLocation, window, workspace } from 'vscode';
+import { commands, ExtensionContext, languages, OutputChannel, Progress, ProgressLocation, Uri, window, workspace } from 'vscode';
 import { TelemetryReporter } from '@vscode/extension-telemetry';
 import { RulesetResolver } from './rulesetResolver';
 import { RulesetDefinitionProvider } from './rulesetDefinitionProvider';
@@ -16,6 +16,38 @@ import { perfTimer } from './performanceTimer';
 
 export const rulesetResolver = new RulesetResolver();
 export let reporter: TelemetryReporter;
+
+const createBenchmarkDefaultUri = () => {
+    const workspaceFolder = workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+        return;
+    }
+
+    const sanitizedName = workspaceFolder.name.replace(/[^a-z0-9-_]+/gi, '-').toLowerCase();
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    return Uri.joinPath(workspaceFolder.uri, `benchmark-${sanitizedName}-${timestamp}.json`);
+};
+
+const saveBenchmarkReport = async (
+    report: ReturnType<typeof perfTimer.report>,
+    outputChannel: OutputChannel,
+) => {
+    const targetUri = await window.showSaveDialog({
+        defaultUri: createBenchmarkDefaultUri(),
+        filters: {
+            JSON: ['json'],
+        },
+        saveLabel: 'Save benchmark report',
+    });
+
+    if (!targetUri) {
+        outputChannel.appendLine('Benchmark report was not saved to a file.');
+        return;
+    }
+
+    await workspace.fs.writeFile(targetUri, new TextEncoder().encode(`${JSON.stringify(report, null, 2)}\n`));
+    outputChannel.appendLine(`Saved benchmark report to ${targetUri.fsPath}`);
+};
 
 const loadWithProgress = () => {
     window.withProgress({
@@ -56,18 +88,19 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.generateDocumentation', GenerateDocumentationCommand.handler));
 
-    context.subscriptions.push(commands.registerCommand('oxcYamlHelper.benchmark', () => {
+    context.subscriptions.push(commands.registerCommand('oxcYamlHelper.benchmark', async () => {
         const outputChannel = window.createOutputChannel('OXC Benchmark');
         outputChannel.show();
         outputChannel.appendLine('Running benchmark - reloading rulesets...');
         perfTimer.reset();
-        window.withProgress({
+        await window.withProgress({
             location: ProgressLocation.Notification,
             title: 'Running benchmark',
         }, async (progress) => {
             await rulesetResolver.load(progress);
             const report = perfTimer.report();
             outputChannel.appendLine(JSON.stringify(report, null, 2));
+            await saveBenchmarkReport(report, outputChannel);
             outputChannel.appendLine('\nBenchmark complete.');
             perfTimer.logReport();
         });

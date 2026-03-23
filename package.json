@@ -220,7 +220,8 @@
         "postinstall": "echo node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./out/test/runTest.js",
         "test:prepare": "node ./out/test/prepare.js",
-        "test:cleanup": "mv package.json.orig package.json"
+        "test:cleanup": "mv package.json.orig package.json",
+        "benchmark:compare": "node ./scripts/compare-benchmarks.mjs"
     },
     "devDependencies": {
         "@types/dot-object": "^2.1.6",
