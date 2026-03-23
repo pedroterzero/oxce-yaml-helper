@@ -19,7 +19,7 @@
         "Other"
     ],
     "activationEvents": [
-        "workspaceContains:**/*.rul"
+        "onStartupFinished"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -39,6 +39,10 @@
             {
                 "command": "oxcYamlHelper.convertCsvToRul",
                 "title": "OpenXcom IDE - Import to rul"
+            },
+            {
+                "command": "oxcYamlHelper.benchmark",
+                "title": "OpenXcom IDE - Run performance benchmark"
             }
         ],
         "menus": {
@@ -220,9 +224,7 @@
     },
     "devDependencies": {
         "@types/dot-object": "^2.1.6",
-        "@types/flat-cache": "^2.0.2",
         "@types/fs-extra": "^11.0.4",
-        "@types/glob": "^9.0.0",
         "@types/lodash": "^4.17.20",
         "@types/mocha": "^10.0.10",
         "@types/node": "^20.19.25",
@@ -242,6 +244,7 @@
         "@vscode/extension-telemetry": "^1.2.0",
         "dot-object": "^2.1.5",
         "flat-cache": "^6.1.19",
+        "glob": "^13.0.6",
         "lodash": "^4.17.21",
         "marked": "^17.0.1",
         "merge-anything": "^5.1.7",

@@ -1,10 +1,7 @@
-import { Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, Range, Uri, workspace } from 'vscode';
-import { DefinitionLookup, Match } from './rulesetTree';
+import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from 'vscode';
+import { Match } from './rulesetTree';
 import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from './workspaceFolderRuleset';
 import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from './definitions/typeLinks';
-import { builtinResourceIds, builtinTypes } from './definitions/builtinTypes';
-import { ignoreTypes } from './definitions/ignoreTypes';
-import { ignoreStringTypes, stringTypes } from './definitions/stringTypes';
 import { rulesetResolver } from './extension';
 import { logger } from './logger';
 import { FilesWithDiagnostics, LogicHandler } from './logic/logicHandler';
@@ -12,18 +9,10 @@ import { mergeAndConcat } from 'merge-anything';
 import { typeHintMessages } from './definitions/typeHintMessages';
 import { typedProperties } from './typedProperties';
 import { WorkspaceFolderRulesetHierarchy } from './workspaceFolderRulesetHierarchy';
-import { pathStartsWith } from './utilities';
 import { FileNotInWorkspaceError } from './rulesetResolver';
-
-type Duplicates = {
-    [key: string]: DefinitionLookup[];
-};
-
-type DuplicateMatches = {
-    key: string;
-    definition: DefinitionLookup;
-    duplicates: DefinitionLookup[];
-};
+import { perfTimer } from './performanceTimer';
+import { ReferenceClassifier } from './referenceClassifier';
+import { DuplicateChecker } from './duplicateChecker';
 
 type TypeMatchResult = {
     match: boolean;
@@ -33,42 +22,17 @@ type TypeMatchResult = {
 
 export class RulesetDefinitionChecker {
     private problemsByPath: { [key: string]: number } = {};
-    private duplicatesPerFile: { [key: string]: DuplicateMatches[] } = {};
-
-    private ignoreDefinitionRegexes: RegExp[] = [
-        /^extraSprites\.files\.\d+$/,
-        /^extended\.tags\.([a-zA-Z]+)$/,
-        // /^facilities\.provideBaseFunc$/,
-        /^terrains\.mapBlocks\[\]$/,
-    ];
-
-    private builtinTypeRegexes: { regex: RegExp; values: string[] }[] = [];
-    private stringTypeRegexes: RegExp[] = [];
-    private ignoreTypesRegexes: RegExp[] = [];
-
-    private ignoreTypeValues: { [key: string]: string[] } = {
-        extraSprites: [
-            'BASEBITS.PCK',
-            'BIGOBS.PCK',
-            'FLOOROB.PCK',
-            'HANDOB.PCK',
-            'INTICON.PCK',
-            'Projectiles',
-            'SMOKE.PCK',
-        ],
-        extraSounds: ['BATTLE.CAT'],
-    };
 
     private noWarnAboutIncorrectType = Object.keys(spriteTypeLinks).concat(Object.keys(soundTypeLinks));
 
     private logicHandler = new LogicHandler();
-
-    public constructor() {
-        this.loadRegexes();
-    }
+    private classifier = new ReferenceClassifier();
+    private duplicateChecker = new DuplicateChecker();
 
     public init(lookup: TypeLookup) {
-        this.checkDefinitions(lookup);
+        perfTimer.start('checker.checkDefinitions');
+        this.duplicateChecker.checkDefinitions(lookup);
+        perfTimer.stop('checker.checkDefinitions');
         this.logicHandler = new LogicHandler();
     }
 
@@ -78,13 +42,17 @@ export class RulesetDefinitionChecker {
         _workspacePath: string,
         hierarchy: WorkspaceFolderRulesetHierarchy,
     ): Diagnostic[] {
+        perfTimer.start('checker.checkFile');
         const diagnostics: Diagnostic[] = [];
 
+        perfTimer.start('checker.checkReferences');
         this.checkReferences(file, ruleset.definitionsLookup, diagnostics);
-        this.addDuplicateDefinitions(file, diagnostics);
+        perfTimer.stop('checker.checkReferences');
+        this.duplicateChecker.addDuplicateDefinitions(file, diagnostics);
 
         this.checkLogicData(ruleset, file, diagnostics, hierarchy);
 
+        perfTimer.stop('checker.checkFile');
         return diagnostics;
     }
 
@@ -114,59 +82,14 @@ export class RulesetDefinitionChecker {
         return mergeAndConcat(diagnosticsPerFile, additionalFilesWithDiagnostics) as FilesWithDiagnostics;
     }
 
-    private addDuplicateDefinitions(file: ReferenceFile, diagnostics: Diagnostic[]) {
-        if (!(file.file.path in this.duplicatesPerFile)) {
-            return;
-        }
-
-        const duplicates = this.duplicatesPerFile[file.file.path];
-        for (const duplicate of duplicates) {
-            const relatedInformation = [];
-            for (const dupdef of duplicate.duplicates) {
-                relatedInformation.push(
-                    new DiagnosticRelatedInformation(
-                        new Location(dupdef.file, new Range(...dupdef.rangePosition[0], ...dupdef.rangePosition[1])),
-                        'also defined here',
-                    ),
-                );
-            }
-
-            let message = `${duplicate.definition.type} ${duplicate.key} is duplicate (add # ignoreDuplicate after this to ignore this entry)`;
-
-            message = this.checkDuplicateHints(duplicate, message);
-
-            const range = new Range(...duplicate.definition.rangePosition[0], ...duplicate.definition.rangePosition[1]);
-            diagnostics.push({
-                range,
-                message,
-                severity: DiagnosticSeverity.Warning,
-                relatedInformation,
-            });
-        }
-
-        // appendFile(workspacePath + '/messages.txt', doc.fileName.slice(workspacePath.length + 1) + "\n==========\n" + messages.join("\n") + "\n\n", () => { return; });
-    }
-
-    private checkDuplicateHints(duplicate: DuplicateMatches, message: string) {
-        if (duplicate.definition.type.startsWith('extraSprites.')) {
-            if (duplicate.definition.metadata?.spriteSize) {
-                message += `\nHint: ${typeHintMessages
-                    .extraSpritesMulti(duplicate.definition.metadata.spriteSize as string)
-                    .trim()}`;
-            }
-        }
-
-        return message;
-    }
-
     private checkReferences(file: ReferenceFile, lookup: TypeLookup, diagnostics: Diagnostic[]) {
         for (const ref of file.references) {
-            if (!this.typeExists(ref)) {
+            if (!this.classifier.typeExists(ref)) {
                 continue;
             }
 
             let isCheckableTranslation = false;
-            if (this.isCheckableTranslatableString(ref)) {
+            if (this.classifier.isCheckableTranslatableString(ref)) {
                 isCheckableTranslation = true;
 
                 // check if the reference points to an existing translation
@@ -198,29 +121,6 @@ export class RulesetDefinitionChecker {
         }
     }
 
-    private isCheckableTranslatableString(ref: Match) {
-        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations')) {
-            return false;
-        }
-
-        if (this.isExtraStringType(ref.path)) {
-            return true;
-        }
-        if (
-            typedProperties.isDefinitionPropertyForPath(
-                ref.path.split('.').slice(0, -1).join('.'),
-                ref.path.split('.').slice(-1).join('.'),
-                'DUMMY',
-            )
-        ) {
-            if (!ignoreStringTypes.includes(ref.path)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private checkForValidTranslationReference(ref: Match, file: Uri, diagnostics: Diagnostic[]) {
         // console.log(`checking translation ${ref.path} => ${ref.key}`);
         // const translation = rulesetResolver.getTranslationForKey(ref.key, file, true);
@@ -244,122 +144,6 @@ export class RulesetDefinitionChecker {
                 () => `No translation entry found for "${ref.key}" (${ref.path})`,
             );
         }
-    }
-
-    public checkDefinitions(lookup: TypeLookup) {
-        this.duplicatesPerFile = {};
-
-        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions')) {
-            return;
-        }
-
-        logger.debug(`Existing lookups: ${Object.keys(lookup).length}`);
-
-        const dupes = this.getDuplicatesByKeyAndType(lookup);
-        logger.debug(`Number of types that have duplicates: ${Object.keys(dupes).length}`);
-
-        for (const type in dupes) {
-            for (const defs of Object.values(dupes[type])) {
-                this.groupDuplicatesByFile(defs, type);
-            }
-        }
-    }
-
-    private groupDuplicatesByFile(defs: DefinitionLookup[], type: string) {
-        for (const idx1 in defs) {
-            // first loop, build the message for defs that is not this one
-            const def = defs[idx1];
-
-            const mydefs = [];
-            for (const idx2 in defs) {
-                // inner loop, get defs that aren't this one
-                if (idx1 !== idx2) {
-                    mydefs.push(defs[idx2]);
-                }
-            }
-
-            if (!(def.file.path in this.duplicatesPerFile)) {
-                this.duplicatesPerFile[def.file.path] = [];
-            }
-
-            this.duplicatesPerFile[def.file.path].push({
-                key: type,
-                definition: def,
-                duplicates: mydefs,
-            });
-        }
-    }
-
-    private getDuplicatesByKeyAndType(lookup: TypeLookup) {
-        const dupes: { [key: string]: { [key: string]: DefinitionLookup[] } } = {};
-        const hierarchy = rulesetResolver.getRulesetHierarchy();
-
-        for (const key in lookup) {
-            const duplicates = this.getDuplicateKeys(lookup[key], key, hierarchy);
-            if (!duplicates) {
-                continue;
-            }
-
-            const grouped = this.groupDuplicates(duplicates);
-            if (Object.keys(grouped).length) {
-                dupes[key] = grouped;
-            }
-        }
-
-        return dupes;
-    }
-
-    private getDuplicateKeys(
-        keyDefs: DefinitionLookup[],
-        key: string,
-        hierarchy: { [key: string]: Uri },
-    ): Duplicates | undefined {
-        const duplicates: Duplicates = {};
-
-        definitions: for (const def of keyDefs) {
-            if (
-                def.metadata &&
-                '_comment' in def.metadata &&
-                (def.metadata._comment as string).includes('ignoreDuplicate')
-            ) {
-                // explicitly ignored by comment
-                continue;
-            }
-
-            if (def.type in this.ignoreTypeValues && this.ignoreTypeValues[def.type].indexOf(key) !== -1) {
-                continue;
-            }
-            for (const re of this.ignoreDefinitionRegexes) {
-                if (re.exec(def.type)) {
-                    continue definitions;
-                }
-            }
-
-            if (!pathStartsWith(def.file, hierarchy.mod)) {
-                continue;
-            }
-
-            if (!(def.type in duplicates)) {
-                duplicates[def.type] = [];
-            }
-
-            duplicates[def.type].push(def);
-        }
-
-        return duplicates;
-    }
-
-    private groupDuplicates(duplicates: Duplicates) {
-        const ret: { [key: string]: DefinitionLookup[] } = {};
-
-        for (const type in duplicates) {
-            const typeDupes = duplicates[type];
-            if (typeDupes.length > 1) {
-                ret[type] = typeDupes;
-            }
-        }
-
-        return ret;
     }
 
     private getPossibleKeys(ref: Match) {
@@ -555,89 +339,8 @@ export class RulesetDefinitionChecker {
         return message;
     }
 
-    private typeExists(ref: Match): boolean {
-        if (ref.path.match(/^[a-z]+\.delete$/i)) {
-            // we can't really check deletes, because the types are deleted by the time we get here. TODO to fix even that
-            return false;
-        }
-        if (ref.path.startsWith('extraStrings.') || ref.path.startsWith('extended.scripts.')) {
-            // ignore extraStrings for now(?)
-            return false;
-        }
-        if (this.checkForIgnoredType(ref.path)) {
-            // ignore these assorted types for now
-            return false;
-        }
-        if (
-            !workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations') &&
-            this.isExtraStringType(ref.path)
-        ) {
-            // allow translation checking to be disabled
-            return false;
-        }
-        if (ref.path in builtinTypes && builtinTypes[ref.path].indexOf(ref.key) !== -1) {
-            return false;
-        } else if (this.matchesBuiltinTypeRegex(ref.path, ref.key)) {
-            return false;
-        }
-
-        if (ref.path in builtinResourceIds) {
-            const [min, max] = builtinResourceIds[ref.path];
-
-            if (parseInt(ref.key) >= min && parseInt(ref.key) <= max) {
-                // built in resource id
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private isExtraStringType(path: string) {
-        if (stringTypes.includes(path)) {
-            return true;
-        }
-
-        for (const regex of this.stringTypeRegexes) {
-            if (regex.exec(path)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private checkForIgnoredType(path: string) {
-        if (ignoreTypes.includes(path)) {
-            return true;
-        }
-
-        for (const re of this.ignoreTypesRegexes) {
-            if (re.exec(path)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public matchesBuiltinTypePathRegex(path: string) {
-        for (const item of this.builtinTypeRegexes) {
-            if (item.regex.exec(path)) {
-                return item.values;
-            }
-        }
-        return;
-    }
-
-    private matchesBuiltinTypeRegex(path: string, key: string): boolean {
-        for (const item of this.builtinTypeRegexes) {
-            if (item.regex.exec(path) && item.values.includes(key)) {
-                return true;
-            }
-        }
-
-        return false;
+        return this.classifier.matchesBuiltinTypePathRegex(path);
     }
 
     public getProblemsByPath() {
@@ -646,33 +349,6 @@ export class RulesetDefinitionChecker {
 
     public clear() {
         this.problemsByPath = {};
-    }
-
-    private loadRegexes() {
-        for (const type in builtinTypes) {
-            if (type.startsWith('/') && type.endsWith('/')) {
-                this.builtinTypeRegexes.push({
-                    regex: new RegExp(type.slice(1, -1)),
-                    values: builtinTypes[type],
-                });
-
-                delete builtinResourceIds[type];
-            }
-        }
-
-        for (const type of stringTypes) {
-            if (type.startsWith('/') && type.endsWith('/')) {
-                this.stringTypeRegexes.push(new RegExp(type.slice(1, -1)));
-
-                // stringTypes = stringTypes.filter(fType => fType !== type);
-            }
-        }
-
-        for (const type of ignoreTypes) {
-            if (type.startsWith('/') && type.endsWith('/')) {
-                this.ignoreTypesRegexes.push(new RegExp(type.slice(1, -1)));
-            }
-        }
     }
 }
 

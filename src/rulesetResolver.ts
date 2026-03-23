@@ -16,6 +16,7 @@ import {
 import { parse } from 'yaml2';
 import { reporter } from './extension';
 import { logger } from './logger';
+import { perfTimer } from './performanceTimer';
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { rulesetFileCacheManager } from './rulesetFileCacheManager';
 import { rulesetParser } from './rulesetParser';
@@ -54,20 +55,18 @@ export class RulesetResolver implements Disposable {
 
     public async load(progress: Progress<{ message?: string; increment?: number }>) {
         this.init();
-        const start = new Date();
+        perfTimer.reset();
+        perfTimer.start('total.load');
+        perfTimer.start('phase.loadYamlFiles');
 
         progress.report({ increment: 0 });
 
         this.onDidLoadRulesheet(this.ruleSheetLoaded.bind(this, progress));
 
-        // eslint-disable-next-line no-debugger
-        // debugger;
-        // console.profile();
         await this.loadYamlFiles();
-        // console.profileEnd();
-        // eslint-disable-next-line no-debugger
+        perfTimer.stop('phase.loadYamlFiles');
         progress.report({ increment: 100 });
-        logger.debug(`yaml files loaded, took ${(new Date().getTime() - start.getTime()) / 1000}s`);
+        logger.debug(`yaml files loaded, took ${(perfTimer.report()['phase.loadYamlFiles']?.totalMs ?? 0) / 1000}s`);
 
         this.onDidLoadRulesheet(this.ruleSheetReloaded.bind(this, progress));
 
@@ -75,7 +74,9 @@ export class RulesetResolver implements Disposable {
 
         this.registerFileWatcher();
 
-        // this.loaded = true;
+        perfTimer.stop('total.load');
+        perfTimer.logReport();
+
         this.onDidLoadEmitter.emit('didLoad');
     }
 
@@ -340,12 +341,16 @@ export class RulesetResolver implements Disposable {
             throw new Error('workspace folder could not be found');
         }
 
+        perfTimer.start('file.cacheCheck');
         let parsed: ParsedRuleset | undefined = await rulesetFileCacheManager.retrieve(file);
+        perfTimer.stop('file.cacheCheck');
         if (parsed) {
             logger.debug(`Retrieved ${file.path} from cache`);
         } else {
             try {
+                perfTimer.start('file.parse');
                 parsed = await this.parseDocument(file, workspaceFolder);
+                perfTimer.stop('file.parse');
             } catch (error) {
                 window.showErrorMessage(
                     `Failed to parse: ${workspace.asRelativePath(
@@ -362,6 +367,7 @@ export class RulesetResolver implements Disposable {
             return;
         }
 
+        perfTimer.start('file.treeMerge');
         if (parsed.definitions) {
             rulesetTree.mergeIntoTree(parsed.definitions, workspaceFolder, file);
         }
@@ -376,6 +382,7 @@ export class RulesetResolver implements Disposable {
         }
 
         rulesetTree.mergeTranslationsIntoTree(parsed.translations, workspaceFolder, file);
+        perfTimer.stop('file.treeMerge');
 
         delete this.processingFiles[file.path];
         this.onDidLoadEmitter.emit(
@@ -522,9 +529,10 @@ export class RulesetResolver implements Disposable {
             rulesetTree.refresh(workspaceFolder);
         });
 
-        const start = new Date();
+        perfTimer.start('phase.validation');
         this.validateReferences();
-        logger.debug(`rulesets validated, took ${(new Date().getTime() - start.getTime()) / 1000}s`);
+        perfTimer.stop('phase.validation');
+        logger.debug(`rulesets validated, took ${(perfTimer.report()['phase.validation']?.totalMs ?? 0) / 1000}s`);
     }
 
     private validateReferences() {

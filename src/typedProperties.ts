@@ -8,10 +8,7 @@ import {
     getAdditionalTypePropertyHints,
     getAdditionalVetoTypes,
 } from './utilities';
-
-type typePropertyHints = {
-    [key: string]: string[];
-};
+import typeConfig = require('./definitions/typeConfig.json');
 
 type typeProperties = {
     [key: string]: {
@@ -28,10 +25,6 @@ type logicMethod = (key: string, path: string, ruleType: RuleType | Match) => Lo
 
 type logicOverrides = {
     [key: string]: logicMethod;
-};
-
-type metadataFields = {
-    [key: string]: string[];
 };
 
 type LogicOverride = {
@@ -56,160 +49,20 @@ export class typedProperties {
         return false;
     }
 
-    // properties for which 'type' is not the (only) key
-    private static typePropertyHints: typePropertyHints = {
-        alienRaces: ['id'],
-        extraSprites: ['type', 'typeSingle'],
-        events: ['name'],
-        facilities: ['type', 'provideBaseFunc[]'],
-        invs: ['id'],
-        manufacture: ['name'],
-        manufactureShortcut: ['name'],
-        research: ['name'],
-        soldierBonuses: ['name'],
-        soldierTransformation: ['name'],
-        terrains: ['name'],
-        'terrains.mapBlocks[]': ['name'],
-        ufopaedia: ['id'],
-        ufoTrajectories: ['id'],
-        ...getAdditionalTypePropertyHints(),
-    };
-
-    private static vetoTypes: string[] = [
-        'extraStrings',
-        'facilities.verticalLevels[]',
-        'mapScripts.commands[]',
-        'mapScripts.commands[].tunnelData.MCDReplacements[]',
-        'mapScripts.commands[].verticalLevels[]',
-        'startingBase.crafts[]',
-        'startingBase.crafts[].weapons[]',
-        'startingBase.facilities[]',
-        'startingBase.items[]',
-        // reinstate regex for this?
-        'startingBaseBeginner.crafts[]',
-        'startingBaseBeginner.crafts[].weapons[]',
-        'startingBaseBeginner.facilities[]',
-        'startingBaseBeginner.items[]',
-        'startingBaseExperienced.crafts[]',
-        'startingBaseExperienced.crafts[].weapons[]',
-        'startingBaseExperienced.facilities[]',
-        'startingBaseExperienced.items[]',
-        'startingBaseVeteran.crafts[]',
-        'startingBaseVeteran.crafts[].weapons[]',
-        'startingBaseVeteran.facilities[]',
-        'startingBaseVeteran.items[]',
-        'startingBaseGenius.crafts[]',
-        'startingBaseGenius.crafts[].weapons[]',
-        'startingBaseGenius.facilities[]',
-        'startingBaseGenius.items[]',
-        'startingBaseSuperhuman.crafts[]',
-        'startingBaseSuperhuman.crafts[].weapons[]',
-        'startingBaseSuperhuman.facilities[]',
-        'startingBaseSuperhuman.items[]',
-        ...getAdditionalVetoTypes(),
-    ];
-
-    private static globalVariablePaths = [
-        'ai',
-        'constants',
-        'fixedUserOptions',
-        'gameOver',
-        'health',
-        'lighting',
-        'mana',
-        'missionRatings',
-        'monthlyRatings',
-        'recommendedUserOptions',
-        ...getAdditionalGlobalVariablePaths(),
-    ];
-
-    private static vetoTypeValues: { [key: string]: string[] } = {
-        // 'extraSprites': ['BASEBITS.PCK', 'BIGOBS.PCK', 'FLOOROB.PCK', 'HANDOB.PCK', 'INTICON.PCK', 'Projectiles', 'SMOKE.PCK'],
-    };
-
-    // maybe combine this with keyReferenceTypes, or use this in that? or always check both?
-    private static keyDefinitionTypes: { [key: string]: KeyReferenceOptions } = {
-        // not 100% sure about these yet. Perhaps they should only work for the current file? maybe they're not definitions at all?
-        'extended.tags.BattleGame': {},
-        'extended.tags.BattleItem': {},
-        'extended.tags.BattleUnit': {},
-        'extended.tags.GeoscapeSoldier': {},
-        'extended.tags.RuleArmor': {},
-        'extended.tags.RuleItem': {},
-        'extended.tags.RuleSoldier': {},
-        'extended.tags.RuleSoldierBonus': {},
-        'extended.tags.RuleUfo': {},
-        'extraSprites.BASEBITS.PCK.files': { recurse: false },
-        'extraSprites.BIGOBS.PCK.files': { recurse: false },
-        'extraSprites.FLOOROB.PCK.files': { recurse: false },
-        'extraSprites.HANDOB.PCK.files': { recurse: false },
-        'extraSprites.INTICON.PCK.files': { recurse: false },
-        'extraSprites.HIT.PCK.files': { recurse: false },
-        'extraSprites.Projectiles.files': { recurse: false },
-        'extraSprites.SMOKE.PCK.files': { recurse: false },
-        'extraSprites.SPICONS.DAT.files': { recurse: false },
-        'extraSprites.X1.PCK.files': { recurse: false },
-        'extraSounds.BATTLE.CAT.files': { recurse: false },
-        'extraSounds.GEO.CAT.files': { recurse: false },
-        // '/^extraSprites\\.[a-zA-Z0-9]+(\\.PCK)?\\.files\\.\\d+$/',
-    };
-
-    private static keyReferenceTypes: { [key: string]: KeyReferenceOptions } = {
-        ...typedProperties.keyDefinitionTypes,
-        'arcScripts.randomArcs': {},
-        'arcScripts.researchTriggers': {},
-        'arcScripts.itemTriggers': {},
-        'arcScripts.facilityTriggers': {},
-        'alienDeployments.civiliansByType': {},
-        '/^alienDeployments\\.alienBaseUpgrades\\.\\d+$/': {},
-        '/^alienMissions\\.raceWeights\\.\\d+$/': {},
-        '/^alienMissions\\.regionWeights\\.\\d+$/': {},
-        '/^alienRaces\\.retaliationMissionWeights\\.\\d+$/': {},
-        'armors.tags': {},
-        'enviroEffects.environmentalConditions': {},
-        'events.everyMultiItemList': {},
-        'events.weightedItemList': {},
-        'eventScripts.itemTriggers': {},
-        'eventScripts.facilityTriggers': {},
-        'eventScripts.oneTimeRandomEvents': {},
-        '/^eventScripts\\.eventWeights\\.\\d+$/': {},
-        'eventScripts.researchTriggers': {},
-        'facilities.buildCostItems': {},
-        'items.tags': {},
-        'manufacture.requiredItems': {},
-        'manufacture.producedItems': {},
-        'manufacture.randomProducedItems[][]': {},
-        '/^missionScripts\\.missionWeights\\.\\d+$/': {},
-        '/^missionScripts\\.raceWeights\\.\\d+$/': {},
-        '/^missionScripts\\.regionWeights\\.\\d+$/': {},
-        // '/^manufacture\\.randomProducedItems[][]\\.[a-zA-Z0-9_]+$/': {},
-        'missionScripts.researchTriggers': {},
-        'missionScripts.itemTriggers': {},
-        'missionScripts.facilityTriggers': {},
-        'research.getOneFreeProtected': {},
-        'startingBase.items': {},
-        // 'startingBase.randomSoldiers': {},
-        '/^startingBase(Beginner|Experienced|Veteran|Genius|Superhuman)?\\.randomSoldiers$/': {},
-        'startingConditions.defaultArmor': {},
-        '/^startingConditions\\.defaultArmor\\.[a-zA-Z0-9_]+$/': {},
-        'startingConditions.requiredItems': {},
-        'ufos.raceBonus': {},
-        'terrains.mapBlocks[].items': {},
-        ...getAdditionalKeyReferenceTypes(),
-    };
-
-    private static keyValueReferenceTypes: string[] = [
-        'enviroEffects.armorTransformations',
-        'enviroEffects.paletteTransformations',
-        'items.zombieUnitByType',
-        'items.zombieUnitByArmorFemale',
-        'items.zombieUnitByArmorMale',
-    ];
-
-    private static arrayDefinitionTypes: string[] = ['facilities.provideBaseFunc[]'];
-
     // fully built from typeLinks now
     private static typeProperties: typeProperties = {};
+
+    // Data fields loaded from typeConfig.json in init(), merged with runtime additions
+    private static typePropertyHints: { [key: string]: string[] } = {};
+    private static vetoTypes: string[] = [];
+    private static globalVariablePaths: string[] = [];
+    private static vetoTypeValues: { [key: string]: string[] } = {};
+    private static keyDefinitionTypes: { [key: string]: KeyReferenceOptions } = {};
+    private static keyReferenceTypes: { [key: string]: KeyReferenceOptions } = {};
+    private static keyValueReferenceTypes: string[] = [];
+    private static arrayDefinitionTypes: string[] = [];
+    private static metadataFields: { [key: string]: string[] } = {};
+    private static storeVariables: { [key: string]: boolean } = {};
 
     // ATTENTION: when adding logic here, it also needs to be happen when checking references
     private static metadataLogicOverrides: logicOverrides = {
@@ -223,19 +76,6 @@ export class typedProperties {
         'items.bulletSprite': typedProperties.typeLinksLogic,
     };
 
-    private static metadataFields: metadataFields = {
-        items: ['damageType', 'blastRadius', 'damageAlter.FixRadius'],
-        'extraSprites.BIGOBS.PCK': ['height', 'width', 'subX', 'subY'],
-        'extraSprites.HANDOB.PCK': ['height', 'width', 'subX', 'subY'],
-        'extraSprites.FLOOROB.PCK': ['height', 'width', 'subX', 'subY'],
-        'extraSprites.INTICON.PCK': ['height', 'width', 'subX', 'subY'],
-        'extraSprites.Projectiles': ['height', 'subY'],
-    };
-
-    private static storeVariables: { [key: string]: boolean } = {
-        'globalVariables.ftaGame': true,
-    };
-
     private static additionalLogicPaths: string[] = [];
     private static keyReferenceTypesRegexes: {
         regex: RegExp;
@@ -243,7 +83,29 @@ export class typedProperties {
     }[] = [];
     private static typeLinkRegexes: { regex: RegExp; values: string[] }[] = [];
 
+    // Performance caches for frequently called regex methods
+    private static regexTypeLinkCache = new Map<string, string[] | undefined>();
+    private static keyReferencePathCache = new Map<string, KeyReferenceOptions | undefined>();
+
     public static init() {
+        // Load base config from JSON
+        this.typePropertyHints = { ...typeConfig.typePropertyHints, ...getAdditionalTypePropertyHints() };
+        this.vetoTypes = [...typeConfig.vetoTypes, ...getAdditionalVetoTypes()];
+        this.globalVariablePaths = [...typeConfig.globalVariablePaths, ...getAdditionalGlobalVariablePaths()];
+        this.vetoTypeValues = { ...typeConfig.vetoTypeValues };
+        this.keyDefinitionTypes = { ...typeConfig.keyDefinitionTypes };
+        this.keyReferenceTypes = { ...this.keyDefinitionTypes, ...typeConfig.keyReferenceTypes, ...getAdditionalKeyReferenceTypes() };
+        this.keyValueReferenceTypes = [...typeConfig.keyValueReferenceTypes];
+        this.arrayDefinitionTypes = [...typeConfig.arrayDefinitionTypes];
+        this.metadataFields = { ...typeConfig.metadataFields };
+        this.storeVariables = { ...typeConfig.storeVariables };
+
+        // Clear caches on re-init
+        this.regexTypeLinkCache.clear();
+        this.keyReferencePathCache.clear();
+        this.keyReferenceTypesRegexes = [];
+        this.typeLinkRegexes = [];
+
         this.addTypeLinks();
         this.getAdditionalLogicPaths();
         this.getAdditionalMetadataFields();
@@ -502,18 +364,26 @@ export class typedProperties {
     }
 
     public static isKeyReferencePath(path: string): KeyReferenceOptions | undefined {
+        if (this.keyReferencePathCache.has(path)) {
+            return this.keyReferencePathCache.get(path);
+        }
+
         const match = path in this.keyReferenceTypes;
         if (match) {
-            return this.keyReferenceTypes[path];
+            const result = this.keyReferenceTypes[path];
+            this.keyReferencePathCache.set(path, result);
+            return result;
         }
 
         // allow regex
         for (const type of this.keyReferenceTypesRegexes) {
             if (type.regex.exec(path)) {
+                this.keyReferencePathCache.set(path, type.settings);
                 return type.settings;
             }
         }
 
+        this.keyReferencePathCache.set(path, undefined);
         return;
     }
 
@@ -581,24 +451,25 @@ export class typedProperties {
         }
     }
 
-    public static isRegexTypeLink(path: string) {
+    public static isRegexTypeLink(path: string): string[] | undefined {
+        if (this.regexTypeLinkCache.has(path)) {
+            return this.regexTypeLinkCache.get(path);
+        }
+
         for (const type in this.typeLinkRegexes) {
             const regex = this.typeLinkRegexes[type].regex;
             if (regex.exec(path)) {
-                return this.typeLinkRegexes[type].values;
+                const result = this.typeLinkRegexes[type].values;
+                this.regexTypeLinkCache.set(path, result);
+                return result;
             }
         }
 
+        this.regexTypeLinkCache.set(path, undefined);
         return;
     }
 
     private static loadRegexes() {
-        // @TODO is this called more than once?
-        if (this.keyReferenceTypesRegexes.length > 0) {
-            logger.error('Should not happen!');
-            return;
-        }
-
         for (const type in this.keyReferenceTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.keyReferenceTypesRegexes.push({

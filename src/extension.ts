@@ -12,6 +12,7 @@ import { ConvertCsvCommand } from './commands/convertCsvCommand';
 import { ConvertCsvToRulCommand } from './commands/convertCsvToRulCommand';
 import { AutoOrderWeaponsCommand } from './commands/autoOrderWeaponsCommand';
 import { GenerateDocumentationCommand } from './commands/generateDocumentationCommand';
+import { perfTimer } from './performanceTimer';
 
 export const rulesetResolver = new RulesetResolver();
 export let reporter: TelemetryReporter;
@@ -54,6 +55,23 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.autoOrderWeapons', AutoOrderWeaponsCommand.handler));
 
     context.subscriptions.push(commands.registerCommand('oxcYamlHelper.generateDocumentation', GenerateDocumentationCommand.handler));
+
+    context.subscriptions.push(commands.registerCommand('oxcYamlHelper.benchmark', () => {
+        const outputChannel = window.createOutputChannel('OXC Benchmark');
+        outputChannel.show();
+        outputChannel.appendLine('Running benchmark - reloading rulesets...');
+        perfTimer.reset();
+        window.withProgress({
+            location: ProgressLocation.Notification,
+            title: 'Running benchmark',
+        }, async (progress) => {
+            await rulesetResolver.load(progress);
+            const report = perfTimer.report();
+            outputChannel.appendLine(JSON.stringify(report, null, 2));
+            outputChannel.appendLine('\nBenchmark complete.');
+            perfTimer.logReport();
+        });
+    }));
 
     if (workspace.getConfiguration('oxcYamlHelper').get<boolean>('showRulesetDocumentationOnStartup')) {
         commands.executeCommand('oxcYamlHelper.generateDocumentation');
