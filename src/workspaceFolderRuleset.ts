@@ -37,11 +37,11 @@ export type DefinitionCompletions = {
 
 export class WorkspaceFolderRuleset {
     public definitionsLookup: TypeLookup = {};
-    public rulesetFiles: RulesetFile[] = [];
-    public variableFiles: VariableFile[] = [];
-    public referenceFiles: ReferenceFile[] = [];
-    public translationFiles: TranslationFile[] = [];
-    public logicDataFiles: LogicDataFile[] = [];
+    public rulesetFiles = new Map<string, RulesetFile>();
+    public variableFiles = new Map<string, VariableFile>();
+    public referenceFiles = new Map<string, ReferenceFile>();
+    public translationFiles = new Map<string, TranslationFile>();
+    public logicDataFiles = new Map<string, LogicDataFile>();
     private variables: Variables = {};
     private translations: Translations = {};
     //    private references: Match[] = [];
@@ -74,11 +74,11 @@ export class WorkspaceFolderRuleset {
     }
 
     public deleteFileFromTree(file: Uri) {
-        this.rulesetFiles = this.rulesetFiles.filter((collection) => collection.file.path !== file.path);
-        this.variableFiles = this.variableFiles.filter((collection) => collection.file.path !== file.path);
-        this.referenceFiles = this.referenceFiles.filter((collection) => collection.file.path !== file.path);
-        this.translationFiles = this.translationFiles.filter((collection) => collection.file.path !== file.path);
-        this.logicDataFiles = this.logicDataFiles.filter((collection) => collection.file.path !== file.path);
+        this.rulesetFiles.delete(file.path);
+        this.variableFiles.delete(file.path);
+        this.referenceFiles.delete(file.path);
+        this.translationFiles.delete(file.path);
+        this.logicDataFiles.delete(file.path);
     }
 
     private getTranslationLookups(translations: Translation[]): Translations {
@@ -156,49 +156,23 @@ export class WorkspaceFolderRuleset {
     }
 
     private addRulesetFile(definitions: Definition[], sourceFile: Uri) {
-        const rulesetFile = { definitions, file: sourceFile };
-        if (this.rulesetFiles.length > 0 && rulesetFile.file) {
-            this.rulesetFiles = this.rulesetFiles.filter((tp) => tp.file && tp.file.path !== rulesetFile.file.path);
-        }
-        this.rulesetFiles.push(rulesetFile);
+        this.rulesetFiles.set(sourceFile.path, { definitions, file: sourceFile });
     }
 
     private addRulesetReferenceFile(references: Match[], sourceFile: Uri) {
-        const referenceFile = { references, file: sourceFile };
-        if (this.referenceFiles.length > 0 && referenceFile.file) {
-            this.referenceFiles = this.referenceFiles.filter(
-                (tp) => tp.file && tp.file.path !== referenceFile.file.path,
-            );
-        }
-        this.referenceFiles.push(referenceFile);
+        this.referenceFiles.set(sourceFile.path, { references, file: sourceFile });
     }
 
     private addRulesetVariableFile(variables: Variables, sourceFile: Uri) {
-        const variableFile = { variables, file: sourceFile };
-        if (this.variableFiles.length > 0 && variableFile.file) {
-            this.variableFiles = this.variableFiles.filter((tp) => tp.file && tp.file.path !== variableFile.file.path);
-        }
-        this.variableFiles.push(variableFile);
+        this.variableFiles.set(sourceFile.path, { variables, file: sourceFile });
     }
 
     private addRulesetTranslationFile(translations: Translations, sourceFile: Uri) {
-        const translationFile = { translations, file: sourceFile };
-        if (this.translationFiles.length > 0 && translationFile.file) {
-            this.translationFiles = this.translationFiles.filter(
-                (tp) => tp.file && tp.file.path !== translationFile.file.path,
-            );
-        }
-        this.translationFiles.push(translationFile);
+        this.translationFiles.set(sourceFile.path, { translations, file: sourceFile });
     }
 
     private addRulesetLogicDataFile(logicData: { [key: string]: LogicDataEntry[] }, sourceFile: Uri) {
-        const logicDataFile = { logicData, file: sourceFile };
-        if (this.logicDataFiles.length > 0 && logicDataFile.file) {
-            this.logicDataFiles = this.logicDataFiles.filter(
-                (tp) => tp.file && tp.file.path !== logicDataFile.file.path,
-            );
-        }
-        this.logicDataFiles.push(logicDataFile);
+        this.logicDataFiles.set(sourceFile.path, { logicData, file: sourceFile });
     }
 
     public getVariables(): Variables {
@@ -206,7 +180,7 @@ export class WorkspaceFolderRuleset {
     }
 
     public getReferences(): Match[] {
-        return this.referenceFiles.flatMap((file) => file.references);
+        return [...this.referenceFiles.values()].flatMap((file) => file.references);
     }
 
     public getKeysContaining(key: string | undefined, target: string): DefinitionCompletions {
@@ -242,7 +216,7 @@ export class WorkspaceFolderRuleset {
     }
 
     public getNumberOfParsedDefinitionFiles(): number {
-        return this.rulesetFiles.length;
+        return this.rulesetFiles.size;
     }
 
     public getTranslation(key: string): string | undefined {
@@ -275,7 +249,7 @@ export class WorkspaceFolderRuleset {
         //        logger.debug(`[${(new Date()).toISOString()}] Number of textDocuments in workspace: ${workspace.textDocuments.length}`);
         let problems = 0;
         const diagnosticsPerFile: FilesWithDiagnostics = {};
-        for (const file of this.referenceFiles) {
+        for (const file of this.referenceFiles.values()) {
             if (file.file.path.startsWith(Uri.joinPath(assetUri, '/').path)) {
                 // do not check assets obviously, but do store its logic data
                 rulesetDefinitionChecker.checkLogicData(this, file, [], this.hierarchy);
@@ -305,10 +279,8 @@ export class WorkspaceFolderRuleset {
     }
 
     public getLogicData(file: Uri) {
-        const logicFile = this.logicDataFiles.find(
-            (logicFile) => file === logicFile.file && Object.keys(logicFile.logicData).length > 0,
-        );
-        if (logicFile) {
+        const logicFile = this.logicDataFiles.get(file.path);
+        if (logicFile && Object.keys(logicFile.logicData).length > 0) {
             return logicFile.logicData;
         }
 
@@ -323,7 +295,7 @@ export class WorkspaceFolderRuleset {
 
     private createDefinitionLookup() {
         const lookup: TypeLookup = {};
-        for (const file of this.rulesetFiles) {
+        for (const file of this.rulesetFiles.values()) {
             for (const def of file.definitions) {
                 const arr = lookup[def.name];
                 const entry = this.getDefinitionLookup(def, file.file);
@@ -341,7 +313,7 @@ export class WorkspaceFolderRuleset {
 
     private createVariableLookup() {
         const vars: Variables = {};
-        for (const file of this.variableFiles) {
+        for (const file of this.variableFiles.values()) {
             for (const key in file.variables) {
                 vars[key] = file.variables[key];
             }
@@ -351,7 +323,7 @@ export class WorkspaceFolderRuleset {
 
     private createTranslationLookup() {
         const translations: Translations = {};
-        for (const file of this.translationFiles) {
+        for (const file of this.translationFiles.values()) {
             for (const locale in file.translations) {
                 const localeTranslations = (translations[locale] ??= {});
                 const fileLocale = file.translations[locale];

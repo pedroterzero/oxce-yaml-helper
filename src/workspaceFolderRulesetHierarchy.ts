@@ -15,24 +15,19 @@ export class WorkspaceFolderRulesetHierarchy {
 
         const deletes = this.getDeletes(hierarchy);
 
-        for (const idx in this.ruleset.rulesetFiles) {
-            const file =  this.ruleset.rulesetFiles[idx];
+        for (const [path, file] of this.ruleset.rulesetFiles) {
             if (!pathStartsWith(file.file, hierarchy.vanilla)) {
                 continue;
             }
 
-            // console.log(`definitions before deleting: ${Object.keys(file.definitions).length} (${file.file.path}) (to delete: ${deletes.length})`);
-
-            this.ruleset.rulesetFiles[idx].definitions = file.definitions.filter(def =>
+            this.ruleset.rulesetFiles.get(path)!.definitions = file.definitions.filter(def =>
                 !deletes.find(del => del.key === def.name && del.path === def.type)
             );
-
-            // console.log(`definitions after deleting: ${Object.keys(file.definitions).length} (${file.file.path})`);
         }
     }
 
     private getDeletes(hierarchy: { [key: string]: Uri; }) {
-        const modFiles =  this.ruleset.referenceFiles.filter(file => pathStartsWith(file.file, hierarchy.mod));
+        const modFiles = [...this.ruleset.referenceFiles.values()].filter(file => pathStartsWith(file.file, hierarchy.mod));
         const parsed: {path: string, key: string}[] = [];
         for (const file of modFiles) {
             const refs = file.references.filter(ref => ref.path.match(/^[a-zA-Z]+\.delete$/));
@@ -63,7 +58,7 @@ export class WorkspaceFolderRulesetHierarchy {
 
         const hierarchy = rulesetResolver.getRulesetHierarchy();
 
-        const modFiles = this.ruleset.rulesetFiles.filter(file => file.file.path.startsWith(Uri.joinPath(hierarchy.vanilla, '/').path));
+        const modFiles = [...this.ruleset.rulesetFiles.values()].filter(file => file.file.path.startsWith(Uri.joinPath(hierarchy.vanilla, '/').path));
 
         for (const file of modFiles) {
             for (const def of file.definitions) {
