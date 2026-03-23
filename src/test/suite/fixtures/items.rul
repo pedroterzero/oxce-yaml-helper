@@ -113,3 +113,17 @@ items:
 
   - type: STR_LINKER_YML_BUILTIN_TEST
     builtInTest: STR_BUILTIN_TEST_BAD
+
+  # --- tests for properly matched TU cost and accuracy (should not warn) ---
+  - type: STR_ITEM_VALID_COST_ACCURACY
+    costAimed:
+      time: 50
+    accuracyAimed: 80
+    costSnap:
+      time: 25
+    accuracySnap: 60
+
+  # --- test for accuracy with no TU cost (should warn) ---
+  - type: STR_ITEM_ACCURACY_WITHOUT_TU_COST
+    accuracyAimed: 80
+    accuracySnap: 60

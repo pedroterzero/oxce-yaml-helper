@@ -54,3 +54,9 @@ alienMissions:
     waves:
       - ufo: STR_ABDUCTOR
         trajectory: P0
+
+  # operationType:3 + objective:2 exemption (should NOT warn about missing waves)
+  - type: STR_ALIEN_MISSION_NEW_BASE_EXEMPTION
+    operationType: 3
+    objective: 2
+    raceWeights: {}

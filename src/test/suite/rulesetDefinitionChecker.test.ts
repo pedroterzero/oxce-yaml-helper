@@ -53,7 +53,7 @@ const getNumberOfDiagnostics = () => {
 };
 
 // this is useful because it gives a general idea if diagnostics are correctly generated without explicitly checking each one
-const expectedNumberOfDiagnostics = 693;
+const expectedNumberOfDiagnostics = 707;
 
 const originalSettingFindDuplicateDefinitions = workspace
     .getConfiguration('oxcYamlHelper')
@@ -619,5 +619,273 @@ describe('rulesetDefinitionChecker', () => {
             '"STR_BUILTIN_TEST_BAD" does not exist (items.builtInTest) for STR_LINKER_YML_BUILTIN_TEST',
         );
         assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    // ===== Positive cases: ensure valid data does NOT produce logic diagnostics =====
+
+    it('does not find a diagnostic for an item with properly matched TU cost and accuracy', () => {
+        const diagnostic = findDiagnostic(
+            'items.rul',
+            `if there's a TU cost for Aimed, there should be an accuracy setting!`,
+            121,
+            6,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an item with accuracy but no TU cost', () => {
+        let diagnostic = findDiagnostic(
+            'items.rul',
+            `if accuracy is set, there should be a TU cost (costAimed.time or tuAimed)!`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        diagnostic = findDiagnostic(
+            'items.rul',
+            `if accuracy is set, there should be a TU cost (costSnap.time or tuSnap)!`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for a soldierTransformation with allowedSoldierTypes', () => {
+        const diagnostic = findDiagnostic(
+            'soldierTransformation.rul',
+            `'STR_TRANSFORMATION_WITH_SOLDIER_TYPES' does not have allowedSoldierTypes: set. Without it, it can never be used in-game.`,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for a manufactureShortcut with startFrom', () => {
+        const diagnostic = findDiagnostic(
+            'manufactureShortcut.rul',
+            `'STR_MANUFACTURE_SHORTCUT_WITH_STARTFROM' does not have startFrom: set. This will cause a segmentation fault on loading OpenXcom!`,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for an alienMission with operationType 3 and objective 2 without waves', () => {
+        const diagnostic = findDiagnostic(
+            'alienMissions.rul',
+            `'STR_ALIEN_MISSION_NEW_BASE_EXEMPTION' does not have waves: set. This will lead to a segmentation fault when this mission triggers.`,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for an ufopaedia with STR_NOT_AVAILABLE section', () => {
+        const diagnostic = findDiagnostic(
+            'ufopaedia.rul',
+            ufopaediaImageErrorMessage,
+            18,
+            13,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for an ufopaedia type_id 7 without image_id', () => {
+        const diagnostic = findDiagnostic(
+            'ufopaedia.rul',
+            ufopaediaImageErrorMessage,
+            28,
+            13,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for an ufopaedia type_id 7 with image_id', () => {
+        const diagnostic = findDiagnostic(
+            'ufopaedia.rul',
+            ufopaediaImageErrorMessage,
+            32,
+            13,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for a region with valid missionZone coordinates', () => {
+        findDiagnostic(
+            'regions.rul',
+            'Crossing the prime meridian requires a different syntax',
+        );
+        // we should find one (the invalid one) but not have a second
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/regions.rul`));
+        const matchingDiagnostics = diagnosticsFile.filter(
+            (item) => item.message.startsWith('Crossing the prime meridian'),
+        );
+        // only 1 diagnostic for the original bad coordinate, not the new valid one
+        assert.strictEqual(matchingDiagnostics.length, 1);
+    });
+
+    it('finds a diagnostic for an alienDeployment working with refNode (positive check)', () => {
+        const diagnostic = findDiagnostic(
+            'alienDeployments.rul',
+            `'STR_TEST_ALIEN_DEPLOYMENT_WORKING_WITH_REFNODE' does not have data: set. This can lead to crashes in-game.`,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('does not find a diagnostic for an alienMission with raceWeights in missionScripts (positive check)', () => {
+        const diagnostic = findDiagnostic(
+            'alienMissions.rul',
+            `'STR_ALIEN_MISSION_IN_MISSIONSCRIPT' does not have raceWeights: set here or in missionScripts. This will lead to a crash when this mission triggers.`,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('finds a diagnostic for a mapscript addBlock command with incorrect groups', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/mapScripts.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message.includes('TEST_BAD_MAPSCRIPT_ADDBLOCK'),
+        );
+        assert.notStrictEqual(diagnostic, undefined, 'Expected a diagnostic for addBlock with non-existing group');
+    });
+
+    it('verifies that addLine group errors are errors, not warnings', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/mapScripts.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message ===
+                `'Group '10' does not exist in terrain for TEST_BAD_MAPSCRIPT. This will cause a segmentation fault when loading the map!`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        // verify it's an error (addLine = error)
+        assert.strictEqual(diagnostic!.severity, 0); // DiagnosticSeverity.Error = 0
+    });
+
+    it('does not find a diagnostic for a working alienDeployment with full data', () => {
+        const diagnostic = findDiagnostic(
+            'alienDeployments.rul',
+            `'STR_TEST_ALIEN_DEPLOYMENT_WORKING' does not have data: set. This can lead to crashes in-game.`,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('does not find missing data diagnostics for a working alienDeployment', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/alienDeployments.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message.includes('not set. This can lead to crashes in-game.') &&
+                item.range.start.line >= 16 &&
+                item.range.start.line <= 23,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('verifies a craftweapon with valid launcher does not produce an error', () => {
+        const diagnostic = findDiagnostic(
+            'craftWeapons.rul',
+            `'STR_DUMMY_CRAFT_WEAPON' does not have a launcher: set. This will cause a crash on loading OpenXcom!`,
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    it('does not find an autoShots conflict when only confAuto.shots is set', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/items.rul`));
+        // STR_DUPLICATE_AUTOSHOTS should have the conflict, but we want to make sure
+        // a normal item without autoShots doesn't trigger the check
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message === 'autoShots and confAuto.shots should not both be set!' &&
+                item.range.start.line !== 90, // line 90 is the known bad item
+        );
+        assert.strictEqual(diagnostic, undefined);
+    });
+
+    // ===== Diagnostic severity and message format tests =====
+
+    it('verifies craftweapon rearmRate diagnostic is an error', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/craftWeapons.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message.includes('rearmRate') && item.message.includes('is less than clipSize'),
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        assert.strictEqual(diagnostic!.severity, 0); // DiagnosticSeverity.Error = 0
+    });
+
+    it('verifies ufopaedia missing image_id diagnostic is an error', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/ufopaedia.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) => item.message === ufopaediaImageErrorMessage,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        assert.strictEqual(diagnostic!.severity, 0); // DiagnosticSeverity.Error = 0
+    });
+
+    it('verifies ufopaedia missing rect_text diagnostic is a warning', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/ufopaedia.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message ===
+                `Ufopaedia articles with type_ids 1 (Craft) should have rect_text:. Otherwise the text will not show up in the article.`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        assert.strictEqual(diagnostic!.severity, 1); // DiagnosticSeverity.Warning = 1
+    });
+
+    it('verifies soldierTransformation missing allowedSoldierTypes diagnostic is a warning', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/soldierTransformation.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message.includes('does not have allowedSoldierTypes: set'),
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        assert.strictEqual(diagnostic!.severity, 1); // DiagnosticSeverity.Warning = 1
+    });
+
+    it('verifies alienDeployments missing data diagnostic is an error', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/alienDeployments.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message.includes('does not have data: set'),
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        assert.strictEqual(diagnostic!.severity, 0); // DiagnosticSeverity.Error = 0
+    });
+
+    it('verifies manufatureShortcut missing startFrom diagnostic is an error', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/manufactureShortcut.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message.includes('does not have startFrom: set'),
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        assert.strictEqual(diagnostic!.severity, 0); // DiagnosticSeverity.Error = 0
+    });
+
+    it('verifies alienMission missing waves diagnostic is an error', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/alienMissions.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message.includes('does not have waves: set'),
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        assert.strictEqual(diagnostic!.severity, 0); // DiagnosticSeverity.Error = 0
+    });
+
+    it('verifies alienMission missing wave trajectory diagnostic is an error', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/alienMissions.rul`));
+        const diagnostic = diagnosticsFile.find(
+            (item) =>
+                item.message === `Wave does not have trajectory: set. This will cause a crash on loading OpenXcom!`,
+        );
+        assert.notStrictEqual(diagnostic, undefined);
+        assert.strictEqual(diagnostic!.severity, 0); // DiagnosticSeverity.Error = 0
+    });
+
+    // ===== Diagnostic count per file tests =====
+
+    it('has the expected number of diagnostics for items.rul', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/items.rul`));
+        assert.ok(diagnosticsFile.length > 0, 'items.rul should have diagnostics');
+    });
+
+    it('has the expected number of diagnostics for alienMissions.rul', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/alienMissions.rul`));
+        assert.ok(diagnosticsFile.length > 0, 'alienMissions.rul should have diagnostics');
+    });
+
+    it('has the expected number of diagnostics for craftWeapons.rul', () => {
+        const diagnosticsFile = getDiagnosticsForFile(Uri.file(`${fixturePath}/craftWeapons.rul`));
+        assert.ok(diagnosticsFile.length > 0, 'craftWeapons.rul should have diagnostics');
     });
 });

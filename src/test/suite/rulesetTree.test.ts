@@ -374,4 +374,151 @@ describe('rulesetTree', () => {
 
     // todo: getDiagnosticCollection() ?
     // todo: checkDefinitions()
+
+    describe('mergeVariablesIntoTree', () => {
+        beforeEach(() => {
+            rulesetTree.init();
+        });
+
+        it('stores and retrieves variables', () => {
+            const variables = { 'testVar': 'testValue', 'testVar2': 42 };
+            rulesetTree.mergeVariablesIntoTree(variables, mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'dummy.rul')));
+            rulesetTree.refresh(mockWorkSpaceFolder);
+            const retrieved = rulesetTree.getVariables(mockWorkSpaceFolder);
+            assert.notStrictEqual(retrieved, undefined);
+            assert.strictEqual(retrieved!['testVar'], 'testValue');
+            assert.strictEqual(retrieved!['testVar2'], 42);
+        });
+
+        it('overwrites variables from same file', () => {
+            const variables1 = { 'testVar': 'value1' };
+            const variables2 = { 'testVar': 'value2' };
+            rulesetTree.mergeVariablesIntoTree(variables1, mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'dummy.rul')));
+            rulesetTree.refresh(mockWorkSpaceFolder);
+            rulesetTree.mergeVariablesIntoTree(variables2, mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'dummy.rul')));
+            rulesetTree.refresh(mockWorkSpaceFolder);
+            const retrieved = rulesetTree.getVariables(mockWorkSpaceFolder);
+            assert.strictEqual(retrieved!['testVar'], 'value2');
+        });
+
+        it('does not overwrite variables from different files', () => {
+            const variables1 = { 'testVar1': 'value1' };
+            const variables2 = { 'testVar2': 'value2' };
+            rulesetTree.mergeVariablesIntoTree(variables1, mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'dummy.rul')));
+            rulesetTree.mergeVariablesIntoTree(variables2, mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'dummy2.rul')));
+            rulesetTree.refresh(mockWorkSpaceFolder);
+            const retrieved = rulesetTree.getVariables(mockWorkSpaceFolder);
+            assert.strictEqual(retrieved!['testVar1'], 'value1');
+            assert.strictEqual(retrieved!['testVar2'], 'value2');
+        });
+    });
+
+    describe('getDefinitionsByName with ruleType filter', () => {
+        beforeEach(() => {
+            rulesetTree.init();
+        });
+
+        it('returns definitions matching the correct type', () => {
+            addMockDefinition(rulesetTree, mockDefinition); // type: 'items'
+            const matches = rulesetTree.getDefinitionsByName(mockDefinition.name, mockWorkSpaceFolder, { type: 'items', key: '' });
+            assert.strictEqual(matches?.length, 1);
+        });
+
+        it('returns definitions when no ruleType filter is given', () => {
+            addMockDefinition(rulesetTree, mockDefinition);
+            const matches = rulesetTree.getDefinitionsByName(mockDefinition.name, mockWorkSpaceFolder, undefined);
+            assert.strictEqual(matches?.length, 1);
+        });
+
+        it('handles multiple definitions with the same name across different types', () => {
+            const itemDef = { ...mockDefinition, type: 'items', name: 'STR_SHARED_NAME' };
+            const craftDef = { ...mockDefinition, type: 'crafts', name: 'STR_SHARED_NAME' };
+            addMockDefinition(rulesetTree, itemDef, 'items.rul');
+            addMockDefinition(rulesetTree, craftDef, 'crafts.rul');
+            const matches = rulesetTree.getDefinitionsByName('STR_SHARED_NAME', mockWorkSpaceFolder, undefined);
+            assert.strictEqual(matches?.length, 2);
+        });
+    });
+
+    describe('deleteFileFromTree - edge cases', () => {
+        beforeEach(() => {
+            rulesetTree.init();
+        });
+
+        it('handles deleting a file that was never added', () => {
+            addMockDefinition(rulesetTree, mockDefinition, 'dummy.rul');
+            rulesetTree.deleteFileFromTree(mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'nonexistent.rul')));
+            rulesetTree.refresh(mockWorkSpaceFolder);
+            // the original definition should still exist
+            assertDefinitionExists(rulesetTree, mockDefinition);
+        });
+
+        it('cleans up all data types for a deleted file', () => {
+            const file = Uri.file(path.resolve(fixturePath, 'cleanup.rul'));
+            rulesetTree.mergeIntoTree([Object.assign({}, mockDefinition) as any], mockWorkSpaceFolder, file);
+            rulesetTree.mergeReferencesIntoTree([Object.assign({}, mockReference) as any], mockWorkSpaceFolder, file);
+            rulesetTree.mergeTranslationsIntoTree([Object.assign({}, mockTranslation)], mockWorkSpaceFolder, file);
+            rulesetTree.mergeVariablesIntoTree({ 'cleanupVar': 'value' }, mockWorkSpaceFolder, file);
+            rulesetTree.refresh(mockWorkSpaceFolder);
+
+            assertDefinitionExists(rulesetTree, mockDefinition);
+            assertTranslationExists(rulesetTree, mockTranslation);
+            assertReferenceExists(rulesetTree, mockReference);
+
+            rulesetTree.deleteFileFromTree(mockWorkSpaceFolder, file);
+            rulesetTree.refresh(mockWorkSpaceFolder);
+
+            assertDefinitionExists(rulesetTree, mockDefinition, false);
+            assertTranslationExists(rulesetTree, mockTranslation, false);
+            assertReferenceExists(rulesetTree, mockReference, false);
+        });
+    });
+
+    describe('init resets all state', () => {
+        it('clears definitions, references, translations, and variables', () => {
+            rulesetTree.init();
+            addMockDefinition(rulesetTree, mockDefinition);
+            addMockReference(rulesetTree, mockReference);
+            addMockTranslation(rulesetTree, mockTranslation);
+            rulesetTree.mergeVariablesIntoTree({ 'initVar': 'val' }, mockWorkSpaceFolder, Uri.file(path.resolve(fixturePath, 'dummy.rul')));
+            rulesetTree.refresh(mockWorkSpaceFolder);
+
+            assertDefinitionExists(rulesetTree, mockDefinition);
+            assertTranslationExists(rulesetTree, mockTranslation);
+            assertReferenceExists(rulesetTree, mockReference);
+
+            rulesetTree.init();
+
+            const matches = rulesetTree.getDefinitionsByName(mockDefinition.name, mockWorkSpaceFolder, undefined);
+            assert.strictEqual(matches?.length, 0);
+            const translation = rulesetTree.getTranslation(mockTranslation.key, mockWorkSpaceFolder);
+            assert.strictEqual(translation, undefined);
+        });
+    });
+
+    describe('getTranslation', () => {
+        it('returns undefined for non-existing translation key', () => {
+            const translation = fixtureRulesetTree.getTranslation('STR_THIS_KEY_DOES_NOT_EXIST', workspaceFolder!);
+            assert.strictEqual(translation, undefined);
+        });
+
+        it('retrieves an existing translation from fixtures', () => {
+            const translation = fixtureRulesetTree.getTranslation('STR_DUMMY_ITEM', workspaceFolder!);
+            assert.strictEqual(translation, 'Dummy');
+        });
+    });
+
+    describe('getNumberOfParsedDefinitionFiles', () => {
+        it('returns a positive number for loaded fixtures', () => {
+            const count = fixtureRulesetTree.getNumberOfParsedDefinitionFiles(workspaceFolder!);
+            assert.ok(count !== undefined && count > 0, 'Should have parsed at least one file');
+        });
+
+        it('returns zero for a fresh tree', () => {
+            rulesetTree.init();
+            const count = rulesetTree.getNumberOfParsedDefinitionFiles(mockWorkSpaceFolder);
+            // a fresh workspace folder may return 0 or undefined
+            assert.ok(count === undefined || count === 0, 'Fresh tree should have no parsed files');
+        });
+    });
 });

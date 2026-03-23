@@ -1,6 +1,10 @@
 manufactureShortcut:
   - name: STR_MANUFACTURE_SHORTCUT_WITHOUT_STARTFROM
 
+  # positive case: manufactureShortcut WITH startFrom (should NOT warn)
+  - name: STR_MANUFACTURE_SHORTCUT_WITH_STARTFROM
+    startFrom: STR_DUMMY_MANUFACTURE
+
   # type validations
 
   - name: STR_MANUFACTURE_SHORTCUT_BREAKDOWNITEMS_TEST

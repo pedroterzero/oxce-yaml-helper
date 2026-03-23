@@ -256,4 +256,46 @@ describe('Definition Provider', () => {
             assert.strictEqual(definitions[0].range.end.character, 24);
         });
     }); */
+
+    describe('provideDefinition - additional cases', () => {
+        it('finds definition for a craft reference in manufacture', async () => {
+            // manufacture.rul producedItems references STR_DUMMY_CRAFT which is a craft
+            const craftsPath = resolve(fixturePath, 'crafts.rul');
+            const craftsUri = Uri.file(craftsPath);
+            await checkDefinitionSingle(manufacturePath, 12, 8, craftsUri, 1, 10, 1, 25);
+        });
+
+        it('finds definition for a research reference', async () => {
+            const researchPath = resolve(fixturePath, 'research.rul');
+            const researchUri = Uri.file(researchPath);
+            await checkDefinitionSingle(manufacturePath, 49, 18, researchUri, 1, 10, 1, 28);
+        });
+
+        it('does not find definition for a non-existing reference', async () => {
+            // STR_DUMMY_NON_EXISTING_REFERENCE in manufacture.rul
+            await checkDefinitionSingle(manufacturePath, 16, 8);
+        });
+
+        it('finds definition for alienRace member unit', async () => {
+            const alienRacesPath = resolve(fixturePath, 'alienRaces.rul');
+            const unitsPath = resolve(fixturePath, 'units.rul');
+            const unitsUri = Uri.file(unitsPath);
+            // STR_DUMMY_UNIT_ALIEN_RACE_TEST in alienRaces.rul
+            await checkDefinitionSingle(alienRacesPath, 4, 10, unitsUri, 4, 10, 4, 40);
+        });
+
+        it('finds definition for craftWeapons clip reference to an item', async () => {
+            const craftWeaponsPath = resolve(fixturePath, 'craftWeapons.rul');
+            // STR_DUMMY_ITEM at craftWeapons.rul STR_CRAFT_WEAPON_CLIP_TEST clip line
+            await checkDefinitionSingle(craftWeaponsPath, 21, 12, itemsUri, 1, 10, 1, 24);
+        });
+
+        it('finds definition for soldierTransformation soldierBonusType', async () => {
+            const soldierTransPath = resolve(fixturePath, 'soldierTransformation.rul');
+            const soldierBonusesPath = resolve(fixturePath, 'soldierBonuses.rul');
+            const soldierBonusesUri = Uri.file(soldierBonusesPath);
+            // STR_DUMMY_BONUS in soldierTransformation.rul
+            await checkDefinitionSingle(soldierTransPath, 11, 24, soldierBonusesUri, 1, 10, 1, 25);
+        });
+    });
 });

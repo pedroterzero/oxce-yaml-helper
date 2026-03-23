@@ -75,3 +75,9 @@ mapScripts:
   # incorrect type
   - type: STR_MAPSCRIPTS_COMMANDS_VERTICALLEVELS_TERRAIN_TEST_INCORRECT
     commands: [{type: addLine, verticalLevels: [{terrain: STR_DUMMY_RESEARCH}], direction: vertical}]
+
+  # addBlock with bad group (should be WARNING, not error)
+  - type: TEST_BAD_MAPSCRIPT_ADDBLOCK
+    commands:
+    - type: addBlock
+      groups: [10]

@@ -21,3 +21,12 @@ terrains:
         width: 10
         length: 10
         groups: [1, 2]
+
+  - name: TEST_BAD_MAPSCRIPT_ADDBLOCK
+    script: TEST_BAD_MAPSCRIPT_ADDBLOCK
+    mapBlocks:
+      - name: BLOCK1
+        width: 10
+        length: 10
+        groups: 1
+        groups: 1
