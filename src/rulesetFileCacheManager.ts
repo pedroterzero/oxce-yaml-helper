@@ -1,4 +1,5 @@
-import { ExtensionContext, extensions, Uri, workspace } from 'vscode';
+import { ExtensionContext, extensions, Uri } from 'vscode';
+import { cachedConfig } from './cachedConfiguration';
 import { create } from 'flat-cache';
 import { ParsedRuleset } from './rulesetResolver';
 import { createHash } from 'crypto';
@@ -113,7 +114,7 @@ export class RulesetFileCacheManager {
     }
 
     private useCache(file: Uri): boolean {
-        const cacheStrategy = workspace.getConfiguration('oxcYamlHelper').get<string>('cacheStrategy');
+        const cacheStrategy = cachedConfig.cacheStrategy;
         if (!cacheStrategy) {
             return true;
         }

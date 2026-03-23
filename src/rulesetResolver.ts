@@ -15,6 +15,7 @@ import {
 } from 'vscode';
 import { parse } from 'yaml2';
 import { reporter } from './extension';
+import { cachedConfig } from './cachedConfiguration';
 import { logger } from './logger';
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { rulesetFileCacheManager } from './rulesetFileCacheManager';
@@ -614,7 +615,7 @@ export class RulesetResolver implements Disposable {
     }
 
     public getLocale(): string {
-        return workspace.getConfiguration('oxcYamlHelper').get<string>('translationLocale') ?? 'en-US';
+        return cachedConfig.translationLocale;
     }
 
     public dispose() {

@@ -1,5 +1,6 @@
-import { Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, Range, Uri, workspace } from 'vscode';
+import { Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, Range, Uri } from 'vscode';
 import { DefinitionLookup, Match } from './rulesetTree';
+import { cachedConfig } from './cachedConfiguration';
 import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from './workspaceFolderRuleset';
 import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from './definitions/typeLinks';
 import { builtinResourceIds, builtinTypes } from './definitions/builtinTypes';
@@ -199,7 +200,7 @@ export class RulesetDefinitionChecker {
     }
 
     private isCheckableTranslatableString(ref: Match) {
-        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations')) {
+        if (!cachedConfig.findMissingTranslations) {
             return false;
         }
 
@@ -249,7 +250,7 @@ export class RulesetDefinitionChecker {
     public checkDefinitions(lookup: TypeLookup) {
         this.duplicatesPerFile = {};
 
-        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findDuplicateDefinitions')) {
+        if (!cachedConfig.findDuplicateDefinitions) {
             return;
         }
 
@@ -511,7 +512,7 @@ export class RulesetDefinitionChecker {
 
             this.problemsByPath[ref.path]++;
 
-            if (workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories') === 'no') {
+            if (cachedConfig.validateCategories === 'no') {
                 if (['items.categories[]' /*, 'manufacture.category'*/].indexOf(ref.path) !== -1) {
                     return;
                 }
@@ -569,7 +570,7 @@ export class RulesetDefinitionChecker {
             return false;
         }
         if (
-            !workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations') &&
+            !cachedConfig.findMissingTranslations &&
             this.isExtraStringType(ref.path)
         ) {
             // allow translation checking to be disabled
