@@ -1,9 +1,8 @@
 import { ExtensionContext, extensions, Uri, workspace } from 'vscode';
 import { create } from 'flat-cache';
 import { ParsedRuleset } from './rulesetResolver';
-import { createHash } from 'crypto';
 import { rulesetResolver } from './extension';
-import { mkdir, readFile, stat } from 'fs/promises';
+import { mkdir, stat } from 'fs/promises';
 
 export class RulesetFileCacheManager {
     private CACHE_DIR = 'oxchelper';
@@ -52,14 +51,14 @@ export class RulesetFileCacheManager {
             return;
         }
 
-        const path = file.fsPath;
-        const fileContents = await readFile(path);
-        const hash = createHash('md5')
-            .update(fileContents.toString() + this.version)
-            .digest('hex');
+        const fileStat = await stat(file.fsPath);
 
         const cache = this.getCache(file);
-        cache.setKey('metadata', { hash });
+        cache.setKey('metadata', {
+            mtimeMs: fileStat.mtimeMs,
+            size: fileStat.size,
+            version: this.version,
+        });
         cache.setKey('data', JSON.parse(JSON.stringify(data)));
         cache.save();
     }
@@ -82,16 +81,13 @@ export class RulesetFileCacheManager {
             return;
         }
 
-        const path = file.fsPath;
-        const fileContents = await readFile(path);
-        const hash = createHash('md5')
-            .update(fileContents.toString() + this.version)
-            .digest('hex');
+        const fileStat = await stat(file.fsPath);
 
         const cache = this.getCache(file);
         const result = cache.all();
+        const meta = result?.metadata;
 
-        if (result && result.metadata?.hash === hash) {
+        if (meta && meta.mtimeMs === fileStat.mtimeMs && meta.size === fileStat.size && meta.version === this.version) {
             const parsed = result.data;
 
             const ret: ParsedRuleset = {
@@ -105,7 +101,7 @@ export class RulesetFileCacheManager {
             });
 
             return ret;
-        } else if (result && result.metadata?.hash !== hash) {
+        } else if (meta) {
             cache.removeCacheFile();
         }
 
