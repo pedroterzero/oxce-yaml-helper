@@ -15,7 +15,7 @@ import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
 import { WorkspaceFolderRulesetHierarchy } from './workspaceFolderRulesetHierarchy';
 import { rulesetResolver } from './extension';
 import { FilesWithDiagnostics } from './logic/logicHandler';
-import { mergeAndConcat } from 'merge-anything';
+import { perfTimer } from './performanceTimer';
 
 export type RulesetFile = { file: Uri; definitions: Definition[] };
 export type ReferenceFile = { file: Uri; references: Match[] };
@@ -107,20 +107,6 @@ export class WorkspaceFolderRuleset {
         }
 
         return grouped;
-    }
-
-    private getLookups(definitions: Definition[], sourceFile: Uri): TypeLookup {
-        const lookups: TypeLookup = {};
-
-        for (const definition of definitions) {
-            if (!(definition.name in lookups)) {
-                lookups[definition.name] = [];
-            }
-
-            lookups[definition.name].push(this.getDefinitionLookup(definition, sourceFile));
-        }
-
-        return lookups;
     }
 
     private getDefinitionLookup(definition: Definition, sourceFile: Uri): DefinitionLookup {
@@ -271,7 +257,9 @@ export class WorkspaceFolderRuleset {
 
     public refresh() {
         this.hierarchy.handleDeletes();
+        perfTimer.start('phase.createLookups');
         this.createLookups();
+        perfTimer.stop('phase.createLookups');
     }
 
     public getDiagnosticCollection(): DiagnosticCollection {
@@ -334,28 +322,45 @@ export class WorkspaceFolderRuleset {
     }
 
     private createDefinitionLookup() {
-        this.definitionsLookup = mergeAndConcat(
-            {}, // start empty
-            ...this.rulesetFiles.map((file) => this.getLookups(file.definitions, file.file)),
-        );
+        const lookup: TypeLookup = {};
+        for (const file of this.rulesetFiles) {
+            for (const def of file.definitions) {
+                const arr = lookup[def.name];
+                const entry = this.getDefinitionLookup(def, file.file);
+                if (arr) {
+                    arr.push(entry);
+                } else {
+                    lookup[def.name] = [entry];
+                }
+            }
+        }
+        this.definitionsLookup = lookup;
 
         logger.debug('Total number of (unique) definitions: ', Object.keys(this.definitionsLookup).length);
     }
 
     private createVariableLookup() {
-        this.variables = mergeAndConcat(
-            {}, // start empty
-            ...this.variableFiles.map((file) => file.variables),
-        );
-
-        //    logger.debug('Number of variables', Object.keys(this.variables).length);
+        const vars: Variables = {};
+        for (const file of this.variableFiles) {
+            for (const key in file.variables) {
+                vars[key] = file.variables[key];
+            }
+        }
+        this.variables = vars;
     }
 
     private createTranslationLookup() {
-        this.translations = mergeAndConcat(
-            {}, // start empty
-            ...this.translationFiles.map((file) => file.translations),
-        );
+        const translations: Translations = {};
+        for (const file of this.translationFiles) {
+            for (const locale in file.translations) {
+                const localeTranslations = (translations[locale] ??= {});
+                const fileLocale = file.translations[locale];
+                for (const key in fileLocale) {
+                    localeTranslations[key] = fileLocale[key];
+                }
+            }
+        }
+        this.translations = translations;
 
         logger.debug(
             `Number of translations for ${rulesetResolver.getLocale()}: ${

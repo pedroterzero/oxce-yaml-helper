@@ -1,4 +1,5 @@
-import { Diagnostic, DiagnosticSeverity, Range, Uri, workspace } from 'vscode';
+import { Diagnostic, DiagnosticSeverity, Range, Uri } from 'vscode';
+import { cachedConfig } from './cachedConfiguration';
 import { Match } from './rulesetTree';
 import { ReferenceFile, TypeLookup, WorkspaceFolderRuleset } from './workspaceFolderRuleset';
 import { soundTypeLinks, spriteTypeLinks, typeLinks, typeLinksPossibleKeys } from './definitions/typeLinks';
@@ -23,7 +24,7 @@ type TypeMatchResult = {
 export class RulesetDefinitionChecker {
     private problemsByPath: { [key: string]: number } = {};
 
-    private noWarnAboutIncorrectType = Object.keys(spriteTypeLinks).concat(Object.keys(soundTypeLinks));
+    private noWarnAboutIncorrectType = new Set([...Object.keys(spriteTypeLinks), ...Object.keys(soundTypeLinks)]);
 
     private logicHandler = new LogicHandler();
     private classifier = new ReferenceClassifier();
@@ -249,11 +250,12 @@ export class RulesetDefinitionChecker {
     }
 
     private processTypeLinks(rawTypeLinks: string[], rawPossibleKeys: string[]) {
+        const sentinels = new Set(['_any_', '_all_']);
         const keyMatchType = rawPossibleKeys.includes('_all_') ? 'all' : 'any';
-        const possibleKeys = rawPossibleKeys.filter((key) => !['_any_', '_all_'].includes(key));
+        const possibleKeys = rawPossibleKeys.filter((key) => !sentinels.has(key));
 
         const matchType = rawTypeLinks.includes('_any_') ? 'any' : 'all';
-        const typeLinks = rawTypeLinks.filter((key) => !['_any_', '_all_'].includes(key));
+        const typeLinks = rawTypeLinks.filter((key) => !sentinels.has(key));
 
         if (keyMatchType === 'all' && typeLinks.length !== possibleKeys.length) {
             logger.error(
@@ -295,7 +297,7 @@ export class RulesetDefinitionChecker {
 
             this.problemsByPath[ref.path]++;
 
-            if (workspace.getConfiguration('oxcYamlHelper').get<string>('validateCategories') === 'no') {
+            if (cachedConfig.validateCategories === 'no') {
                 if (['items.categories[]' /*, 'manufacture.category'*/].indexOf(ref.path) !== -1) {
                     return;
                 }
@@ -320,7 +322,7 @@ export class RulesetDefinitionChecker {
     }
 
     private incorrectTypeMessage(ref: Match, target?: TypeMatchResult) {
-        if (this.noWarnAboutIncorrectType.includes(ref.path)) {
+        if (this.noWarnAboutIncorrectType.has(ref.path)) {
             return this.nonexistantDefinitionMessage(ref);
         }
 

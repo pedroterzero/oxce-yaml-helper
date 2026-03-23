@@ -1,5 +1,5 @@
-import { workspace } from 'vscode';
 import { Match } from './rulesetTree';
+import { cachedConfig } from './cachedConfiguration';
 import { builtinResourceIds, builtinTypes } from './definitions/builtinTypes';
 import { ignoreTypes } from './definitions/ignoreTypes';
 import { ignoreStringTypes, stringTypes } from './definitions/stringTypes';
@@ -7,9 +7,18 @@ import { typedProperties } from './typedProperties';
 import { perfTimer } from './performanceTimer';
 
 export class ReferenceClassifier {
-    private builtinTypeRegexes: { regex: RegExp; values: string[] }[] = [];
+    private builtinTypeRegexes: { regex: RegExp; values: Set<string> }[] = [];
     private stringTypeRegexes: RegExp[] = [];
     private ignoreTypesRegexes: RegExp[] = [];
+    private stringTypesSet = new Set<string>();
+    private ignoreTypesSet = new Set<string>();
+    private ignoreStringTypesSet = new Set<string>();
+
+    // Per-path regex result caches (cleared implicitly on new instance)
+    private deletePatternCache = new Map<string, boolean>();
+    private ignoreTypeCache = new Map<string, boolean>();
+    private stringTypeCache = new Map<string, boolean>();
+    private builtinPathMatchCache = new Map<string, Set<string> | undefined>();
 
     public constructor() {
         this.loadRegexes();
@@ -20,7 +29,12 @@ export class ReferenceClassifier {
      */
     public typeExists(ref: Match): boolean {
         perfTimer.start('checker.typeExists');
-        if (ref.path.match(/^[a-z]+\.delete$/i)) {
+        let isDelete = this.deletePatternCache.get(ref.path);
+        if (isDelete === undefined) {
+            isDelete = /^[a-z]+\.delete$/i.test(ref.path);
+            this.deletePatternCache.set(ref.path, isDelete);
+        }
+        if (isDelete) {
             perfTimer.stop('checker.typeExists');
             return false;
         }
@@ -32,10 +46,7 @@ export class ReferenceClassifier {
             perfTimer.stop('checker.typeExists');
             return false;
         }
-        if (
-            !workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations') &&
-            this.isExtraStringType(ref.path)
-        ) {
+        if (!cachedConfig.findMissingTranslations && this.isExtraStringType(ref.path)) {
             perfTimer.stop('checker.typeExists');
             return false;
         }
@@ -60,21 +71,29 @@ export class ReferenceClassifier {
     }
 
     public isExtraStringType(path: string): boolean {
-        if (stringTypes.includes(path)) {
+        const cached = this.stringTypeCache.get(path);
+        if (cached !== undefined) {
+            return cached;
+        }
+
+        if (this.stringTypesSet.has(path)) {
+            this.stringTypeCache.set(path, true);
             return true;
         }
 
         for (const regex of this.stringTypeRegexes) {
             if (regex.exec(path)) {
+                this.stringTypeCache.set(path, true);
                 return true;
             }
         }
 
+        this.stringTypeCache.set(path, false);
         return false;
     }
 
     public isCheckableTranslatableString(ref: Match): boolean {
-        if (!workspace.getConfiguration('oxcYamlHelper').get<boolean>('findMissingTranslations')) {
+        if (!cachedConfig.findMissingTranslations) {
             return false;
         }
 
@@ -88,7 +107,7 @@ export class ReferenceClassifier {
                 'DUMMY',
             )
         ) {
-            if (!ignoreStringTypes.includes(ref.path)) {
+            if (!this.ignoreStringTypesSet.has(ref.path)) {
                 return true;
             }
         }
@@ -97,35 +116,48 @@ export class ReferenceClassifier {
     }
 
     public matchesBuiltinTypePathRegex(path: string): string[] | undefined {
-        for (const item of this.builtinTypeRegexes) {
-            if (item.regex.exec(path)) {
-                return item.values;
-            }
-        }
-        return;
+        const values = this.getBuiltinPathMatch(path);
+        return values ? [...values] : undefined;
     }
 
     private matchesBuiltinTypeRegex(path: string, key: string): boolean {
+        const values = this.getBuiltinPathMatch(path);
+        return values !== undefined && values.has(key);
+    }
+
+    private getBuiltinPathMatch(path: string): Set<string> | undefined {
+        if (this.builtinPathMatchCache.has(path)) {
+            return this.builtinPathMatchCache.get(path);
+        }
         for (const item of this.builtinTypeRegexes) {
-            if (item.regex.exec(path) && item.values.includes(key)) {
-                return true;
+            if (item.regex.exec(path)) {
+                this.builtinPathMatchCache.set(path, item.values);
+                return item.values;
             }
         }
-
-        return false;
+        this.builtinPathMatchCache.set(path, undefined);
+        return undefined;
     }
 
     private checkForIgnoredType(path: string): boolean {
-        if (ignoreTypes.includes(path)) {
+        const cached = this.ignoreTypeCache.get(path);
+        if (cached !== undefined) {
+            return cached;
+        }
+
+        if (this.ignoreTypesSet.has(path)) {
+            this.ignoreTypeCache.set(path, true);
             return true;
         }
 
         for (const re of this.ignoreTypesRegexes) {
             if (re.exec(path)) {
+                this.ignoreTypeCache.set(path, true);
                 return true;
             }
         }
 
+        this.ignoreTypeCache.set(path, false);
         return false;
     }
 
@@ -134,7 +166,7 @@ export class ReferenceClassifier {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.builtinTypeRegexes.push({
                     regex: new RegExp(type.slice(1, -1)),
-                    values: builtinTypes[type],
+                    values: new Set(builtinTypes[type]),
                 });
 
                 delete builtinResourceIds[type];
@@ -144,13 +176,21 @@ export class ReferenceClassifier {
         for (const type of stringTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.stringTypeRegexes.push(new RegExp(type.slice(1, -1)));
+            } else {
+                this.stringTypesSet.add(type);
             }
         }
 
         for (const type of ignoreTypes) {
             if (type.startsWith('/') && type.endsWith('/')) {
                 this.ignoreTypesRegexes.push(new RegExp(type.slice(1, -1)));
+            } else {
+                this.ignoreTypesSet.add(type);
             }
+        }
+
+        for (const type of ignoreStringTypes) {
+            this.ignoreStringTypesSet.add(type);
         }
     }
 }

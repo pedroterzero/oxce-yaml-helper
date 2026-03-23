@@ -10,6 +10,8 @@ import {
 } from './utilities';
 import typeConfig = require('./definitions/typeConfig.json');
 
+const sentinelKeys = new Set(['_all_', '_any_']);
+
 type typeProperties = {
     [key: string]: {
         [key: string]: typePropertyLink;
@@ -42,7 +44,7 @@ export class typedProperties {
             return false;
         }
 
-        if (['extraSprites', 'extraSounds'].includes(path) /* && key !== 'type'*/) {
+        if (new Set(['extraSprites', 'extraSounds']).has(path) /* && key !== 'type'*/) {
             return `${path}.${name}.files` in this.keyDefinitionTypes;
         }
 
@@ -55,11 +57,11 @@ export class typedProperties {
     // Data fields loaded from typeConfig.json in init(), merged with runtime additions
     private static typePropertyHints: { [key: string]: string[] } = {};
     private static vetoTypes: string[] = [];
-    private static globalVariablePaths: string[] = [];
+    private static globalVariablePaths = new Set<string>();
     private static vetoTypeValues: { [key: string]: string[] } = {};
     private static keyDefinitionTypes: { [key: string]: KeyReferenceOptions } = {};
     private static keyReferenceTypes: { [key: string]: KeyReferenceOptions } = {};
-    private static keyValueReferenceTypes: string[] = [];
+    private static keyValueReferenceTypes = new Set<string>();
     private static arrayDefinitionTypes: string[] = [];
     private static metadataFields: { [key: string]: string[] } = {};
     private static storeVariables: { [key: string]: boolean } = {};
@@ -76,7 +78,7 @@ export class typedProperties {
         'items.bulletSprite': typedProperties.typeLinksLogic,
     };
 
-    private static additionalLogicPaths: string[] = [];
+    private static additionalLogicPaths = new Set<string>();
     private static keyReferenceTypesRegexes: {
         regex: RegExp;
         settings: KeyReferenceOptions;
@@ -91,11 +93,15 @@ export class typedProperties {
         // Load base config from JSON
         this.typePropertyHints = { ...typeConfig.typePropertyHints, ...getAdditionalTypePropertyHints() };
         this.vetoTypes = [...typeConfig.vetoTypes, ...getAdditionalVetoTypes()];
-        this.globalVariablePaths = [...typeConfig.globalVariablePaths, ...getAdditionalGlobalVariablePaths()];
+        this.globalVariablePaths = new Set([...typeConfig.globalVariablePaths, ...getAdditionalGlobalVariablePaths()]);
         this.vetoTypeValues = { ...typeConfig.vetoTypeValues };
         this.keyDefinitionTypes = { ...typeConfig.keyDefinitionTypes };
-        this.keyReferenceTypes = { ...this.keyDefinitionTypes, ...typeConfig.keyReferenceTypes, ...getAdditionalKeyReferenceTypes() };
-        this.keyValueReferenceTypes = [...typeConfig.keyValueReferenceTypes];
+        this.keyReferenceTypes = {
+            ...this.keyDefinitionTypes,
+            ...typeConfig.keyReferenceTypes,
+            ...getAdditionalKeyReferenceTypes(),
+        };
+        this.keyValueReferenceTypes = new Set([...typeConfig.keyValueReferenceTypes]);
         this.arrayDefinitionTypes = [...typeConfig.arrayDefinitionTypes];
         this.metadataFields = { ...typeConfig.metadataFields };
         this.storeVariables = { ...typeConfig.storeVariables };
@@ -274,7 +280,7 @@ export class typedProperties {
      */
     private static typeLinksLogic(key: string, path: string): LogicOverride[] {
         const targets = typeLinks[path];
-        const keys = typeLinksPossibleKeys[path](key).filter((key) => !['_all_', '_any_'].includes(key));
+        const keys = typeLinksPossibleKeys[path](key).filter((key) => !sentinelKeys.has(key));
 
         const overrides: LogicOverride[] = [];
         for (const key in targets) {
@@ -388,15 +394,15 @@ export class typedProperties {
     }
 
     public static isKeyValueReferencePath(path: string) {
-        return this.keyValueReferenceTypes.includes(path);
+        return this.keyValueReferenceTypes.has(path);
     }
 
     public static isGlobalVariablePath(path: string) {
-        return this.globalVariablePaths.includes(path);
+        return this.globalVariablePaths.has(path);
     }
 
     public static isAdditionalLogicPath(path: string) {
-        return this.additionalLogicPaths.includes(path);
+        return this.additionalLogicPaths.has(path);
     }
 
     private static addTypeLinks() {
@@ -434,7 +440,7 @@ export class typedProperties {
     }
 
     private static getAdditionalLogicPaths() {
-        this.additionalLogicPaths = new LogicHandler().getPaths();
+        this.additionalLogicPaths = new Set(new LogicHandler().getPaths());
     }
 
     private static getAdditionalMetadataFields() {

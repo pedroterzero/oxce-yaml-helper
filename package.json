@@ -219,6 +219,8 @@
         "watch-tsc": "tsc -watch -p ./",
         "postinstall": "echo node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./out/test/runTest.js",
+        "benchmark": "npm run compile && node ./out/test/runBenchmark.js",
+        "benchmark:run": "node ./out/test/runBenchmark.js",
         "test:prepare": "node ./out/test/prepare.js",
         "test:cleanup": "mv package.json.orig package.json",
         "benchmark:compare": "node ./scripts/compare-benchmarks.mjs"

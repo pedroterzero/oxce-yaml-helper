@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
-import { existsSync } from 'fs';
+import { Stats, existsSync } from 'fs';
+import { stat } from 'fs/promises';
 import { glob } from 'glob';
 import {
     ConfigurationTarget,
@@ -15,6 +16,7 @@ import {
 } from 'vscode';
 import { parse } from 'yaml2';
 import { reporter } from './extension';
+import { cachedConfig } from './cachedConfiguration';
 import { logger } from './logger';
 import { perfTimer } from './performanceTimer';
 import { rulesetDefinitionChecker } from './rulesetDefinitionChecker';
@@ -144,14 +146,20 @@ export class RulesetResolver implements Disposable {
             return;
         }
 
+        await rulesetFileCacheManager.ensureReady();
+
         return Promise.all(
             workspace.workspaceFolders.map(async (workspaceFolder) => {
                 logger.debug('loading yaml files for workspace dir:', workspaceFolder.name);
                 const files = await this.getYamlFilesForWorkspaceFolder(workspaceFolder);
+
+                // Pre-stat all files in parallel to avoid per-file stat() calls in retrieve/put
+                const statResults = await Promise.all(files.map((file) => stat(file.fsPath).catch(() => undefined)));
+
                 return Promise.all(
-                    files.map((file) => {
+                    files.map((file, i) => {
                         logger.debug(`loading ruleset file: ${this.getCleanFile(file, workspaceFolder.uri)}`);
-                        return this.loadYamlIntoTree(file, workspaceFolder, files.length);
+                        return this.loadYamlIntoTree(file, workspaceFolder, files.length, statResults[i]);
                     }),
                 );
             }),
@@ -160,14 +168,13 @@ export class RulesetResolver implements Disposable {
 
     private async getYamlFilesForWorkspaceFolder(workspaceFolder: WorkspaceFolder): Promise<Uri[]> {
         let files: Uri[] = [];
-        await Promise.all([
-            await workspace.findFiles(this.yamlPattern),
-            await workspace.findFiles('**/Language/*.yml'),
-        ]).then((values) => {
-            files = files
-                .concat(...values)
-                .filter((file) => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
-        });
+        await Promise.all([workspace.findFiles(this.yamlPattern), workspace.findFiles('**/Language/*.yml')]).then(
+            (values) => {
+                files = files
+                    .concat(...values)
+                    .filter((file) => workspace.getWorkspaceFolder(file)?.uri.path === workspaceFolder.uri.path);
+            },
+        );
 
         await this.getAssetRulesets(files);
 
@@ -334,6 +341,7 @@ export class RulesetResolver implements Disposable {
         file: Uri,
         workspaceFolder?: WorkspaceFolder,
         numberOfFiles?: number,
+        fileStat?: Stats,
     ): Promise<void> {
         if (!workspaceFolder) {
             workspaceFolder = workspace.getWorkspaceFolder(file);
@@ -343,14 +351,14 @@ export class RulesetResolver implements Disposable {
         }
 
         perfTimer.start('file.cacheCheck');
-        let parsed: ParsedRuleset | undefined = await rulesetFileCacheManager.retrieve(file);
+        let parsed: ParsedRuleset | undefined = await rulesetFileCacheManager.retrieve(file, fileStat);
         perfTimer.stop('file.cacheCheck');
         if (parsed) {
             logger.debug(`Retrieved ${file.path} from cache`);
         } else {
             try {
                 perfTimer.start('file.parse');
-                parsed = await this.parseDocument(file, workspaceFolder);
+                parsed = await this.parseDocument(file, workspaceFolder, fileStat);
                 perfTimer.stop('file.parse');
             } catch (error) {
                 window.showErrorMessage(
@@ -394,7 +402,11 @@ export class RulesetResolver implements Disposable {
         );
     }
 
-    private async parseDocument(file: Uri, workspaceFolder: WorkspaceFolder): Promise<ParsedRuleset | undefined> {
+    private async parseDocument(
+        file: Uri,
+        workspaceFolder: WorkspaceFolder,
+        fileStat?: Stats,
+    ): Promise<ParsedRuleset | undefined> {
         const document = await this.getTextDocument(file);
         if (document.getText().trim().length === 0) {
             // new files could be empty
@@ -464,7 +476,7 @@ export class RulesetResolver implements Disposable {
             }
 
             // don't need to wait for cache to be written
-            /*await */ rulesetFileCacheManager.put(file, parsed);
+            /*await */ rulesetFileCacheManager.put(file, parsed, fileStat);
 
             return parsed;
         } catch (error: any) {
@@ -623,7 +635,7 @@ export class RulesetResolver implements Disposable {
     }
 
     public getLocale(): string {
-        return workspace.getConfiguration('oxcYamlHelper').get<string>('translationLocale') ?? 'en-US';
+        return cachedConfig.translationLocale;
     }
 
     public dispose() {

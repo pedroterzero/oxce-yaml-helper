@@ -1,42 +1,63 @@
-import { ExtensionContext, extensions, Uri, workspace } from 'vscode';
-import { create } from 'flat-cache';
+import { Stats } from 'fs';
+import { ExtensionContext, extensions, Uri } from 'vscode';
+import { cachedConfig } from './cachedConfiguration';
 import { ParsedRuleset } from './rulesetResolver';
-import { createHash } from 'crypto';
 import { rulesetResolver } from './extension';
-import { mkdir, readFile, stat } from 'fs/promises';
+import { mkdir, readFile, stat, writeFile, unlink } from 'fs/promises';
+
+const cacheAssetsStrategies = new Set(['all', 'only cache languages, assets', 'only cache assets']);
+const cacheLanguagesStrategies = new Set(['all', 'only cache languages', 'only cache languages, assets']);
+
+interface CacheMetadata {
+    mtimeMs: number;
+    size: number;
+    version: string;
+}
 
 export class RulesetFileCacheManager {
     private CACHE_DIR = 'oxchelper';
     private context?: ExtensionContext;
-    // private version = extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version;
+    private metadataIndex = new Map<string, CacheMetadata>();
+    private cachedVersion: string | undefined;
+    private readyPromise?: Promise<void>;
+    private metadataWriteQueue = Promise.resolve();
+
+    public async ensureReady(): Promise<void> {
+        await this.readyPromise;
+    }
 
     public setExtensionContent(context: ExtensionContext): void {
         this.context = context;
-        this.init();
+        this.readyPromise = this.init();
     }
 
-    private get version() {
-        return extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version;
+    private get version(): string {
+        if (!this.cachedVersion) {
+            this.cachedVersion =
+                extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version ?? '0.0.0';
+        }
+        return this.cachedVersion!;
     }
 
     private async init() {
-        console.log(`version: ${extensions.getExtension('pedroterzero.oxc-yaml-helper')?.packageJSON.version}`);
+        console.log(`version: ${this.version}`);
 
         if (!this.context) {
             return;
         }
 
-        // check if cache dir exists, otherwise create it
-        console.debug(`Checking if cache dir exists: ${this.getCachePath()}`);
+        const cachePath = this.getCachePath();
         try {
-            await stat(this.getCachePath());
+            await stat(cachePath);
         } catch (error: any) {
             if (error.code === 'ENOENT') {
-                await mkdir(this.getCachePath(), { recursive: true });
+                await mkdir(cachePath, { recursive: true });
             } else {
                 throw error;
             }
         }
+
+        await this.loadMetadataIndex();
     }
 
     private getCachePath(): string {
@@ -47,52 +68,89 @@ export class RulesetFileCacheManager {
         return Uri.joinPath(this.context.globalStorageUri, '/', this.CACHE_DIR).fsPath;
     }
 
-    public async put(file: Uri, data: ParsedRuleset) {
+    private getMetadataPath(): string {
+        return `${this.getCachePath()}/_metadata.json`;
+    }
+
+    private getCacheId(file: Uri): string {
+        return file.path.replace(/[/:]/g, '_');
+    }
+
+    private getDataPath(cacheId: string): string {
+        return `${this.getCachePath()}/${cacheId}`;
+    }
+
+    private async loadMetadataIndex(): Promise<void> {
+        try {
+            const data = await readFile(this.getMetadataPath(), 'utf8');
+            const parsed: Record<string, CacheMetadata> = JSON.parse(data);
+            this.metadataIndex = new Map(Object.entries(parsed));
+        } catch {
+            // Index doesn't exist or is corrupt — start fresh
+            this.metadataIndex = new Map();
+        }
+    }
+
+    private saveMetadataIndex(): void {
+        this.metadataWriteQueue = this.metadataWriteQueue
+            .then(() => writeFile(this.getMetadataPath(), JSON.stringify(Object.fromEntries(this.metadataIndex))))
+            .catch(() => {});
+    }
+
+    public async put(file: Uri, data: ParsedRuleset, fileStat?: Stats) {
         if (!this.context) {
             return;
         }
 
-        const path = file.fsPath;
-        const fileContents = await readFile(path);
-        const hash = createHash('md5')
-            .update(fileContents.toString() + this.version)
-            .digest('hex');
+        if (!fileStat) {
+            fileStat = await stat(file.fsPath);
+        }
+        const cacheId = this.getCacheId(file);
 
-        const cache = this.getCache(file);
-        cache.setKey('metadata', { hash });
-        cache.setKey('data', JSON.parse(JSON.stringify(data)));
-        cache.save();
+        await writeFile(this.getDataPath(cacheId), JSON.stringify(data));
+
+        this.metadataIndex.set(cacheId, {
+            mtimeMs: fileStat.mtimeMs,
+            size: fileStat.size,
+            version: this.version,
+        });
+
+        this.saveMetadataIndex();
     }
 
     public remove(file: Uri) {
-        this.getCache(file).removeCacheFile();
+        const cacheId = this.getCacheId(file);
+        this.metadataIndex.delete(cacheId);
+        unlink(this.getDataPath(cacheId)).catch(() => {});
+        this.saveMetadataIndex();
     }
 
-    private getCache(file: Uri) {
-        const cacheId = file.path.replace(/[/:]/g, '_');
-        // console.log(`getting cache object for ${file.path}, cacheId: ${cacheId}`);
-        return create({
-            cacheId,
-            cacheDir: this.getCachePath(),
-        });
-    }
+    public async retrieve(file: Uri, fileStat?: Stats) {
+        await this.readyPromise;
 
-    public async retrieve(file: Uri) {
         if (!this.useCache(file)) {
             return;
         }
 
-        const path = file.fsPath;
-        const fileContents = await readFile(path);
-        const hash = createHash('md5')
-            .update(fileContents.toString() + this.version)
-            .digest('hex');
+        const cacheId = this.getCacheId(file);
+        const meta = this.metadataIndex.get(cacheId);
+        if (!meta || meta.version !== this.version) {
+            return;
+        }
 
-        const cache = this.getCache(file);
-        const result = cache.all();
+        if (!fileStat) {
+            fileStat = await stat(file.fsPath);
+        }
 
-        if (result && result.metadata?.hash === hash) {
-            const parsed = result.data;
+        if (meta.mtimeMs !== fileStat.mtimeMs || meta.size !== fileStat.size) {
+            this.metadataIndex.delete(cacheId);
+            return;
+        }
+
+        // Metadata matches — read data file (async, not blocking event loop)
+        try {
+            const data = await readFile(this.getDataPath(cacheId), 'utf8');
+            const parsed = JSON.parse(data);
 
             const ret: ParsedRuleset = {
                 translations: 'translations' in parsed ? parsed.translations : [],
@@ -105,15 +163,15 @@ export class RulesetFileCacheManager {
             });
 
             return ret;
-        } else if (result && result.metadata?.hash !== hash) {
-            cache.removeCacheFile();
+        } catch {
+            // Data file missing or corrupt
+            this.metadataIndex.delete(cacheId);
+            return;
         }
-
-        return;
     }
 
     private useCache(file: Uri): boolean {
-        const cacheStrategy = workspace.getConfiguration('oxcYamlHelper').get<string>('cacheStrategy');
+        const cacheStrategy = cachedConfig.cacheStrategy;
         if (!cacheStrategy) {
             return true;
         }
@@ -122,8 +180,8 @@ export class RulesetFileCacheManager {
             return false;
         }
 
-        const cacheAssets = ['all', 'only cache languages, assets', 'only cache assets'].includes(cacheStrategy);
-        const cacheLanguages = ['all', 'only cache languages', 'only cache languages, assets'].includes(cacheStrategy);
+        const cacheAssets = cacheAssetsStrategies.has(cacheStrategy);
+        const cacheLanguages = cacheLanguagesStrategies.has(cacheStrategy);
 
         const isAssetFile = file.path.startsWith(rulesetResolver.getRulesetHierarchy().vanilla.path + '/');
         const isLanguageFile = file.path.match(/\/Language\/[^/]+\.yml$/i);
