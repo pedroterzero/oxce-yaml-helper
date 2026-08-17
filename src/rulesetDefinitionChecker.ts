@@ -312,7 +312,7 @@ export class RulesetDefinitionChecker {
     private getDuplicateKeys(
         keyDefs: DefinitionLookup[],
         key: string,
-        hierarchy: { [key: string]: Uri },
+        hierarchy: { [key: string]: Uri | undefined },
     ): Duplicates | undefined {
         const duplicates: Duplicates = {};
 

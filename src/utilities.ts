@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'fs';
-import { env, Uri, window, workspace } from 'vscode';
+import { env, Uri, WorkspaceFolder, window, workspace } from 'vscode';
 import { parse } from 'yaml';
 
 type LinkerConfig = {
@@ -21,13 +21,28 @@ type LinkerConfig = {
 let config: LinkerConfig;
 let errorShown = false;
 
+/**
+ * Resolves the configured OpenXcom mod root for a workspace folder. Defaults to the
+ * workspace folder itself when `oxcYamlHelper.modRoot` is unset, so nested monorepo
+ * mods (i.e. `content/From the Ashes`) can be treated as the mod root.
+ */
+export const getModRootUri = (workspaceFolder: WorkspaceFolder): Uri => {
+    const modRoot = workspace
+        .getConfiguration('oxcYamlHelper')
+        .get<string>('modRoot')
+        ?.trim()
+        .replace(/\\/g, '/');
+
+    return modRoot ? Uri.joinPath(workspaceFolder.uri, modRoot) : workspaceFolder.uri;
+};
+
 const getLinkerConfig = () => {
     if (config) {
         return config;
     }
 
     if (workspace?.workspaceFolders) {
-        const path = Uri.joinPath(workspace.workspaceFolders[0].uri, 'linker.yml');
+        const path = Uri.joinPath(getModRootUri(workspace.workspaceFolders[0]), 'linker.yml');
         if (existsSync(path.fsPath)) {
             const configFile = readFileSync(path.fsPath);
 
@@ -103,7 +118,11 @@ export const getAdditionalGlobalVariablePaths = () => {
     return getLinkerConfig()?.globalVariables ?? [];
 };
 
-export const pathStartsWith = (file1: Uri, file2: Uri) => {
+export const pathStartsWith = (file1: Uri, file2: Uri | undefined) => {
+    if (!file2) {
+        return false;
+    }
+
     // handle case insensitivity in windows -- on github actions, for some reason the mod path was /D:/ and the def path was /d:/
     let file1path = file1.path;
     let file2path = Uri.joinPath(file2, '/').path;

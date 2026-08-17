@@ -31,7 +31,7 @@ export class WorkspaceFolderRulesetHierarchy {
         }
     }
 
-    private getDeletes(hierarchy: { [key: string]: Uri; }) {
+    private getDeletes(hierarchy: { [key: string]: Uri | undefined; }) {
         const modFiles =  this.ruleset.referenceFiles.filter(file => pathStartsWith(file.file, hierarchy.mod));
         const parsed: {path: string, key: string}[] = [];
         for (const file of modFiles) {
@@ -61,9 +61,13 @@ export class WorkspaceFolderRulesetHierarchy {
             return;
         }
 
-        const hierarchy = rulesetResolver.getRulesetHierarchy();
+        const vanilla = rulesetResolver.getRulesetHierarchy().vanilla;
+        if (!vanilla) {
+            // oxcYamlHelper.baseGame is set to "none", so there are no vanilla definitions to collect
+            return;
+        }
 
-        const modFiles = this.ruleset.rulesetFiles.filter(file => file.file.path.startsWith(Uri.joinPath(hierarchy.vanilla, '/').path));
+        const modFiles = this.ruleset.rulesetFiles.filter(file => file.file.path.startsWith(Uri.joinPath(vanilla, '/').path));
 
         for (const file of modFiles) {
             for (const def of file.definitions) {

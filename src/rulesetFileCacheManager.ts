@@ -125,7 +125,8 @@ export class RulesetFileCacheManager {
         const cacheAssets = ['all', 'only cache languages, assets', 'only cache assets'].includes(cacheStrategy);
         const cacheLanguages = ['all', 'only cache languages', 'only cache languages, assets'].includes(cacheStrategy);
 
-        const isAssetFile = file.path.startsWith(rulesetResolver.getRulesetHierarchy().vanilla.path + '/');
+        const vanilla = rulesetResolver.getRulesetHierarchy().vanilla;
+        const isAssetFile = vanilla !== undefined && file.path.startsWith(vanilla.path + '/');
         const isLanguageFile = file.path.match(/\/Language\/[^/]+\.yml$/i);
 
         if (!cacheAssets && isAssetFile) {

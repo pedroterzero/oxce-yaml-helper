@@ -76,18 +76,25 @@
                     "default": "**/*.rul",
                     "description": "Rules files location (i.e. Rulesets/**/*.rul)"
                 },
+                "oxcYamlHelper.modRoot": {
+                    "type": "string",
+                    "default": "",
+                    "markdownDescription": "Optional path from the workspace folder to the actual OpenXcom mod root. Leave empty to use the workspace folder itself. Example for monorepos: `content/From the Ashes`."
+                },
                 "oxcYamlHelper.baseGame": {
                     "type": "string",
                     "enum": [
                         "oxc",
-                        "oxce"
+                        "oxce",
+                        "none"
                     ],
                     "enumDescriptions": [
                         "OpenXcom",
-                        "OpenXcom Extended"
+                        "OpenXcom Extended",
+                        "Do not load bundled base game rulesets"
                     ],
                     "default": "oxce",
-                    "description": "Controls the version used for validating rulesets."
+                    "description": "Controls the version used for validating rulesets. Use none for standalone projects that should not inherit bundled X-COM rulesets."
                 },
                 "oxcYamlHelper.translationLocale": {
                     "type": "string",
@@ -163,7 +170,7 @@
                 "oxcYamlHelper.parentMods": {
                     "type": "array",
                     "default": [],
-                    "description": "Names of parent mods (i.e. 40k, ROSIGMA). Note, these must point to existing directories under this mod's directory"
+                    "description": "Names of parent mods (i.e. 40k, ROSIGMA). These must point to existing directories next to the active mod root (i.e. next to oxcYamlHelper.modRoot, or the workspace folder if unset)"
                 }
             }
         },
